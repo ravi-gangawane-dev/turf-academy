@@ -1,0 +1,36 @@
+.dialog-message {
+  margin: 0 0 0.75rem;
+  color: #42584c;
+  font-size: 0.9rem;
+}
+
+.media-frame {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.media-frame img,
+.media-frame video {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #0b1f16;
+}
+
+figcaption {
+  font-size: 0.78rem;
+  color: #52615a;
+  text-align: center;
+}
+
+.media-empty {
+  margin: 0;
+  padding: 2rem 1rem;
+  border: 1px dashed #c9d5cf;
+  border-radius: 10px;
+  text-align: center;
+  color: #52615a;
+  font-size: 0.85rem;
+}

@@ -1,0 +1,337 @@
+<div class="parent-dashboard">
+  @if (loading()) {
+    <app-async-state title="Loading your family dashboard…" />
+  } @else if (error()) {
+    <app-async-state kind="error" title="Dashboard unavailable" [message]="error()" actionLabel="Retry" (action)="retry()" />
+  } @else if (parent(); as item) {
+    <app-page-hero [title]="item.full_name" eyebrow="Welcome back," subtitle="Stay connected. Support their journey." [breadcrumbs]="[{label:'Dashboard'}]"><div hero-actions>@if (children().length) {
+        <label class="child-switcher"
+          ><span class="mini-avatar">
+            @if (selectedChild()?.workspace?.student?.photoUrl) {
+              <img [src]="selectedChild()!.workspace.student.photoUrl" alt="" />
+            } @else {
+              {{ initials(selectedChild()!.workspace.student.fullName) }}
+            }</span
+          ><span
+            ><strong>{{ selectedChild()!.workspace.student.fullName }}</strong
+            ><small
+              >{{ selectedChild()!.workspace.student.studentCode }} ·
+              {{ batch(selectedChild()!) }}</small
+            ></span
+          ><select
+            [value]="selectedChild()!.workspace.student.id"
+            (change)="selectChild($event)"
+            aria-label="Select child"
+          >
+            @for (child of children(); track child.workspace.student.id) {
+              <option
+                [value]="child.workspace.student.id"
+                [selected]="child.workspace.student.id === selectedChild()!.workspace.student.id"
+              >
+                {{ child.workspace.student.fullName }}
+              </option>
+            }</select
+          ><i class="pi pi-angle-down"></i
+        ></label>
+      }
+      </div></app-page-hero>
+    @if (selectedChild(); as child) {
+      <section class="metric-grid">
+        <app-summary-metric-card label="Attendance" [value]="attendance(child).rate + '%'" icon="pi-users" [hint]="attendance(child).present + ' of ' + attendance(child).total + ' records present'" />
+        <app-summary-metric-card label="Pending fees" [value]="fee(child).pending | academyMoney" icon="pi-wallet" hint="Current monthly plan" tone="red" />
+        <app-summary-metric-card label="Next session" [value]="time(nextSession(child)?.['start_time'])" icon="pi-calendar" [hint]="'' + (nextSession(child)?.['title'] || 'No upcoming session scheduled')" tone="blue" />
+        <app-summary-metric-card label="Current batch" [value]="batch(child)" icon="pi-graduation-cap" [hint]="'' + (batchRecord(child)['skill_level'] || child.workspace.student.skillLevel)" tone="purple" />
+      </section>
+      <section class="top-grid">
+        <article class="panel child-overview">
+          <h2>Child overview</h2>
+          <div class="overview-content">
+            <div class="large-photo">
+              @if (child.workspace.student.photoUrl) {
+                <img
+                  [src]="child.workspace.student.photoUrl"
+                  [alt]="child.workspace.student.fullName"
+                />
+              } @else {
+                {{ initials(child.workspace.student.fullName) }}
+              }
+            </div>
+            <dl>
+              <div>
+                <dt>Name</dt>
+                <dd>{{ child.workspace.student.fullName }}</dd>
+              </div>
+              <div>
+                <dt>Student ID</dt>
+                <dd>{{ child.workspace.student.studentCode }}</dd>
+              </div>
+              <div>
+                <dt>Age</dt>
+                <dd>{{ age(child.workspace.student.dateOfBirth) }} years</dd>
+              </div>
+              <div>
+                <dt>Date of birth</dt>
+                <dd>{{ child.workspace.student.dateOfBirth | date: 'dd MMM yyyy' }}</dd>
+              </div>
+              <div>
+                <dt>Batch</dt>
+                <dd>{{ batch(child) }}</dd>
+              </div>
+              <div>
+                <dt>Join date</dt>
+                <dd>{{ child.workspace.student.joinedOn | date: 'dd MMM yyyy' }}</dd>
+              </div>
+            </dl>
+          </div>
+          <button class="text-action" (click)="openChild(child.workspace.student.id)">
+            View complete profile <i class="pi pi-arrow-right"></i>
+          </button>
+        </article>
+        <article class="panel today">
+          <header>
+            <h2>Today's attendance</h2>
+            @if (todayAttendance(child)) {
+              <app-status-badge status="present" />
+            } @else {
+              <app-status-badge status="no_record" />
+            }
+          </header>
+          @if (todayAttendance(child); as record) {
+            <div class="attendance-event">
+              <i class="pi pi-check"></i
+              ><span
+                >Checked in<strong>{{ recordTime(record['check_in_at']) }}</strong></span
+              ><span
+                >Checked out<strong>{{
+                  record['check_out_at'] ? recordTime(record['check_out_at']) : 'In progress'
+                }}</strong></span
+              ><span
+                >Duration<strong>{{ duration(record) }}</strong></span
+              >
+            </div>
+            <div class="encouragement"><i class="pi pi-trophy"></i>Great job! Keep it up!</div>
+          } @else {
+            <div class="empty-small">
+              <i class="pi pi-calendar-times"></i><strong>No attendance recorded today</strong
+              ><span>The latest records are shown below.</span>
+            </div>
+          }
+        </article>
+        <article class="panel profile-card">
+          <div class="completion-heading">
+            <div>
+              <small>Parent profile</small>
+              <h2>{{ profileCompletion().percentage }}% complete</h2>
+            </div>
+            <div
+              class="completion-ring"
+              [style.--completion]="profileCompletion().percentage + '%'"
+            >
+              {{ profileCompletion().percentage }}%
+            </div>
+          </div>
+          <div class="completion-track">
+            <i [style.width.%]="profileCompletion().percentage"></i>
+          </div>
+          <p>
+            {{ profileCompletion().completed }} of {{ profileCompletion().total }} details completed
+          </p>
+          @if (profileCompletion().missing.length) {
+            <ul>
+              @for (field of profileCompletion().missing; track field) {
+                <li><i class="pi pi-circle-fill"></i>{{ field }}</li>
+              }
+            </ul>
+          } @else {
+            <div class="complete"><i class="pi pi-check-circle"></i>Profile complete</div>
+          }
+        </article>
+      </section>
+      <section class="middle-grid">
+        <article class="panel attendance-summary">
+          <header>
+            <h2>Attendance summary</h2>
+            <span>All records</span>
+          </header>
+          <div class="summary-body">
+            <div class="rate-ring" [style.--rate]="attendance(child).rate + '%'">
+              {{ attendance(child).rate }}%<small>Overall</small>
+            </div>
+            <div class="summary-numbers">
+              <span
+                ><i class="present-dot"></i>Present<strong>{{
+                  attendance(child).present
+                }}</strong></span
+              ><span
+                ><i class="absent-dot"></i>Absent<strong>{{
+                  attendance(child).total - attendance(child).present
+                }}</strong></span
+              >
+              <div class="bars">
+                @for (record of child.workspace.attendance.slice(0, 8); track record['id']) {
+                  <i [class.absent]="record['status'] === 'absent'"></i>
+                }
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="panel fee-summary">
+          <header>
+            <h2>Fee summary</h2>
+            <span>{{ batch(child) }}</span>
+          </header>
+          <div class="fee-plan">
+            <i class="pi pi-calendar"></i
+            ><span
+              >Monthly plan<small>{{ fee(child).monthly | academyMoney }} per month</small></span
+            >
+          </div>
+          <div class="fee-values">
+            <span
+              >Plan amount<strong>{{ fee(child).monthly | academyMoney }}</strong></span
+            ><span
+              >Paid<strong>{{ fee(child).paid | academyMoney }}</strong></span
+            ><span
+              >Pending<strong>{{ fee(child).pending | academyMoney }}</strong></span
+            >
+          </div>
+        </article>
+        <article class="panel parent-info">
+          <header>
+            <h2>Parent information</h2>
+            <app-status-badge [status]="$any(item.status)" />
+          </header>
+          <div class="parent-row">
+            <div class="parent-avatar">
+              @if (item.photo_url) {
+                <img [src]="item.photo_url" alt="" />
+              } @else {
+                {{ initials(item.full_name) }}
+              }
+            </div>
+            <span
+              ><strong>{{ item.full_name }}</strong
+              ><small>{{ item.relation || 'Guardian' }}</small></span
+            >
+          </div>
+          <dl>
+            <div>
+              <dt>Phone</dt>
+              <dd>{{ item.phone }}</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd>{{ item.email || 'Not provided' }}</dd>
+            </div>
+            <div>
+              <dt>Address</dt>
+              <dd>{{ address() }}</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+      <section class="bottom-grid">
+        <article class="panel table-card">
+          <header>
+            <h2>Recent attendance</h2>
+            <button (click)="openChild(child.workspace.student.id)">
+              View all <i class="pi pi-arrow-right"></i>
+            </button>
+          </header>
+          <app-table-tools title="Recent attendance" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Check in</th>
+                <th>Check out</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of child.workspace.attendance.slice(0, 5); track record['id']) {
+                <tr>
+                  <td>{{ recordDate(record['attendance_date']) }}</td>
+                  <td>
+                    <app-status-badge [status]="$any(record['status'])" />
+                  </td>
+                  <td>
+                    {{ recordTime(record['check_in_at']) }}
+                  </td>
+                  <td>
+                    {{ recordTime(record['check_out_at']) }}
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4"><app-async-state kind="empty" title="No attendance records available." /></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </article>
+        <article class="panel table-card">
+          <header>
+            <h2>Recent payments</h2>
+            <span>{{ child.workspace.payments.length }} payments</span>
+          </header>
+          <app-table-tools title="Recent payments" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of child.workspace.payments.slice(0, 5); track payment['id']) {
+                <tr>
+                  <td>{{ recordDate(payment['paid_at']) }}</td>
+                  <td>{{ amount(payment['amount']) | academyMoney }}</td>
+                  <td>{{ payment['payment_mode'] }}</td>
+                  <td>
+                    <app-status-badge [status]="$any(payment['status'])" />
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4"><app-async-state kind="empty" title="No payment records available." /></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </article>
+        <article class="panel contact-card">
+          <header><h2>Quick actions</h2></header>
+          <button (click)="openChild(child.workspace.student.id)">
+            <i class="pi pi-user"></i
+            ><span>Child profile<small>View complete academy record</small></span
+            ><i class="pi pi-angle-right"></i></button
+          ><button (click)="message(item.whatsapp || item.phone)">
+            <i class="pi pi-whatsapp"></i
+            ><span>Contact academy<small>Send a WhatsApp message</small></span
+            ><i class="pi pi-angle-right"></i>
+          </button>
+          <div class="privacy">
+            <i class="pi pi-shield"></i
+            ><span
+              ><strong>Private family portal</strong
+              ><small>Only linked child records are accessible.</small></span
+            >
+          </div>
+        </article>
+      </section>
+    } @else {
+      <section class="state">
+        <i class="pi pi-users"></i><strong>No child linked to this account</strong
+        ><span>Please contact Turf Cricket Academy to link your child.</span>
+        <div class="state-actions">
+          <button (click)="message(parent()?.whatsapp || parent()?.phone)">Contact academy</button>
+          <button (click)="retry()">Refresh</button>
+        </div>
+      </section>
+    }
+  }
+</div>

@@ -1,0 +1,405 @@
+<div class="app-list-page notifications-page">
+  <app-page-hero
+    [title]="pageTitle"
+    subtitle="Search notification records and manage delivery."
+    [breadcrumbs]="[{ label: 'Dashboard', route: '/dashboard' }, { label: pageTitle }]"
+    actionLabel="Refresh"
+    actionIcon="pi-refresh"
+    [actionDisabled]="loading()"
+    (action)="reload()"
+  >
+    <div hero-actions class="available-channels" aria-label="Available delivery channels">
+      <span><i class="pi pi-send" aria-hidden="true"></i> Available delivery channels</span>
+      <strong>{{ availableChannelsLabel }}</strong>
+      @if (!providerChannels().includes('email')) {
+        <span class="channel-unavailable"><i class="pi pi-envelope" aria-hidden="true"></i> Email (not enabled)</span>
+      }
+    </div>
+  </app-page-hero>
+  <app-notification-section-nav [showTemplates]="auth.role() === 'admin'" />
+  @if (deliveryMessage()) {
+    <p role="status">{{ deliveryMessage() }}</p>
+  }
+  <p class="summary-scope">
+    Summary matches active filters across every page. Total includes manual activity; delivery
+    counts exclude manual activity, whose delivery remains unknown.
+  </p>
+  @if (loading()) {
+    <p role="status">Updating notification summary...</p>
+  } @else if (!error()) {
+    <section class="notification-metrics" aria-label="Notification summary">
+      <app-summary-metric-card
+        label="Total alerts"
+        [value]="counts().all"
+        icon="pi-send"
+        hint="Matching notification records"
+        tone="blue"
+      />
+      <app-summary-metric-card
+        label="Delivered"
+        [value]="counts().delivered"
+        icon="pi-check-circle"
+        hint="Reached the recipient"
+      />
+      <app-summary-metric-card
+        label="In progress"
+        [value]="counts().pending"
+        icon="pi-clock"
+        hint="Queued or processing"
+        tone="orange"
+      />
+      <app-summary-metric-card
+        label="Failed"
+        [value]="counts().failed"
+        icon="pi-exclamation-circle"
+        hint="Needs attention"
+        tone="red"
+      />
+    </section>
+  }
+  <section class="notification-filters" aria-label="Filter notifications">
+    <div class="filter-main">
+    <label class="search-field"
+      >Search notifications
+      <input
+        type="search"
+        maxlength="200"
+        placeholder="Message or recipient"
+        [value]="search()"
+        (input)="setSearch($any($event.target).value)"
+      />
+    </label>
+    <label
+      >Channel
+      <select [value]="channel()" (change)="setChannel($any($event.target).value)">
+        <option value="">All channels</option>
+        <option value="in_app">In-app</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="email">Email</option>
+        <option value="sms">SMS</option>
+      </select>
+    </label>
+    <label
+      >Status
+      <select [value]="filter()" (change)="setFilter($any($event.target).value)">
+        <option value="all">All statuses</option>
+        <option value="queued">Queued</option>
+        <option value="sending">Processing</option>
+        <option value="sent">Sent / published</option>
+        <option value="delivered">Delivered</option>
+        <option value="failed">Failed</option>
+      </select>
+    </label>
+      <div class="filter-actions">
+        <button type="button" class="more-filters" (click)="showMoreFilters.set(!showMoreFilters())"
+          [attr.aria-expanded]="showMoreFilters()" aria-controls="notification-advanced-filters">
+          <i class="pi pi-sliders-h" aria-hidden="true"></i>
+          {{ showMoreFilters() ? 'Fewer filters' : 'More filters' }}
+          @if (advancedFilterCount()) { <span class="filter-count">{{ advancedFilterCount() }}</span> }
+        </button>
+        <button type="button" class="clear-filters" (click)="clearFilters()">Clear all filters</button>
+      </div>
+    </div>
+    <div id="notification-advanced-filters" class="filter-advanced" [hidden]="!showMoreFilters()">
+    <label
+      >From date
+      <input
+        type="date"
+        [value]="from()"
+        [attr.max]="to() || null"
+        (change)="setDate('from', $any($event.target).value)"
+      />
+    </label>
+    <label
+      >To date
+      <input
+        type="date"
+        [value]="to()"
+        [attr.min]="from() || null"
+        (change)="setDate('to', $any($event.target).value)"
+      />
+    </label>
+    <label
+      >Recipient contact
+      <input
+        type="search"
+        maxlength="200"
+        placeholder="Phone, email or recipient"
+        [value]="columns.values()['recipient'] || ''"
+        (input)="columns.set('recipient', $any($event.target).value)"
+      />
+    </label>
+    <label
+      >Student name
+      <input
+        type="search"
+        maxlength="200"
+        placeholder="Search linked student"
+        [value]="studentName()"
+        (input)="setSearch($any($event.target).value, 'studentName')"
+      />
+    </label>
+    <app-notification-entity-filter
+      kind="student"
+      [resetVersion]="entityFilterReset()"
+      label="students"
+      [value]="studentId()"
+      (valueChange)="setEntity('studentId', $event)"
+    />
+    <app-notification-entity-filter
+      kind="recipient"
+      [resetVersion]="entityFilterReset()"
+      label="recipients"
+      [value]="recipientId()"
+      (valueChange)="setEntity('recipientId', $event)"
+    />
+    <app-notification-entity-filter
+      kind="batch"
+      [resetVersion]="entityFilterReset()"
+      label="batches"
+      [value]="batchId()"
+      (valueChange)="setEntity('batchId', $event)"
+    />
+      <small>Date filters use the academy timezone. Batch filters use the batch recorded when the notification was created.</small>
+    </div>
+    @if (categoryFilter() !== 'all') { <p>Type preset: {{ categoryFilter() }}</p> }
+  </section>
+  <section class="notification-card">
+    <div class="table-wrap">
+      <app-table-tools
+        title="Notifications"
+        [table]="exportTable1"
+        [total]="total()"
+      ></app-table-tools>
+      <table #exportTable1 class="academy-table column-list-table">
+        <thead>
+          <tr>
+            <th>
+              <app-sortable-header
+                sortKey="subject"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Message</app-sortable-header
+              >
+            </th>
+            <th>
+              <app-sortable-header
+                sortKey="recipient"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Recipient</app-sortable-header
+              >
+            </th>
+            <th>
+              <app-sortable-header
+                sortKey="channel"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Channel</app-sortable-header
+              >
+            </th>
+            <th>
+              <app-sortable-header
+                sortKey="templateKey"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Type</app-sortable-header
+              >
+            </th>
+            <th>
+              <app-sortable-header
+                sortKey="status"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Status</app-sortable-header
+              >
+            </th>
+            <th>
+              <app-sortable-header
+                sortKey="createdAt"
+                [activeSort]="sortBy()"
+                [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)"
+                >Date</app-sortable-header
+              >
+            </th>
+            <th>Student</th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th>
+              <app-column-filter
+                label="message"
+                type="search"
+                [value]="columns.values()['subject'] || ''"
+                (changed)="columns.set('subject', $event)"
+              />
+            </th>
+            <th>
+              <app-column-filter
+                label="recipient"
+                type="search"
+                [value]="columns.values()['recipient'] || ''"
+                (changed)="columns.set('recipient', $event)"
+              />
+            </th>
+            <th>
+              <app-column-filter
+                label="channel"
+                type="search"
+                [value]="columns.values()['channel'] || ''"
+                (changed)="columns.set('channel', $event)"
+              />
+            </th>
+            <th>
+              <app-column-filter
+                label="type"
+                type="search"
+                [value]="columns.values()['templateKey'] || ''"
+                (changed)="columns.set('templateKey', $event)"
+              />
+            </th>
+            <th>
+              <app-column-filter
+                label="status"
+                type="search"
+                [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status', $event)"
+              />
+            </th>
+            <th>
+              <app-column-filter
+                label="date"
+                type="date"
+                [value]="columns.values()['createdAt'] || ''"
+                (changed)="columns.set('createdAt', $event)"
+              />
+            </th>
+            <th><span class="sr-only">Use Student name above</span></th>
+            <th><button type="button" (click)="clearFilters()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (error()) {
+            <tr>
+              <td colspan="8">
+                <app-async-state
+                  kind="error"
+                  title="Notifications unavailable"
+                  [message]="error()"
+                  actionLabel="Try again"
+                  (action)="reload()"
+                />
+              </td>
+            </tr>
+          } @else if (loading()) {
+            <tr>
+              <td colspan="8">Loading notifications...</td>
+            </tr>
+          } @else {
+            @for (row of rows(); track row.id) {
+              <tr class="notification-table-row">
+                <td>
+                  <strong>{{ row.subject }}</strong
+                  ><small class="message-preview">{{ row.body }}</small>
+                  @if (row.failureReason) {
+                    <small>{{ row.failureReason }}</small>
+                  }
+                </td>
+                <td>{{ row.recipient }}</td>
+                <td>{{ row.channel }}</td>
+                <td>{{ row.templateKey }}</td>
+                <td>
+                  @if (row.manualState) {
+                    <strong>Manual: {{ row.manualState.replaceAll('_', ' ') }}</strong>
+                    <small>Delivery unknown</small>
+                  } @else {
+                    <app-status-badge [status]="$any(row.status)" />
+                  }
+                  @if (row.readAt) {
+                    <small>Inbox read {{ row.readAt | date: 'MMM d, h:mm a' }}</small>
+                  }
+                </td>
+                <td>{{ row.createdAt | date: 'MMM d, h:mm a' }}</td>
+                <td>{{ row.studentName || 'Not linked' }}</td>
+                <td>
+                  <button type="button" class="notification-action" aria-label="View details" title="View details" (click)="viewNotification(row)"><i class="pi pi-eye" aria-hidden="true"></i></button>
+                  <button type="button" class="notification-action notification-action-copy" aria-label="Copy message" title="Copy message" (click)="copyNotification(row)"><i class="pi pi-copy" aria-hidden="true"></i></button>
+                  @if (canOpenManual(row)) {
+                    <button
+                      type="button"
+                      [disabled]="!!delivering()"
+                      (click)="manualAction(row, 'request')"
+                    >
+                      {{ row.manualState ? 'Reopen WhatsApp' : 'Manual WhatsApp' }}
+                    </button>
+                  }
+                  @if (row.manualState === 'launch_requested') {
+                    <button
+                      type="button"
+                      [disabled]="!!delivering()"
+                      (click)="manualAction(row, 'confirm')"
+                    >
+                      Confirm sent
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="!!delivering()"
+                      (click)="manualAction(row, 'cancel')"
+                    >
+                      Cancel activity
+                    </button>
+                  }
+                  <button type="button" class="notification-action notification-action-history" [attr.aria-label]="historyLoading() === row.id ? 'Loading history' : 'View history'" title="View history" [disabled]="!!historyLoading()" (click)="viewHistory(row)">
+                    <i [class]="historyLoading() === row.id ? 'pi pi-spinner pi-spin' : 'pi pi-history'" aria-hidden="true"></i>
+                  </button>
+                  @if (row.channel !== 'in_app') {
+                    @if (row.uncertain || (row.claimed && !row.providerId)) {
+                      <small>Delivery outcome needs reconciliation.</small>
+                    } @else if (row.providerId || canSend(row)) {
+                      <button
+                        [disabled]="!!delivering() || !providerChannels().includes(row.channel)"
+                        (click)="delivery(row)"
+                      >
+                        {{
+                          row.providerId
+                            ? 'Refresh delivery status'
+                            : row.status === 'failed'
+                              ? 'Retry failed message'
+                              : 'Send queued message'
+                        }}
+                      </button>
+                    }
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8">
+                  <app-async-state
+                    kind="empty"
+                    title="No notifications found"
+                    message="No delivery records match these filters."
+                  />
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination
+      [total]="total()"
+      [page]="page()"
+      [pageSize]="pageSize()"
+      (pageSizeChange)="setPageSize($event)"
+      itemLabel="notifications"
+      (pageChange)="changePage($event)"
+    />
+  </section>
+</div>

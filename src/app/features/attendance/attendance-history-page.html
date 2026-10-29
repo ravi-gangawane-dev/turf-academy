@@ -1,0 +1,239 @@
+<div class="history-page">
+  <div class="history-layout" [class.correction-panel-collapsed]="correctionRailCollapsed()">
+    <main>
+      @if (error()) {
+      <div class="error-message">
+        <i class="pi pi-exclamation-triangle"></i>
+        {{ error() }}
+      </div>
+      }
+      @if (optionsError()) {
+      <p role="alert">{{ optionsError() }}</p>
+      }
+
+      @if (loading()) {
+      <div class="loading-message">
+        <i class="pi pi-spin pi-spinner"></i>
+        Loading attendance records...
+      </div>
+      }
+
+      @if (!loading() && !error()) {
+      <section class="records">
+        <div class="table-wrap">
+          <app-table-tools title="Attendance history" [table]="exportTable1" [total]="total()">
+            <div class="table-filters" role="group" aria-label="Attendance filters">
+              <div class="filter-main">
+                <label class="search-field">
+                  <span>Search students</span>
+                  <input type="search" placeholder="Search by student name&#8230;" [value]="search()"
+                    (input)="onSearchChange($event)" />
+                </label>
+
+                <label>
+                  <span>Attendance Status</span>
+                  <select [value]="status()" (change)="onStatusChange($event)">
+                    <option value="all">All statuses</option>
+                    @for (option of statusOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                </label>
+
+                <div class="filter-actions">
+                  <button type="button" class="more-filters" (click)="toggleMoreFilters()"
+                    [attr.aria-expanded]="showMoreFilters()" aria-controls="attendance-advanced-filters">
+                    <i class="pi pi-sliders-h" aria-hidden="true"></i>
+                    {{ showMoreFilters() ? 'Fewer filters' : 'More filters' }}
+                    @if (advancedFilterCount()) {
+                    <span class="filter-count">{{ advancedFilterCount() }}</span>
+                    }
+                  </button>
+                  <button type="button" class="clear-filters" (click)="resetFilters()">Clear all filters</button>
+                </div>
+              </div>
+
+              <div id="attendance-advanced-filters" class="filter-advanced" [hidden]="!showMoreFilters()">
+                <label>
+                  <span>Student</span>
+                  <select [value]="studentId()" (change)="onStudentChange($event)">
+                    <option value="">All students</option>
+                    @for (student of allStudents(); track student.id) {
+                    <option [value]="student.id">{{ student.name }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label>
+                  <span>Batch</span>
+                  <select [value]="batchId()" (change)="onBatchChange($event)">
+                    <option value="">All batches</option>
+                    @for (batch of allBatches(); track batch.id) {
+                    <option [value]="batch.id">{{ batch.name }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label>
+                  <span>From date</span>
+                  <input type="date" [value]="from()" [attr.max]="to() || null"
+                    (change)="onFromChange($event)" />
+                </label>
+                <label>
+                  <span>To date</span>
+                  <input type="date" [value]="to()" [attr.min]="from() || null"
+                    (change)="onToChange($event)" />
+                </label>
+
+                <div class="range-presets" role="group" aria-label="Quick date ranges">
+                  <button type="button" (click)="setRange(0)">Today</button>
+                  <button type="button" (click)="setRange(7)">7 Days</button>
+                  <button type="button" (click)="setRange(30)">30 Days</button>
+                </div>
+              </div>
+            </div>
+          </app-table-tools>
+
+          <table #exportTable1 class="academy-table" [hidden]="!records().length">
+            <thead>
+              <tr>
+                @for (col of columns; track col) {
+                <th>{{ col }}</th>
+                }
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of visibleRecords(); track row['id']) {
+              <tr>
+                <td>{{ row['attendance_date'] }}</td>
+                <td>
+                  <b>{{ row.student?.full_name || '—' }}</b>
+                  @if (row.student?.student_code) {
+                  <small>{{ row.student?.student_code }}</small>
+                  }
+                </td>
+                <td>{{ row.student?.student_code || '—' }}</td>
+                <td>{{ row['attendance_date'] | date: 'EEEE' }}</td>
+                <td>{{ row['check_in_at'] ? (row['check_in_at'] | date: 'shortTime') : '—' }}</td>
+                <td>{{ row['check_out_at'] ? (row['check_out_at'] | date: 'shortTime') : '—' }}</td>
+                <td>
+                  <span class="status" [class.absent]="row['status'] === 'absent'"
+                    [class.late]="row['status'] === 'late'" [class.not-marked]="row['status'] === 'not_marked'">
+                    {{ statusLabel(row['status']) }}
+                  </span>
+                </td>
+                <td>{{ row.batch?.name || '—' }}</td>
+                <td>{{ row['source'] || '—' }}</td>
+                <td>{{ row['remarks'] || '—' }}</td>
+                <td>
+                  <button type="button" class="row-action"
+                    [attr.aria-label]="'Correct attendance for ' + (row.student?.full_name || 'student') + ' on ' + row['attendance_date']"
+                    title="Make correction" (click)="startCorrection(row)">
+                    <i class="pi pi-pencil" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+
+          @if (!records().length) {
+          <app-async-state kind="empty" title="No attendance records match these filters." />
+          }
+        </div>
+
+        <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)" />
+      </section>
+      }
+    </main>
+
+    <aside [class.correction-rail-collapsed]="correctionRailCollapsed()">
+      <section class="side-card correction-form">
+        <header class="correction-form-heading">
+          <button type="button" class="rail-toggle" (click)="toggleCorrectionRail()"
+            [attr.aria-expanded]="!correctionRailCollapsed()" aria-controls="correction-rail-content"
+            [attr.aria-label]="correctionRailCollapsed() ? 'Expand correction panel' : 'Collapse correction panel'"
+            [title]="correctionRailCollapsed() ? 'Expand correction panel' : 'Collapse correction panel'">
+            <i class="pi" [class.pi-angle-right]="!correctionRailCollapsed()" [class.pi-angle-left]="correctionRailCollapsed()" aria-hidden="true"></i>
+          </button>
+          <h2>Make Attendance Correction</h2>
+        </header>
+        <div id="correction-rail-content" [hidden]="correctionRailCollapsed()">
+        <p class="rail-hint">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          Correct an existing record, or pick the pencil icon on a row to load it here.
+        </p>
+
+        <label>
+          <span class="field-label">Student <em>*</em></span>
+          <select [value]="draft().studentId" (change)="onCorrectionStudent($event)">
+            <option value="">Select student</option>
+            @for (student of allStudents(); track student.id) {
+            <option [value]="student.id">{{ student.name }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="rail-row">
+          <label>
+            <span class="field-label">Date <em>*</em></span>
+            <input type="date" [value]="draft().date" (change)="onCorrectionDate($event)" />
+          </label>
+          <label>
+            Batch / Program
+            <input type="text" [value]="draft().batchName || '—'" disabled />
+          </label>
+        </div>
+
+        <label>
+          <span class="field-label">Attendance Status <em>*</em></span>
+          <select [value]="draft().status" (change)="onCorrectionStatus($event)">
+            @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="rail-row">
+          <label>
+            Check In Time
+            <input type="time" [value]="draft().checkIn" (change)="onCorrectionCheckIn($event)" />
+          </label>
+          <label>
+            Check Out Time
+            <input type="time" [value]="draft().checkOut" (change)="onCorrectionCheckOut($event)" />
+          </label>
+        </div>
+
+        <label>
+          <span class="field-label">Reason <em>*</em></span>
+          <textarea rows="3" maxlength="300" placeholder="Enter reason for correction (required)"
+            [value]="draft().reason" (input)="onCorrectionReason($event)"></textarea>
+        </label>
+
+        @if (draftNotice()) {
+        <p class="rail-notice" role="status">{{ draftNotice() }}</p>
+        }
+        @if (draftError()) {
+        <p class="rail-error" role="alert">{{ draftError() }}</p>
+        }
+
+        <footer>
+          <button type="button" class="secondary" [disabled]="saving()" (click)="resetCorrection()">
+            Reset
+          </button>
+          <button type="button" class="primary" [disabled]="saving()" (click)="saveCorrection()">
+            @if (saving()) {
+            <span class="spinner" aria-hidden="true"></span>
+            }
+            Save Correction
+          </button>
+        </footer>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</div>

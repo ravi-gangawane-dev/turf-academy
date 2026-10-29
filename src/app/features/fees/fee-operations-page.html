@@ -1,0 +1,196 @@
+<div class="app-list-page fee-operations">
+  <app-page-hero
+    title="{{
+      view === 'late-fees'
+        ? 'Late Fee Rules'
+        : view === 'discounts'
+          ? 'Discounts'
+          : view === 'pending'
+            ? 'Pending Fees'
+            : 'Fee Summary'
+    }}"
+    subtitle="Manage fee configuration and balances."
+    [breadcrumbs]="[
+      { label: 'Dashboard', route: '/dashboard' },
+      {
+        label:
+          view === 'late-fees'
+            ? 'Late Fee Rules'
+            : view === 'discounts'
+              ? 'Discounts'
+              : view === 'pending'
+                ? 'Pending Fees'
+                : 'Fee Summary',
+      },
+    ]"
+    ><div hero-actions>
+      @if (view === 'discounts' || view === 'late-fees') {
+        <button type="button" class="primary" (click)="open()">
+          <i class="pi pi-plus"></i>Add rule
+        </button>
+      }
+    </div></app-page-hero
+  >
+  <app-fee-view-navigation />
+  @if (error()) {
+    <div class="notice error" role="alert">
+      {{ error() }} <button (click)="ngOnInit()">Retry</button>
+    </div>
+  }
+  @if (message()) {
+    <div class="notice" role="status">{{ message() }}</div>
+  }
+  @if (!loading() && (view === 'pending' || view === 'summary')) {
+    <section class="metrics">
+      <app-summary-metric-card label="Charges" [value]="totals().count" icon="pi-receipt" hint="Total fee records" />
+      <app-summary-metric-card label="Net fees" [value]="totals().final / 100 | academyMoney" icon="pi-wallet" tone="blue" />
+      <app-summary-metric-card label="Collected" [value]="totals().paid / 100 | academyMoney" icon="pi-check-circle" tone="green" />
+      <app-summary-metric-card label="Outstanding" [value]="totals().balance / 100 | academyMoney" icon="pi-clock" tone="orange" />
+    </section>
+  }
+  <section class="fee-list-card" aria-label="Fee records">
+    <button type="button" (click)="columns.reset()">Reset column filters</button>
+    @if (loading()) {
+      <div class="empty-state" role="status">
+        <i class="pi pi-spin pi-spinner" aria-hidden="true"></i><strong>Loading fee data...</strong>
+      </div>
+    } @else {
+      @if (view === 'pending' || view === 'summary') {
+        <section class="table-wrap">
+          <app-table-tools [title]="view === 'pending' ? 'Pending fees' : 'Fee summary'" [table]="exportTable1" [total]="total()"></app-table-tools>
+<table #exportTable1 class="academy-table" [class.empty-table]="!visibleRows().length" [class.balance-table]="view === 'pending' || view === 'summary'">
+            <thead><tr><th><app-sortable-header sortKey="cf_student" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th><th><app-sortable-header sortKey="cf_period" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Period</app-sortable-header></th><th><app-sortable-header sortKey="cf_base" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Base</app-sortable-header></th><th><app-sortable-header sortKey="cf_discount" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Discount</app-sortable-header></th><th><app-sortable-header sortKey="cf_late" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Late fee</app-sortable-header></th><th><app-sortable-header sortKey="cf_paid" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Paid</app-sortable-header></th><th><app-sortable-header sortKey="cf_balance" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Balance</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th></tr><tr class="column-filters"><th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''" (changed)="columns.set('student',$event)" /></th><th><app-column-filter label="period" type="month" [value]="columns.values()['period'] || ''" (changed)="columns.set('period',$event)" /></th><th><app-column-filter label="base" type="number" [value]="columns.values()['base'] || ''" (changed)="columns.set('base',$event)" /></th><th><app-column-filter label="discount" type="number" [value]="columns.values()['discount'] || ''" (changed)="columns.set('discount',$event)" /></th><th><app-column-filter label="late fee" type="number" [value]="columns.values()['late'] || ''" (changed)="columns.set('late',$event)" /></th><th><app-column-filter label="paid" type="number" [value]="columns.values()['paid'] || ''" (changed)="columns.set('paid',$event)" /></th><th><app-column-filter label="balance" type="number" [value]="columns.values()['balance'] || ''" (changed)="columns.set('balance',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th></tr></thead>
+            <tbody>
+              @for (row of visibleRows(); track row['id']) {
+                <tr>
+                  <td>{{ student(row) }}</td>
+                  <td>{{ text(row, 'charge_month') | date: 'MMM yyyy' }}</td>
+                  <td>{{ amount(row, 'base_amount') / 100 | academyMoney }}</td>
+                  <td>{{ amount(row, 'discount_amount') / 100 | academyMoney }}</td>
+                  <td>{{ amount(row, 'late_fee_amount') / 100 | academyMoney }}</td>
+                  <td>{{ amount(row, 'paid_amount') / 100 | academyMoney }}</td>
+                  <td>{{ amount(row, 'balance_amount') / 100 | academyMoney }}</td>
+                  <td><app-status-badge [status]="text(row, 'status')" /></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="empty-cell"><div class="empty-state"><i class="pi pi-wallet" aria-hidden="true"></i><strong>No fee records found</strong><p>Try a different name, period, or status.</p></div></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      } @else {
+        <section class="table-wrap">
+          <app-table-tools [title]="view === 'late-fees' ? 'Late fee rules' : 'Discounts'" [table]="exportTable2" [total]="total()"></app-table-tools>
+<table #exportTable2 class="academy-table" [class.empty-table]="!visibleRows().length" [class.balance-table]="view === 'pending' || view === 'summary'">
+            <thead><tr><th><app-sortable-header sortKey="cf_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Name</app-sortable-header></th><th><app-sortable-header sortKey="cf_kind" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Kind</app-sortable-header></th><th><app-sortable-header sortKey="cf_value" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Value</app-sortable-header></th><th><app-sortable-header [sortKey]="view === 'late-fees' ? 'cf_grace' : 'cf_validity'" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">{{ view === 'late-fees' ? 'Grace days' : 'Validity' }}</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th><app-column-filter label="name" type="search" [value]="columns.values()['name'] || ''" (changed)="columns.set('name',$event)" /></th><th><app-column-filter label="kind" type="search" [value]="columns.values()['kind'] || ''" (changed)="columns.set('kind',$event)" /></th><th><app-column-filter label="value" type="number" [value]="columns.values()['value'] || ''" (changed)="columns.set('value',$event)" /></th><th><app-column-filter [label]="view === 'late-fees' ? 'grace days' : 'validity'" [type]="view === 'late-fees' ? 'number' : 'search'" [value]="columns.values()[view === 'late-fees' ? 'grace' : 'validity'] || ''" (changed)="columns.set(view === 'late-fees' ? 'grace' : 'validity',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th></th></tr></thead>
+            <tbody>
+              @for (row of visibleRows(); track row['id']) {
+                <tr>
+                  <td>{{ row['name'] }}</td>
+                  <td>{{ text(row, 'kind') | titlecase }}</td>
+                  <td>
+                    {{
+                      row['kind'] === 'percentage'
+                        ? row['value'] + '%'
+                        : (amount(row, 'value') / 100 | academyMoney)
+                    }}
+                  </td>
+                  <td>
+                    @if (view === 'late-fees') {
+                      {{ row.grace_days }} days<br />Cap:
+                      {{
+                        row.maximum_amount === null
+                          ? 'No limit'
+                          : (row.maximum_amount | academyMoney)
+                      }}
+                    } @else {
+                      {{
+                        row.valid_from ? (row.valid_from | date: 'dd MMM yyyy') : 'Any start date'
+                      }}
+                      to
+                      {{ row.valid_till ? (row.valid_till | date: 'dd MMM yyyy') : 'No end date' }}
+                    }
+                  </td>
+                  <td><app-status-badge [status]="text(row, 'status')" /></td>
+                  <td>
+                    <button (click)="open(row)" aria-label="Edit">
+                      <i class="pi pi-pencil"></i></button
+                    ><button (click)="remove(row)" [disabled]="saving()" aria-label="Delete">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="empty-cell"><div class="empty-state"><i class="pi pi-sliders-h" aria-hidden="true"></i><strong>{{ rows().length ? 'No matching rules' : 'No rules configured yet' }}</strong><p>{{ rows().length ? 'Try adjusting or resetting your filters.' : 'Add a rule to get started.' }}</p></div></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+      <app-pagination
+        [total]="total()"
+        [page]="page()"
+        [pageSize]="pageSize()"
+        (pageChange)="changePage($event)"
+        (pageSizeChange)="setPageSize($event)"
+      />
+    }
+  </section>
+</div>
+@if (dialogOpen()) {
+  <div class="dialog-backdrop">
+    <section
+      class="dialog"
+      appModalFocus
+      [modalBusy]="saving()"
+      (modalDismiss)="close()"
+      aria-labelledby="fee-dialog-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <h2 id="fee-dialog-title">
+        {{ editingId() ? 'Edit' : 'Add' }} {{ view === 'discounts' ? 'discount' : 'late fee rule' }}
+      </h2>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <label>Name<input formControlName="name" /></label
+        ><label
+          >Kind<select formControlName="kind">
+            <option value="fixed">Fixed</option>
+            @if (view === 'late-fees') {
+              <option value="daily">Daily</option>
+            }
+            <option value="percentage">Percentage</option>
+          </select></label
+        ><label>Value<input type="number" min="0" step="0.01" formControlName="value" /></label>
+        @if (view === 'late-fees') {
+          <label>Grace days<input type="number" min="0" formControlName="graceDays" /></label
+          ><label
+            >Maximum amount<input type="number" min="0" step="0.01" formControlName="maximumAmount"
+          /></label>
+        } @else {
+          <label>Valid from<input type="date" formControlName="validFrom" /></label
+          ><label>Valid until<input type="date" formControlName="validTill" /></label>
+        }
+        <label
+          >Status<select formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select></label
+        >
+        @if (error()) {
+          <p class="notice error form-error" role="alert">{{ error() }}</p>
+        }
+        <footer>
+          <button type="button" (click)="close()" [disabled]="saving()">Cancel</button
+          ><button class="primary" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : 'Save' }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}

@@ -1,0 +1,153 @@
+<div class="app-list-page students-page">
+  @if (message()) {
+    <div class="student-action-notice" role="status">
+      {{ message()
+      }}<button aria-label="Dismiss notification" (click)="message.set('')">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  }
+  <app-page-hero
+    class="student-list-hero"
+    title="Student List"
+    subtitle="Manage and view all academy students."
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Students' }]"
+    [actionLabel]="auth.hasPermission('students:write') ? 'Add Student' : ''"
+    actionIcon="pi-plus"
+    (action)="openAdd()"
+    (breadcrumbSelected)="openBreadcrumb($event)"
+  />
+  <section class="student-metrics">
+    <app-summary-metric-card label="Total students" [value]="metrics().total" icon="pi-users" hint="All registered students" />
+    <app-summary-metric-card label="Active students" [value]="metrics().active" icon="pi-user-plus" [hint]="(metrics().total ? ((metrics().active / metrics().total) * 100).toFixed(1) : 0) + '% of total'" tone="blue" />
+    <app-summary-metric-card label="Inactive students" [value]="metrics().inactive" icon="pi-user-minus" [hint]="(metrics().total ? ((metrics().inactive / metrics().total) * 100).toFixed(1) : 0) + '% of total'" tone="orange" />
+    <app-summary-metric-card label="New this month" [value]="metrics().newThisMonth" icon="pi-graduation-cap" hint="Based on registration date" tone="purple" />
+    <app-summary-metric-card label="Graduated" [value]="metrics().graduated" icon="pi-users" hint="This academic year" tone="teal" />
+  </section>
+  <app-data-table
+    class="directory-card"
+    [total]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    itemLabel="students"
+    (pageChange)="goToPage($event)"
+    (pageSizeChange)="setPageSize($event)"
+  >
+    
+    <div table-content class="table-wrap">
+      <app-table-tools title="Students" [table]="exportTable1" [customExport]="true"><button type="button" class="export-button" (click)="exportStudents()">
+        <i class="pi pi-download" aria-hidden="true"></i>Export
+      </button></app-table-tools>
+<table #exportTable1 class="academy-table student-table reference-table no-selection">
+        <thead><tr><th>#</th><th><app-sortable-header sortKey="cf_full_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th><th><app-sortable-header sortKey="cf_batch_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch / Program</app-sortable-header></th><th><app-sortable-header sortKey="cf_coach_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Coach</app-sortable-header></th><th><app-sortable-header sortKey="cf_date_of_birth" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Date of birth</app-sortable-header></th><th><app-sortable-header sortKey="cf_phone" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Phone</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th><app-sortable-header sortKey="cf_parent_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Parent / Guardian</app-sortable-header></th><th><app-sortable-header sortKey="cf_join_date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Join date</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th></th><th><app-column-filter label="student" type="search" [value]="columns.values()['full_name'] || ''" (changed)="columns.set('full_name',$event)" /></th><th><app-column-filter label="batch / program" type="search" [value]="columns.values()['batch_name'] || ''" (changed)="columns.set('batch_name',$event)" /></th><th><app-column-filter label="coach" type="search" [value]="columns.values()['coach_name'] || ''" (changed)="columns.set('coach_name',$event)" /></th><th><app-column-filter label="date of birth" type="date" [value]="columns.values()['date_of_birth'] || ''" (changed)="columns.set('date_of_birth',$event)" /></th><th><app-column-filter label="phone" type="search" [value]="columns.values()['phone'] || ''" (changed)="columns.set('phone',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><app-column-filter label="parent / guardian" type="search" [value]="columns.values()['parent_name'] || ''" (changed)="columns.set('parent_name',$event)" /></th><th><app-column-filter label="join date" type="date" [value]="columns.values()['join_date'] || ''" (changed)="columns.set('join_date',$event)" /></th><th><button type="button" (click)="columns.reset()">Reset</button></th></tr></thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4, 5]; track item) {
+              <tr class="skeleton-row">
+                <td colspan="10"><span></span></td>
+              </tr>
+            }
+          } @else if (error()) {
+            <tr>
+              <td colspan="10">
+                <app-async-state kind="error" title="Could not load students" [message]="error()" actionLabel="Retry" (action)="retry()" />
+              </td>
+            </tr>
+          } @else {
+            @for (row of rows(); track row.id; let index = $index) {
+              <tr>
+                <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+                <td>
+                  <button class="student-link" (click)="openStudent(row.id)">
+                    <span class="avatar-stack"
+                      ><span class="mini-avatar">{{ initials(row.fullName) }}</span>
+                      @if (row.photoUrl) {
+                        <img
+                          class="mini-avatar avatar-photo"
+                          [src]="row.photoUrl"
+                          alt=""
+                          (error)="hideBrokenImage($event)"
+                        />
+                      }</span
+                    ><span
+                      ><strong>{{ row.fullName }}</strong
+                      ><small>{{ row.studentCode }}</small></span
+                    >
+                  </button>
+                </td>
+                <td>
+                  <span class="batch-chip">{{ row.batchName || 'Not assigned' }}</span>
+                </td>
+                <td>
+                  <span class="coach-cell"
+                    ><span class="avatar-stack"
+                      ><span class="coach-avatar">{{ initials(row.coachName || 'NA') }}</span>
+                      @if (row.coachPhotoUrl) {
+                        <img
+                          class="coach-avatar avatar-photo"
+                          [src]="row.coachPhotoUrl"
+                          alt=""
+                          (error)="hideBrokenImage($event)"
+                        />
+                      }</span
+                    >{{ row.coachName || 'Not assigned' }}</span
+                  >
+                </td>
+                <td>{{ row.dateOfBirth | date: 'dd MMM yyyy' }}</td>
+                <td>{{ row.phone || '—' }}</td>
+                <td>
+                  <app-status-badge [status]="row.status" />
+                </td>
+                <td>
+                  <strong class="guardian">{{ row.parentName || 'Not linked' }}</strong
+                  ><small class="relation">{{ row.parentPhone || '—' }}</small>
+                </td>
+                <td>{{ row.joinDate | date: 'dd MMM yyyy' }}</td>
+                <td>
+                  <span class="row-actions"
+                    ><button
+                      class="icon-button"
+                      aria-label="View student"
+                      (click)="openStudent(row.id)"
+                    >
+                      <i class="pi pi-eye"></i>
+                    </button>
+                    @if (auth.hasPermission('students:write')) {
+                      <button
+                        class="icon-button"
+                        aria-label="Edit student"
+                        (click)="editStudent(row.id)"
+                      >
+                        <i class="pi pi-pencil"></i>
+                      </button>
+                    }
+                    @if (auth.role() === 'admin') {
+                      <button
+                        class="icon-button danger-action"
+                        [disabled]="deletingId() === row.id"
+                        aria-label="Delete student"
+                        (click)="deleteStudent(row)"
+                      >
+                        <i
+                          [class]="
+                            deletingId() === row.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'
+                          "
+                        ></i>
+                      </button>
+                    }
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="10">
+                  <app-async-state kind="empty" title="No students found" message="Try changing the search or filters." />
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>

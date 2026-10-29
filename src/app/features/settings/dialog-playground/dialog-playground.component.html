@@ -1,0 +1,170 @@
+<div class="dialog-playground-page">
+  <header class="page-header">
+    <div>
+      <h1><i class="pi pi-window-maximize" aria-hidden="true"></i> Dialog Playground</h1>
+      <p class="subtitle">
+        {{ registryCount() }} registered dialog types. Previews run the same
+        <code>DialogService</code> and shared template components the application uses.
+      </p>
+    </div>
+  </header>
+
+  <div class="playground-layout">
+    <section class="registry-panel" aria-labelledby="registry-title">
+      <h2 id="registry-title">Registered dialogs</h2>
+
+      <div class="filters">
+        <label class="search">
+          <span class="sr-only">Search dialogs</span>
+          <input
+            type="search"
+            placeholder="Search dialogs…"
+            [value]="searchQuery()"
+            (input)="onSearchChange($any($event.target).value)"
+          />
+        </label>
+
+        <div class="category-tags" role="group" aria-label="Filter by category">
+          <button
+            type="button"
+            class="tag"
+            [class.active]="selectedCategory() === 'all'"
+            (click)="onCategoryChange('all')"
+          >
+            All
+          </button>
+          @for (category of categories; track category.value) {
+            <button
+              type="button"
+              class="tag"
+              [class.active]="selectedCategory() === category.value"
+              (click)="onCategoryChange(category.value)"
+            >
+              {{ category.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <ul class="template-list">
+        @for (template of filteredTemplates(); track template.type) {
+          <li>
+            <button
+              type="button"
+              class="template-card"
+              [class.active]="selectedType() === template.type"
+              (click)="selectTemplate(template)"
+            >
+              <span class="card-top">
+                <strong>{{ template.name }}</strong>
+                <span class="chip">{{ template.category }}</span>
+              </span>
+              <span class="card-description">{{ template.description }}</span>
+              <span class="card-meta">
+                <code>{{ componentFor(template) }}</code>
+                <span class="usage-count">
+                  {{ template.usedBy.length ? template.usedBy.length + ' module(s)' : 'No production usage yet' }}
+                </span>
+              </span>
+            </button>
+          </li>
+        } @empty {
+          <li class="empty-state">No dialogs match this filter.</li>
+        }
+      </ul>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="editor-title">
+      @if (selectedEntry(); as entry) {
+        <header class="editor-header">
+          <h2 id="editor-title">{{ entry.name }}</h2>
+          <p class="component-line">
+            Template component: <code>{{ entry.component }}</code>
+          </p>
+        </header>
+
+        <div class="usage-block">
+          <h3>Used by</h3>
+          @if (usage().length) {
+            <ul class="usage-list">
+              @for (module of usage(); track module) {
+                <li>{{ module }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="hint">Not wired into a production flow yet.</p>
+          }
+        </div>
+
+        <form class="config-form" [formGroup]="configForm" (ngSubmit)="applyConfig()">
+          <div class="field">
+            <label for="cfg-title">Title</label>
+            <input id="cfg-title" type="text" formControlName="title" />
+          </div>
+
+          <div class="field">
+            <label for="cfg-message">Message</label>
+            <textarea id="cfg-message" rows="3" formControlName="message"></textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cfg-confirm">Primary label</label>
+              <input id="cfg-confirm" type="text" formControlName="confirmLabel" />
+            </div>
+            <div class="field">
+              <label for="cfg-cancel">Cancel label</label>
+              <input id="cfg-cancel" type="text" formControlName="cancelLabel" />
+            </div>
+          </div>
+
+          <fieldset class="field">
+            <legend>Size / responsiveness</legend>
+            <div class="size-selector">
+              @for (size of sizes; track size.value) {
+                <button
+                  type="button"
+                  class="tag"
+                  [class.active]="configForm.controls['size'].value === size.value"
+                  (click)="configForm.controls['size'].setValue(size.value)"
+                >
+                  {{ size.label }}
+                </button>
+              }
+            </div>
+          </fieldset>
+
+          <div class="toggles">
+            <label><input type="checkbox" formControlName="showClose" /> Close button</label>
+            <label><input type="checkbox" formControlName="showCancel" /> Cancel action</label>
+            <label><input type="checkbox" formControlName="loading" /> Loading state</label>
+            <label><input type="checkbox" formControlName="disableClose" /> Block dismissal</label>
+          </div>
+
+          <div class="editor-actions">
+            <button type="submit" class="primary">
+              <i class="pi pi-play" aria-hidden="true"></i> Preview live
+            </button>
+            <button type="button" class="secondary" (click)="previewLoading()">Loading state</button>
+            <button type="button" class="secondary" (click)="previewError()">Error state</button>
+            <button type="button" class="secondary" (click)="resetConfig()">Reset</button>
+          </div>
+        </form>
+
+        <details class="config-preview">
+          <summary>Current configuration</summary>
+          <pre>{{ configJson() }}</pre>
+        </details>
+
+        @if (previewResult(); as result) {
+          <p class="preview-result" role="status">
+            Last result: action <strong>{{ result.action }}</strong>, confirmed
+            <strong>{{ result.confirmed }}</strong>{{ result.preview ? ' (preview — no data changed)' : '' }}
+          </p>
+        }
+      } @else {
+        <p class="empty-state">Select a dialog template to configure it.</p>
+      }
+    </section>
+  </div>
+</div>

@@ -1,0 +1,498 @@
+<div class="app-list-page feature-page reports-page">
+  <app-page-hero
+    title="Reports"
+    subtitle="Generate operational views from attendance, enrollment and fee records."
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Reports' }]"
+  />
+
+  @if (error()) {
+    <div class="notice error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="report-workspace" [class.filters-collapsed]="!filtersVisible()">
+    <div class="report-content" [class.empty-report]="!report()">
+      @if (report(); as result) {
+        <section class="report-heading">
+          <div>
+            <p class="report-generated-at">
+              <i class="pi pi-clock" aria-hidden="true"></i>
+              Generated {{ result.generatedAt | date: 'medium' }}
+            </p>
+            <h2>{{ result.title }}</h2>
+            @if (result.type === 'revenue') {
+              <p class="report-description">Payments received in the selected period, less all refunds recorded for those payments.</p>
+            }
+          </div>
+          <div class="report-actions no-print">
+            <button class="app-button secondary" type="button" (click)="toggleChart()" [attr.aria-expanded]="chartVisible()">
+              <i class="pi pi-chart-bar"></i>{{ chartVisible() ? 'Hide chart' : 'Show chart' }}
+            </button>
+            <button class="app-button secondary" type="button" (click)="exportCsv()">
+              <i class="pi pi-download"></i>Export CSV
+            </button>
+            <button class="app-button secondary" type="button" (click)="print()">
+              <i class="pi pi-print"></i>Print
+            </button>
+          </div>
+        </section>
+
+        <section class="report-summary">
+          @for (item of result.summary; track item.label) {
+            <app-summary-metric-card [label]="item.label" [value]="item.value" icon="pi-chart-bar" />
+          }
+        </section>
+
+        @if (chartVisible()) {
+          <section class="app-card report-chart" aria-label="Report chart">
+            <header class="report-chart-header">
+              <div>
+                <h3>{{ result.title }} chart</h3>
+                @if (selectedChartColumn; as metric) {
+                  <p>
+                    @if (chartType() === 'multiline') {
+                      Comparing numeric report fields by {{ selectedChartGroup?.label || 'row' }}.
+                    } @else {
+                      Showing {{ metric.label }} grouped by {{ selectedChartGroup?.label || 'report row' }}.
+                    }
+                  </p>
+                }
+              </div>
+              <div class="chart-controls">
+                <label class="chart-metric">
+                  Chart type
+                  <select class="app-select" [value]="chartType()" (change)="updateChartType($event)">
+                    <option value="bar">Bar chart</option>
+                    <option value="line">Line chart</option>
+                    <option value="multiline">Multi-line chart</option>
+                    <option value="pie">Pie chart</option>
+                  </select>
+                </label>
+                @if (chartGroupColumns.length) {
+                  <label class="chart-metric">
+                    Group by
+                    <select class="app-select" [value]="chartGroup()" (change)="updateChartGroup($event)">
+                      <option value="auto">Recommended grouping</option>
+                      <option value="">Each report row</option>
+                      @for (column of chartGroupColumns; track column.key) {
+                        <option [value]="column.key">{{ column.label }}</option>
+                      }
+                    </select>
+                  </label>
+                }
+                @if (chartColumns.length > 1 && chartType() !== 'multiline') {
+                  <label class="chart-metric">
+                    Chart metric
+                    <select class="app-select" [value]="selectedChartColumn?.key" (change)="updateChartMetric($event)">
+                      @for (column of chartColumns; track column.key) {
+                        <option [value]="column.key">{{ column.label }}</option>
+                      }
+                    </select>
+                  </label>
+                }
+              </div>
+            </header>
+
+            @if (chartType() === 'multiline') {
+              @if (chartSeries.length > 1) {
+                <div class="chart-scroll">
+                  <svg
+                    class="line-chart"
+                    [attr.viewBox]="'0 0 ' + lineChartWidth + ' 280'"
+                    [style.width.px]="lineChartWidth"
+                    role="img"
+                    aria-label="Multi-line comparison chart"
+                  >
+                    <line x1="40" y1="30" x2="40" y2="220" class="chart-axis" />
+                    <line x1="40" y1="220" [attr.x2]="lineChartWidth - 20" y2="220" class="chart-axis" />
+                    <line x1="40" y1="125" [attr.x2]="lineChartWidth - 20" y2="125" class="chart-gridline" />
+                    @for (series of chartSeries; track series.key) {
+                      <polyline [attr.points]="series.points" fill="none" [attr.stroke]="series.color" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                    }
+                    @for (label of chartLabels; track $index) {
+                      <text [attr.x]="chartLabels.length > 1 ? 40 + ($index / (chartLabels.length - 1)) * (lineChartWidth - 80) : lineChartWidth / 2" y="246" class="chart-axis-label">{{ label }}</text>
+                    }
+                  </svg>
+                </div>
+                <ul class="chart-legend" aria-label="Chart series">
+                  @for (series of chartSeries; track series.key) {
+                    <li><span class="legend-swatch" [style.background]="series.color"></span>{{ series.label }}</li>
+                  }
+                </ul>
+              } @else {
+                <p class="chart-unavailable">A multi-line chart needs at least two numeric fields in this report.</p>
+              }
+            } @else if (chartType() === 'pie') {
+              @if (pieSegments.length) {
+                <div class="pie-chart-layout">
+                  <div class="pie-chart" [style.background]="pieGradient" role="img" [attr.aria-label]="selectedChartColumn?.label + ' pie chart'"></div>
+                  <ul class="chart-legend pie-legend">
+                    @for (segment of pieSegments; track segment.label) {
+                      <li>
+                        <span class="legend-swatch" [style.background]="segment.color"></span>
+                        <span>{{ segment.label }}</span>
+                        <strong>{{ segment.value }} ({{ segment.percent | number: '1.0-1' }}%)</strong>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              } @else {
+                <p class="chart-unavailable">This report has no non-negative numeric values for a pie chart.</p>
+              }
+            } @else if (chartBars.length) {
+              @if (chartType() === 'line') {
+                <div class="chart-scroll">
+                  <svg
+                    class="line-chart"
+                    [attr.viewBox]="'0 0 ' + lineChartWidth + ' 280'"
+                    [style.width.px]="lineChartWidth"
+                    role="img"
+                    [attr.aria-label]="selectedChartColumn?.label + ' line chart'"
+                  >
+                    <line x1="40" y1="30" x2="40" y2="220" class="chart-axis" />
+                    <line x1="40" y1="220" [attr.x2]="lineChartWidth - 20" y2="220" class="chart-axis" />
+                    <line x1="40" y1="125" [attr.x2]="lineChartWidth - 20" y2="125" class="chart-gridline" />
+                    @for (series of chartSeries; track series.key) {
+                      <polyline [attr.points]="series.points" fill="none" [attr.stroke]="series.color" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                    }
+                    @for (bar of chartBars; track $index) {
+                      <text [attr.x]="chartBars.length > 1 ? 40 + ($index / (chartBars.length - 1)) * (lineChartWidth - 80) : lineChartWidth / 2" y="246" class="chart-axis-label">{{ bar.label }}</text>
+                    }
+                  </svg>
+                </div>
+              } @else {
+                <div class="chart-scroll">
+                  <div class="chart-bars" role="img" [attr.aria-label]="selectedChartColumn?.label + ' by report row'">
+                    @for (bar of chartBars; track $index) {
+                      <div class="chart-bar-item" [title]="bar.label + ': ' + bar.value">
+                        <strong>{{ bar.value }}</strong>
+                        <div class="chart-bar-track">
+                          <span class="chart-bar" [style.height.%]="bar.height"></span>
+                        </div>
+                        <span class="chart-bar-label">{{ bar.label }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            } @else {
+              <p class="chart-unavailable">This report has no numeric data to chart.</p>
+            }
+          </section>
+        }
+
+        <section class="app-card report-table">
+          <div class="table-wrap">
+            <app-table-tools [title]="result.title" [table]="exportTable1" [total]="result.rows.length"></app-table-tools>
+<table #exportTable1 class="academy-table data-table">
+              <thead>
+                <tr>
+                  @for (column of result.columns; track column.key) {
+                    <th>{{ column.label }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of paginatedRows; track $index) {
+                  <tr>
+                    @for (column of result.columns; track column.key) {
+                      <td>{{ row[column.key] }}</td>
+                    }
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td [attr.colspan]="result.columns.length">
+                      <app-async-state kind="empty" title="No records match these filters." />
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <app-pagination
+            [total]="result.rows.length"
+            [page]="reportPage()"
+            [pageSize]="reportPageSize()"
+            itemLabel="report rows"
+            (pageChange)="changeReportPage($event)"
+            (pageSizeChange)="changeReportPageSize($event)"
+          />
+        </section>
+
+        <article class="report-print-document">
+          <header class="print-letterhead">
+            <img
+              class="print-academy-logo"
+              src="/branding/turf-cricket-academy-logo.png"
+              alt="Turf Cricket Academy logo"
+            />
+            <div class="print-academy-details">
+              <p>OFFICIAL ACADEMY REPORT</p>
+              <h1>{{ academyName }}</h1>
+            </div>
+            <div class="print-document-label">
+              <strong>{{ result.title }}</strong>
+              <span>Generated {{ result.generatedAt | date: 'medium' }}</span>
+            </div>
+          </header>
+
+          <section class="print-report-details">
+            <div>
+              <span>Reporting period</span>
+              @if (generatedCriteria(); as criteria) {
+                <strong>{{ criteria.period }}</strong>
+                @if (criteria.period !== 'Current directory') {
+                  <span>{{ criteria.from }} to {{ criteria.to }}</span>
+                }
+              }
+            </div>
+            @if (generatedCriteria(); as criteria) {
+              <div>
+                <span>Batch</span>
+                <strong>{{ criteria.batch }}</strong>
+              </div>
+            }
+            <div>
+              <span>Report records</span>
+              <strong>{{ result.rows.length }}</strong>
+            </div>
+          </section>
+
+          @if (result.summary.length) {
+            <section class="print-summary">
+              <h2>Summary</h2>
+              <div>
+                @for (item of result.summary; track item.label) {
+                  <article>
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.value }}</strong>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+
+          @if (printChartIncluded()) {
+            <section class="print-report-chart">
+              <h2>{{ result.title }} chart</h2>
+              @if (chartType() === 'pie') {
+                <div class="print-pie-layout">
+                  <svg viewBox="0 0 220 220" role="img" [attr.aria-label]="result.title + ' pie chart'">
+                    <circle cx="110" cy="110" r="90" fill="none" stroke="#e4ebe6" stroke-width="28" />
+                    @for (segment of printPieSegments; track segment.label) {
+                      <circle
+                        cx="110"
+                        cy="110"
+                        r="90"
+                        fill="none"
+                        [attr.stroke]="segment.color"
+                        stroke-width="28"
+                        [attr.stroke-dasharray]="segment.dashLength + ' ' + (2 * 3.141592653589793 * 90)"
+                        [attr.stroke-dashoffset]="segment.dashOffset"
+                        transform="rotate(-90 110 110)"
+                      />
+                    }
+                  </svg>
+                  <ul class="print-pie-legend">
+                    @for (segment of printPieSegments; track segment.label) {
+                      <li>
+                        <span [style.background]="segment.color"></span>
+                        <strong>{{ segment.label }}</strong>
+                        <span>{{ segment.value }} ({{ segment.percent | number: '1.0-1' }}%)</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              } @else {
+                <svg
+                  class="print-axis-chart"
+                  [attr.viewBox]="'0 0 ' + (chartType() === 'multiline' || chartType() === 'line' ? lineChartWidth : 900) + ' 260'"
+                  role="img"
+                  [attr.aria-label]="result.title + ' chart'"
+                >
+                  <line x1="40" y1="30" x2="40" y2="215" class="print-chart-axis" />
+                  <line
+                    x1="40"
+                    y1="215"
+                    [attr.x2]="(chartType() === 'multiline' || chartType() === 'line' ? lineChartWidth : 900) - 20"
+                    y2="215"
+                    class="print-chart-axis"
+                  />
+                  @if (chartType() === 'bar') {
+                    @for (bar of chartBars; track $index) {
+                      <rect
+                        [attr.x]="60 + $index * (780 / chartBars.length) + 8"
+                        [attr.y]="215 - bar.height * 1.7"
+                        [attr.width]="780 / chartBars.length - 16 < 12 ? 12 : 780 / chartBars.length - 16"
+                        [attr.height]="bar.height * 1.7"
+                        fill="#277d47"
+                      />
+                      <text
+                        [attr.x]="60 + $index * (780 / chartBars.length) + (780 / chartBars.length) / 2"
+                        y="238"
+                        class="print-chart-label"
+                      >{{ bar.label }}</text>
+                    }
+                  } @else {
+                    @for (series of chartSeries; track series.key) {
+                      <polyline
+                        [attr.points]="series.points"
+                        fill="none"
+                        [attr.stroke]="series.color"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      @for (point of series.points.split(' '); track $index) {
+                        <circle [attr.cx]="point.split(',')[0]" [attr.cy]="point.split(',')[1]" r="4" [attr.fill]="series.color" />
+                      }
+                    }
+                    @for (label of chartLabels; track $index) {
+                      <text
+                        [attr.x]="chartLabels.length > 1 ? 40 + ($index / (chartLabels.length - 1)) * (lineChartWidth - 80) : lineChartWidth / 2"
+                        y="238"
+                        class="print-chart-label"
+                      >{{ label }}</text>
+                    }
+                  }
+                </svg>
+                @if (chartType() === 'multiline') {
+                  <ul class="print-chart-legend">
+                    @for (series of chartSeries; track series.key) {
+                      <li><span [style.background]="series.color"></span>{{ series.label }}</li>
+                    }
+                  </ul>
+                }
+              }
+            </section>
+          }
+
+          <section class="print-records">
+            <header>
+              <h2>Report details</h2>
+              <span>{{ result.rows.length }} records</span>
+            </header>
+            <app-table-tools title="Report details" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table">
+              <thead>
+                <tr>
+                  @for (column of result.columns; track column.key) {
+                    <th>{{ column.label }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of result.rows; track $index) {
+                  <tr>
+                    @for (column of result.columns; track column.key) {
+                      <td>{{ row[column.key] }}</td>
+                    }
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td [attr.colspan]="result.columns.length">No records match these filters.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </section>
+
+          <footer class="print-footer">
+            <span>{{ academyName }}</span>
+            <span>Generated {{ result.generatedAt | date: 'medium' }}</span>
+          </footer>
+        </article>
+      } @else {
+        <section class="app-card report-empty">
+          <i class="pi pi-chart-bar"></i>
+          <h2>Choose filters and generate a report</h2>
+          <p>The resulting table can be exported to CSV or printed.</p>
+        </section>
+      }
+    </div>
+
+      <aside
+        id="report-filter-panel"
+        class="report-filter-sidebar no-print"
+      >
+        <button
+          class="filter-toggle"
+          type="button"
+          (click)="toggleFilters()"
+          [attr.aria-expanded]="filtersVisible()"
+          aria-controls="report-filter-fields"
+          [attr.aria-label]="filtersVisible() ? 'Collapse report filters' : 'Expand report filters'"
+        >
+          <i class="pi" [class.pi-angle-right]="filtersVisible()" [class.pi-angle-left]="!filtersVisible()"></i>
+        </button>
+        @if (filtersVisible()) {
+        <section class="app-card form-panel">
+          <header class="report-filter-heading">
+            <h2>Report filters</h2>
+          </header>
+          <form id="report-filter-fields" class="form-grid report-filter-grid" [formGroup]="form" (ngSubmit)="generate()">
+            <div class="form-field">
+              @if (reportScope) {
+                <span class="field-label">Report</span>
+                <p>{{ reportScope === 'batch' ? 'Batch report' : 'Coach performance report' }}</p>
+              } @else {
+                <label for="report-type">Report</label>
+                <select id="report-type" class="app-select" formControlName="type" (change)="updateReportType()">
+                  <option value="attendance">Attendance</option>
+                  <option value="fees">Fee collection</option>
+                  <option value="pending">Pending balances</option>
+                  <option value="enrollment">Enrollment</option>
+                  <option value="revenue">Revenue</option>
+                  <option value="coach">Coach performance</option>
+                  <option value="batch">Batch report</option>
+                </select>
+              }
+            </div>
+            <div class="form-field">
+              <label for="report-period">Period</label>
+              <select id="report-period" class="app-select" formControlName="period" (change)="updateReportPeriod()">
+                <option value="today">Today</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
+                <option value="quarter">This quarter</option>
+                <option value="year">This year</option>
+                <option value="custom">Date range</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="report-from">From</label>
+              <input id="report-from" class="app-input" type="date" formControlName="from" />
+              @if (form.controls.period.value === 'custom' && form.controls.type.value === 'batch') {
+                <small>Batch reports show the current batch directory.</small>
+              }
+            </div>
+            <div class="form-field">
+              <label for="report-to">To</label>
+              <input id="report-to" class="app-input" type="date" formControlName="to" />
+            </div>
+            <div class="form-field">
+              <label for="report-batch">Batch</label>
+              <select id="report-batch" class="app-select" formControlName="batchId">
+                <option value="">All batches</option>
+                @for (batch of store.batches(); track batch.id) {
+                  <option [value]="batch.id">{{ batch.name }}</option>
+                }
+              </select>
+              @if (reportScope === 'coach' || form.controls.type.value === 'coach') {
+                <small>Coach performance covers all assigned batches.</small>
+              }
+            </div>
+            <div class="form-actions">
+              <button class="app-button" [disabled]="loading()">
+                @if (loading()) {
+                  <i class="pi pi-spin pi-spinner"></i>Generating…
+                } @else {
+                  <i class="pi pi-chart-bar"></i>Generate report
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+        }
+      </aside>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<section class="ui-card" [class.compact]="compact()">
+  @if (title() || subtitle()) {
+    <header>
+      <div>
+        @if (title()) {
+          <h2>{{ title() }}</h2>
+        }
+        @if (subtitle()) {
+          <p>{{ subtitle() }}</p>
+        }
+      </div>
+      <ng-content select="[card-actions]" />
+    </header>
+  }
+  <div class="ui-card-content"><ng-content /></div>
+</section>

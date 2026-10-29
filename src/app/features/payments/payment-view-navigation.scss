@@ -1,0 +1,32 @@
+:host { display: block; }
+
+.payment-view-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #d8e1db;
+    border-radius: 8px;
+    background: #fff;
+    color: #33503f;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover { background: #edf6ef; border-color: #87b493; }
+    &.active { background: #08743c; border-color: #08743c; color: #fff; }
+    &:focus-visible { outline: 2px solid #08743c; outline-offset: 3px; }
+  }
+}
+
+@media (max-width: 650px) {
+  .payment-view-actions a { flex: 1 1 160px; }
+}

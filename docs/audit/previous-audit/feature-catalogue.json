@@ -1,0 +1,1230 @@
+{
+  "date": "2026-10-21",
+  "counts": {
+    "WORKING": 19,
+    "NOT WORKING": 5,
+    "PARTIALLY WORKING": 91,
+    "MISSING": 2,
+    "NEEDS IMPROVEMENT": 11,
+    "NOT VERIFIED": 24
+  },
+  "total": 152,
+  "features": [
+    {
+      "id": "F001",
+      "module": "auth",
+      "feature": "/auth/splash ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:36; ./features/auth/auth-splash-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F002",
+      "module": "login",
+      "feature": "/login ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:40; redirect auth/login",
+      "priority": "P2"
+    },
+    {
+      "id": "F003",
+      "module": "auth",
+      "feature": "/auth/login ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:41; ./features/auth/login-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F004",
+      "module": "unauthorized",
+      "feature": "/unauthorized ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:46; ./features/auth/unauthorized-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F005",
+      "module": "auth",
+      "feature": "/auth/forgot-password ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:52; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F006",
+      "module": "auth",
+      "feature": "/auth/reset-password ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:60; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F007",
+      "module": "auth",
+      "feature": "/auth/otp ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:69; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F008",
+      "module": "auth",
+      "feature": "/auth/session-expired ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:78; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F009",
+      "module": "auth",
+      "feature": "/auth/password-updated ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:86; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F010",
+      "module": "redirect",
+      "feature": "/redirect/admin ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:95; ./features/auth/role-redirect-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F011",
+      "module": "redirect",
+      "feature": "/redirect/coach ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:101; ./features/auth/role-redirect-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F012",
+      "module": "redirect",
+      "feature": "/redirect/reception ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:107; ./features/auth/role-redirect-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F013",
+      "module": "redirect",
+      "feature": "/redirect/parent ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:118; ./features/auth/role-redirect-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F014",
+      "module": "coach",
+      "feature": "/coach/dashboard ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard renders; automated accessibility violations (I10). Aggregate financial reconciliation not tested. src/app/app.routes.ts:138; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F015",
+      "module": "coach",
+      "feature": "/coach/batches ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:144; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F016",
+      "module": "coach",
+      "feature": "/coach/batches/:batchId ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:150; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F017",
+      "module": "coach",
+      "feature": "/coach/students ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:156; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F018",
+      "module": "coach",
+      "feature": "/coach/students/:studentId ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:162; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F019",
+      "module": "coach",
+      "feature": "/coach/attendance ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:168; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F020",
+      "module": "coach",
+      "feature": "/coach/attendance/qr ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:174; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F021",
+      "module": "coach",
+      "feature": "/coach/attendance/check-in ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:180; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F022",
+      "module": "coach",
+      "feature": "/coach/attendance/check-out ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:186; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F023",
+      "module": "coach",
+      "feature": "/coach/attendance/history ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:192; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F024",
+      "module": "coach",
+      "feature": "/coach/attendance/correction ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:198; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F025",
+      "module": "coach",
+      "feature": "/coach/attendance/summary ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:204; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F026",
+      "module": "coach",
+      "feature": "/coach/schedule ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:210; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F027",
+      "module": "coach",
+      "feature": "/coach/notifications ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:216; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F028",
+      "module": "coach",
+      "feature": "/coach/profile ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:222; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F029",
+      "module": "coach",
+      "feature": "/coach/support ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for coach. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:228; ./features/coach/coach-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F030",
+      "module": "dashboard",
+      "feature": "/dashboard/admin ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard renders; automated accessibility violations (I10). Aggregate financial reconciliation not tested. src/app/app.routes.ts:235; ./features/dashboard/dashboard-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F031",
+      "module": "dashboard",
+      "feature": "/dashboard/coach ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:243; ./features/dashboard/dashboard-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F032",
+      "module": "dashboard",
+      "feature": "/dashboard/reception ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard renders; automated accessibility violations (I10). Aggregate financial reconciliation not tested. src/app/app.routes.ts:251; ./features/dashboard/dashboard-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F033",
+      "module": "parent",
+      "feature": "/parent/dashboard ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard renders; automated accessibility violations (I10). Aggregate financial reconciliation not tested. src/app/app.routes.ts:259; ./features/parents/parent-dashboard-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F034",
+      "module": "parent",
+      "feature": "/parent/children/:id/edit ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:267; ./features/students/student-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F035",
+      "module": "parent",
+      "feature": "/parent/children/:id ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:275; ./features/parents/parent-child-profile-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F036",
+      "module": "parent",
+      "feature": "/parent/children ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:285; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F037",
+      "module": "parent",
+      "feature": "/parent/attendance ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:291; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F038",
+      "module": "parent",
+      "feature": "/parent/attendance/calendar ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:297; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F039",
+      "module": "parent",
+      "feature": "/parent/schedule ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:303; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F040",
+      "module": "parent",
+      "feature": "/parent/coach ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:309; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F041",
+      "module": "parent",
+      "feature": "/parent/fees ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:315; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F042",
+      "module": "parent",
+      "feature": "/parent/payments ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:321; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F043",
+      "module": "parent",
+      "feature": "/parent/receipts ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:327; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F044",
+      "module": "parent",
+      "feature": "/parent/notifications ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:333; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F045",
+      "module": "parent",
+      "feature": "/parent/profile ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:339; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F046",
+      "module": "parent",
+      "feature": "/parent/profile/edit ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:345; ./features/parents/parent-profile-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F047",
+      "module": "parent",
+      "feature": "/parent/support ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for parent. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:355; ./features/parents/parent-portal-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F048",
+      "module": "dashboard",
+      "feature": "/dashboard ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:361; ./features/dashboard/dashboard-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F049",
+      "module": "search",
+      "feature": "/search ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:370; ./features/system/search-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F050",
+      "module": "students",
+      "feature": "/students/add ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:376; ./features/students/student-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F051",
+      "module": "students",
+      "feature": "/students/:id/edit ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:384; ./features/students/student-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F052",
+      "module": "students",
+      "feature": "/students/:id ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:392; ./features/students/student-details-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F053",
+      "module": "students",
+      "feature": "/students ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:400; ./features/students/students-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F054",
+      "module": "parents",
+      "feature": "/parents/add ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:408; ./features/parents/parent-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F055",
+      "module": "parents",
+      "feature": "/parents/:id/edit ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. I04: payload drops opt-out and resets status (static). src/app/app.routes.ts:415; ./features/parents/parent-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F056",
+      "module": "parents",
+      "feature": "/parents/:id ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:422; ./features/parents/parent-details-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F057",
+      "module": "parents",
+      "feature": "/parents ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:429; ./features/parents/parents-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F058",
+      "module": "batches",
+      "feature": "/batches/student-allocation ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:435; ./features/batches/batches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F059",
+      "module": "batches",
+      "feature": "/batches/coach-assignment ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:441; ./features/batches/batches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F060",
+      "module": "batches",
+      "feature": "/batches/schedule ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:447; ./features/batches/batches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F061",
+      "module": "batches",
+      "feature": "/batches/capacity ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:453; ./features/batches/batches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F062",
+      "module": "batches",
+      "feature": "/batches ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:459; ./features/batches/batches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F063",
+      "module": "coaches",
+      "feature": "/coaches/add ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:465; ./features/coaches/coach-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F064",
+      "module": "coaches",
+      "feature": "/coaches/:id/edit ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:472; ./features/coaches/coach-form-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F065",
+      "module": "coaches",
+      "feature": "/coaches/:id ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:479; ./features/coaches/coach-details-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F066",
+      "module": "coaches",
+      "feature": "/coaches ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:486; ./features/coaches/coaches-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F067",
+      "module": "enrollments",
+      "feature": "/enrollments ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:493; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F068",
+      "module": "enrollments",
+      "feature": "/enrollments/new ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:500; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F069",
+      "module": "enrollments",
+      "feature": "/enrollments/transfer ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:507; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F070",
+      "module": "enrollments",
+      "feature": "/enrollments/pause ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:514; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F071",
+      "module": "enrollments",
+      "feature": "/enrollments/cancel ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:521; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F072",
+      "module": "enrollments",
+      "feature": "/enrollments/fee-plans ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:528; ./features/fees/fee-plans-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F073",
+      "module": "enrollments",
+      "feature": "/enrollments/history ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:534; ./features/enrollments/enrollments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F074",
+      "module": "attendance",
+      "feature": "/attendance ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:541; ./features/attendance/attendance-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F075",
+      "module": "attendance",
+      "feature": "/attendance/check-in-out ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:548; ./features/attendance/qr-attendance-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F076",
+      "module": "attendance",
+      "feature": "/attendance/manual-check-in ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:555; redirect attendance/check-in-out",
+      "priority": "P2"
+    },
+    {
+      "id": "F077",
+      "module": "attendance",
+      "feature": "/attendance/manual-check-out ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:560; redirect attendance/check-in-out",
+      "priority": "P2"
+    },
+    {
+      "id": "F078",
+      "module": "attendance",
+      "feature": "/attendance/qr ? route/read experience",
+      "status": "NOT VERIFIED",
+      "evidence": "Registered route; not independently exercised. src/app/app.routes.ts:565; redirect attendance/check-in-out",
+      "priority": "P2"
+    },
+    {
+      "id": "F079",
+      "module": "attendance",
+      "feature": "/attendance/correction ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:570; ./features/attendance/attendance-correction-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F080",
+      "module": "attendance",
+      "feature": "/attendance/history ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:579; ./features/attendance/attendance-history-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F081",
+      "module": "attendance",
+      "feature": "/attendance/calendar ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:588; ./features/attendance/attendance-calendar-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F082",
+      "module": "attendance",
+      "feature": "/attendance/offline-queue ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:597; ./features/attendance/offline-queue-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F083",
+      "module": "fees",
+      "feature": "/fees/plans ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:604; ./features/fees/fee-plans-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F084",
+      "module": "fees",
+      "feature": "/fees ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:610; ./features/fees/fees-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F085",
+      "module": "notifications",
+      "feature": "/notifications ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:616; ./features/notifications/notifications-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F086",
+      "module": "notifications",
+      "feature": "/notifications/events ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:623; ./features/notifications/academy-events-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F087",
+      "module": "reports",
+      "feature": "/reports ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. I08: interactive display slices an in-memory dataset. src/app/app.routes.ts:629; ./features/reports/reports-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F088",
+      "module": "auth",
+      "feature": "/auth/change-password ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:635; ./features/auth/auth-utility-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F089",
+      "module": "fees",
+      "feature": "/fees/discounts ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:641; ./features/fees/fee-operations-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F090",
+      "module": "fees",
+      "feature": "/fees/late-fees ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:646; ./features/fees/fee-operations-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F091",
+      "module": "fees",
+      "feature": "/fees/pending ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:651; ./features/fees/fee-operations-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F092",
+      "module": "fees",
+      "feature": "/fees/summary ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:656; ./features/fees/fee-operations-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F093",
+      "module": "payments",
+      "feature": "/payments ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:662; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F094",
+      "module": "payments",
+      "feature": "/payments/new ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:670; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F095",
+      "module": "payments",
+      "feature": "/payments/partial ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:678; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F096",
+      "module": "payments",
+      "feature": "/payments/full ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:686; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F097",
+      "module": "payments",
+      "feature": "/payments/receipts ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for receptionist, admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:694; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F098",
+      "module": "payments",
+      "feature": "/payments/refunds ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:699; ./features/payments/payments-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F099",
+      "module": "payments",
+      "feature": "/payments/history ? route/read experience",
+      "status": "NOT WORKING",
+      "evidence": "I01: HTTP400 Invalid payment view for admin and receptionist. src/app/app.routes.ts:709; ./features/payments/payments-page",
+      "priority": "P1"
+    },
+    {
+      "id": "F100",
+      "module": "notifications",
+      "feature": "/notifications/whatsapp ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:718; ./features/notifications/notifications-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F101",
+      "module": "notifications",
+      "feature": "/notifications/templates ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:723; ./features/notifications/notification-templates-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F102",
+      "module": "notifications",
+      "feature": "/notifications/failed ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:729; ./features/notifications/notifications-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F103",
+      "module": "notifications",
+      "feature": "/notifications/delivery-status ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:734; ./features/notifications/notifications-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F104",
+      "module": "reports",
+      "feature": "/reports/coach ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. I08: interactive display slices an in-memory dataset. src/app/app.routes.ts:740; ./features/reports/reports-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F105",
+      "module": "reports",
+      "feature": "/reports/batch ? route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. I08: interactive display slices an in-memory dataset. src/app/app.routes.ts:745; ./features/reports/reports-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F106",
+      "module": "settings",
+      "feature": "/settings ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:751; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F107",
+      "module": "settings",
+      "feature": "/settings/users ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:757; ./features/settings/users-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F108",
+      "module": "settings",
+      "feature": "/settings/audit-logs ? route/read experience",
+      "status": "WORKING",
+      "evidence": "Read/list scope only: live rendering plus safe controls or fresh-session endpoint checks. CRUD is not certified. src/app/app.routes.ts:764; ./features/settings/audit-log-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F109",
+      "module": "settings",
+      "feature": "/settings/profile ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:771; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F110",
+      "module": "settings",
+      "feature": "/settings/regional ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:777; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F111",
+      "module": "settings",
+      "feature": "/settings/attendance ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:783; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F112",
+      "module": "settings",
+      "feature": "/settings/fees ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:789; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F113",
+      "module": "settings",
+      "feature": "/settings/notifications ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:795; ./features/settings/academy-settings-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F114",
+      "module": "settings",
+      "feature": "/settings/roles ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:801; ./features/settings/users-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F115",
+      "module": "settings",
+      "feature": "/settings/permissions ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:807; ./features/settings/settings-tools-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F116",
+      "module": "settings",
+      "feature": "/settings/theme ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:814; ./features/settings/settings-tools-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F117",
+      "module": "settings",
+      "feature": "/settings/backup ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:821; ./features/settings/settings-tools-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F118",
+      "module": "design",
+      "feature": "/design/:section/:view ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:829; ./features/system/design-system-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F119",
+      "module": "handoff",
+      "feature": "/handoff/:view ? route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Rendered for admin. Submissions and exhaustive interactions not executed. src/app/app.routes.ts:842; ./features/system/developer-handoff-page",
+      "priority": "P2"
+    },
+    {
+      "id": "F120",
+      "module": "Build",
+      "feature": "Production Angular build",
+      "status": "WORKING",
+      "evidence": "npm run build passed; build-output.txt. Edge functions are not in this build graph.",
+      "priority": "P3"
+    },
+    {
+      "id": "F121",
+      "module": "Testing",
+      "feature": "Full Angular unit-test command",
+      "status": "NOT WORKING",
+      "evidence": "I02: provider TypeScript parsing fails; zero tests execute, including exclusion attempt.",
+      "priority": "P1"
+    },
+    {
+      "id": "F122",
+      "module": "Testing",
+      "feature": "Isolated pure logic tests",
+      "status": "WORKING",
+      "evidence": "19 tests in six files pass; pure-unit-output.txt.",
+      "priority": "P3"
+    },
+    {
+      "id": "F123",
+      "module": "Authorization",
+      "feature": "Four-role sessions and sampled read boundaries",
+      "status": "WORKING",
+      "evidence": "Four accounts authenticate, eight forbidden routes denied; anonymous reads empty, parent/coach scope predicates pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F124",
+      "module": "WhatsApp",
+      "feature": "Admin QR and bulk manual Click-to-Chat",
+      "status": "WORKING",
+      "evidence": "Prior authorized E2E: two cases pass including persisted times, relationship recipient and bulk invalid/missing/opt-out handling.",
+      "priority": "P2"
+    },
+    {
+      "id": "F125",
+      "module": "WhatsApp",
+      "feature": "Receptionist complete E2E assertion",
+      "status": "PARTIALLY WORKING",
+      "evidence": "I03: assertion races checkout. Trace confirms later successful save; corrected test not rerun.",
+      "priority": "P2"
+    },
+    {
+      "id": "F126",
+      "module": "WhatsApp",
+      "feature": "Message sent or delivered confirmation",
+      "status": "NOT VERIFIED",
+      "evidence": "URL opening does not establish sending or delivery. No recipient receipt available.",
+      "priority": "P2"
+    },
+    {
+      "id": "F127",
+      "module": "Notifications",
+      "feature": "Local edge-provider deployability",
+      "status": "NOT WORKING",
+      "evidence": "I02: invalid source expressions; local/deployed configuration drift. No deployment attempted.",
+      "priority": "P1"
+    },
+    {
+      "id": "F128",
+      "module": "Attendance",
+      "feature": "Business-date consistency",
+      "status": "NOT WORKING",
+      "evidence": "I05: static UTC/academy-date mismatch near midnight; live boundary mutation not run.",
+      "priority": "P2"
+    },
+    {
+      "id": "F129",
+      "module": "Parents",
+      "feature": "Consent/status preservation on edit",
+      "status": "NOT WORKING",
+      "evidence": "I04: static confirmed replacement payload drops whatsapp:false and forces active status.",
+      "priority": "P2"
+    },
+    {
+      "id": "F130",
+      "module": "Offline",
+      "feature": "Queue identity and replay",
+      "status": "PARTIALLY WORKING",
+      "evidence": "I06: persisted operations have no account namespace; cross-account replay scenario untested.",
+      "priority": "P2"
+    },
+    {
+      "id": "F131",
+      "module": "Attendance",
+      "feature": "Database checkout preconditions",
+      "status": "PARTIALLY WORKING",
+      "evidence": "I07: local staff SQL lacks open-check-in guard present in coach SQL; live mutation not run.",
+      "priority": "P2"
+    },
+    {
+      "id": "F132",
+      "module": "Architecture",
+      "feature": "Component decomposition",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "69 OnPush components; 17 inline templates; coach portal 1125 lines, reports 723.",
+      "priority": "P3"
+    },
+    {
+      "id": "F133",
+      "module": "Testing",
+      "feature": "Colocated spec for every component",
+      "status": "MISSING",
+      "evidence": "43 of 69 components have no colocated spec, against requested audit standard; indirect coverage may exist.",
+      "priority": "P2"
+    },
+    {
+      "id": "F134",
+      "module": "Tooling",
+      "feature": "Configured project lint command",
+      "status": "MISSING",
+      "evidence": "package.json has no lint script; development-tooling gap.",
+      "priority": "P3"
+    },
+    {
+      "id": "F135",
+      "module": "Auth",
+      "feature": "UI login/logout audit logs, recovery email, reset, OTP and password change",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F136",
+      "module": "Students",
+      "feature": "Create/edit/delete and document/photo persistence",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F137",
+      "module": "Parents",
+      "feature": "Create/link/unlink/delete and primary-parent persistence",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F138",
+      "module": "Coaches",
+      "feature": "Create/edit/delete and assignment writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F139",
+      "module": "Batches",
+      "feature": "Create/edit/delete, waitlist and schedule writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F140",
+      "module": "Enrollments",
+      "feature": "Create/transfer/pause/cancel/fee-plan writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F141",
+      "module": "Attendance",
+      "feature": "Corrections, offline retry/discard and coach writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F142",
+      "module": "Fees",
+      "feature": "Generate charges, discounts, late fees and fee-plan writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F143",
+      "module": "Payments",
+      "feature": "Record/allocate/refund and receipt generation",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F144",
+      "module": "Notifications",
+      "feature": "Compose/send/retry, templates and events writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F145",
+      "module": "Settings",
+      "feature": "User/role/permission and preference writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F146",
+      "module": "Storage",
+      "feature": "Upload/delete/download and storage write-policy lifecycle",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F147",
+      "module": "Backup",
+      "feature": "Restore drill and external retention",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F148",
+      "module": "PWA",
+      "feature": "Production install/update and cross-account offline replay",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F149",
+      "module": "Exports",
+      "feature": "Every-module CSV/PDF completeness and parity",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F150",
+      "module": "Attendance",
+      "feature": "Large-roster selection",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I08: first 500-row workspace page consumed without continuation; current small data does not exercise limit.",
+      "priority": "P2"
+    },
+    {
+      "id": "F151",
+      "module": "WhatsApp",
+      "feature": "Settings test recipient",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I09: fixed Rahul/Sunil test fixture in settings; actual attendance resolver is dynamic.",
+      "priority": "P3"
+    },
+    {
+      "id": "F152",
+      "module": "Accessibility",
+      "feature": "Representative dashboard accessibility",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I10: automated keyboard-scroll and contrast violations; manual all-route accessibility unverified.",
+      "priority": "P2"
+    }
+  ]
+}

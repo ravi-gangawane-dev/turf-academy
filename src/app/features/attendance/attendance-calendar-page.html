@@ -1,0 +1,287 @@
+<div class="calendar-page">
+  <app-page-hero title="Attendance Calendar" subtitle="Review attendance by month, week or record." [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Attendance', route: '/attendance' },
+      { label: 'Calendar' },
+    ]" />
+  <app-attendance-view-navigation />
+
+  <div class="calendar-layout">
+    <main>
+      <section class="calendar-filters" aria-label="Calendar filters">
+        <label>
+          <span>Select Batch</span>
+          <select (change)="onBatchChange($event)" [value]="selectedBatch()">
+            <option value="">All Batches</option>
+            @for (batch of allBatches(); track batch.id) {
+            <option [value]="batch.id">{{ batch.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          <span>Select Student</span>
+          <select (change)="onStudentChange($event)" [value]="selectedStudent()">
+            <option value="">All Students</option>
+            @for (student of allStudents(); track student.id) {
+            <option [value]="student.id">{{ student.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          <span>Status</span>
+          <select (change)="onStatusChange($event)" [value]="selectedStatus()">
+            <option value="">All Status</option>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+            <option value="late">Late</option>
+            <option value="checked_out">Checked Out</option>
+          </select>
+        </label>
+
+        <div class="period-filter">
+          <label class="month-picker">
+            <span>Month</span>
+            <input type="month" (change)="onDateChange($event)" [value]="selectedDate()"
+              aria-label="Choose calendar month" />
+          </label>
+          <div class="period-presets" role="group" aria-label="Attendance date presets">
+            <button type="button" [class.active]="activePreset() === 'today'"
+              (click)="setPreset('today')">Today</button>
+            <button type="button" [class.active]="activePreset() === 'week'" (click)="setPreset('week')">Week</button>
+            <button type="button" [class.active]="activePreset() === 'month'"
+              (click)="setPreset('month')">Month</button>
+            <button type="button" [class.active]="activePreset() === 'quarter'"
+              (click)="setPreset('quarter')">Quarter</button>
+            <button type="button" [class.active]="activePreset() === 'half-year'" (click)="setPreset('half-year')">Half
+              year</button>
+            <button type="button" [class.active]="activePreset() === 'year'" (click)="setPreset('year')">Year</button>
+          </div>
+          <div class="date-range">
+            <span>Custom range</span>
+            <button type="button" class="range-picker-trigger" aria-haspopup="dialog"
+              [attr.aria-expanded]="rangePickerOpen()" (click)="toggleRangePicker()">
+              <i class="pi pi-calendar" aria-hidden="true"></i>
+              {{ dateRangeLabel() }}
+              <i class="pi pi-chevron-down" aria-hidden="true"></i>
+            </button>
+          </div>
+          @if (rangePickerOpen()) {
+          <section class="range-picker" role="dialog" aria-label="Choose attendance date range">
+            <header>
+              <button type="button" aria-label="Previous month" (click)="changeRangePickerMonth(-1)">
+                <i class="pi pi-chevron-left" aria-hidden="true"></i>
+              </button>
+              <strong>{{ rangePickerMonth() | date: 'MMMM yyyy' }}</strong>
+              <button type="button" aria-label="Next month" (click)="changeRangePickerMonth(1)">
+                <i class="pi pi-chevron-right" aria-hidden="true"></i>
+              </button>
+            </header>
+            <div class="range-calendar-grid range-calendar-weekdays" aria-hidden="true">
+              @for (day of ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']; track day) {
+              <span>{{ day }}</span>
+              }
+            </div>
+            <div class="range-calendar-grid">
+              @for (day of rangePickerDays(); track day.date) {
+              <button type="button" [class.outside-month]="day.outsideMonth"
+                [class.range-day]="isRangeCalendarDateInRange(day.date)"
+                [class.selected]="isRangeCalendarDateSelected(day.date)" [class.current-day]="day.date === todayValue"
+                [attr.aria-pressed]="isRangeCalendarDateSelected(day.date)" (click)="chooseRangeDate(day.date)">{{
+                day.day }}</button>
+              }
+            </div>
+            <p aria-live="polite">
+              {{ draftRangeStart() ? formatDate(draftRangeStart()) : 'Select a start date' }}
+              @if (draftRangeEnd()) { – {{ formatDate(draftRangeEnd()) }} }
+            </p>
+            <footer>
+              <button type="button" class="cancel-range" (click)="cancelDateRange()">Cancel</button>
+              <button type="button" class="apply-range" [disabled]="!draftRangeStart() || !draftRangeEnd()"
+                (click)="applyDateRange()">Apply range</button>
+            </footer>
+          </section>
+          }
+          @if (rangeError()) {
+          <small class="range-error" role="alert">{{ rangeError() }}</small>
+          }
+        </div>
+        @if (viewMode() === 'week') {
+        <label class="week-picker">
+          <span>Week</span>
+          <select [ngModel]="selectedWeek()" (ngModelChange)="selectedWeek.set(+$event)">
+            @for (week of weeks(); track week) {
+            <option [value]="week">Week {{ week }}</option>
+            }
+          </select>
+        </label>
+        }
+
+        <div class="view-switch" role="group" aria-label="Calendar view">
+          <button type="button" [attr.aria-pressed]="viewMode() === 'month'" [class.active]="viewMode() === 'month'"
+            (click)="onViewModeChange('month')">
+            Month
+          </button>
+          <button type="button" [attr.aria-pressed]="viewMode() === 'week'" [class.active]="viewMode() === 'week'"
+            (click)="onViewModeChange('week')">
+            Week
+          </button>
+          <button type="button" [attr.aria-pressed]="viewMode() === 'list'" [class.active]="viewMode() === 'list'"
+            (click)="onViewModeChange('list')">
+            List
+          </button>
+        </div>
+      </section>
+
+      @if (loading()) {
+      <p role="status">Loading attendance...</p>
+      }
+      @if (optionsError()) {
+      <p role="alert">{{ optionsError() }}</p>
+      }
+
+      <!-- Month View -->
+      @if (viewMode() === 'month') {
+      <section class="main-calendar">
+        <header>
+          <div class="calendar-period">
+            <button type="button" class="period-button" aria-label="Previous month" (click)="onPreviousMonth()">
+              <i class="pi pi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <h2>{{ monthName() }} {{ currentYear() }}</h2>
+            <button type="button" class="period-button" aria-label="Next month" (click)="onNextMonth()">
+              <i class="pi pi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+          <button type="button" class="export" (click)="export()">
+            <i class="pi pi-download" aria-hidden="true"></i> Export
+          </button>
+        </header>
+
+        <div class="weekdays">
+          @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+          <b>{{ day }}</b>
+          }
+        </div>
+
+        <div class="month-grid">
+          @if (calendarData(); as data) {
+          @for (day of data.days; track $index) {
+          <article [class.muted]="day.muted" [class.holiday]="day.isHoliday"
+            [class.today]="isCurrentMonth() && day.day === todayDate && !day.muted"
+            [class.out-of-range]="day.inRange === false">
+            <strong>{{ day.day }}</strong>
+            @if (!day.muted) {
+            @if (day.isHoliday) {
+            <em>Holiday</em>
+            <small>No Session</small>
+            } @else if (day.stats) {
+            <span class="present"> <i></i>{{ day.stats.present }} Present </span>
+            <span class="absent"> <i></i>{{ day.stats.absent }} Absent </span>
+            <span class="late"> <i></i>{{ day.stats.late }} Late </span>
+            <span>{{ day.stats.checked_out }} Checked Out</span>
+            } @else {
+            <small>No Records</small>
+            }
+            }
+          </article>
+          }
+          }
+        </div>
+      </section>
+      }
+
+      <!-- Week View -->
+      @if (viewMode() === 'week') {
+      @if (weekData(); as week) {
+      <section class="main-calendar">
+        <header>
+          <h2>Week {{ week.week }} ({{ week.startDate }} to {{ week.endDate }})</h2>
+          <button type="button" class="export" (click)="export()">
+            <i class="pi pi-download" aria-hidden="true"></i> Export
+          </button>
+        </header>
+
+        <div class="week-view">
+          @for (day of week.dayStats; track day.date) {
+          <article>
+            <h3>{{ day.date }}</h3>
+            <span class="present"><i></i>{{ day.stats.present }} Present</span>
+            <span class="absent"><i></i>{{ day.stats.absent }} Absent</span>
+            <span class="late"><i></i>{{ day.stats.late }} Late</span>
+          </article>
+          }
+        </div>
+      </section>
+      }
+      }
+
+      <!-- List View -->
+      @if (viewMode() === 'list') {
+      @if (listData(); as list) {
+      <section class="list-view">
+        <header>
+          <h2>Attendance Records</h2>
+          <button type="button" class="export" (click)="export()">
+            <i class="pi pi-download" aria-hidden="true"></i> Export current page CSV
+          </button>
+        </header>
+
+        @if (list.records.length > 0) {
+        <div class="table-wrap">
+          <app-table-tools title="Attendance records" [table]="exportTable1" [total]="list.total"></app-table-tools>
+          <table #exportTable1 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Batch</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Status</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of list.records; track record.id) {
+              <tr>
+                <td>{{ record.attendance_date }}</td>
+                <td>{{ record.student?.full_name }}</td>
+                <td>{{ record.batch?.name }}</td>
+                <td>{{ record.check_in_at | date: 'short' }}</td>
+                <td>{{ record.check_out_at | date: 'short' }}</td>
+                <td class="status" [attr.data-status]="record.status">
+                  {{ record.status }}
+                </td>
+                <td>{{ record.remarks }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination [total]="list.total" [page]="listPage()" [pageSize]="listPageSize()"
+          (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" />
+        } @else {
+        <div class="empty">
+          <i class="pi pi-inbox"></i>
+          <strong>No Records Found</strong>
+          <span>No attendance records match your filters.</span>
+        </div>
+        }
+      </section>
+      }
+      }
+    </main>
+
+  </div>
+
+  <!-- Error Display -->
+  @if (error()) {
+  <div class="error-message">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+  }
+</div>

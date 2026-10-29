@@ -1,0 +1,72 @@
+<div class="app-list-page attendance-section correction-page">
+  @if (message()) {
+    <div class="correction-notice" role="status">{{ message() }}</div>
+  }
+  @if (error()) {
+    <div class="page-info" role="alert">
+      <i aria-hidden="true" class="pi pi-exclamation-triangle"></i>{{ error() }}
+    </div>
+  }
+  <section class="correction-card">
+    
+    @if (loading()) {
+      <div class="queue-state">Loading correction requests…</div>
+    } @else if (!error() && !rows().length) {
+      <app-async-state kind="empty" title="No correction requests found." />
+    }
+      <div class="table-wrap">
+        <app-table-tools title="Attendance corrections" [table]="exportTable1" [total]="total()"></app-table-tools>
+<table #exportTable1 class="academy-table">
+          <thead><tr><th><app-sortable-header sortKey="student" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th><th><app-sortable-header sortKey="attendance_date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Date</app-sortable-header></th><th><app-sortable-header sortKey="batch" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch</app-sortable-header></th><th><app-sortable-header sortKey="current" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Current</app-sortable-header></th><th><app-sortable-header sortKey="requested" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Requested</app-sortable-header></th><th><app-sortable-header sortKey="reason" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Reason</app-sortable-header></th><th><app-sortable-header sortKey="resolution_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''" (changed)="columns.set('student',$event)" /></th><th><app-column-filter label="date" type="date" [value]="columns.values()['attendance_date'] || ''" (changed)="columns.set('attendance_date',$event)" /></th><th><app-column-filter label="batch" type="search" [value]="columns.values()['batch'] || ''" (changed)="columns.set('batch',$event)" /></th><th><app-column-filter label="current" type="search" [value]="columns.values()['current'] || ''" (changed)="columns.set('current',$event)" /></th><th><app-column-filter label="requested" type="search" [value]="columns.values()['requested'] || ''" (changed)="columns.set('requested',$event)" /></th><th><app-column-filter label="reason" type="search" [value]="columns.values()['reason'] || ''" (changed)="columns.set('reason',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['resolution_status'] || ''" (changed)="columns.set('resolution_status',$event)" /></th><th><button (click)="columns.reset()">Reset</button></th></tr></thead>
+          <tbody>
+            @for (row of rows(); track row['id']) {
+              @let record = relation(row, 'attendance'); @let student = relation(record, 'student');
+              @let batch = relation(record, 'batch');
+              <tr>
+                <td>
+                  <b>{{ student['full_name'] || 'Student' }}</b
+                  ><small>{{ student['student_code'] }}</small>
+                </td>
+                <td>{{ record['attendance_date'] }}</td>
+                <td>{{ batch['name'] || '—' }}</td>
+                <td>{{ record['status'] }}</td>
+                <td>
+                  <strong>{{ requestedStatus(row) }}</strong>
+                </td>
+                <td>{{ row['reason'] }}</td>
+                <td>
+                  <em>{{ row['resolution_status'] }}</em>
+                </td>
+                <td>
+                  @if (row['resolution_status'] === 'pending') {
+                    <div class="review-actions">
+                      <button [disabled]="!!submittingId()" (click)="resolve(row['id'], true)">
+                        <i aria-hidden="true" class="pi pi-check"></i> Approve</button
+                      ><button
+                        class="reject"
+                        [disabled]="!!submittingId()"
+                        (click)="resolve(row['id'], false)"
+                      >
+                        <i aria-hidden="true" class="pi pi-times"></i> Reject
+                      </button>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (true) {
+        <label class="resolution-reason"
+          >Review note / rejection reason<textarea
+            [(ngModel)]="reviewReason"
+            maxlength="300"
+            placeholder="Required when rejecting"
+          ></textarea>
+        </label>
+      }
+    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="corrections"
+      (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)" />
+  </section>
+</div>

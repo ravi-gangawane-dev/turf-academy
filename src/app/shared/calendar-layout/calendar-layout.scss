@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--app-side-panel-width);
+  align-items: start;
+  gap: var(--app-grid-gap);
+}
+main,
+aside {
+  min-width: 0;
+}
+aside {
+  display: grid;
+  gap: var(--app-grid-gap);
+}
+@media (max-width: 1050px) {
+  .calendar-layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  aside {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-22",
+  "requestedReports": 8,
+  "brokenLinks": [],
+  "counts": {
+    "WORKING": 30,
+    "NOT WORKING": 4,
+    "PARTIALLY WORKING": 93,
+    "MISSING": 0,
+    "NEEDS IMPROVEMENT": 9,
+    "NOT VERIFIED": 16
+  },
+  "total": 152,
+  "uniqueIds": 152
+}

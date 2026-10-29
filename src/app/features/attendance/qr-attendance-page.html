@@ -1,0 +1,360 @@
+﻿<div class="attendance-workspace app-list-page">
+  <app-page-hero
+    title="Student Check In / Check Out"
+    subtitle="Manage student attendance using the QR scanner or manual entry."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Attendance', route: '/attendance' },
+      { label: 'Check In / Check Out' },
+    ]"
+  >
+    <div hero-actions class="hero-actions">
+      <span class="date-label"
+        ><i class="pi pi-calendar" aria-hidden="true"></i
+        >{{ today | date: 'EEE, d MMM yyyy' }}</span
+      ><span class="today-label">Today</span>
+      <a class="outline-button" routerLink="/attendance/history"
+        ><i class="pi pi-chart-line" aria-hidden="true"></i>View Attendance</a
+      >
+    </div>
+  </app-page-hero>
+  <app-attendance-view-navigation />
+
+  @if (store.loading()) {
+    <div class="workspace-notice" role="status">
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>Loading attendance…
+    </div>
+  }
+  @if (store.apiError()) {
+    <div class="workspace-notice error" role="alert">
+      <span>{{ store.apiError() }}</span
+      ><button type="button" class="outline-button" (click)="store.loadAttendanceWorkspace()">
+        Retry
+      </button>
+    </div>
+  }
+  @if (error() || message()) {
+    <div
+      class="workspace-notice manual-notice"
+      [class.error]="error()"
+      [attr.role]="error() ? 'alert' : 'status'"
+    >
+      <i
+        class="pi"
+        [class.pi-exclamation-circle]="error()"
+        [class.pi-check-circle]="!error()"
+        aria-hidden="true"
+      ></i
+      ><span>{{ error() || message() }}</span>
+    </div>
+  }
+  @if (whatsappUpdates().length) {
+    <div class="parent-update-bar">
+      <span class="heading-icon green"><i class="pi pi-whatsapp" aria-hidden="true"></i></span>
+      <div><strong>Parent updates</strong><span>{{ whatsappUpdates().length }} attendance message{{ whatsappUpdates().length === 1 ? '' : 's' }} to review</span></div>
+      <button type="button" class="outline-button" (click)="openWhatsAppDialog()"><i class="pi pi-eye" aria-hidden="true"></i>Review messages</button>
+    </div>
+  }
+  <div class="capture-grid">
+    <section
+      id="scanner"
+      class="workspace-card scanner-card"
+      tabindex="-1"
+      aria-labelledby="scanner-title"
+    >
+      <header class="card-heading">
+        <span class="heading-icon green"><i class="pi pi-qrcode" aria-hidden="true"></i></span>
+        <div>
+          <h2 id="scanner-title">QR Scanner</h2>
+          <p>Scan, review the student, then confirm attendance.</p>
+        </div>
+        <button
+          class="camera-switch"
+          type="button"
+          [disabled]="cameraStarting() || busy()"
+          (click)="switchCamera()"
+          [attr.aria-label]="
+            'Switch camera. Currently using ' +
+            (cameraFacing() === 'user' ? 'front' : 'rear') +
+            ' camera'
+          "
+        >
+          <i class="pi pi-sync" aria-hidden="true"></i><span>Switch Camera</span>
+        </button>
+      </header>
+      <div class="camera-frame" [class.active]="cameraActive()">
+        <div id="qr-reader" class="reader"></div>
+        @if (!cameraActive()) {
+          <div class="scan-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="camera-placeholder">
+            <i class="pi pi-qrcode" aria-hidden="true"></i
+            ><strong>Position the QR code within the frame</strong
+            ><span
+              >{{ cameraFacing() === 'user' ? 'Front camera selected' : 'Rear camera selected' }} ·
+              Check in &amp; check out</span
+            >
+          </div>
+        }
+        <div class="camera-controls">
+          <button
+            type="button"
+            [disabled]="cameraStarting() || busy()"
+            [attr.aria-busy]="cameraStarting()"
+            (click)="cameraActive() ? stopCamera() : startCamera()"
+          >
+            <i class="pi pi-camera" aria-hidden="true"></i
+            >{{
+              cameraStarting()
+                ? 'Starting camera…'
+                : cameraActive()
+                  ? 'Stop Camera'
+                  : 'Start Camera'
+            }}
+          </button>
+        </div>
+      </div>
+      <div class="entry-divider"><span>OR ENTER CODE</span></div>
+      <form class="manual-code" (submit)="$event.preventDefault(); resolve(code.value)">
+        <label class="visually-hidden" for="student-qr-code">Student QR code</label>
+        <div class="code-input">
+          <i class="pi pi-search" aria-hidden="true"></i
+          ><input
+            id="student-qr-code"
+            #code
+            autocomplete="off"
+            required
+            placeholder="Enter or paste student QR token"
+            [disabled]="busy()"
+          />
+        </div>
+        <button class="primary-button" type="submit" [disabled]="busy()">
+          <i class="pi pi-shield" aria-hidden="true"></i
+          >{{ resolving() ? 'Identifying…' : 'Identify student' }}
+        </button>
+      </form>
+      @if (identity(); as result) {
+        <section class="scan-result" aria-live="polite">
+          <span class="avatar">{{ initials(result.student.name) }}</span>
+          <div class="scan-identity">
+            <h3>{{ result.student.name }} <em>Identified</em></h3>
+            <p>{{ result.student.id.toUpperCase() }} · {{ result.batch.name }}</p>
+            <small>{{
+              result.attendance?.checkOutAt
+                ? 'Attendance completed today'
+                : result.attendance?.checkInAt
+                  ? 'Currently checked in'
+                  : 'Ready to check in'
+            }}</small>
+          </div>
+          <div class="result-actions">
+            <button
+              class="primary-button"
+              type="button"
+              (click)="confirm()"
+              [disabled]="busy() || !!result.attendance?.checkOutAt"
+            >
+              {{
+                result.attendance?.checkOutAt
+                  ? 'Already checked out'
+                  : result.attendance?.checkInAt
+                    ? 'Confirm check out'
+                    : 'Confirm check in'
+              }}</button
+            ><button class="text-button" type="button" (click)="reset()" [disabled]="busy()">
+              Clear
+            </button>
+          </div>
+        </section>
+      } @else {
+        <p class="scanner-hint">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>A scan identifies the student. Confirm
+          before saving check-in or check-out.
+        </p>
+      }
+    </section>
+    <section
+      id="manual-in"
+      class="workspace-card manual-card"
+      tabindex="-1"
+      aria-labelledby="check-in-title"
+    >
+      <header class="card-heading">
+        <span class="heading-icon green"><i class="pi pi-sign-in" aria-hidden="true"></i></span>
+        <div>
+          <h2 id="check-in-title">Manual Check In</h2>
+          <p>Search and select students arriving today.</p>
+        </div>
+      </header>
+      <label class="search-field"
+        ><span class="visually-hidden">Search students</span
+        ><input
+          type="search"
+          placeholder="Search by name, student ID, or batch…"
+          [ngModel]="checkInQuery()"
+          (ngModelChange)="changeQuery($event, 'in')"
+          [disabled]="busy()" /><i class="pi pi-search" aria-hidden="true"></i
+      ></label>
+      <div class="list-heading">
+        <h3>Matching students</h3>
+        <span>{{ availableRows().length }}</span>
+      </div>
+      <div class="student-list" [attr.aria-busy]="store.loading()">
+        @if (!store.loading() && !store.apiError()) {
+          @for (row of availableRows(); track row.id) {
+            <label class="student-choice" [class.selected]="selectedIn().includes(row.id)"
+              ><input
+                type="checkbox"
+                [checked]="selectedIn().includes(row.id)"
+                [disabled]="busy()"
+                (change)="toggleSelection(row.id, 'in')"
+                [attr.aria-label]="'Check in ' + row.studentName + ' in ' + row.batchName"
+              /><span class="avatar">{{ initials(row.studentName) }}</span
+              ><span class="student-identity"
+                ><strong>{{ row.studentName }}</strong
+                ><small [title]="row.studentId">{{ row.studentId }}</small></span
+              ><span class="batch-tag">{{ row.batchName }}</span></label
+            >
+          } @empty {
+            <div class="empty-list">
+              <i class="pi pi-user-plus" aria-hidden="true"></i
+              ><strong>{{
+                checkInQuery() ? 'No matching students' : 'No students waiting'
+              }}</strong>
+              <p>
+                {{
+                  checkInQuery()
+                    ? 'Try a different name, ID or batch.'
+                    : 'No students are waiting to check in in the loaded roster.'
+                }}
+              </p>
+            </div>
+          }
+        }
+      </div>
+      <footer class="manual-footer">
+        <p class="selection-hint">
+          {{
+            selectedIn().length
+              ? selectedIn().length + ' selected for check-in'
+              : 'Select students to mark their arrival.'
+          }}
+        </p>
+        <button
+          type="button"
+          class="primary-button mark-button"
+          [disabled]="!selectedIn().length || busy() || store.loading() || !!store.apiError()"
+          (click)="markSelected('in')"
+        >
+          <i class="pi pi-check" aria-hidden="true"></i>{{ saving() ? 'Saving…' : 'Mark Check In' }}
+        </button>
+      </footer>
+    </section>
+    <section
+      id="manual-out"
+      class="workspace-card manual-card"
+      tabindex="-1"
+      aria-labelledby="check-out-title"
+    >
+      <header class="card-heading">
+        <span class="heading-icon rose"><i class="pi pi-sign-out" aria-hidden="true"></i></span>
+        <div>
+          <h2 id="check-out-title">Manual Check Out</h2>
+          <p>Search and select students leaving today.</p>
+        </div>
+      </header>
+      <label class="search-field"
+        ><span class="visually-hidden">Search checked-in students</span
+        ><input
+          type="search"
+          placeholder="Search by name, student ID, or batch…"
+          [ngModel]="checkOutQuery()"
+          (ngModelChange)="changeQuery($event, 'out')"
+          [disabled]="busy()" /><i class="pi pi-search" aria-hidden="true"></i
+      ></label>
+      <div class="list-heading">
+        <h3>Students currently inside</h3>
+        <span>{{ insideRows().length }}</span>
+      </div>
+      <div class="student-list" [attr.aria-busy]="store.loading()">
+        @if (!store.loading() && !store.apiError()) {
+          @for (row of insideRows(); track row.id) {
+            <label
+              class="student-choice checkout-choice"
+              [class.selected]="selectedOut().includes(row.id)"
+              ><input
+                type="checkbox"
+                [checked]="selectedOut().includes(row.id)"
+                [disabled]="busy()"
+                (change)="toggleSelection(row.id, 'out')"
+                [attr.aria-label]="'Check out ' + row.studentName + ' in ' + row.batchName"
+              /><span class="avatar">{{ initials(row.studentName) }}</span
+              ><span class="student-identity"
+                ><strong>{{ row.studentName }}</strong
+                ><small [title]="row.studentId + ' · ' + row.batchName"
+                  >{{ row.studentId }} · {{ row.batchName }}</small
+                ></span
+              ><span class="arrival-time"
+                ><small>Checked in</small
+                >{{ displayTime(row.attendance?.checkInAt) | date: 'h:mm a' }}
+                @if (row.attendance?.syncState) {
+                  <small>Sync {{ row.attendance?.syncState }}</small>
+                }
+              </span></label
+            >
+          } @empty {
+            <div class="empty-list">
+              <i class="pi pi-sign-out" aria-hidden="true"></i
+              ><strong>{{
+                checkOutQuery() ? 'No matching students' : 'No students inside'
+              }}</strong>
+              <p>
+                {{
+                  checkOutQuery()
+                    ? 'Try a different name, ID or batch.'
+                    : 'Checked-in students appear here until they leave.'
+                }}
+              </p>
+            </div>
+          }
+        }
+      </div>
+      <footer class="manual-footer">
+        <p class="selection-hint">
+          {{
+            selectedOut().length
+              ? selectedOut().length + ' selected for check-out'
+              : 'Select students to mark their departure.'
+          }}
+        </p>
+        <button
+          type="button"
+          class="checkout-button mark-button"
+          [disabled]="!selectedOut().length || busy() || store.loading() || !!store.apiError()"
+          (click)="markSelected('out')"
+        >
+          <i class="pi pi-sign-out" aria-hidden="true"></i
+          >{{ saving() ? 'Saving…' : 'Mark Check Out' }}
+        </button>
+      </footer>
+    </section>
+  </div>
+
+</div>
+
+@if (whatsappDialogOpen()) {
+  <div class="whatsapp-dialog-backdrop">
+    <section class="whatsapp-dialog" appModalFocus aria-labelledby="whatsapp-dialog-title" aria-describedby="whatsapp-dialog-description" (modalDismiss)="whatsappDialogOpen.set(false)">
+      <header class="whatsapp-dialog-header">
+        <span class="heading-icon green"><i class="pi pi-whatsapp" aria-hidden="true"></i></span>
+        <div><h2 id="whatsapp-dialog-title">WhatsApp parent updates</h2><p id="whatsapp-dialog-description">Review the saved attendance message, then open WhatsApp to send it.</p></div>
+        <button type="button" class="dialog-close" aria-label="Close WhatsApp updates" (click)="whatsappDialogOpen.set(false)"><i class="pi pi-times" aria-hidden="true"></i></button>
+      </header>
+      <div class="whatsapp-dialog-body">
+        @for (update of whatsappUpdates(); track update.key) {
+          <app-whatsapp-action [message]="update.message" [studentId]="update.studentId" [studentName]="update.studentName" [preparationError]="update.error" />
+        }
+      </div>
+      <footer class="whatsapp-dialog-footer"><span><i class="pi pi-info-circle" aria-hidden="true"></i>Sending is completed in WhatsApp.</span><button type="button" class="outline-button" (click)="whatsappDialogOpen.set(false)">Done</button></footer>
+    </section>
+  </div>
+}

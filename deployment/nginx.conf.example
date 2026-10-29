@@ -1,0 +1,49 @@
+# HTTPS is required: camera access, service worker registration and PWA install
+# prompts only work on a secure origin (localhost excepted).
+server {
+  listen 80;
+  server_name _;
+  # Redirect everything except the ACME challenge to HTTPS.
+  location /.well-known/acme-challenge/ { root /var/www/certbot; }
+  location / { return 308 https://$host$request_uri; }
+}
+
+server {
+  listen 443 ssl;
+  http2 on;
+  server_name _;
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # Replace with the certificate paths for the target environment.
+  ssl_certificate     /etc/letsencrypt/live/example/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/example/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+  # Hashed bundles are immutable; the worker manifest and app entry must revalidate.
+  location ~* \.(?:[a-z0-9_-]+\.)?[A-Z0-9_-]{8,}\.(?:js|css)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    try_files $uri =404;
+  }
+
+  location = /ngsw.json { add_header Cache-Control "no-cache"; try_files $uri =404; }
+  location = /ngsw-worker.js { add_header Cache-Control "no-cache"; try_files $uri =404; }
+  location = /index.html { add_header Cache-Control "no-cache"; }
+
+  # Angular client routes must return the application entry point.
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  # API traffic must be proxied to the backend and never fall through to index.html.
+  location /api/v1/ {
+    proxy_pass http://academy-api:8080/api/v1/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}

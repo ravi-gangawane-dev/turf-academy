@@ -1,0 +1,257 @@
+openapi: 3.1.0
+info:
+  title: Turf Cricket Academy API
+  version: 1.0.0
+  description: Contract for the staff vertical slice. Money values are integer paise and timestamps are UTC ISO-8601.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      security: []
+      operationId: login
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } }
+      responses:
+        '200': { description: Authenticated, content: { application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      responses:
+        '200': { description: Dashboard summary, content: { application/json: { schema: { $ref: '#/components/schemas/DashboardResponse' } } } }
+  /students:
+    get:
+      operationId: listStudents
+      parameters:
+        - { $ref: '#/components/parameters/Search' }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200': { description: Students, content: { application/json: { schema: { $ref: '#/components/schemas/StudentPageResponse' } } } }
+    post:
+      operationId: registerStudent
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentRegistration' } } } }
+      responses:
+        '201': { description: Student created, content: { application/json: { schema: { $ref: '#/components/schemas/StudentResponse' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /students/{studentId}:
+    parameters: [ { $ref: '#/components/parameters/StudentId' } ]
+    get:
+      operationId: getStudent
+      responses:
+        '200': { description: Student, content: { application/json: { schema: { $ref: '#/components/schemas/StudentResponse' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      operationId: updateStudent
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentUpdate' } } } }
+      responses:
+        '200': { description: Student updated, content: { application/json: { schema: { $ref: '#/components/schemas/StudentResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /parents:
+    get:
+      operationId: listParents
+      responses:
+        '200': { description: Parents, content: { application/json: { schema: { $ref: '#/components/schemas/ParentListResponse' } } } }
+  /parents/{parentId}:
+    put:
+      operationId: updateParent
+      parameters: [ { name: parentId, in: path, required: true, schema: { type: string } } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ParentUpdate' } } } }
+      responses:
+        '200': { description: Parent updated, content: { application/json: { schema: { $ref: '#/components/schemas/ParentResponse' } } } }
+  /batches:
+    get:
+      operationId: listBatches
+      responses:
+        '200': { description: Batches, content: { application/json: { schema: { $ref: '#/components/schemas/BatchListResponse' } } } }
+    post:
+      operationId: createBatch
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/BatchWrite' } } } }
+      responses:
+        '201': { description: Batch created, content: { application/json: { schema: { $ref: '#/components/schemas/BatchResponse' } } } }
+  /batches/{batchId}:
+    put:
+      operationId: updateBatch
+      parameters: [ { name: batchId, in: path, required: true, schema: { type: string } } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/BatchWrite' } } } }
+      responses:
+        '200': { description: Batch updated, content: { application/json: { schema: { $ref: '#/components/schemas/BatchResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /coaches:
+    get:
+      operationId: listCoaches
+      responses:
+        '200': { description: Coaches, content: { application/json: { schema: { $ref: '#/components/schemas/CoachListResponse' } } } }
+    post:
+      operationId: createCoach
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CoachWrite' } } } }
+      responses:
+        '201': { description: Coach created, content: { application/json: { schema: { $ref: '#/components/schemas/CoachResponse' } } } }
+  /coaches/{coachId}:
+    put:
+      operationId: updateCoach
+      parameters: [ { name: coachId, in: path, required: true, schema: { type: string } } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CoachWrite' } } } }
+      responses:
+        '200': { description: Coach updated, content: { application/json: { schema: { $ref: '#/components/schemas/CoachResponse' } } } }
+  /enrollments:
+    get:
+      operationId: listEnrollments
+      responses:
+        '200': { description: Enrollments, content: { application/json: { schema: { $ref: '#/components/schemas/EnrollmentListResponse' } } } }
+    post:
+      operationId: createEnrollment
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EnrollmentWrite' } } } }
+      responses:
+        '201': { description: Enrollment and first charge created, content: { application/json: { schema: { $ref: '#/components/schemas/EnrollmentResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /enrollments/{enrollmentId}/{action}:
+    post:
+      operationId: changeEnrollmentStatus
+      parameters:
+        - { name: enrollmentId, in: path, required: true, schema: { type: string } }
+        - { name: action, in: path, required: true, schema: { type: string, enum: [pause, cancel, reactivate] } }
+      responses:
+        '200': { description: Enrollment updated, content: { application/json: { schema: { $ref: '#/components/schemas/EnrollmentResponse' } } } }
+  /enrollments/{enrollmentId}/transfer-batch:
+    post:
+      operationId: transferEnrollment
+      parameters:
+        - { name: enrollmentId, in: path, required: true, schema: { type: string } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [batchId, startDate], properties: { batchId: { type: string }, startDate: { type: string, format: date } } } } } }
+      responses:
+        '200': { description: New active enrollment; previous enrollment remains as history, content: { application/json: { schema: { $ref: '#/components/schemas/EnrollmentResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /attendance:
+    get:
+      operationId: listAttendance
+      parameters:
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+        - { name: batchId, in: query, schema: { type: string } }
+      responses:
+        '200': { description: Daily attendance, content: { application/json: { schema: { $ref: '#/components/schemas/AttendanceListResponse' } } } }
+  /attendance/check-in:
+    post:
+      operationId: checkIn
+      parameters: [ { $ref: '#/components/parameters/IdempotencyKey' } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CheckInRequest' } } } }
+      responses:
+        '201': { description: Checked in, content: { application/json: { schema: { $ref: '#/components/schemas/AttendanceResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /attendance/identify:
+    post:
+      operationId: identifyStudentQr
+      description: Resolves a signed or opaque QR payload. This endpoint never mutates attendance.
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [code], properties: { code: { type: string, minLength: 1 } } } } } }
+      responses:
+        '200': { description: Active student identity and current attendance state, content: { application/json: { schema: { $ref: '#/components/schemas/QrIdentityResponse' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /attendance/check-out:
+    post:
+      operationId: checkOut
+      parameters: [ { $ref: '#/components/parameters/IdempotencyKey' } ]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [attendanceId], properties: { attendanceId: { type: string } } } } } }
+      responses:
+        '200': { description: Checked out, content: { application/json: { schema: { $ref: '#/components/schemas/AttendanceResponse' } } } }
+  /fees:
+    get:
+      operationId: listFeeCharges
+      parameters:
+        - { name: status, in: query, schema: { type: string, enum: [paid, partial, pending, overdue] } }
+      responses:
+        '200': { description: Fee charges, content: { application/json: { schema: { $ref: '#/components/schemas/FeeListResponse' } } } }
+  /fees/record-payment:
+    post:
+      operationId: recordPayment
+      parameters: [ { $ref: '#/components/parameters/IdempotencyKey' } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PaymentWrite' } } } }
+      responses:
+        '201': { description: Payment recorded, content: { application/json: { schema: { $ref: '#/components/schemas/PaymentResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /notifications:
+    get:
+      operationId: listNotifications
+      responses:
+        '200': { description: Provider delivery log, content: { application/json: { schema: { $ref: '#/components/schemas/NotificationListResponse' } } } }
+  /notifications/{notificationId}/retry:
+    post:
+      operationId: retryNotification
+      parameters:
+        - { name: notificationId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Notification queued for another delivery attempt, content: { application/json: { schema: { $ref: '#/components/schemas/NotificationResponse' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /reports/{reportType}:
+    get:
+      operationId: generateReport
+      parameters:
+        - { name: reportType, in: path, required: true, schema: { type: string, enum: [attendance, fees, pending, enrollment, revenue] } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+        - { name: batchId, in: query, schema: { type: string } }
+      responses:
+        '200': { description: Report dataset ready for display or export, content: { application/json: { schema: { $ref: '#/components/schemas/ReportResponse' } } } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Search: { name: search, in: query, schema: { type: string } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+    StudentId: { name: studentId, in: path, required: true, schema: { type: string } }
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 8 } }
+  responses:
+    Unauthorized: { description: Authentication failed, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    NotFound: { description: Record not found, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    Conflict: { description: Business rule conflict, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    ValidationError: { description: Validation failed, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+  schemas:
+    LoginRequest: { type: object, additionalProperties: false, required: [identity, password], properties: { identity: { type: string }, password: { type: string, minLength: 6 } } }
+    AuthSession: { type: object, required: [accessToken, user], properties: { accessToken: { type: string }, user: { type: object, required: [id, name, role], properties: { id: { type: string }, name: { type: string }, role: { type: string, enum: [admin, coach, receptionist] } } } } }
+    Parent: { type: object, required: [id, name, mobile, whatsapp, relation], properties: { id: { type: string }, name: { type: string }, mobile: { type: string, pattern: '^\d{10}$' }, whatsapp: { type: string, pattern: '^\d{10}$' }, relation: { type: string } } }
+    ParentUpdate: { type: object, additionalProperties: false, required: [name, mobile, whatsapp, relation], properties: { name: { type: string }, mobile: { type: string }, whatsapp: { type: string }, relation: { type: string } } }
+    Student: { type: object, required: [id, parentId, name, dateOfBirth, skillLevel, status], properties: { id: { type: string }, parentId: { type: string }, name: { type: string }, dateOfBirth: { type: string, format: date }, skillLevel: { type: string }, status: { type: string, enum: [active, inactive] }, version: { type: integer } } }
+    StudentRegistration: { type: object, additionalProperties: false, required: [studentName, dateOfBirth, skillLevel, parentName, mobile, whatsapp, relation], properties: { studentName: { type: string }, dateOfBirth: { type: string, format: date }, skillLevel: { type: string }, parentName: { type: string }, mobile: { type: string }, whatsapp: { type: string }, relation: { type: string } } }
+    StudentUpdate: { type: object, additionalProperties: false, required: [name, dateOfBirth, skillLevel, status, version], properties: { name: { type: string }, dateOfBirth: { type: string, format: date }, skillLevel: { type: string }, status: { type: string, enum: [active, inactive] }, version: { type: integer } } }
+    Batch: { type: object, required: [id, name, schedule, capacity, monthlyFeePaise], properties: { id: { type: string }, name: { type: string }, schedule: { type: string }, capacity: { type: integer, minimum: 1 }, monthlyFeePaise: { type: integer, minimum: 1 }, coachId: { type: string } } }
+    BatchWrite: { type: object, additionalProperties: false, required: [name, schedule, capacity, monthlyFeePaise], properties: { name: { type: string }, schedule: { type: string }, capacity: { type: integer, minimum: 1 }, monthlyFeePaise: { type: integer, minimum: 1 }, coachId: { type: string } } }
+    Coach: { type: object, required: [id, name, mobile, specialization, status], properties: { id: { type: string }, name: { type: string }, mobile: { type: string, pattern: '^\d{10}$' }, specialization: { type: string }, status: { type: string, enum: [active, inactive] } } }
+    CoachWrite: { type: object, additionalProperties: false, required: [name, mobile, specialization, status], properties: { name: { type: string }, mobile: { type: string, pattern: '^\d{10}$' }, specialization: { type: string }, status: { type: string, enum: [active, inactive] } } }
+    Enrollment: { type: object, required: [id, studentId, batchId, startDate, dueDate, monthlyFeePaise, status], properties: { id: { type: string }, studentId: { type: string }, batchId: { type: string }, startDate: { type: string, format: date }, dueDate: { type: string, format: date }, monthlyFeePaise: { type: integer }, status: { type: string, enum: [active, paused, cancelled] } } }
+    EnrollmentWrite: { type: object, additionalProperties: false, required: [studentId, batchId, startDate, dueDate, monthlyFeePaise], properties: { studentId: { type: string }, batchId: { type: string }, startDate: { type: string, format: date }, dueDate: { type: string, format: date }, monthlyFeePaise: { type: integer, minimum: 1 } } }
+    Attendance: { type: object, required: [id, studentId, batchId, businessDate, checkInAt, status], properties: { id: { type: string }, studentId: { type: string }, batchId: { type: string }, businessDate: { type: string, format: date }, checkInAt: { type: string, format: date-time }, checkOutAt: { type: [string, 'null'], format: date-time }, status: { type: string, enum: [present, late, checked-out] } } }
+    CheckInRequest: { type: object, additionalProperties: false, required: [studentId, batchId], properties: { studentId: { type: string }, batchId: { type: string }, source: { type: string, enum: [manual, qr], default: manual } } }
+    QrIdentity: { type: object, required: [student, batch, enrollment], properties: { student: { $ref: '#/components/schemas/Student' }, batch: { $ref: '#/components/schemas/Batch' }, enrollment: { $ref: '#/components/schemas/Enrollment' }, attendance: { oneOf: [ { $ref: '#/components/schemas/Attendance' }, { type: 'null' } ] } } }
+    FeeCharge: { type: object, required: [id, studentId, enrollmentId, period, amountPaise, dueDate, paidPaise, balancePaise, status], properties: { id: { type: string }, studentId: { type: string }, enrollmentId: { type: string }, period: { type: string }, amountPaise: { type: integer }, dueDate: { type: string, format: date }, paidPaise: { type: integer }, balancePaise: { type: integer }, status: { type: string, enum: [Paid, Partial, Pending, Overdue] } } }
+    Payment: { type: object, required: [id, chargeId, studentId, amountPaise, mode, paidAt, receiptNumber], properties: { id: { type: string }, chargeId: { type: string }, studentId: { type: string }, amountPaise: { type: integer }, mode: { type: string, enum: [cash, upi, online] }, paidAt: { type: string, format: date-time }, receiptNumber: { type: string } } }
+    PaymentWrite: { type: object, additionalProperties: false, required: [chargeId, amountPaise, mode], properties: { chargeId: { type: string }, amountPaise: { type: integer, minimum: 1 }, mode: { type: string, enum: [cash, upi, online] } } }
+    Notification: { type: object, required: [id, studentId, type, recipientName, recipientMobile, channel, status, createdAt], properties: { id: { type: string }, studentId: { type: string }, type: { type: string, enum: [check-in, check-out, fee-reminder, announcement] }, recipientName: { type: string }, recipientMobile: { type: string }, channel: { type: string, enum: [whatsapp, sms] }, status: { type: string, enum: [queued, sent, delivered, failed] }, createdAt: { type: string, format: date-time }, failureReason: { type: string } } }
+    ReportDataset: { type: object, required: [type, title, generatedAt, columns, rows, summary], properties: { type: { type: string, enum: [attendance, fees, pending, enrollment, revenue] }, title: { type: string }, generatedAt: { type: string, format: date-time }, columns: { type: array, items: { type: object, required: [key, label], properties: { key: { type: string }, label: { type: string } } } }, rows: { type: array, items: { type: object, additionalProperties: { oneOf: [ { type: string }, { type: number } ] } } }, summary: { type: array, items: { type: object, required: [label, value], properties: { label: { type: string }, value: { type: string } } } } } }
+    DashboardSummary: { type: object, additionalProperties: true, description: Matches the frontend DashboardSummary model. }
+    PageMeta: { type: object, required: [page, limit, total], properties: { page: { type: integer }, limit: { type: integer }, total: { type: integer } } }
+    ErrorResponse: { type: object, required: [success, message, error], properties: { success: { const: false }, message: { type: string }, error: { type: object, required: [code], properties: { code: { type: string }, fields: { type: object, additionalProperties: { type: string } }, correlationId: { type: string } } } } }
+    AuthResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/AuthSession' } } } ] }
+    DashboardResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/DashboardSummary' } } } ] }
+    StudentResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Student' } } } ] }
+    ParentResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Parent' } } } ] }
+    BatchResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Batch' } } } ] }
+    CoachResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Coach' } } } ] }
+    EnrollmentResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Enrollment' } } } ] }
+    AttendanceResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Attendance' } } } ] }
+    QrIdentityResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/QrIdentity' } } } ] }
+    PaymentResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Payment' } } } ] }
+    NotificationResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/Notification' } } } ] }
+    NotificationListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Notification' } } } } ] }
+    ReportResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { $ref: '#/components/schemas/ReportDataset' } } } ] }
+    ParentListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Parent' } } } } ] }
+    BatchListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Batch' } } } } ] }
+    CoachListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Coach' } } } } ] }
+    EnrollmentListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Enrollment' } } } } ] }
+    AttendanceListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Attendance' } } } } ] }
+    FeeListResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/FeeCharge' } } } } ] }
+    StudentPageResponse: { allOf: [ { $ref: '#/components/schemas/SuccessEnvelope' }, { type: object, properties: { data: { type: object, required: [items, page, limit, total], properties: { items: { type: array, items: { $ref: '#/components/schemas/Student' } }, page: { type: integer }, limit: { type: integer }, total: { type: integer } } } } } ] }
+    SuccessEnvelope: { type: object, required: [success, message, data], properties: { success: { const: true }, message: { type: string } } }

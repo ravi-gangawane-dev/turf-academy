@@ -1,0 +1,12 @@
+<section class="summary-grid" [attr.aria-label]="ariaLabel()">
+  @for (card of cards(); track card.label) {
+    <app-summary-metric-card
+      [label]="card.label"
+      [value]="card.value"
+      [icon]="card.icon"
+      [hint]="card.hint || ''"
+      [tone]="card.tone || 'green'"
+      [route]="card.route || ''"
+    />
+  }
+</section>

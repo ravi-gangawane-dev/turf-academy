@@ -1,0 +1,476 @@
+﻿<div class="app-list-page batches-page">
+  <app-page-hero
+    title="{{
+      view === 'list'
+        ? 'Batches'
+        : view === 'coach-assignment'
+          ? 'Coach Assignment'
+          : view === 'student-allocation'
+            ? 'Student Allocation'
+            : view === 'schedule'
+              ? 'Batch Schedule'
+              : 'Batch Capacity'
+    }}"
+    subtitle="Manage batches, schedules, coaches and capacity."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      {
+        label:
+          view === 'list'
+            ? 'Batches'
+            : view === 'coach-assignment'
+              ? 'Coach Assignment'
+              : view === 'student-allocation'
+                ? 'Student Allocation'
+                : view === 'schedule'
+                  ? 'Batch Schedule'
+                  : 'Batch Capacity',
+      },
+    ]"
+    actionLabel="Add Batch"
+    [actionDisabled]="loading()"
+    (action)="edit()"
+  ></app-page-hero>
+  <nav class="batch-tabs" aria-label="Batch views">
+    <a
+      routerLink="/batches"
+      [class.active]="view === 'list'"
+      [attr.aria-current]="view === 'list' ? 'page' : null"
+      >All batches</a
+    ><a
+      routerLink="/batches/coach-assignment"
+      [class.active]="view === 'coach-assignment'"
+      [attr.aria-current]="view === 'coach-assignment' ? 'page' : null"
+      >Coach assignment</a
+    ><a
+      routerLink="/batches/student-allocation"
+      [class.active]="view === 'student-allocation'"
+      [attr.aria-current]="view === 'student-allocation' ? 'page' : null"
+      >Student allocation</a
+    ><a
+      routerLink="/batches/schedule"
+      [class.active]="view === 'schedule'"
+      [attr.aria-current]="view === 'schedule' ? 'page' : null"
+      >Schedule</a
+    ><a
+      routerLink="/batches/capacity"
+      [class.active]="view === 'capacity'"
+      [attr.aria-current]="view === 'capacity' ? 'page' : null"
+      >Capacity &amp; waiting list</a
+    >
+  </nav>
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+  @if (message()) {
+    <p class="success" role="status">{{ message() }}</p>
+  }
+  <section class="metrics" aria-label="Batch summary">
+    <app-summary-metric-card label="Batches" [value]="metrics().batches" icon="pi-calendar" hint="All registered batches" />
+    <app-summary-metric-card label="Active enrollments" [value]="metrics().active" icon="pi-users" hint="Currently enrolled students" tone="blue" />
+    <app-summary-metric-card label="Active batch capacity" [value]="metrics().capacity" icon="pi-chart-bar" hint="Total available places" tone="purple" />
+    <app-summary-metric-card label="Waiting students" [value]="metrics().waiting" icon="pi-clock" hint="Awaiting a place" tone="orange" />
+  </section>
+  @if (loading()) {
+    <app-async-state title="Loading batches…" />
+  }
+  @if (editing() !== null) {
+    <section class="card">
+      <h2>{{ editing() ? 'Edit batch' : 'New batch' }}</h2>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <fieldset [disabled]="saving()">
+          <div class="fields">
+            <label>Batch name *<input formControlName="name" /></label
+            ><label>Batch code *<input formControlName="code" /></label
+            ><label>Age group<input formControlName="age_group" /></label
+            ><label>Skill level<input formControlName="skill_level" /></label>
+            <label>Capacity *<input type="number" min="1" formControlName="capacity" /></label
+            ><label
+              >Waiting list capacity<input
+                type="number"
+                min="0"
+                formControlName="waitlist_capacity"
+            /></label>
+            <label>Start date *<input type="date" formControlName="start_date" /></label
+            ><label>End date<input type="date" formControlName="end_date" /></label
+            ><label>Start time *<input type="time" formControlName="start_time" /></label
+            ><label>End time *<input type="time" formControlName="end_time" /></label>
+            <label
+              >Fee plan *<select aria-label="Fee plan *" formControlName="fee_plan_id">
+                <option value="">Select fee plan</option>
+                @for (p of workspace().plans; track p.id) {
+                  <option [value]="p.id">{{ p.name }} — {{ p.monthly_fee | academyMoney }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Primary coach<select aria-label="Primary coach" formControlName="primaryCoach">
+                <option value="">Unassigned</option>
+                @for (c of workspace().coaches; track c.id) {
+                  @if (c.status === 'active') {
+                    <option [value]="c.id">{{ c.full_name }}</option>
+                  }
+                }
+              </select></label
+            >
+            <label
+              >Status<select formControlName="status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select></label
+            ><label>Description<textarea formControlName="description"></textarea></label>
+          </div>
+          <div class="days" aria-label="Training days">
+            @for (day of dayNames; track day; let i = $index) {
+              <label
+                ><input type="checkbox" [checked]="days().includes(i)" (change)="toggleDay(i)" />{{
+                  day
+                }}</label
+              >
+            }
+          </div>
+          <footer>
+            <a routerLink="/fees/plans">Manage fee plans</a
+            ><button type="button" (click)="editing.set(null)">Cancel</button
+            ><button class="primary" type="submit">
+              {{ saving() ? 'Saving…' : 'Save batch' }}
+            </button>
+          </footer>
+        </fieldset>
+      </form>
+    </section>
+  }
+  @if (view === 'coach-assignment') {
+    <section class="card">
+      <h2>Assign a coach</h2>
+      <form [formGroup]="assignment" (ngSubmit)="assign()">
+        <fieldset class="fields action-fields" [disabled]="saving() || loading()">
+          <label
+            >Batch<select aria-label="Batch" formControlName="batch">
+              <option value="">Select batch</option>
+              @for (b of workspace().batches; track b.id) {
+                <option [value]="b.id">{{ b.name }}</option>
+              }
+            </select></label
+          >
+          <label
+            >Coach<select aria-label="Coach" formControlName="coach">
+              <option value="">Select coach</option>
+              @for (c of workspace().coaches; track c.id) {
+                @if (c.status === 'active') {
+                  <option [value]="c.id">{{ c.full_name }}</option>
+                }
+              }
+            </select></label
+          >
+          <label
+            >Role<select aria-label="Role" formControlName="role">
+              <option value="primary">Primary</option>
+              <option value="assistant">Assistant</option>
+            </select></label
+          ><button class="primary">Assign coach</button>
+        </fieldset>
+      </form>
+    </section>
+  }
+  @if (view === 'student-allocation' || view === 'capacity') {
+    <section class="card">
+      <h2>Allocate or waitlist a student</h2>
+      <form [formGroup]="allocation" (ngSubmit)="allocate()">
+        <fieldset class="fields action-fields allocation-fields" [disabled]="saving() || loading()">
+          <label
+            >Student<select aria-label="Student" formControlName="student">
+              <option value="">Select student</option>
+              @for (s of workspace().students; track s.id) {
+                @if (s.status === 'active') {
+                  <option [value]="s.id">{{ s.full_name }} · {{ s.student_code }}</option>
+                }
+              }
+            </select></label
+          >
+          <label
+            >Destination batch<select aria-label="Destination batch" formControlName="batch">
+              <option value="">Select batch</option>
+              @for (b of workspace().batches; track b.id) {
+                @if (b.status === 'active') {
+                  <option [value]="b.id">{{ b.name }}</option>
+                }
+              }
+            </select></label
+          >
+          <label>Effective date<input type="date" formControlName="start" /></label
+          ><label
+            >Action<select aria-label="Action" formControlName="action">
+              <option value="enroll">Enroll / transfer</option>
+              <option value="waitlist">Add to waiting list</option>
+            </select></label
+          ><button class="primary">Save allocation</button>
+        </fieldset>
+      </form>
+    </section>
+  }
+
+  @if (view === 'student-allocation') {
+    <app-data-table
+      [total]="total()"
+      [page]="page()"
+      [pageSize]="pageSize()"
+      itemLabel="allocations"
+      (pageChange)="changePage($event)"
+      (pageSizeChange)="setPageSize($event)"
+    >
+
+      <div table-content class="table-wrap">
+        <app-table-tools title="Student allocation" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table batch-directory allocation-directory">
+          <thead>
+            <tr>
+              <th><app-sortable-header sortKey="name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th>
+              <th><app-sortable-header sortKey="batch" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch</app-sortable-header></th>
+              <th><app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+              <th><app-sortable-header sortKey="date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Start</app-sortable-header></th>
+              <th>Action</th>
+            </tr>
+
+            <tr class="column-filters"><th><label><input type="search" aria-label="Filter student" placeholder="Filter student" [(ngModel)]="columnFilters.student" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter batch" placeholder="Filter batch" [(ngModel)]="columnFilters.batch" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter status" placeholder="Filter status" [(ngModel)]="columnFilters.columnStatus" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="date" aria-label="Filter start date" placeholder="Filter start date" [(ngModel)]="columnFilters.start" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><button type="button" (click)="resetColumnFilters()" aria-label="Reset column filters">Reset</button></th></tr>
+          </thead>
+          <tbody>
+            @for (e of pageAllocations(); track e.id) {
+              <tr>
+                <td>{{ studentName(e.student_id) }}</td>
+                <td>{{ batchName(e.batch_id) }}</td>
+                <td><app-status-badge [status]="e.status" /></td>
+                <td>{{ e.valid_from | date: 'mediumDate' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="icon-action danger"
+                      title="Remove allocation"
+                      [attr.aria-label]="'Remove allocation for ' + studentName(e.student_id)"
+                      [disabled]="saving()"
+                      (click)="cancelEnrollment(e.id)"
+                    >
+                      <i class="pi pi-user-minus" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">
+                  @if (!loading() && !error()) {
+                    <app-async-state kind="empty" title="No matching allocations." />
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-data-table>
+  } @else {
+    <app-data-table
+      [total]="total()"
+      [page]="page()"
+      [pageSize]="pageSize()"
+      itemLabel="batches"
+      (pageChange)="changePage($event)"
+      (pageSizeChange)="setPageSize($event)"
+      >
+      <div table-content class="table-wrap">
+        <app-table-tools title="Batches" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table batch-directory">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col"><app-sortable-header sortKey="name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch</app-sortable-header></th>
+              <th><app-sortable-header sortKey="schedule" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Schedule</app-sortable-header></th>
+              <th><app-sortable-header sortKey="coach" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Coaches</app-sortable-header></th>
+              <th scope="col"><app-sortable-header sortKey="capacity" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Capacity</app-sortable-header></th>
+              <th scope="col"><app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+              <th><app-sortable-header sortKey="fee" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Monthly fee</app-sortable-header></th>
+              <th scope="col">Actions</th>
+            </tr>
+
+            <tr class="column-filters"><th></th><th><label><input type="search" aria-label="Filter batch" placeholder="Filter batch" [(ngModel)]="columnFilters.batch" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter schedule" placeholder="Filter schedule" [(ngModel)]="columnFilters.schedule" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter coach" placeholder="Filter coach" [(ngModel)]="columnFilters.coach" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="number" aria-label="Filter capacity" placeholder="Filter capacity" [(ngModel)]="columnFilters.capacity" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter status" placeholder="Filter status" [(ngModel)]="columnFilters.columnStatus" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="number" aria-label="Filter monthly fee" placeholder="Filter fee" [(ngModel)]="columnFilters.fee" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><button type="button" (click)="resetColumnFilters()" aria-label="Reset column filters">Reset</button></th></tr>
+          </thead>
+          <tbody>
+            @for (b of pageRows(); track b.id; let index = $index) {
+              <tr>
+                <td class="row-number">{{ (page() - 1) * pageSize() + index + 1 }}</td>
+                <td>
+                  <strong>{{ b.name }}</strong
+                  ><small
+                    >{{ b.code }}
+                    @if (b.age_group) {
+                      &middot; {{ b.age_group }}
+                    }
+                  </small>
+                </td>
+                <td>
+                  {{ schedule(b) || 'Not scheduled' }}
+                  @if (b.start_time && b.end_time) {
+                    <small
+                      >{{ b.start_time.slice(0, 5) }} &ndash; {{ b.end_time.slice(0, 5) }}</small
+                    >
+                  }
+                  @if (view === 'schedule') {
+                    <small
+                      >{{ b.start_date || 'No start date' }} &ndash;
+                      {{ b.end_date || 'Ongoing' }}</small
+                    >
+                    @if (hasSessionToday(b)) {
+                      <span class="session-today">Training today</span>
+                    }
+                  }
+                </td>
+                <td>
+                  <div class="coach-list">
+                    @for (c of b.batch_coaches; track c.coach_id) {
+                      <div class="coach-entry">
+                        <span
+                          >{{ coachName(c.coach_id) }}
+                          <span class="coach-role">{{
+                            c.is_primary ? 'Primary' : 'Assistant'
+                          }}</span></span
+                        >
+                        @if (view === 'coach-assignment') {
+                          <button
+                            type="button"
+                            [disabled]="saving()"
+                            (click)="unassign(b.id, c.coach_id)"
+                            class="unassign-action"
+                            title="Unassign coach"
+                            [attr.aria-label]="
+                              'Unassign ' + coachName(c.coach_id) + ' from ' + b.name
+                            "
+                          >
+                            <i class="pi pi-user-minus" aria-hidden="true"></i>
+                          </button>
+                        }
+                      </div>
+                    } @empty {
+                      <span class="muted">Unassigned</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="capacity-count"
+                    >{{ activeCount(b.id) }} / {{ b.capacity }} enrolled</span
+                  ><small>{{ waitingCount(b.id) }} / {{ b.waitlist_capacity }} waiting</small>
+                </td>
+                <td><app-status-badge [status]="b.status" /></td>
+                <td class="money">{{ fee(b) | academyMoney }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="icon-action"
+                      (click)="edit(b)"
+                      [disabled]="saving()"
+                      [attr.aria-label]="'Edit ' + b.name"
+                      title="Edit batch"
+                    >
+                      <i class="pi pi-pencil" aria-hidden="true"></i>
+                    </button>
+                    @if (auth.role() === 'admin') {
+                      <button
+                        type="button"
+                        class="icon-action danger"
+                        (click)="remove(b)"
+                        [disabled]="saving()"
+                        [attr.aria-label]="'Delete ' + b.name"
+                        title="Delete batch"
+                      >
+                        <i class="pi pi-trash" aria-hidden="true"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8">
+                  @if (!loading() && !error()) {
+                    <app-async-state kind="empty" title="No matching batches." />
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table></div
+    ></app-data-table>
+  }
+  @if (view === 'capacity' || view === 'student-allocation') {
+    <section class="card waiting-card">
+      <header class="waiting-heading">
+        <div>
+          <h2>Waiting list</h2>
+          <p>Pausing an enrollment does not add a student to this list.</p>
+        </div>
+        <button type="button" (click)="resetWaiting()">Reset filters</button>
+      </header>
+      <div class="table-wrap">
+        <app-table-tools title="Waiting list" [table]="exportTable3" [total]="waitingTotal()"></app-table-tools>
+<table #exportTable3 class="academy-table batch-directory waiting-directory">
+          <thead>
+            <tr>
+                <th [attr.aria-sort]="waitingSort === 'student_name' ? (waitingDirection === 'asc' ? 'ascending' : 'descending') : 'none'"><app-sortable-header sortKey="student_name" [activeSort]="waitingSort" [direction]="waitingDirection" (sortChange)="sortWaiting('student_name')">Student</app-sortable-header></th>
+                <th [attr.aria-sort]="waitingSort === 'batch_name' ? (waitingDirection === 'asc' ? 'ascending' : 'descending') : 'none'"><app-sortable-header sortKey="batch_name" [activeSort]="waitingSort" [direction]="waitingDirection" (sortChange)="sortWaiting('batch_name')">Batch</app-sortable-header></th>
+                <th [attr.aria-sort]="waitingSort === 'created_at' ? (waitingDirection === 'asc' ? 'ascending' : 'descending') : 'none'"><app-sortable-header sortKey="created_at" [activeSort]="waitingSort" [direction]="waitingDirection" (sortChange)="sortWaiting('created_at')">Added</app-sortable-header></th>
+              <th>Actions</th>
+            </tr>
+              <tr class="column-filters">
+                <th><label><input type="search" aria-label="Filter waiting student" placeholder="Filter student" [(ngModel)]="waitingFilters.student" (ngModelChange)="scheduleWaitingFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+                <th><label><input type="search" aria-label="Filter waiting batch" placeholder="Filter batch" [(ngModel)]="waitingFilters.batch" (ngModelChange)="scheduleWaitingFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+                <th><label><input type="date" aria-label="Filter date added" [(ngModel)]="waitingFilters.date" (ngModelChange)="scheduleWaitingFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+                <th></th>
+              </tr>
+          </thead>
+          <tbody>
+            @for (w of waiting(); track w.id) {
+              <tr>
+                  <td>{{ w.student_name }}</td>
+                  <td>{{ w.batch_name }}</td>
+                <td>{{ w.created_at | date: 'mediumDate' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      class="compact-action"
+                      type="button"
+                      [disabled]="saving()"
+                      (click)="waitAction(w.batch_id, w.student_id, 'promote')"
+                    >
+                      Enroll today</button
+                    ><button
+                      class="compact-action danger"
+                      type="button"
+                      [disabled]="saving()"
+                      (click)="waitAction(w.batch_id, w.student_id, 'remove')"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">
+                    @if (waitingLoading()) {
+                      <app-async-state title="Loading waiting list…" />
+                    } @else if (waitingError()) {
+                      <app-async-state kind="error" title="Waiting list unavailable" [message]="waitingError()" actionLabel="Try again" (action)="loadWaiting()" />
+                    } @else {
+                    <app-async-state kind="empty" title="No waiting students." />
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+        <app-pagination [total]="waitingTotal()" [page]="waitingPage()" [pageSize]="waitingPageSize()" itemLabel="waiting students" (pageChange)="changeWaitingPage($event)" (pageSizeChange)="changeWaitingSize($event)" />
+    </section>
+  }
+</div>

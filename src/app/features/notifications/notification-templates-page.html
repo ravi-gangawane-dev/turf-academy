@@ -1,0 +1,180 @@
+<div class="app-list-page templates-page">
+  <app-page-hero title="Notification Templates" subtitle="Create and control approved outbound messages." [breadcrumbs]="[
+      { label: 'Dashboard', route: '/dashboard' },
+      { label: 'Notification Templates' },
+    ]" actionLabel="New template" (action)="open()"></app-page-hero>
+  <app-notification-section-nav [showTemplates]="true" />
+  @if (error()) {
+  <div class="notice error" role="alert">{{ error() }} <button type="button" (click)="reload()"
+      [disabled]="loading()">Try again</button></div>
+  }
+  @if (message()) {
+  <div class="notice" role="status">{{ message() }}</div>
+  }
+  <section class="card table-wrap">
+
+    <app-table-tools title="Notification templates" [table]="exportTable1" [total]="total()"></app-table-tools>
+    <table #exportTable1 class="academy-table">
+      <thead>
+        <tr>
+          <th><app-sortable-header sortKey="name" [activeSort]="sortBy" [direction]="sortDirection"
+              (sortChange)="changeSort($event)">Name</app-sortable-header></th>
+          <th><app-sortable-header sortKey="templateKey" [activeSort]="sortBy" [direction]="sortDirection"
+              (sortChange)="changeSort($event)">Key</app-sortable-header></th>
+          <th><app-sortable-header sortKey="channel" [activeSort]="sortBy" [direction]="sortDirection"
+              (sortChange)="changeSort($event)">Channel</app-sortable-header></th>
+          <th><app-sortable-header sortKey="body" [activeSort]="sortBy" [direction]="sortDirection"
+              (sortChange)="changeSort($event)">Message</app-sortable-header></th>
+          <th><app-sortable-header sortKey="status" [activeSort]="sortBy" [direction]="sortDirection"
+              (sortChange)="changeSort($event)">Status</app-sortable-header></th>
+          <th>Actions</th>
+        </tr>
+        <tr class="column-filters">
+          <th><app-column-filter label="name" [value]="columns.values()['name'] || ''"
+              (changed)="columns.set('name',$event)" /></th>
+          <th><app-column-filter label="key" [value]="columns.values()['templateKey'] || ''"
+              (changed)="columns.set('templateKey',$event)" /></th>
+          <th><app-column-filter label="channel" [value]="columns.values()['channel'] || ''"
+              (changed)="columns.set('channel',$event)" /></th>
+          <th><app-column-filter label="message" [value]="columns.values()['body'] || ''"
+              (changed)="columns.set('body',$event)" /></th>
+          <th><app-column-filter label="status" [value]="columns.values()['status'] || ''"
+              (changed)="columns.set('status',$event)" /></th>
+          <th><button type="button" (click)="columns.reset()">Reset</button></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+        <tr>
+          <td>
+            <strong>{{ row.name }}</strong><small>{{ row.subject }}</small>
+          </td>
+          <td>
+            <code>{{ row.templateKey }}</code>
+          </td>
+          <td>{{ row.channel }}</td>
+          <td>{{ row.body }}</td>
+          <td><app-status-badge [status]="row.status" /></td>
+          <td>
+            <div class="actions" role="group" aria-label="Actions for {{ row.name }}">
+              <button type="button" class="edit-button" (click)="open(row)" aria-label="Edit {{ row.name }}"
+                title="Edit template">
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+              </button>
+              <button type="button" (click)="toggle(row)" class="disable-button"
+                [class.disable-action]="row.status === 'active'" [class.activate-action]="row.status !== 'active'"
+                [attr.title]="row.status === 'active' ? 'Disable' : 'Activate'"
+                [attr.aria-label]="row.status === 'active' ? 'Disable' : 'Activate'">
+                <i class="pi pi-power-off" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6">{{ loading() ? 'Loading templates…' : 'No templates configured.' }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="templates"
+      (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+  </section>
+</div>
+@if (dialogOpen()) {
+<div class="dialog-backdrop">
+  <section class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="dialogOpen.set(false)" role="dialog"
+    aria-modal="true" aria-labelledby="template-title">
+    <h2 id="template-title">{{ editingId() ? 'Edit' : 'Create' }} template</h2>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <label>Name<input formControlName="name" /></label><label>Template key<input
+          formControlName="templateKey" /></label>
+      <label>Channel<select formControlName="channel">
+          @for (channel of supportedChannels; track channel.value) {
+          <option [value]="channel.value">{{ channel.label }}</option>
+          }
+        </select></label>
+      <label>Status<select formControlName="status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select></label>
+      <label class="wide">Subject<input formControlName="subject" /></label><label class="wide">Message<textarea
+          formControlName="body"></textarea></label>
+      <p class="wide placeholder-help">
+        Automated templates can use placeholders:
+        <code>&#123;parent_name&#125;</code>, <code>&#123;student_name&#125;</code>,
+        <code>&#123;batch_name&#125;</code>, <code>&#123;amount&#125;</code>,
+        <code>&#123;due_date&#125;</code>, <code>&#123;event_name&#125;</code>,
+        <code>&#123;event_date&#125;</code>, <code>&#123;event_details&#125;</code>,
+        <code>&#123;session_date&#125;</code>, <code>&#123;from_date&#125;</code>,
+        <code>&#123;to_date&#125;</code>, and <code>&#123;event_time&#125;</code>. Placeholders
+        are replaced with the matching student, fee, attendance, or event details. Only
+        placeholders from the selected event's contract are accepted. SMS is not supported.
+      </p>
+      @if (formError()) {
+      <p class="notice error wide" role="alert">{{ formError() }}</p>
+      }
+      <section class="wide template-preview" aria-label="Notification preview">
+        <div class="preview-heading">
+          <div>
+            <h3>Notification preview</h3>
+            <p>Sample content only. This preview does not send a notification.</p>
+          </div>
+          <span class="preview-label">Preview</span>
+        </div>
+        @if (form.controls.templateKey.value === 'student_birthday') {
+        <article class="preview-birthday-notification">
+          <div class="preview-birthday-profile">
+            @if (studentBirthdayPhoto()) {
+            <img [src]="studentBirthdayPhoto()" alt="Aarav Sharma profile photo" />
+            } @else {
+            <span aria-hidden="true"><i class="pi pi-user"></i></span>
+            }
+            <span class="preview-birthday-cake" aria-hidden="true">🎂</span>
+          </div>
+          <div class="preview-birthday-content">
+            <header class="preview-birthday-brand">
+              <img src="/branding/turf-cricket-academy-logo.png" alt="" />
+              <strong>Turf Cricket Academy</strong>
+            </header>
+            <strong class="preview-birthday-subject">{{
+              previewText(
+              form.controls.subject.value ||
+              '🎉 Happy Birthday, {student_name}! 🎂'
+              )
+              }}</strong>
+            <p>{{ previewText(form.controls.body.value || 'Your message will appear here.') }}</p>
+          </div>
+          <div class="preview-birthday-meta">
+            <span>2m ago</span>
+            <span class="preview-birthday-new">New</span>
+            <span class="preview-birthday-art" aria-hidden="true">🏏</span>
+          </div>
+        </article>
+        } @else {
+        <article class="preview-notification">
+          <span class="preview-icon" aria-hidden="true">
+            <i class="pi pi-bell"></i>
+          </span>
+          <div class="preview-copy">
+            <strong>{{
+              previewText(
+              form.controls.subject.value || form.controls.name.value || 'Notification'
+              )
+              }}</strong>
+            <p>{{ previewText(form.controls.body.value || 'Your message will appear here.') }}</p>
+            <small>To Priya Sharma · In-app · Just now</small>
+          </div>
+        </article>
+        }
+      </section>
+      <footer>
+        <button type="button" (click)="dialogOpen.set(false)">Cancel</button><button class="primary"
+          [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save template' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>
+}

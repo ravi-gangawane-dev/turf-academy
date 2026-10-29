@@ -1,0 +1,91 @@
+@if (request(); as request) {
+  <div class="dialog-backdrop" role="presentation" (click)="onBackdrop(request, $event)">
+    <section
+      class="dialog-panel"
+      [class]="sizeClass()"
+      [class.dialog-busy]="isBusy()"
+      appModalFocus
+      [modalBusy]="isBusy() || (request.config.disableClose ?? false)"
+      (modalDismiss)="cancel(request)"
+      aria-labelledby="dialog-title"
+    >
+      <header class="dialog-header">
+        <h2 id="dialog-title">{{ request.config.title }}</h2>
+        @if (request.config.showClose !== false) {
+          <button
+            type="button"
+            class="dialog-close"
+            aria-label="Close dialog"
+            [disabled]="isBusy() || (request.config.disableClose ?? false)"
+            (click)="cancel(request)"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        }
+      </header>
+
+      <div class="dialog-body">
+        @switch (request.config.type) {
+          @case ('form') {
+            <app-form-dialog [config]="request.config" (stateChange)="onFormState($event)" />
+          }
+          @case ('prompt') {
+            <app-form-dialog [config]="request.config" (stateChange)="onFormState($event)" />
+          }
+          @case ('image-preview') {
+            <app-media-preview-dialog [config]="request.config" />
+          }
+          @case ('confirm') {
+            <app-confirmation-dialog [config]="request.config" />
+          }
+          @case ('delete') {
+            <app-confirmation-dialog [config]="request.config" />
+          }
+          @case ('whatsapp') {
+            <app-confirmation-dialog [config]="request.config" />
+          }
+          @case ('session-expired') {
+            <app-confirmation-dialog [config]="request.config" />
+          }
+          @case ('permission') {
+            <app-confirmation-dialog [config]="request.config" />
+          }
+          @default {
+            <app-message-dialog [config]="request.config" />
+          }
+        }
+      </div>
+
+      <footer class="dialog-footer">
+        @if (request.config.preview) {
+          <span class="preview-badge"><i class="pi pi-eye" aria-hidden="true"></i> Preview mode</span>
+        }
+        <div class="dialog-actions">
+          @if (request.config.showCancel !== false && isConfirmType(request.config.type)) {
+            <button
+              type="button"
+              class="dialog-button secondary"
+              [disabled]="isBusy() || (request.config.disableClose ?? false)"
+              (click)="cancel(request)"
+            >
+              {{ cancelLabel() }}
+            </button>
+          }
+          <button
+            type="button"
+            class="dialog-button primary"
+            [class.danger]="request.config.type === 'delete'"
+            [disabled]="primaryDisabled()"
+            [attr.aria-busy]="isBusy()"
+            (click)="primary(request)"
+          >
+            @if (isBusy()) {
+              <span class="spinner" aria-hidden="true"></span>
+            }
+            {{ primaryLabel() }}
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+}

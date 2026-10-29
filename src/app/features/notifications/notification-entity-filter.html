@@ -1,0 +1,42 @@
+<label>
+  Find {{ label() }}
+  <input
+    type="search"
+    maxlength="200"
+    [value]="search()"
+    [placeholder]="'Search ' + label()"
+    (focus)="active.set(true)"
+    (input)="search.set($any($event.target).value); active.set(true)"
+  />
+</label>
+<label>
+  {{ label() }}
+  <select
+    [value]="value()"
+    (focus)="active.set(true)"
+    (change)="valueChange.emit($any($event.target).value)"
+  >
+    <option value="" [selected]="!value()">All {{ label() }}</option>
+    @if (kind() === 'batch') {
+      <option value="unlinked" [selected]="value() === 'unlinked'">
+        Unlinked / legacy records
+      </option>
+    }
+    @if (selectedMissing()) {
+      <option [value]="value()" selected>Selected record (loading or unavailable)</option>
+    }
+    @for (option of choices(); track option.value) {
+      <option [value]="option.value" [selected]="value() === option.value">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+</label>
+@if (loading()) {
+  <small role="status">Loading choices…</small>
+} @else if (error()) {
+  <small role="status">Choices unavailable.</small>
+  <button type="button" (click)="refresh.set(refresh() + 1)">Retry choices</button>
+} @else if (active()) {
+  <small>Up to 30 matches. Refine the search if needed.</small>
+}

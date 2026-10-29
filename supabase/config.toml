@@ -1,0 +1,22 @@
+project_id = "turf-academy-ui"
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+major_version = 17
+
+[auth]
+enabled = true
+site_url = "http://localhost:4200"
+additional_redirect_urls = ["http://localhost:4200/**"]
+
+[auth.email.template.recovery]
+subject = "Reset your Turf Cricket Academy password"
+content_path = "./supabase/templates/recovery.html"
+
+[storage]
+enabled = true
+

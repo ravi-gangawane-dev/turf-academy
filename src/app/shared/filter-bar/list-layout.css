@@ -1,0 +1,118 @@
+/* Shared list-page rhythm and projected filter controls. */
+.workspace > main form.list-filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px;
+  margin: 0;
+  border-bottom: 1px solid var(--app-border);
+}
+.workspace > main form.list-filter-form > label {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 150px;
+  min-width: 0;
+}
+.workspace > main form.list-filter-form :is(input, select, button) {
+  min-height: 44px;
+  max-width: 100%;
+}
+.workspace > main form.list-filter-form > button { flex: 0 0 auto; }
+.workspace > main .app-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+.workspace > main .app-list-page > :is(app-page-hero, app-data-table, section, .filters, .metrics, .student-metrics, .coach-metrics, .parent-metrics, .notification-metrics) {
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+.workspace > main .app-list-page > app-page-hero { margin: 0 !important; }
+.workspace > main .app-list-page app-page-hero .app-page-header { margin: 0; }
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) {
+  --filter-search-min-width: 220px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-card);
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) > section {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) > section > :is(select, label:not(.filter-search)) {
+  flex: 1 1 130px;
+  width: 130px;
+  min-width: 120px;
+  max-width: 100%;
+  margin: 0;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) > section > label:not(.filter-search) {
+  display: grid;
+  gap: 4px;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) label > select {
+  width: 100%;
+  min-width: 0;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) :is(select, input, button) {
+  margin: 0;
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) .filter-search {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-block: 0;
+  box-sizing: border-box;
+  flex: 0 1 240px;
+  margin: 0;
+}
+.workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) .filter-search input {
+  /* Override the foundation rule for standalone form inputs. */
+  height: 40px !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0;
+  box-shadow: none;
+  padding-block: 0;
+}
+@media (max-width: 700px) {
+  .workspace > main .app-list-page { gap: 16px; }
+  .workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) .filter-search {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) > section > :is(select, label:not(.filter-search)) {
+    flex-basis: 140px;
+    min-width: 0;
+  }
+}

@@ -1,0 +1,36 @@
+<header class="app-page-header page-hero">
+  <div class="hero-copy">
+    @if (breadcrumbs().length) {
+      <nav aria-label="Breadcrumb">
+        @for (crumb of breadcrumbs(); track $index; let last = $last) {
+          @if (last) {
+            <span class="current" aria-current="page">{{ crumb.label }}</span>
+          } @else if (crumb.route) {
+            <a [routerLink]="crumb.route">@if (crumb.icon) { <i aria-hidden="true" class="pi {{ crumb.icon }}"></i> }{{ crumb.label }}</a>
+          } @else {
+            <button type="button" (click)="breadcrumbSelected.emit(crumb.label)">@if (crumb.icon) { <i aria-hidden="true" class="pi {{ crumb.icon }}"></i> }{{ crumb.label }}</button>
+          }
+          @if (!last) { <i aria-hidden="true" class="pi pi-angle-right separator"></i> }
+        }
+      </nav>
+    }
+    @if (eyebrow()) { <small class="eyebrow">{{ eyebrow() }}</small> }
+    <h1>{{ title() }}</h1>
+    @if (subtitle()) { <p>{{ subtitle() }}</p> }
+  </div>
+  @if (quote() || brandName()) {
+    <div class="hero-brand">
+      @if (quote()) { <strong>{{ quote() }}</strong> }
+      @if (brandName()) { <small>{{ brandName() }}</small> }
+    </div>
+  }
+  <div class="hero-controls">
+    @if (actionLabel()) {
+      <button type="button" class="hero-action" [disabled]="actionDisabled() || actionLoading()" [attr.aria-busy]="actionLoading()" (click)="action.emit()">
+        <i aria-hidden="true" [class]="actionLoading() ? 'pi pi-spin pi-spinner' : 'pi ' + actionIcon()"></i>{{ actionLoading() ? actionLoadingLabel() : actionLabel() }}
+      </button>
+    }
+    <ng-content select="[hero-actions]" />
+  </div>
+  <div class="hero-details"><ng-content select="[hero-details]" /></div>
+</header>

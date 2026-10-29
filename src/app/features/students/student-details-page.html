@@ -1,0 +1,333 @@
+<div class="students-page student-details-page">
+  <app-page-hero
+    title="Student Details"
+    subtitle="View complete student information and activity."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Students', route: '/students' },
+      { label: 'Student Details' },
+    ]"
+    (breadcrumbSelected)="openBreadcrumb($event)"
+  />
+  @if (loading()) {
+    <app-async-state title="Loading student details..." />
+  } @else if (error()) {
+    <app-async-state kind="error" title="Could not load student" [message]="error()" actionLabel="Retry" (action)="retry()" />
+  } @else if (data(); as workspace) {
+    <section class="profile-hero-grid">
+      <article class="profile-card">
+        <div class="student-photo">
+          @if (workspace.student.photoUrl) {
+            <img [src]="workspace.student.photoUrl" [alt]="workspace.student.fullName" />
+          } @else {
+            <span>{{ initials(workspace.student.fullName) }}</span>
+          }
+        </div>
+        <div class="profile-content">
+          <header class="app-page-header">
+            <div>
+              <h2 class="profile-name">
+                {{ workspace.student.fullName }}
+                <app-status-badge [status]="$any(workspace.student.status)" />
+              </h2>
+              <h2>
+                {{ related(workspace.enrollment, 'batch', 'name') || workspace.student.skillLevel }}
+              </h2>
+            </div>
+            @if (auth.hasPermission('students:write')) {
+              <button class="app-button" (click)="edit()">
+                <i class="pi pi-pencil"></i>Edit student
+              </button>
+            }
+          </header>
+          <dl class="profile-facts">
+            <div>
+              <dt>Student ID</dt>
+              <dd>{{ workspace.student.studentCode }}</dd>
+            </div>
+            <div>
+              <dt>Date of birth</dt>
+              <dd>{{ workspace.student.dateOfBirth | date: 'dd MMM yyyy' }}</dd>
+            </div>
+            <div>
+              <dt>Gender</dt>
+              <dd>{{ workspace.student.gender || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Blood group</dt>
+              <dd>{{ workspace.student.bloodGroup || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Phone</dt>
+              <dd>{{ workspace.student.phone || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd>{{ workspace.student.email || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Guardian</dt>
+              <dd>{{ workspace.student.parentName || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Joined on</dt>
+              <dd>{{ workspace.student.joinedOn | date: 'dd MMM yyyy' }}</dd>
+            </div>
+            <div>
+              <dt>Address</dt>
+              <dd>{{ workspace.student.address || '—' }}</dd>
+            </div>
+            <div>
+              <dt>PIN code</dt>
+              <dd>{{ workspace.student.pinCode || '—' }}</dd>
+            </div>
+          </dl>
+        </div>
+      </article>
+      <aside class="quick-actions-card">
+        <h2>Quick actions</h2>
+        @if (auth.hasPermission('students:write')) {
+          <button (click)="edit()"><i class="pi pi-pencil"></i>Edit student</button>
+        }
+        <button (click)="markAttendance()">
+          <i class="pi pi-check-circle"></i>Mark attendance
+        </button>
+        <button (click)="setTab('timeline')"><i class="pi pi-history"></i>View timeline</button>
+        @if (auth.hasPermission('fees:write')) {
+          <button (click)="openPayments()"><i class="pi pi-wallet"></i>Payment history</button>
+        }
+        <button (click)="sendMessage()"><i class="pi pi-comment"></i>Send message</button>
+        <button (click)="backToStudents()"><i class="pi pi-arrow-left"></i>Back to students</button>
+      </aside>
+    </section>
+    <nav class="detail-tabs" aria-label="Student details sections">
+      @for (
+        tab of ['overview', 'documents', 'attendance', 'payments', 'medical', 'timeline'];
+        track tab
+      ) {
+        <button [class.active]="activeTab() === tab" (click)="setTab($any(tab))">{{ tab }}</button>
+      }
+    </nav>
+
+    @if(['documents','attendance','payments','timeline'].includes(activeTab())){
+      <button (click)="columns.reset()">Reset filters</button>
+      @if(tableLoading()){<app-async-state title="Loading records..." />}
+      @if(tableError()){<app-async-state kind="error" title="History unavailable" [message]="tableError()" actionLabel="Retry" (action)="changeHistoryPage(activeTab(),1)" />}
+    }
+    @if (activeTab() === 'overview') {
+      <section class="live-overview">
+        <article class="detail-card">
+          <h2>Recent activity</h2>
+          @for (event of timeline(); track timelineValue(event, 'date') + timelineValue(event, 'title')) {
+            <div class="activity-row">
+              <i class="pi pi-history"></i
+              ><span
+                ><strong>{{ timelineValue(event, 'title') }}</strong
+                ><small>{{
+                  timelineValue(event, 'detail') ||
+                    'Recorded
+            activity'
+                }}</small></span
+              ><time>{{ timelineValue(event, 'date') | date: 'dd MMM yyyy, h:mm a' }}</time>
+            </div>
+          } @empty {
+            <app-async-state kind="empty" title="No recent activity" message="Student activity will appear here." />
+          }
+        </article>
+        <aside class="overview-right">
+          <article class="detail-card">
+            <h2>Program information</h2>
+            <dl class="info-list">
+              <dt>Batch</dt>
+              <dd>{{ related(workspace.enrollment, 'batch', 'name') || '—' }}</dd>
+              <dt>Program</dt>
+              <dd>{{ related(workspace.enrollment, 'fee_plan', 'name') || '—' }}</dd>
+              <dt>Status</dt>
+              <dd>{{ text(workspace.enrollment, 'status') || '—' }}</dd>
+              <dt>Valid from</dt>
+              <dd>{{ (text(workspace.enrollment, 'valid_from') | date: 'dd MMM yyyy') || '—' }}</dd>
+            </dl>
+          </article>
+          <article class="detail-card">
+            <h2>Guardian information</h2>
+            <dl class="info-list">
+              <dt>Name</dt>
+              <dd>{{ workspace.student.parentName || '—' }}</dd>
+              <dt>Relationship</dt>
+              <dd>{{ workspace.student.parentRelation || '—' }}</dd>
+              <dt>Phone</dt>
+              <dd>{{ workspace.student.parentPhone || '—' }}</dd>
+              <dt>Email</dt>
+              <dd>{{ workspace.student.parentEmail || '—' }}</dd>
+            </dl>
+          </article>
+          <article class="detail-card">
+            <h2>Activity summary</h2>
+            <dl class="info-list">
+              <dt>Sessions</dt>
+              <dd>{{ attendanceSummary().total }}</dd>
+              <dt>Attendance rate</dt>
+              <dd>{{ attendanceSummary().rate }}%</dd>
+              <dt>Payments</dt>
+              <dd>{{ workspace.payments.length }}</dd>
+              <dt>Documents</dt>
+              <dd>{{ workspace.documents.length }}</dd>
+            </dl>
+          </article>
+        </aside>
+      </section>
+    }
+    @if (activeTab() === 'documents') {
+      <app-data-table
+        [total]="workspace.documentTotal"
+        [page]="documentPage()"
+        [pageSize]="pageSize()"
+        itemLabel="documents"
+        (pageChange)="changeHistoryPage('documents', $event)"
+        (pageSizeChange)="changeHistoryPageSize($event)"
+      >
+        <div table-content class="table-wrap">
+          <app-table-tools title="Documents" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table">
+            <thead><tr><th><app-sortable-header sortKey="file_name" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Document</app-sortable-header></th><th><app-sortable-header sortKey="document_type" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Category</app-sortable-header></th><th><app-sortable-header sortKey="uploaded_day" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Uploaded on</app-sortable-header></th><th><app-sortable-header sortKey="uploader_text" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Uploaded by</app-sortable-header></th><th><app-sortable-header sortKey="size_bytes" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Size (bytes)</app-sortable-header></th></tr><tr class="column-filters"><th><app-column-filter label="document" type="search" [value]="columns.values()['file_name'] || ''" (changed)="columns.set('file_name',$event)" /></th><th><app-column-filter label="category" type="search" [value]="columns.values()['document_type'] || ''" (changed)="columns.set('document_type',$event)" /></th><th><app-column-filter label="uploaded on" type="date" [value]="columns.values()['uploaded_day'] || ''" (changed)="columns.set('uploaded_day',$event)" /></th><th><app-column-filter label="uploaded by" type="search" [value]="columns.values()['uploader_text'] || ''" (changed)="columns.set('uploader_text',$event)" /></th><th><app-column-filter label="size (bytes)" type="number" [value]="columns.values()['size_bytes'] || ''" (changed)="columns.set('size_bytes',$event)" /></th></tr></thead>
+            <tbody>
+              @for (row of workspace.documents; track text(row, 'id')) {
+                <tr>
+                  <td>
+                    <strong>{{ text(row, 'file_name') }}</strong>
+                  </td>
+                  <td>{{ text(row, 'document_type') }}</td>
+                  <td>{{ text(row, 'created_at') | date: 'dd MMM yyyy, h:mm a' }}</td>
+                  <td>{{ related(row, 'uploader', 'full_name') || '—' }}</td>
+                  <td>{{ fileSize(row['size_bytes']) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5">
+                    <app-async-state kind="empty" title="No documents" message="Uploaded documents will appear here." />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-data-table>
+    }
+    @if (activeTab() === 'attendance') {
+      <section class="live-metrics">
+        <app-summary-metric-card label="Total sessions" [value]="attendanceSummary().total" icon="pi-calendar" />
+        <app-summary-metric-card label="Present" [value]="attendanceSummary().present" icon="pi-check-circle" tone="green" />
+        <app-summary-metric-card label="Late" [value]="attendanceSummary().late" icon="pi-clock" tone="purple" />
+        <app-summary-metric-card label="Absent" [value]="attendanceSummary().absent" icon="pi-user-minus" tone="orange" />
+        <app-summary-metric-card label="Attendance rate" [value]="attendanceSummary().rate + '%'" icon="pi-chart-line" tone="blue" />
+      </section>
+      <app-data-table
+        [total]="workspace.attendanceTotal"
+        [page]="attendancePage()"
+        [pageSize]="pageSize()"
+        itemLabel="records"
+        (pageChange)="changeHistoryPage('attendance', $event)"
+        (pageSizeChange)="changeHistoryPageSize($event)"
+      >
+        <div table-content class="table-wrap">
+          <app-table-tools title="Attendance history" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table">
+            <thead><tr><th><app-sortable-header sortKey="attendance_date" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Date</app-sortable-header></th><th><app-sortable-header sortKey="batch" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Batch</app-sortable-header></th><th><app-sortable-header sortKey="status" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Status</app-sortable-header></th><th><app-sortable-header sortKey="check_in_text" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Check in</app-sortable-header></th><th><app-sortable-header sortKey="check_out_text" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Check out</app-sortable-header></th><th><app-sortable-header sortKey="recorder_text" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Marked by</app-sortable-header></th></tr><tr class="column-filters"><th><app-column-filter label="date" type="date" [value]="columns.values()['attendance_date'] || ''" (changed)="columns.set('attendance_date',$event)" /></th><th><app-column-filter label="batch" type="search" [value]="columns.values()['batch'] || ''" (changed)="columns.set('batch',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><app-column-filter label="check in" type="time" [value]="columns.values()['check_in_text'] || ''" (changed)="columns.set('check_in_text',$event)" /></th><th><app-column-filter label="check out" type="time" [value]="columns.values()['check_out_text'] || ''" (changed)="columns.set('check_out_text',$event)" /></th><th><app-column-filter label="marked by" type="search" [value]="columns.values()['recorder_text'] || ''" (changed)="columns.set('recorder_text',$event)" /></th></tr></thead>
+            <tbody>
+              @for (row of workspace.attendance; track text(row, 'id')) {
+                <tr>
+                  <td>{{ text(row, 'attendance_date') | date: 'dd MMM yyyy' }}</td>
+                  <td>{{ related(row, 'batch', 'name') || '—' }}</td>
+                  <td>
+                    <app-status-badge [status]="$any(text(row, 'status'))" />
+                  </td>
+                  <td>{{ (text(row, 'check_in_at') | date: 'h:mm a') || '—' }}</td>
+                  <td>{{ (text(row, 'check_out_at') | date: 'h:mm a') || '—' }}</td>
+                  <td>{{ related(row, 'recorder', 'full_name') || '—' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">
+                    <app-async-state kind="empty" title="No attendance records" message="Attendance will appear after a session is marked." />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-data-table>
+    }
+    @if (activeTab() === 'payments') {
+      <section class="live-metrics">
+        <app-summary-metric-card label="Transactions" [value]="workspace.payments.length" icon="pi-arrow-right-arrow-left" />
+        <app-summary-metric-card label="Total received" [value]="paymentTotal() | academyMoney" icon="pi-wallet" tone="green" />
+      </section>
+      <app-data-table
+        [total]="workspace.paymentTotal"
+        [page]="paymentPage()"
+        [pageSize]="pageSize()"
+        itemLabel="payments"
+        (pageChange)="changeHistoryPage('payments', $event)"
+        (pageSizeChange)="changeHistoryPageSize($event)"
+      >
+        <div table-content class="table-wrap">
+          <app-table-tools title="Payment history" [table]="exportTable3"></app-table-tools>
+<table #exportTable3 class="academy-table">
+            <thead><tr><th><app-sortable-header sortKey="paid_day" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Date</app-sortable-header></th><th><app-sortable-header sortKey="amount" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Amount</app-sortable-header></th><th><app-sortable-header sortKey="payment_mode" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Mode</app-sortable-header></th><th><app-sortable-header sortKey="reference" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Reference</app-sortable-header></th><th><app-sortable-header sortKey="status" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Status</app-sortable-header></th><th><app-sortable-header sortKey="recorder_text" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Recorded by</app-sortable-header></th></tr><tr class="column-filters"><th><app-column-filter label="date" type="date" [value]="columns.values()['paid_day'] || ''" (changed)="columns.set('paid_day',$event)" /></th><th><app-column-filter label="amount" type="number" [value]="columns.values()['amount'] || ''" (changed)="columns.set('amount',$event)" /></th><th><app-column-filter label="mode" type="search" [value]="columns.values()['payment_mode'] || ''" (changed)="columns.set('payment_mode',$event)" /></th><th><app-column-filter label="reference" type="search" [value]="columns.values()['reference'] || ''" (changed)="columns.set('reference',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><app-column-filter label="recorded by" type="search" [value]="columns.values()['recorder_text'] || ''" (changed)="columns.set('recorder_text',$event)" /></th></tr></thead>
+            <tbody>
+              @for (row of workspace.payments; track text(row, 'id')) {
+                <tr>
+                  <td>{{ text(row, 'paid_at') | date: 'dd MMM yyyy, h:mm a' }}</td>
+                  <td>{{ amount(row) | academyMoney }}</td>
+                  <td>{{ text(row, 'payment_mode') }}</td>
+                  <td>
+                    {{ text(row, 'provider_reference') || text(row, 'client_reference') || '—' }}
+                  </td>
+                  <td>
+                    <app-status-badge [status]="$any(text(row, 'status'))" />
+                  </td>
+                  <td>{{ related(row, 'recorder', 'full_name') || '—' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">
+                    <app-async-state kind="empty" title="No payment history" message="Completed payments will appear here." />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-data-table>
+    }
+    @if (activeTab() === 'medical') {
+      <section class="detail-card medical-live">
+        <h2>Medical information</h2>
+        @if (workspace.medical; as medical) {
+          <dl class="info-list">
+            <dt>Blood group</dt>
+            <dd>{{ text(medical, 'blood_group') || '—' }}</dd>
+            <dt>Allergies</dt>
+            <dd>{{ text(medical, 'allergies') || '—' }}</dd>
+            <dt>Conditions</dt>
+            <dd>{{ text(medical, 'conditions') || '—' }}</dd>
+            <dt>Medications</dt>
+            <dd>{{ text(medical, 'medications') || '—' }}</dd>
+            <dt>Emergency notes</dt>
+            <dd>{{ text(medical, 'emergency_notes') || '—' }}</dd>
+            <dt>Doctor</dt>
+            <dd>{{ text(medical, 'doctor_name') || '—' }}</dd>
+            <dt>Doctor phone</dt>
+            <dd>{{ text(medical, 'doctor_phone') || '—' }}</dd>
+          </dl>
+        } @else {
+          <app-async-state kind="empty" title="No medical information" message="Medical details have not been recorded." />
+        }
+      </section>
+    }
+    @if (activeTab() === 'timeline') {
+<app-data-table [total]="timelineTotal()" [page]="timelinePage()" [pageSize]="pageSize()" (pageChange)="changeHistoryPage('timeline',$event)" (pageSizeChange)="changeHistoryPageSize($event)"><div table-content class="table-wrap"><app-table-tools title="Activity timeline" [table]="exportTable4"></app-table-tools>
+<table #exportTable4 class="academy-table"><thead><tr><th><app-sortable-header sortKey="event_day" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Date</app-sortable-header></th><th><app-sortable-header sortKey="title" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Type</app-sortable-header></th><th><app-sortable-header sortKey="detail" [activeSort]="tableSort()" [direction]="tableDirection()" (sortChange)="sortTable($event)">Detail</app-sortable-header></th></tr><tr class="column-filters"><th><app-column-filter label="date" type="date" [value]="columns.values()['event_day'] || ''" (changed)="columns.set('event_day',$event)" /></th><th><app-column-filter label="type" type="search" [value]="columns.values()['title'] || ''" (changed)="columns.set('title',$event)" /></th><th><app-column-filter label="detail" type="search" [value]="columns.values()['detail'] || ''" (changed)="columns.set('detail',$event)" /></th></tr></thead><tbody>@for(event of timeline();track event['id']){<tr><td>{{$any(event['date']) | date:'medium'}}</td><td>{{event['title']}}</td><td>{{event['detail']}}</td></tr>}@empty{<tr><td colspan="3">No timeline activity</td></tr>}</tbody></table></div></app-data-table>
+    }
+  }
+</div>

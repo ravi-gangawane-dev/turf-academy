@@ -1,0 +1,75 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/backups
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+/playwright-report/
+/playwright-report-live/
+/test-results/
+
+# Local dev-server artifacts
+.devserver-*.log
+
+# Agent/scratch workspace (logs, one-off probes, generated JSON)
+/.scratch/
+/.freebuff/
+
+# Supabase CLI local state
+/supabase/.temp/
+
+# Committed build output used only for local audits
+/docs/audit/preview-build/
+
+# Screenshot evidence folders (regenerate locally; keeps the repo small)
+/docs/screenshots/
+/screenshots/
+
+# Root-level screenshot dumps (keep curated images under docs/)
+/*.png
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+*.local.json
+.sbh/
+
+# System files
+.DS_Store
+Thumbs.db

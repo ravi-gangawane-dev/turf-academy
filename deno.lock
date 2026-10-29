@@ -1,0 +1,47 @@
+{
+  "version": "5",
+  "redirects": {
+    "https://esm.sh/@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2.117.1"
+  },
+  "remote": {
+    "https://esm.sh/@supabase/supabase-js@2.117.1": "99cf17d2470bce11943555fed60fe54cdd642799103df031ace8071b97b5cf78"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@angular/animations@^22.1.0",
+        "npm:@angular/build@^22.1.3",
+        "npm:@angular/cli@^22.1.3",
+        "npm:@angular/common@^22.1.0",
+        "npm:@angular/compiler-cli@^22.1.0",
+        "npm:@angular/compiler@^22.1.0",
+        "npm:@angular/core@^22.1.0",
+        "npm:@angular/forms@^22.1.0",
+        "npm:@angular/platform-browser@^22.1.0",
+        "npm:@angular/router@^22.1.0",
+        "npm:@angular/service-worker@^22.1.0",
+        "npm:@axe-core/playwright@^4.12.1",
+        "npm:@playwright/test@^1.62.1",
+        "npm:@primeuix/themes@3",
+        "npm:@supabase/supabase-js@^2.115.0",
+        "npm:@tailwindcss/postcss@^4.3.3",
+        "npm:@types/qrcode@^1.5.6",
+        "npm:chart.js@^4.5.1",
+        "npm:date-fns@^4.4.0",
+        "npm:html5-qrcode@^2.3.8",
+        "npm:http-server@^14.1.1",
+        "npm:jsdom@28",
+        "npm:postcss@^8.5.25",
+        "npm:prettier@^3.8.1",
+        "npm:primeicons@8",
+        "npm:primeng@22",
+        "npm:qrcode@^1.5.4",
+        "npm:rxjs@7.8",
+        "npm:tailwindcss@^4.3.3",
+        "npm:tslib@^2.3.0",
+        "npm:typescript@~6.0.2",
+        "npm:vitest@^4.0.8"
+      ]
+    }
+  }
+}

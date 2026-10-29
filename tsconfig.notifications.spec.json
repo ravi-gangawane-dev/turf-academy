@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/features/notifications/*.spec.ts",
+    "src/app/core/supabase/notification-*.spec.ts",
+    "src/app/features/settings/academy-settings-page.spec.ts",
+    "src/app/shared/whatsapp-action/whatsapp-action.spec.ts",
+    "src/app/shared/notification-section-nav/notification-section-nav.spec.ts"
+  ]
+}

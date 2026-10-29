@@ -1,0 +1,64 @@
+[
+  {
+    "role": "admin",
+    "fn": "notification-delivery",
+    "status": 200,
+    "response": {
+      "channels": [
+        "in_app",
+        "whatsapp"
+      ]
+    }
+  },
+  {
+    "role": "admin",
+    "fn": "admin-manage-users",
+    "status": 200,
+    "response": {
+      "total": 8
+    }
+  },
+  {
+    "role": "admin",
+    "rpc": "get_payment_list_page",
+    "view": "history",
+    "status": 400,
+    "error": {
+      "code": "P0001",
+      "details": null,
+      "hint": null,
+      "message": "Invalid payment view"
+    }
+  },
+  {
+    "role": "receptionist",
+    "fn": "notification-delivery",
+    "status": 200,
+    "response": {
+      "channels": [
+        "in_app",
+        "whatsapp"
+      ]
+    }
+  },
+  {
+    "role": "receptionist",
+    "fn": "admin-manage-users",
+    "status": 403,
+    "response": {
+      "error": "Administrator access required."
+    }
+  },
+  {
+    "role": "receptionist",
+    "rpc": "get_payment_list_page",
+    "view": "history",
+    "status": 400,
+    "error": {
+      "code": "P0001",
+      "details": null,
+      "hint": null,
+      "message": "Invalid payment view"
+    }
+  }
+]

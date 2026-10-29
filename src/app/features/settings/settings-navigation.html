@@ -1,0 +1,39 @@
+<nav class="settings-nav" aria-label="Settings sections">
+  <a routerLink="/settings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    ariaCurrentWhenActive="page">
+    All settings
+  </a>
+  @for (section of sections; track section.path) {
+  <a [routerLink]="section.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    ariaCurrentWhenActive="page">
+    {{ section.label }}
+  </a>
+  }
+</nav>
+
+
+
+@if (inviteOpen()) {
+<div class="dialog-backdrop" role="presentation" (click)="$event.target === $event.currentTarget && inviteOpen.set(false)">
+  <form class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="inviteOpen.set(false)"
+    aria-labelledby="invite-dialog-title" [formGroup]="form" (ngSubmit)="invite()">
+    <header>
+      <h2 id="invite-dialog-title">Invite academy user</h2>
+      <button type="button" (click)="inviteOpen.set(false)" aria-label="Close"><i class="pi pi-times"></i></button>
+    </header>
+    <label>Full name<input formControlName="fullName"></label>
+    <label>Email<input type="email" formControlName="email"></label>
+    <label>Phone<input formControlName="phone"></label>
+    <label>Role<select formControlName="role">
+        <option value="admin">Admin</option>
+        <option value="receptionist">Receptionist</option>
+        <option value="coach">Coach</option>
+        <option value="parent">Parent</option>
+      </select></label>
+    <footer>
+      <button type="button" (click)="inviteOpen.set(false)">Cancel</button>
+      <button class="primary" [disabled]="saving()||form.invalid">{{saving()?'Sending…':'Send Invitation'}}</button>
+    </footer>
+  </form>
+</div>
+}

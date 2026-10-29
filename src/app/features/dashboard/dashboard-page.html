@@ -1,0 +1,83 @@
+@if (state$ | async; as state) {
+@if (state.status === 'loading') {
+<section class="dashboard-state"><i class="pi pi-spin pi-spinner"></i>
+  <h2>Preparing your dashboard</h2>
+  <p>Loading profile, permissions, and academy data…</p>
+</section>
+} @else if (state.status === 'error') {
+<section class="dashboard-state error" role="alert"><i class="pi pi-exclamation-triangle"></i>
+  <h2>Dashboard unavailable</h2>
+  <p>Please refresh the page or try again shortly.</p>
+</section>
+} @else {
+<div class="dashboard-page" [class.coach-dashboard]="auth.role() === 'coach'" [class.parent-dashboard]="auth.role() === 'parent'">
+  <app-page-hero [title]="auth.session()?.user?.name || 'Dashboard'" eyebrow="Good {{ greeting }}," subtitle="Here is what is happening at {{state.academyName}} today." [breadcrumbs]="[{label:'Dashboard'}]" [brandName]="state.academyName"><div hero-actions><time><i class="pi pi-calendar"></i>{{ state.businessDateLabel }}</time></div><div hero-details><nav class="hero-actions" aria-label="Primary actions">
+      @if(auth.hasPermission('students:write')){<button class="dark" (click)="navigate('/students')"><i
+          class="pi pi-plus"></i>Create Student</button>}
+      @if(auth.hasPermission('attendance:write')){<button (click)="navigate('/attendance/check-in-out')"><i
+          class="pi pi-qrcode"></i>Check In</button>}
+      @if(auth.hasPermission('fees:write')){<button (click)="navigate('/payments/new')"><i
+          class="pi pi-wallet"></i>Record Payment</button>}
+      @if(auth.hasPermission('notifications:read')){<button (click)="navigate('/notifications')"><i
+          class="pi pi-send"></i>Send Notification</button>}
+    </nav></div></app-page-hero>
+
+  <section class="kpi-grid" aria-label="Academy metrics">
+    @for (metric of state.metrics; track metric.label) {
+      <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail" [tone]="metric.tone" />
+    }
+  </section>
+
+  <section class="analytics-grid">
+    <article class="panel attendance-chart">
+      <header><span class="panel-icon"><i class="pi pi-calendar"></i></span>
+        <div>
+          <h2>Attendance Overview</h2>
+          <p>Last 7 days</p>
+        </div>
+      </header><div class="data-chart" aria-label="Attendance over the last seven days">@for(point of state.attendanceTrend??[];track point.day){<div class="chart-column"><strong>{{point.count}}</strong><div class="chart-track"><i [style.height.%]="chartHeight(point.count,attendanceValues(state.attendanceTrend??[]))"></i></div><small>{{point.day.slice(5)}}</small></div>}@empty{<p>No attendance analytics.</p>}</div></article>
+    @if(auth.hasPermission('fees:write')){<article class="panel fee-chart">
+      <header><span class="panel-icon"><i class="pi pi-indian-rupee"></i></span>
+        <div>
+          <h2>Fee Collection</h2>
+          <p>Last 6 months ? net of refunds</p>
+        </div>
+      </header><div class="data-chart" aria-label="Net collection by payment month">@for(point of state.collectionTrend??[];track point.month){<div class="chart-column"><strong>{{point.amount|academyMoney}}</strong><div class="chart-track"><i [style.height.%]="chartHeight(point.amount,collectionValues(state.collectionTrend??[]))"></i></div><small>{{point.month}}</small></div>}@empty{<p>No collection analytics.</p>}</div></article>}
+    <article class="panel quick-panel">
+      <header><span class="panel-icon"><i class="pi pi-bolt"></i></span>
+        <div>
+          <h2>Quick Actions</h2>
+        </div>
+      </header>
+      <div class="action-grid">@if(auth.hasPermission('students:write')){<button (click)="navigate('/students/add')"><i class="pi pi-user-plus"></i><span>Add Student</span></button>}@if(auth.hasPermission('attendance:write')){<button (click)="navigate('/attendance')"><i class="pi pi-calendar"></i><span>Mark Attendance</span></button>}@if(auth.hasPermission('fees:write')){<button (click)="navigate('/payments/new')"><i class="pi pi-wallet"></i><span>Record Payment</span></button>}@if(auth.hasPermission('batches:write')){<button (click)="navigate('/batches')"><i class="pi pi-users"></i><span>Create Batch</span></button>}@if(auth.hasPermission('notifications:read')){<button (click)="navigate('/notifications')"><i class="pi pi-send"></i><span>Notifications</span></button>}@if(auth.hasPermission('reports:read')){<button (click)="navigate('/reports')"><i class="pi pi-chart-bar"></i><span>Reports</span></button>}</div>
+    </article>
+  </section>
+
+  <section class="detail-grid">
+    <article class="panel data-panel">
+      <header><span class="panel-icon"><i class="pi pi-sign-in"></i></span>
+        <h2>Recent Check-ins</h2><button (click)="navigate('/attendance')">View All <i
+            class="pi pi-arrow-right"></i></button>
+      </header>@for(item of state.checkIns;track item.id){<div class="data-row">
+        <b>{{item.initials}}</b><span><strong>{{item.studentName}}</strong><small>{{item.batchName}}</small></span><time>{{item.checkedInAt}}</time><em
+          [class.late]="item.status==='Late'">{{item.status}}</em></div>}@empty{<div class="small-empty"><i
+          class="pi pi-clock"></i><span><strong>No check-ins yet</strong><small>Student arrivals will appear
+            here.</small></span></div>}
+    </article>
+    @if(auth.hasPermission('fees:write')){<article class="panel data-panel fees">
+      <header><span class="panel-icon alert"><i class="pi pi-exclamation-triangle"></i></span>
+        <h2>Pending Fees</h2><button (click)="navigate('/fees')">View All <i class="pi pi-arrow-right"></i></button>
+      </header>@for(fee of state.pendingFees;track fee.id){<div class="data-row">
+        <span><strong>{{fee.studentName}}</strong><small>{{fee.batchName}}</small></span><strong>{{fee.amountPaise/100|academyMoney:'symbol':'1.2-2'}}</strong><em
+          [class.late]="fee.overdue">{{fee.dueLabel}}</em></div>}@empty{<div class="small-empty"><i
+          class="pi pi-check-circle"></i><span><strong>No pending fees</strong><small>Outstanding charges will appear
+            here.</small></span></div>}
+    </article>}
+    @if(auth.role() === 'admin'){<article class="panel activity" aria-label="Recent Activity">
+      <app-recent-activity />
+    </article>
+    }
+  </section>
+</div>
+}
+}

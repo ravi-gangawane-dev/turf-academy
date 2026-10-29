@@ -1,0 +1,33 @@
+<nav class="notification-section-nav" aria-label="Notification views">
+  <a
+    routerLink="/notifications"
+    [routerLinkActiveOptions]="{
+      paths: 'exact',
+      queryParams: 'ignored',
+      matrixParams: 'ignored',
+      fragment: 'ignored',
+    }"
+    routerLinkActive="active"
+    ariaCurrentWhenActive="page"
+  >
+    <i class="pi pi-inbox" aria-hidden="true"></i>Management
+  </a>
+  @if (showTemplates()) {
+    <a
+      routerLink="/notifications/templates"
+      [routerLinkActiveOptions]="{
+        paths: 'exact',
+        queryParams: 'ignored',
+        matrixParams: 'ignored',
+        fragment: 'ignored',
+      }"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+    >
+      <i class="pi pi-file-edit" aria-hidden="true"></i>Templates
+    </a>
+  }
+  <a routerLink="/notifications/events" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <i class="pi pi-calendar" aria-hidden="true"></i>Events &amp; Holidays
+  </a>
+</nav>

@@ -1,0 +1,11 @@
+<div class="message-row" [class]="tone()">
+  <span class="message-icon" aria-hidden="true"><i class="{{ icon() }}"></i></span>
+  <div class="message-copy">
+    @if (config().message) {
+      <p class="dialog-message">{{ config().message }}</p>
+    }
+    @if (tone() === 'loading') {
+      <p class="loading-line"><span class="spinner" aria-hidden="true"></span> Working…</p>
+    }
+  </div>
+</div>

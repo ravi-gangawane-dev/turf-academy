@@ -1,0 +1,6 @@
+{
+  "online": false,
+  "error": "Attendance requires an online API connection. Reconnect and try again.",
+  "unchanged": true,
+  "queued": 0
+}

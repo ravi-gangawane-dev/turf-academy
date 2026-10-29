@@ -1,0 +1,3585 @@
+{
+  "generatedAt": "2026-10-21T17:28:22.399Z",
+  "routes": [
+    {
+      "path": "auth/splash",
+      "line": 36,
+      "component": "./features/auth/auth-splash-page"
+    },
+    {
+      "path": "login",
+      "line": 40,
+      "redirect": "auth/login",
+      "component": null
+    },
+    {
+      "path": "auth/login",
+      "line": 41,
+      "component": "./features/auth/login-page"
+    },
+    {
+      "path": "unauthorized",
+      "line": 46,
+      "component": "./features/auth/unauthorized-page"
+    },
+    {
+      "path": "auth/forgot-password",
+      "line": 52,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "auth/reset-password",
+      "line": 60,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "auth/otp",
+      "line": 69,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "auth/session-expired",
+      "line": 78,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "auth/password-updated",
+      "line": 86,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "redirect/admin",
+      "line": 95,
+      "component": "./features/auth/role-redirect-page",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "path": "redirect/coach",
+      "line": 101,
+      "component": "./features/auth/role-redirect-page",
+      "roles": [
+        "coach"
+      ]
+    },
+    {
+      "path": "redirect/reception",
+      "line": 107,
+      "component": "./features/auth/role-redirect-page",
+      "roles": [
+        "receptionist"
+      ]
+    },
+    {
+      "path": "redirect/parent",
+      "line": 118,
+      "component": "./features/auth/role-redirect-page",
+      "roles": [
+        "parent"
+      ]
+    },
+    {
+      "path": "coach/dashboard",
+      "line": 138,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "dashboard"
+    },
+    {
+      "path": "coach/batches",
+      "line": 144,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "batches"
+    },
+    {
+      "path": "coach/batches/:batchId",
+      "line": 150,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "batch"
+    },
+    {
+      "path": "coach/students",
+      "line": 156,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "students"
+    },
+    {
+      "path": "coach/students/:studentId",
+      "line": 162,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "student"
+    },
+    {
+      "path": "coach/attendance",
+      "line": 168,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "attendance"
+    },
+    {
+      "path": "coach/attendance/qr",
+      "line": 174,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "qr"
+    },
+    {
+      "path": "coach/attendance/check-in",
+      "line": 180,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "check-in"
+    },
+    {
+      "path": "coach/attendance/check-out",
+      "line": 186,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "check-out"
+    },
+    {
+      "path": "coach/attendance/history",
+      "line": 192,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "history"
+    },
+    {
+      "path": "coach/attendance/correction",
+      "line": 198,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "correction"
+    },
+    {
+      "path": "coach/attendance/summary",
+      "line": 204,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "summary"
+    },
+    {
+      "path": "coach/schedule",
+      "line": 210,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "schedule"
+    },
+    {
+      "path": "coach/notifications",
+      "line": 216,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "notifications"
+    },
+    {
+      "path": "coach/profile",
+      "line": 222,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "profile"
+    },
+    {
+      "path": "coach/support",
+      "line": 228,
+      "component": "./features/coach/coach-portal-page",
+      "roles": [
+        "coach"
+      ],
+      "permission": "coach:portal",
+      "view": "support"
+    },
+    {
+      "path": "dashboard/admin",
+      "line": 235,
+      "component": "./features/dashboard/dashboard-page",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "path": "dashboard/coach",
+      "line": 243,
+      "component": "./features/dashboard/dashboard-page",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "path": "dashboard/reception",
+      "line": 251,
+      "component": "./features/dashboard/dashboard-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ]
+    },
+    {
+      "path": "parent/dashboard",
+      "line": 259,
+      "component": "./features/parents/parent-dashboard-page",
+      "roles": [
+        "parent"
+      ]
+    },
+    {
+      "path": "parent/children/:id/edit",
+      "line": 267,
+      "component": "./features/students/student-form-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read"
+    },
+    {
+      "path": "parent/children/:id",
+      "line": 275,
+      "component": "./features/parents/parent-child-profile-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read"
+    },
+    {
+      "path": "parent/children",
+      "line": 285,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "children"
+    },
+    {
+      "path": "parent/attendance",
+      "line": 291,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "attendance"
+    },
+    {
+      "path": "parent/attendance/calendar",
+      "line": 297,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "calendar"
+    },
+    {
+      "path": "parent/schedule",
+      "line": 303,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "schedule"
+    },
+    {
+      "path": "parent/coach",
+      "line": 309,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "coach"
+    },
+    {
+      "path": "parent/fees",
+      "line": 315,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "fees"
+    },
+    {
+      "path": "parent/payments",
+      "line": 321,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "payments"
+    },
+    {
+      "path": "parent/receipts",
+      "line": 327,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "receipt"
+    },
+    {
+      "path": "parent/notifications",
+      "line": 333,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "notifications"
+    },
+    {
+      "path": "parent/profile",
+      "line": 339,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "profile"
+    },
+    {
+      "path": "parent/profile/edit",
+      "line": 345,
+      "component": "./features/parents/parent-profile-form-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read"
+    },
+    {
+      "path": "parent/support",
+      "line": 355,
+      "component": "./features/parents/parent-portal-page",
+      "roles": [
+        "parent"
+      ],
+      "permission": "children:read",
+      "view": "support"
+    },
+    {
+      "path": "dashboard",
+      "line": 361,
+      "component": "./features/dashboard/dashboard-page",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "path": "search",
+      "line": 370,
+      "component": "./features/system/search-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ],
+      "permission": "students:read"
+    },
+    {
+      "path": "students/add",
+      "line": 376,
+      "component": "./features/students/student-form-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ],
+      "permission": "students:write"
+    },
+    {
+      "path": "students/:id/edit",
+      "line": 384,
+      "component": "./features/students/student-form-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ],
+      "permission": "students:write"
+    },
+    {
+      "path": "students/:id",
+      "line": 392,
+      "component": "./features/students/student-details-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ],
+      "permission": "students:read"
+    },
+    {
+      "path": "students",
+      "line": 400,
+      "component": "./features/students/students-page",
+      "roles": [
+        "admin",
+        "receptionist"
+      ],
+      "permission": "students:read"
+    },
+    {
+      "path": "parents/add",
+      "line": 408,
+      "component": "./features/parents/parent-form-page",
+      "permission": "parents:write"
+    },
+    {
+      "path": "parents/:id/edit",
+      "line": 415,
+      "component": "./features/parents/parent-form-page",
+      "permission": "parents:write"
+    },
+    {
+      "path": "parents/:id",
+      "line": 422,
+      "component": "./features/parents/parent-details-page",
+      "permission": "parents:read"
+    },
+    {
+      "path": "parents",
+      "line": 429,
+      "component": "./features/parents/parents-page",
+      "permission": "parents:read"
+    },
+    {
+      "path": "batches/student-allocation",
+      "line": 435,
+      "component": "./features/batches/batches-page",
+      "permission": "batches:write"
+    },
+    {
+      "path": "batches/coach-assignment",
+      "line": 441,
+      "component": "./features/batches/batches-page",
+      "permission": "batches:write"
+    },
+    {
+      "path": "batches/schedule",
+      "line": 447,
+      "component": "./features/batches/batches-page",
+      "permission": "batches:write"
+    },
+    {
+      "path": "batches/capacity",
+      "line": 453,
+      "component": "./features/batches/batches-page",
+      "permission": "batches:write"
+    },
+    {
+      "path": "batches",
+      "line": 459,
+      "component": "./features/batches/batches-page",
+      "permission": "batches:read"
+    },
+    {
+      "path": "coaches/add",
+      "line": 465,
+      "component": "./features/coaches/coach-form-page",
+      "permission": "coaches:write"
+    },
+    {
+      "path": "coaches/:id/edit",
+      "line": 472,
+      "component": "./features/coaches/coach-form-page",
+      "permission": "coaches:write"
+    },
+    {
+      "path": "coaches/:id",
+      "line": 479,
+      "component": "./features/coaches/coach-details-page",
+      "permission": "coaches:read"
+    },
+    {
+      "path": "coaches",
+      "line": 486,
+      "component": "./features/coaches/coaches-page",
+      "permission": "coaches:read"
+    },
+    {
+      "path": "enrollments",
+      "line": 493,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write"
+    },
+    {
+      "path": "enrollments/new",
+      "line": 500,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write",
+      "view": "new"
+    },
+    {
+      "path": "enrollments/transfer",
+      "line": 507,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write",
+      "view": "transfer"
+    },
+    {
+      "path": "enrollments/pause",
+      "line": 514,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write",
+      "view": "pause"
+    },
+    {
+      "path": "enrollments/cancel",
+      "line": 521,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write",
+      "view": "cancel"
+    },
+    {
+      "path": "enrollments/fee-plans",
+      "line": 528,
+      "component": "./features/fees/fee-plans-page",
+      "permission": "enrollments:write",
+      "view": "fees"
+    },
+    {
+      "path": "enrollments/history",
+      "line": 534,
+      "component": "./features/enrollments/enrollments-page",
+      "permission": "enrollments:write",
+      "view": "history"
+    },
+    {
+      "path": "attendance",
+      "line": 541,
+      "component": "./features/attendance/attendance-page",
+      "permission": "attendance:read"
+    },
+    {
+      "path": "attendance/check-in-out",
+      "line": 548,
+      "component": "./features/attendance/qr-attendance-page",
+      "permission": "attendance:write"
+    },
+    {
+      "path": "attendance/manual-check-in",
+      "line": 555,
+      "redirect": "attendance/check-in-out",
+      "component": null
+    },
+    {
+      "path": "attendance/manual-check-out",
+      "line": 560,
+      "redirect": "attendance/check-in-out",
+      "component": null
+    },
+    {
+      "path": "attendance/qr",
+      "line": 565,
+      "redirect": "attendance/check-in-out",
+      "component": null
+    },
+    {
+      "path": "attendance/correction",
+      "line": 570,
+      "component": "./features/attendance/attendance-correction-page",
+      "permission": "attendance:write"
+    },
+    {
+      "path": "attendance/history",
+      "line": 579,
+      "component": "./features/attendance/attendance-history-page",
+      "permission": "attendance:write"
+    },
+    {
+      "path": "attendance/calendar",
+      "line": 588,
+      "component": "./features/attendance/attendance-calendar-page",
+      "permission": "attendance:write"
+    },
+    {
+      "path": "attendance/offline-queue",
+      "line": 597,
+      "component": "./features/attendance/offline-queue-page",
+      "permission": "attendance:write"
+    },
+    {
+      "path": "fees/plans",
+      "line": 604,
+      "component": "./features/fees/fee-plans-page",
+      "permission": "fees:write"
+    },
+    {
+      "path": "fees",
+      "line": 610,
+      "component": "./features/fees/fees-page",
+      "permission": "fees:write"
+    },
+    {
+      "path": "notifications",
+      "line": 616,
+      "component": "./features/notifications/notifications-page",
+      "permission": "notifications:read"
+    },
+    {
+      "path": "notifications/events",
+      "line": 623,
+      "component": "./features/notifications/academy-events-page",
+      "permission": "notifications:read"
+    },
+    {
+      "path": "reports",
+      "line": 629,
+      "component": "./features/reports/reports-page",
+      "permission": "reports:read"
+    },
+    {
+      "path": "auth/change-password",
+      "line": 635,
+      "component": "./features/auth/auth-utility-page"
+    },
+    {
+      "path": "fees/discounts",
+      "line": 641,
+      "component": "./features/fees/fee-operations-page",
+      "permission": "fees:write",
+      "view": "discounts"
+    },
+    {
+      "path": "fees/late-fees",
+      "line": 646,
+      "component": "./features/fees/fee-operations-page",
+      "permission": "fees:write",
+      "view": "late-fees"
+    },
+    {
+      "path": "fees/pending",
+      "line": 651,
+      "component": "./features/fees/fee-operations-page",
+      "permission": "fees:write",
+      "view": "pending"
+    },
+    {
+      "path": "fees/summary",
+      "line": 656,
+      "component": "./features/fees/fee-operations-page",
+      "permission": "fees:write",
+      "view": "summary"
+    },
+    {
+      "path": "payments",
+      "line": 662,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "list"
+    },
+    {
+      "path": "payments/new",
+      "line": 670,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "new"
+    },
+    {
+      "path": "payments/partial",
+      "line": 678,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "partial"
+    },
+    {
+      "path": "payments/full",
+      "line": 686,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "full"
+    },
+    {
+      "path": "payments/receipts",
+      "line": 694,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "receipts"
+    },
+    {
+      "path": "payments/refunds",
+      "line": 699,
+      "component": "./features/payments/payments-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "fees:write",
+      "view": "refunds"
+    },
+    {
+      "path": "payments/history",
+      "line": 709,
+      "component": "./features/payments/payments-page",
+      "permission": "fees:write",
+      "view": "history"
+    },
+    {
+      "path": "notifications/whatsapp",
+      "line": 718,
+      "component": "./features/notifications/notifications-page",
+      "permission": "notifications:read"
+    },
+    {
+      "path": "notifications/templates",
+      "line": 723,
+      "component": "./features/notifications/notification-templates-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "notifications:read"
+    },
+    {
+      "path": "notifications/failed",
+      "line": 729,
+      "component": "./features/notifications/notifications-page",
+      "permission": "notifications:read"
+    },
+    {
+      "path": "notifications/delivery-status",
+      "line": 734,
+      "component": "./features/notifications/notifications-page",
+      "permission": "notifications:read"
+    },
+    {
+      "path": "reports/coach",
+      "line": 740,
+      "component": "./features/reports/reports-page",
+      "permission": "reports:read"
+    },
+    {
+      "path": "reports/batch",
+      "line": 745,
+      "component": "./features/reports/reports-page",
+      "permission": "reports:read"
+    },
+    {
+      "path": "settings",
+      "line": 751,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/users",
+      "line": 757,
+      "component": "./features/settings/users-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/audit-logs",
+      "line": 764,
+      "component": "./features/settings/audit-log-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/profile",
+      "line": 771,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/regional",
+      "line": 777,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/attendance",
+      "line": 783,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/fees",
+      "line": 789,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/notifications",
+      "line": 795,
+      "component": "./features/settings/academy-settings-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/roles",
+      "line": 801,
+      "component": "./features/settings/users-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "settings/permissions",
+      "line": 807,
+      "component": "./features/settings/settings-tools-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write",
+      "view": "permissions"
+    },
+    {
+      "path": "settings/theme",
+      "line": 814,
+      "component": "./features/settings/settings-tools-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write",
+      "view": "theme"
+    },
+    {
+      "path": "settings/backup",
+      "line": 821,
+      "component": "./features/settings/settings-tools-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write",
+      "view": "backup"
+    },
+    {
+      "path": "design/:section/:view",
+      "line": 829,
+      "component": "./features/system/design-system-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    },
+    {
+      "path": "handoff/:view",
+      "line": 842,
+      "component": "./features/system/developer-handoff-page",
+      "roles": [
+        "admin"
+      ],
+      "permission": "settings:write"
+    }
+  ],
+  "components": [
+    {
+      "file": "src/app/app.ts",
+      "line": 4,
+      "lines": 12,
+      "template": "src/app/app.html",
+      "style": "src/app/app.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/app.spec.ts",
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/attendance/attendance-calendar-page.ts",
+      "line": 29,
+      "lines": 236,
+      "template": "src/app/features/attendance/attendance-calendar-page.html",
+      "style": "src/app/features/attendance/attendance-calendar-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/attendance/attendance-calendar-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "constructor",
+        "ngOnInit",
+        "loadCalendarData",
+        "onViewModeChange",
+        "onBatchChange",
+        "onStudentChange",
+        "onStatusChange",
+        "onDateChange",
+        "setMonth",
+        "onTodayClick",
+        "onPreviousMonth",
+        "onNextMonth",
+        "onPageChange",
+        "onPageSizeChange",
+        "export",
+        "monthValue",
+        "percentage"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/attendance-correction-page.ts",
+      "line": 25,
+      "lines": 165,
+      "template": "src/app/features/attendance/attendance-correction-page.html",
+      "style": "src/app/features/attendance/attendance-correction-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "setStatus",
+        "resetFilters",
+        "setSearch",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "changePage",
+        "setPageSize",
+        "resolve",
+        "requestedStatus",
+        "load"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/attendance-history-page.ts",
+      "line": 26,
+      "lines": 255,
+      "template": "src/app/features/attendance/attendance-history-page.html",
+      "style": "src/app/features/attendance/attendance-history-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/attendance/attendance-history-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "constructor",
+        "ngOnInit",
+        "loadAttendanceHistory",
+        "onStudentChange",
+        "onStatusChange",
+        "onPageChange",
+        "onPageSizeChange",
+        "export"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/attendance-page.ts",
+      "line": 22,
+      "lines": 260,
+      "template": "src/app/features/attendance/attendance-page.html",
+      "style": "src/app/features/attendance/attendance-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "percentage",
+        "initials",
+        "checkIn",
+        "checkOut",
+        "retryFor",
+        "useServerState",
+        "run",
+        "sendWhatsApp"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/manual-check-in-page.ts",
+      "line": 21,
+      "lines": 124,
+      "template": "src/app/features/attendance/manual-check-in-page.html",
+      "style": "src/app/features/attendance/manual-check-in-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "select",
+        "retry",
+        "initials",
+        "code",
+        "submitAttendance"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/offline-queue-page.ts",
+      "line": 26,
+      "lines": 104,
+      "template": "src/app/features/attendance/offline-queue-page.html",
+      "style": "src/app/features/attendance/offline-queue-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "setQuery",
+        "setSort",
+        "setPageSize",
+        "initials",
+        "formatDate",
+        "sync",
+        "retry",
+        "discard",
+        "clear",
+        "export"
+      ]
+    },
+    {
+      "file": "src/app/features/attendance/qr-attendance-page.ts",
+      "line": 24,
+      "lines": 469,
+      "template": "src/app/features/attendance/qr-attendance-page.html",
+      "style": "src/app/features/attendance/qr-attendance-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/attendance/qr-attendance-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "focusPanel",
+        "toggleSelection",
+        "changeQuery",
+        "displayTime",
+        "markSelected",
+        "switchCamera",
+        "startCamera",
+        "stopCamera",
+        "releaseScanner",
+        "cameraErrorMessage",
+        "resolve",
+        "confirm",
+        "prepareSavedWhatsApp",
+        "prepareWhatsApp",
+        "reset",
+        "initials",
+        "ngOnDestroy"
+      ]
+    },
+    {
+      "file": "src/app/features/auth/auth-splash-page.ts",
+      "line": 5,
+      "lines": 8,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/auth/auth-utility-page.ts",
+      "line": 6,
+      "lines": 97,
+      "template": "src/app/features/auth/auth-utility-page.html",
+      "style": "src/app/features/auth/login-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/auth/auth-utility-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "constructor",
+        "submit",
+        "togglePassword"
+      ]
+    },
+    {
+      "file": "src/app/features/auth/login-page.ts",
+      "line": 8,
+      "lines": 37,
+      "template": "src/app/features/auth/login-page.html",
+      "style": "src/app/features/auth/login-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "submit",
+        "safeReturnUrl",
+        "togglePassword"
+      ]
+    },
+    {
+      "file": "src/app/features/auth/role-redirect-page.ts",
+      "line": 4,
+      "lines": 155,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit"
+      ]
+    },
+    {
+      "file": "src/app/features/auth/unauthorized-page.ts",
+      "line": 4,
+      "lines": 6,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/batches/batches-page.ts",
+      "line": 22,
+      "lines": 177,
+      "template": "src/app/features/batches/batches-page.html",
+      "style": "src/app/features/batches/batches-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/batches/batches-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "setPageSize",
+        "scheduleColumnFilters",
+        "resetColumnFilters",
+        "filterChanged",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "changePage",
+        "ngOnDestroy",
+        "scheduleWaitingFilters",
+        "sortWaiting",
+        "resetWaiting",
+        "changeWaitingPage",
+        "changeWaitingSize",
+        "loadWaiting",
+        "fetchWaiting",
+        "ngOnInit",
+        "load",
+        "activeCount",
+        "waitingCount",
+        "studentName",
+        "batchName",
+        "coachName",
+        "fee",
+        "schedule",
+        "hasSessionToday",
+        "edit",
+        "toggleDay",
+        "save",
+        "if",
+        "if",
+        "remove",
+        "assign",
+        "unassign",
+        "allocate",
+        "if",
+        "if",
+        "if",
+        "cancelEnrollment",
+        "waitAction",
+        "mutate",
+        "errorText"
+      ]
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.ts",
+      "line": 51,
+      "lines": 1125,
+      "template": "src/app/features/coach/coach-portal-page.html",
+      "style": "src/app/features/coach/coach-portal-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "ngOnDestroy",
+        "load",
+        "loadPanels",
+        "patchData",
+        "loadStudentsPanel",
+        "loadAttendancePanel",
+        "loadSessionsPanel",
+        "loadNotificationsPanel",
+        "if",
+        "if",
+        "changeNotificationPage",
+        "reloadRealtimePanel",
+        "setSearch",
+        "setBatchSearch",
+        "setBatchStatus",
+        "resetBatchFilters",
+        "setStudentSearch",
+        "resetStudentFilters",
+        "setBatch",
+        "setStatus",
+        "loadStudentPage",
+        "loadAttendancePage",
+        "setScheduleType",
+        "changeScheduleWeek",
+        "resetScheduleWeek",
+        "setScheduleMode",
+        "chooseStudent",
+        "selectStudent",
+        "go",
+        "initials",
+        "relation",
+        "coachSpecializations",
+        "time",
+        "age",
+        "attendanceFor",
+        "studentAttendance",
+        "summaryStudents",
+        "studentAttendanceSummary",
+        "lastAttendance",
+        "primaryParent",
+        "studentBatch",
+        "medical",
+        "address",
+        "batchStudentCount",
+        "batchAttendance",
+        "batchDays",
+        "nextSession",
+        "batchSessions",
+        "sessionsForDay",
+        "dateKey",
+        "isToday",
+        "openAttendance",
+        "todayRecord",
+        "todayDate",
+        "submitAttendance",
+        "scan",
+        "startQrCamera",
+        "stopQrCamera",
+        "markRemainingPresent",
+        "markNotificationRead",
+        "markAllNotificationsRead",
+        "requestAttendanceCorrection",
+        "exportAttendance",
+        "beginProfileEdit",
+        "saveProfile",
+        "chooseProfilePhoto",
+        "setNotificationFilter",
+        "resetNotificationFilters",
+        "resetAttendanceFilters",
+        "setPage",
+        "setPageSize"
+      ]
+    },
+    {
+      "file": "src/app/features/coaches/coach-details-page.ts",
+      "line": 10,
+      "lines": 87,
+      "template": "src/app/features/coaches/coach-details-page.html",
+      "style": "src/app/features/coaches/coach-details-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/coaches/coach-details-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "batches",
+        "showAttendance",
+        "if",
+        "ngOnInit",
+        "initials",
+        "specs",
+        "edit",
+        "list",
+        "breadcrumb"
+      ]
+    },
+    {
+      "file": "src/app/features/coaches/coach-form-page.ts",
+      "line": 7,
+      "lines": 128,
+      "template": "src/app/features/coaches/coach-form-page.html",
+      "style": "src/app/features/coaches/coach-form-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "save",
+        "selectPhoto",
+        "cancel",
+        "breadcrumb"
+      ]
+    },
+    {
+      "file": "src/app/features/coaches/coaches-page.ts",
+      "line": 25,
+      "lines": 143,
+      "template": "src/app/features/coaches/coaches-page.html",
+      "style": "src/app/features/coaches/coaches-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "filterChanged",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "ngOnInit",
+        "loadCoaches",
+        "create",
+        "edit",
+        "openCoachDetails",
+        "coachEmail",
+        "deleteCoach",
+        "changePage",
+        "setPageSize",
+        "openDashboard",
+        "initials"
+      ]
+    },
+    {
+      "file": "src/app/features/dashboard/dashboard-page.ts",
+      "line": 16,
+      "lines": 45,
+      "template": "src/app/features/dashboard/dashboard-page.html",
+      "style": "src/app/features/dashboard/dashboard-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "chartHeight",
+        "attendanceValues",
+        "collectionValues",
+        "navigate"
+      ]
+    },
+    {
+      "file": "src/app/features/dashboard/recent-activity.ts",
+      "line": 26,
+      "lines": 110,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": "src/app/features/dashboard/recent-activity.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "label",
+        "load"
+      ]
+    },
+    {
+      "file": "src/app/features/enrollments/enrollment-metrics.ts",
+      "line": 12,
+      "lines": 43,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "cards"
+      ]
+    },
+    {
+      "file": "src/app/features/enrollments/enrollments-page.ts",
+      "line": 39,
+      "lines": 485,
+      "template": "src/app/features/enrollments/enrollments-page.html",
+      "style": "src/app/features/enrollments/enrollments-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/enrollments/enrollments-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "sortHistory",
+        "historyQuery",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "constructor",
+        "ngOnInit",
+        "reload",
+        "studentChanged",
+        "planChanged",
+        "batchChanged",
+        "submit",
+        "applyAction",
+        "reactivate",
+        "save",
+        "changePage",
+        "filterChanged",
+        "setPageSize",
+        "resetFilters",
+        "applyHistoryFilters",
+        "historyPageChanged",
+        "loadHistory",
+        "historyAction",
+        "exportHistory",
+        "exportRows",
+        "download",
+        "errorText"
+      ]
+    },
+    {
+      "file": "src/app/features/fees/fee-operations-page.ts",
+      "line": 48,
+      "lines": 244,
+      "template": "src/app/features/fees/fee-operations-page.html",
+      "style": "src/app/features/fees/fee-operations-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/fees/fee-operations-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "filterChanged",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "changePage",
+        "setPageSize",
+        "resetFilters",
+        "close",
+        "ngOnInit",
+        "open",
+        "save",
+        "remove",
+        "student",
+        "amount",
+        "text",
+        "reload"
+      ]
+    },
+    {
+      "file": "src/app/features/fees/fee-plans-page.ts",
+      "line": 38,
+      "lines": 197,
+      "template": "src/app/features/fees/fee-plans-page.html",
+      "style": "src/app/features/fees/fee-plans-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/fees/fee-plans-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "setQuery",
+        "setStatus",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "setPageSize",
+        "changePage",
+        "resetFilters",
+        "ngOnInit",
+        "openAdd",
+        "open",
+        "close",
+        "save",
+        "remove",
+        "duration",
+        "reload"
+      ]
+    },
+    {
+      "file": "src/app/features/fees/fees-page.ts",
+      "line": 47,
+      "lines": 338,
+      "template": "src/app/features/fees/fees-page.html",
+      "style": "src/app/features/fees/fees-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/fees/fees-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "downloadInvoice",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "ngOnInit",
+        "selectCharge",
+        "confirmPay",
+        "submitPayment",
+        "openChargeDialog",
+        "enrollmentChanged",
+        "chargePeriodChanged",
+        "addCharge",
+        "changePage",
+        "setPageSize",
+        "resetPage",
+        "resetFilters",
+        "loadCharges",
+        "displayStatus"
+      ]
+    },
+    {
+      "file": "src/app/features/notifications/academy-events-page.ts",
+      "line": 18,
+      "lines": 183,
+      "template": "src/app/features/notifications/academy-events-page.html",
+      "style": "src/app/features/notifications/academy-events-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "open",
+        "save",
+        "toggle",
+        "reload",
+        "applyFilters",
+        "setPage",
+        "setPageSize",
+        "changeSort",
+        "today"
+      ]
+    },
+    {
+      "file": "src/app/features/notifications/notification-templates-page.ts",
+      "line": 43,
+      "lines": 360,
+      "template": "src/app/features/notifications/notification-templates-page.html",
+      "style": "src/app/features/notifications/notification-templates-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/notifications/notification-templates-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnDestroy",
+        "previewText",
+        "ngOnInit",
+        "open",
+        "save",
+        "toggle",
+        "applyFilters",
+        "setPage",
+        "setPageSize",
+        "changeSort",
+        "reload",
+        "loadPage",
+        "loadPreviews",
+        "loadBirthdayPreviewPhotos"
+      ]
+    },
+    {
+      "file": "src/app/features/notifications/notifications-page.ts",
+      "line": 34,
+      "lines": 199,
+      "template": "src/app/features/notifications/notifications-page.html",
+      "style": "src/app/features/notifications/notifications-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/notifications/notifications-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "delivery",
+        "catch",
+        "loadDeliveryConfiguration",
+        "sortColumn",
+        "ngOnDestroy",
+        "ngOnInit",
+        "setFilter",
+        "setCategoryFilter",
+        "clearFilters",
+        "setPageSize",
+        "changePage",
+        "setSearch",
+        "setSortBy",
+        "setSortDirection",
+        "reload",
+        "loadPage"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-child-profile-page.ts",
+      "line": 24,
+      "lines": 138,
+      "template": "src/app/features/parents/parent-child-profile-page.html",
+      "style": "src/app/features/parents/parent-child-profile-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/parents/parent-child-profile-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "load",
+        "setTab",
+        "back",
+        "edit",
+        "message",
+        "initials",
+        "age",
+        "text",
+        "related",
+        "money"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-dashboard-page.ts",
+      "line": 44,
+      "lines": 271,
+      "template": "src/app/features/parents/parent-dashboard-page.html",
+      "style": "src/app/features/parents/parent-dashboard-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "ngOnDestroy",
+        "address",
+        "initials",
+        "batch",
+        "attendance",
+        "selectChild",
+        "replaceSubscriptions",
+        "age",
+        "batchRecord",
+        "fee",
+        "time",
+        "nextSession",
+        "todayAttendance",
+        "duration",
+        "recordDate",
+        "recordTime",
+        "amount",
+        "openChild",
+        "message",
+        "retry"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-details-page.ts",
+      "line": 20,
+      "lines": 127,
+      "template": "src/app/features/parents/parent-details-page.html",
+      "style": "src/app/features/parents/parent-details-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/parents/parent-details-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "addressPart",
+        "preference",
+        "selectTab",
+        "if",
+        "if",
+        "if",
+        "if",
+        "setPageSize",
+        "sendMessage",
+        "if",
+        "initials",
+        "edit",
+        "openStudent",
+        "list",
+        "breadcrumb"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-form-page.ts",
+      "line": 9,
+      "lines": 130,
+      "template": "src/app/features/parents/parent-form-page.html",
+      "style": "src/app/features/parents/parent-form-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "save",
+        "selectPhoto",
+        "cancel",
+        "breadcrumb"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-portal-page.ts",
+      "line": 42,
+      "lines": 437,
+      "template": "src/app/features/parents/parent-portal-page.html",
+      "style": "src/app/features/parents/parent-portal-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "ngOnDestroy",
+        "load",
+        "changeChild",
+        "filterAttendance",
+        "searchAttendance",
+        "sortAttendance",
+        "filterAttendanceDate",
+        "setAttendancePage",
+        "setAttendancePageSize",
+        "setPaymentPage",
+        "setPaymentPageSize",
+        "filterPayments",
+        "searchPayments",
+        "sortPayments",
+        "toggleUnread",
+        "filterNotifications",
+        "setNotificationPage",
+        "setNotificationPageSize",
+        "markRead",
+        "markAllRead",
+        "replaceSubscriptions",
+        "resetPages",
+        "childProfile",
+        "editChild",
+        "childCompletion",
+        "viewTitle",
+        "addressText",
+        "go",
+        "shiftMonth",
+        "today",
+        "text",
+        "duration",
+        "initials",
+        "open",
+        "printReceipt",
+        "value",
+        "money",
+        "receipt"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parent-profile-form-page.ts",
+      "line": 8,
+      "lines": 114,
+      "template": "src/app/features/parents/parent-profile-form-page.html",
+      "style": "src/app/features/parents/parent-profile-form-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "choosePhoto",
+        "save",
+        "cancel"
+      ]
+    },
+    {
+      "file": "src/app/features/parents/parents-page.ts",
+      "line": 25,
+      "lines": 263,
+      "template": "src/app/features/parents/parents-page.html",
+      "style": "src/app/features/parents/parents-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "edit",
+        "deleteParent",
+        "addParent",
+        "openDetails",
+        "refresh",
+        "exportParents",
+        "changePage",
+        "changePageSize",
+        "applyDirectoryFilters",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "resetDirectoryFilters",
+        "initials",
+        "emailFor",
+        "joinedOn",
+        "openDashboard",
+        "loadParents",
+        "downloadCsv"
+      ]
+    },
+    {
+      "file": "src/app/features/payments/payments-page.ts",
+      "line": 58,
+      "lines": 309,
+      "template": "src/app/features/payments/payments-page.html",
+      "style": "src/app/features/payments/payments-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/payments/payments-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "chargeChanged",
+        "submit",
+        "changePage",
+        "setPageSize",
+        "setSearch",
+        "resetFilters",
+        "setStatus",
+        "setSortBy",
+        "sortColumn",
+        "setSortDirection",
+        "printReceipt",
+        "openRefund",
+        "submitRefund",
+        "reload",
+        "paymentStudent",
+        "paymentReceipt",
+        "chargeStudent"
+      ]
+    },
+    {
+      "file": "src/app/features/reports/reports-page.ts",
+      "line": 118,
+      "lines": 723,
+      "template": "src/app/features/reports/reports-page.html",
+      "style": "src/app/features/reports/reports-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/reports/reports-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "updateReportType",
+        "updateReportPeriod",
+        "toggleChart",
+        "toggleFilters",
+        "changeReportPage",
+        "changeReportPageSize",
+        "updateChartMetric",
+        "updateChartType",
+        "updateChartGroup",
+        "aggregateChartValues",
+        "numericValue",
+        "updateScopeFilters",
+        "scopedDataset",
+        "coachDataset",
+        "generate",
+        "money",
+        "exportCsv",
+        "viewReportDetail",
+        "print"
+      ]
+    },
+    {
+      "file": "src/app/features/settings/academy-settings-page.ts",
+      "line": 12,
+      "lines": 140,
+      "template": "src/app/features/settings/academy-settings-page.html",
+      "style": "src/app/features/settings/academy-settings-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "show",
+        "ngOnInit",
+        "save",
+        "openTestWhatsAppMessage",
+        "load"
+      ]
+    },
+    {
+      "file": "src/app/features/settings/audit-log-page.ts",
+      "line": 46,
+      "lines": 562,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": "src/app/features/settings/audit-log-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "ngOnDestroy",
+        "cancelFilterTimer",
+        "scheduleFilters",
+        "sortColumn",
+        "resetFilters",
+        "setPageSize",
+        "load",
+        "export"
+      ]
+    },
+    {
+      "file": "src/app/features/settings/settings-navigation.ts",
+      "line": 9,
+      "lines": 83,
+      "template": "src/app/features/settings/settings-navigation.html",
+      "style": "src/app/features/settings/settings-navigation.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "focusPanel",
+        "openSimpleDialog",
+        "invite"
+      ]
+    },
+    {
+      "file": "src/app/features/settings/settings-tools-page.ts",
+      "line": 40,
+      "lines": 255,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": "src/app/features/settings/settings-tools-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "setTheme",
+        "exportData"
+      ]
+    },
+    {
+      "file": "src/app/features/settings/users-page.ts",
+      "line": 15,
+      "lines": 38,
+      "template": "src/app/features/settings/users-page.html",
+      "style": "src/app/features/settings/users-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "ngOnDestroy",
+        "invite",
+        "changeAccess",
+        "scheduleFilters",
+        "setPage",
+        "setPageSize",
+        "sortColumn",
+        "reload"
+      ]
+    },
+    {
+      "file": "src/app/features/students/student-details-page.ts",
+      "line": 26,
+      "lines": 170,
+      "template": "src/app/features/students/student-details-page.html",
+      "style": "src/app/features/students/student-details-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "sortTable",
+        "ngOnInit",
+        "retry",
+        "load",
+        "openBreadcrumb",
+        "edit",
+        "backToStudents",
+        "markAttendance",
+        "openPayments",
+        "sendMessage",
+        "setTab",
+        "initials",
+        "text",
+        "timelineValue",
+        "related",
+        "fileSize",
+        "amount",
+        "changeHistoryPage",
+        "if",
+        "changeHistoryPageSize"
+      ]
+    },
+    {
+      "file": "src/app/features/students/student-form-page.ts",
+      "line": 7,
+      "lines": 187,
+      "template": "src/app/features/students/student-form-page.html",
+      "style": "src/app/features/students/student-form-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "save",
+        "cancel",
+        "selectPhoto",
+        "openBreadcrumb"
+      ]
+    },
+    {
+      "file": "src/app/features/students/students-page.ts",
+      "line": 29,
+      "lines": 268,
+      "template": "src/app/features/students/students-page.html",
+      "style": "src/app/features/students/students-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/features/students/students-page.spec.ts",
+      "onPush": true,
+      "methods": [
+        "ngOnInit",
+        "search",
+        "filter",
+        "changeSortBy",
+        "sortColumn",
+        "changeSortDirection",
+        "resetFilters",
+        "goToPage",
+        "setPageSize",
+        "retry",
+        "openAdd",
+        "openStudent",
+        "editStudent",
+        "openBreadcrumb",
+        "initials",
+        "hideBrokenImage",
+        "deleteStudent",
+        "exportStudents",
+        "load",
+        "loadMetrics",
+        "loadFilters"
+      ]
+    },
+    {
+      "file": "src/app/features/system/design-system-page.ts",
+      "line": 5,
+      "lines": 96,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/system/developer-handoff-page.ts",
+      "line": 5,
+      "lines": 100,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/system/module-page.ts",
+      "line": 12,
+      "lines": 33,
+      "template": "src/app/features/system/module-page.html",
+      "style": "src/app/features/system/module-page.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/features/system/search-page.ts",
+      "line": 6,
+      "lines": 20,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "constructor",
+        "search"
+      ]
+    },
+    {
+      "file": "src/app/layout/staff-layout/staff-layout.ts",
+      "line": 32,
+      "lines": 290,
+      "template": "src/app/layout/staff-layout/staff-layout.html",
+      "style": "src/app/layout/staff-layout/staff-layout.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "navigationItems",
+        "toggleMenu",
+        "toggleCoachAttendanceMenu",
+        "submitGlobalSearch",
+        "ngOnInit",
+        "loadParentUnread",
+        "loadProfilePhoto",
+        "itemRoute",
+        "itemLabel",
+        "logout"
+      ]
+    },
+    {
+      "file": "src/app/shared/academy-support.ts",
+      "line": 4,
+      "lines": 73,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/async-state/async-state.ts",
+      "line": 3,
+      "lines": 16,
+      "template": "src/app/shared/async-state/async-state.html",
+      "style": "src/app/shared/async-state/async-state.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/calendar-layout/calendar-layout.ts",
+      "line": 3,
+      "lines": 10,
+      "template": "src/app/shared/calendar-layout/calendar-layout.html",
+      "style": "src/app/shared/calendar-layout/calendar-layout.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/column-filter/column-filter.ts",
+      "line": 3,
+      "lines": 29,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "set",
+        "reset",
+        "params"
+      ]
+    },
+    {
+      "file": "src/app/shared/data-table/data-table.ts",
+      "line": 5,
+      "lines": 23,
+      "template": "src/app/shared/data-table/data-table.html",
+      "style": "src/app/shared/data-table/data-table.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/data-table/table-tools.ts",
+      "line": 5,
+      "lines": 72,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "ngAfterViewInit",
+        "ngOnDestroy",
+        "rows",
+        "exportPage"
+      ]
+    },
+    {
+      "file": "src/app/shared/filter-bar/filter-bar.ts",
+      "line": 3,
+      "lines": 71,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "onInput"
+      ]
+    },
+    {
+      "file": "src/app/shared/interaction-dialog/interaction-dialog.ts",
+      "line": 5,
+      "lines": 12,
+      "template": "src/app/shared/interaction-dialog/interaction-dialog.html",
+      "style": "src/app/shared/interaction-dialog/interaction-dialog.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/shared/interaction-dialog/interaction-dialog.spec.ts",
+      "onPush": true,
+      "methods": [
+        "constructor",
+        "cancel"
+      ]
+    },
+    {
+      "file": "src/app/shared/notification-section-nav/notification-section-nav.ts",
+      "line": 4,
+      "lines": 14,
+      "template": "src/app/shared/notification-section-nav/notification-section-nav.html",
+      "style": "src/app/shared/notification-section-nav/notification-section-nav.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/page-hero/page-hero.ts",
+      "line": 10,
+      "lines": 32,
+      "template": "src/app/shared/page-hero/page-hero.html",
+      "style": "src/app/shared/page-hero/page-hero.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/shared/page-hero/page-hero.spec.ts",
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/pagination/pagination.ts",
+      "line": 4,
+      "lines": 51,
+      "template": "src/app/shared/pagination/pagination.html",
+      "style": "src/app/shared/pagination/pagination.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/shared/pagination/pagination.spec.ts",
+      "onPush": true,
+      "methods": [
+        "selectPage",
+        "selectPageSize"
+      ]
+    },
+    {
+      "file": "src/app/shared/sortable-header/sortable-header.ts",
+      "line": 5,
+      "lines": 62,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/status-badge/status-badge.ts",
+      "line": 8,
+      "lines": 20,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": "src/app/shared/status-badge/status-badge.spec.ts",
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/summary-cards/summary-cards.ts",
+      "line": 13,
+      "lines": 24,
+      "template": "src/app/shared/summary-cards/summary-cards.html",
+      "style": "src/app/shared/summary-cards/summary-cards.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/summary-metric-card/summary-metric-card.ts",
+      "line": 6,
+      "lines": 21,
+      "template": "src/app/shared/summary-metric-card/summary-metric-card.html",
+      "style": "src/app/shared/summary-metric-card/summary-metric-card.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/toast/toast-host.ts",
+      "line": 2,
+      "lines": 3,
+      "template": null,
+      "style": null,
+      "inlineTemplate": true,
+      "inlineStyles": true,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/ui-card/ui-card.ts",
+      "line": 3,
+      "lines": 14,
+      "template": "src/app/shared/ui-card/ui-card.html",
+      "style": "src/app/shared/ui-card/ui-card.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": []
+    },
+    {
+      "file": "src/app/shared/whatsapp-action/whatsapp-action.ts",
+      "line": 9,
+      "lines": 61,
+      "template": "src/app/shared/whatsapp-action/whatsapp-action.html",
+      "style": "src/app/shared/whatsapp-action/whatsapp-action.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": "src/app/shared/whatsapp-action/whatsapp-action.spec.ts",
+      "onPush": true,
+      "methods": [
+        "open"
+      ]
+    },
+    {
+      "file": "src/app/shared/whatsapp-confirmation-dialog/whatsapp-confirmation-dialog.ts",
+      "line": 9,
+      "lines": 71,
+      "template": "src/app/shared/whatsapp-confirmation-dialog/whatsapp-confirmation-dialog.html",
+      "style": "src/app/shared/whatsapp-confirmation-dialog/whatsapp-confirmation-dialog.scss",
+      "inlineTemplate": false,
+      "inlineStyles": false,
+      "spec": null,
+      "onPush": true,
+      "methods": [
+        "openWhatsApp",
+        "cancel"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "file": "src/app/features/attendance/attendance-calendar-page.html",
+      "line": 166,
+      "headers": [
+        "Date",
+        "Student",
+        "Batch",
+        "Check In",
+        "Check Out",
+        "Status",
+        "Remarks"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": false,
+      "hasError": false,
+      "source": "src/app/features/attendance/attendance-calendar-page.ts"
+    },
+    {
+      "file": "src/app/features/attendance/attendance-correction-page.html",
+      "line": 28,
+      "headers": [
+        "Student",
+        "Date",
+        "Batch",
+        "Current",
+        "Requested",
+        "Reason",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "resolve(row['id'], true)",
+        "resolve(row['id'], false)"
+      ],
+      "columnFilters": 7,
+      "sortHeaders": 14,
+      "hasLoading": false,
+      "hasEmpty": false,
+      "hasError": false,
+      "source": "src/app/features/attendance/attendance-correction-page.ts"
+    },
+    {
+      "file": "src/app/features/attendance/attendance-history-page.html",
+      "line": 72,
+      "headers": [
+        "{{ col }}"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": false,
+      "hasError": false,
+      "source": "src/app/features/attendance/attendance-history-page.ts"
+    },
+    {
+      "file": "src/app/features/attendance/offline-queue-page.html",
+      "line": 46,
+      "headers": [
+        "#",
+        "Student",
+        "Type",
+        "Date",
+        "Time",
+        "Status",
+        "Reason",
+        "Actions"
+      ],
+      "buttons": [
+        "retry(row.id)",
+        "discard(row.id)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 12,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/attendance/offline-queue-page.ts"
+    },
+    {
+      "file": "src/app/features/attendance/qr-attendance-page.html",
+      "line": 407,
+      "headers": [
+        "Student",
+        "Action",
+        "Time",
+        "Batch",
+        "Parent update"
+      ],
+      "buttons": [
+        "prepareSavedWhatsApp(event.studentId, event.batchId, event.action === 'Check in' ? 'check_in' : 'check_out', event.name)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/attendance/qr-attendance-page.ts"
+    },
+    {
+      "file": "src/app/features/attendance/qr-attendance-page.html",
+      "line": 456,
+      "headers": [
+        "Schedule",
+        "Batch / Program",
+        "Inside"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/attendance/qr-attendance-page.ts"
+    },
+    {
+      "file": "src/app/features/batches/batches-page.html",
+      "line": 225,
+      "headers": [
+        "Student",
+        "Batch",
+        "Status",
+        "Start",
+        "Action",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "resetColumnFilters()",
+        "cancelEnrollment(e.id)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 8,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/batches/batches-page.ts"
+    },
+    {
+      "file": "src/app/features/batches/batches-page.html",
+      "line": 283,
+      "headers": [
+        "#",
+        "Batch",
+        "Schedule",
+        "Coaches",
+        "Capacity",
+        "Status",
+        "Monthly fee",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "resetColumnFilters()",
+        "unassign(b.id, c.coach_id)",
+        "edit(b)",
+        "remove(b)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/batches/batches-page.ts"
+    },
+    {
+      "file": "src/app/features/batches/batches-page.html",
+      "line": 416,
+      "headers": [
+        "Student",
+        "Batch",
+        "Added",
+        "Actions",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [
+        "waitAction(w.batch_id, w.student_id, 'promote')",
+        "waitAction(w.batch_id, w.student_id, 'remove')"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 6,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/batches/batches-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 65,
+      "headers": [
+        "Batch",
+        "Age group",
+        "Students",
+        "Schedule",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": false,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 396,
+      "headers": [
+        "Date",
+        "Day",
+        "Time",
+        "Topic / focus",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 433,
+      "headers": [
+        "Date",
+        "Day",
+        "Time",
+        "Topic / focus",
+        "Venue"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 535,
+      "headers": [
+        "#",
+        "Student",
+        "Student ID",
+        "Age",
+        "Batch",
+        "Attendance",
+        "Last attendance",
+        "Status",
+        "Actions"
+      ],
+      "buttons": [
+        "selectStudent(s.id)",
+        "$event.stopPropagation(); go('/coach/students/' + s.id)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 818,
+      "headers": [
+        "Date",
+        "Day",
+        "Check in",
+        "Check out",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 956,
+      "headers": [
+        "#",
+        "Student",
+        "Student ID",
+        "Age",
+        "Status",
+        "Check-in time",
+        "Check-out time",
+        "Actions"
+      ],
+      "buttons": [
+        "go('/coach/students/' + student.id)"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 1198,
+      "headers": [
+        "#",
+        "Student",
+        "Student ID",
+        "Total",
+        "Present",
+        "Absent",
+        "Late",
+        "Attendance"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coach/coach-portal-page.html",
+      "line": 1640,
+      "headers": [
+        "Date",
+        "Student",
+        "Batch",
+        "Check in",
+        "Check out",
+        "Status",
+        "Source",
+        "Remarks"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/coach/coach-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/coaches/coach-details-page.html",
+      "line": 9,
+      "headers": [
+        "Batch",
+        "Present",
+        "Late",
+        "Absent",
+        "Total records"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/coaches/coach-details-page.ts"
+    },
+    {
+      "file": "src/app/features/coaches/coaches-page.html",
+      "line": 40,
+      "headers": [
+        "#",
+        "Coach",
+        "Specialization",
+        "Contact",
+        "Experience",
+        "Qualification",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "openCoachDetails(coach)",
+        "openCoachDetails(coach)",
+        "edit(coach)",
+        "deleteCoach(coach)"
+      ],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/coaches/coaches-page.ts"
+    },
+    {
+      "file": "src/app/features/enrollments/enrollments-page.html",
+      "line": 18,
+      "headers": [
+        "Student",
+        "Batch",
+        "Fee plan",
+        "Monthly fee",
+        "Validity",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "['/students', row.student_id]"
+      ],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/enrollments/enrollments-page.ts"
+    },
+    {
+      "file": "src/app/features/enrollments/enrollments-page.html",
+      "line": 204,
+      "headers": [
+        "Recorded at",
+        "Effective date",
+        "Student",
+        "Action",
+        "Batch",
+        "Performed by",
+        "Reason",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 7,
+      "sortHeaders": 14,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/enrollments/enrollments-page.ts"
+    },
+    {
+      "file": "src/app/features/fees/fee-operations-page.html",
+      "line": 60,
+      "headers": [
+        "Student",
+        "Period",
+        "Base",
+        "Discount",
+        "Late fee",
+        "Paid",
+        "Balance",
+        "Status",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 8,
+      "sortHeaders": 16,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/fees/fee-operations-page.ts"
+    },
+    {
+      "file": "src/app/features/fees/fee-operations-page.html",
+      "line": 85,
+      "headers": [
+        "Name",
+        "Kind",
+        "Value",
+        "{{ view === 'late-fees' ? 'Grace days' : 'Validity' }}",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [
+        "open(row)",
+        "remove(row)"
+      ],
+      "columnFilters": 5,
+      "sortHeaders": 10,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/fees/fee-operations-page.ts"
+    },
+    {
+      "file": "src/app/features/fees/fee-plans-page.html",
+      "line": 30,
+      "headers": [
+        "#",
+        "Plan name",
+        "Description",
+        "Duration",
+        "Monthly fee",
+        "Total fee",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "open(plan)",
+        "open(plan, true)",
+        "remove(plan)"
+      ],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/fees/fee-plans-page.ts"
+    },
+    {
+      "file": "src/app/features/fees/fees-page.html",
+      "line": 35,
+      "headers": [
+        "#",
+        "Student name",
+        "Batch",
+        "Fee plan",
+        "Month",
+        "Monthly charge",
+        "Due date",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "downloadInvoice(row.id)",
+        "confirmPay(row.id, row.balancePaise, row.studentName)",
+        "['/students',row.studentId]"
+      ],
+      "columnFilters": 7,
+      "sortHeaders": 14,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/fees/fees-page.ts"
+    },
+    {
+      "file": "src/app/features/notifications/academy-events-page.html",
+      "line": 20,
+      "headers": [
+        "Date",
+        "Event",
+        "Type",
+        "Description",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "reload()",
+        "open(row)",
+        "toggle(row)"
+      ],
+      "columnFilters": 5,
+      "sortHeaders": 10,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/notifications/academy-events-page.ts"
+    },
+    {
+      "file": "src/app/features/notifications/notification-templates-page.html",
+      "line": 84,
+      "headers": [
+        "Name",
+        "Key",
+        "Channel",
+        "Message",
+        "Status",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "open(row)",
+        "toggle(row)"
+      ],
+      "columnFilters": 5,
+      "sortHeaders": 10,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/notifications/notification-templates-page.ts"
+    },
+    {
+      "file": "src/app/features/notifications/notifications-page.html",
+      "line": 15,
+      "headers": [
+        "Message",
+        "Recipient",
+        "Channel",
+        "Type",
+        "Status",
+        "Date",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "delivery(row)"
+      ],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/notifications/notifications-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-child-profile-page.html",
+      "line": 186,
+      "headers": [
+        "Date",
+        "Batch",
+        "Status",
+        "Check in",
+        "Check out"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-child-profile-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-child-profile-page.html",
+      "line": 230,
+      "headers": [
+        "Date",
+        "Amount",
+        "Method",
+        "Reference",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-child-profile-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-dashboard-page.html",
+      "line": 242,
+      "headers": [
+        "Date",
+        "Status",
+        "Check in",
+        "Check out"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-dashboard-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-dashboard-page.html",
+      "line": 279,
+      "headers": [
+        "Date",
+        "Amount",
+        "Method",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-dashboard-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-details-page.html",
+      "line": 37,
+      "headers": [
+        "Date",
+        "Record",
+        "Action",
+        "By"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-details-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-details-page.html",
+      "line": 41,
+      "headers": [
+        "Date",
+        "Amount",
+        "Status",
+        "Receipts"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-details-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-portal-page.html",
+      "line": 106,
+      "headers": [
+        "Date",
+        "Session",
+        "Check in",
+        "Check out",
+        "Duration",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 6,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-portal-page.html",
+      "line": 259,
+      "headers": [
+        "Month",
+        "Base",
+        "Discount",
+        "Late fee",
+        "Amount",
+        "Paid",
+        "Outstanding",
+        "Due date",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parent-portal-page.html",
+      "line": 316,
+      "headers": [
+        "Date",
+        "Amount",
+        "Method",
+        "Transaction ID",
+        "Status",
+        "Receipt"
+      ],
+      "buttons": [
+        "open(receipt(p, 'url'))"
+      ],
+      "columnFilters": 0,
+      "sortHeaders": 10,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/parents/parent-portal-page.ts"
+    },
+    {
+      "file": "src/app/features/parents/parents-page.html",
+      "line": 41,
+      "headers": [
+        "#",
+        "Parent name",
+        "Relation",
+        "Phone",
+        "Email",
+        "Children",
+        "Status",
+        "Joined on",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "openDetails(row.id)",
+        "openDetails(row.id)",
+        "edit(row)",
+        "deleteParent(row)"
+      ],
+      "columnFilters": 7,
+      "sortHeaders": 14,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/parents/parents-page.ts"
+    },
+    {
+      "file": "src/app/features/payments/payments-page.html",
+      "line": 57,
+      "headers": [
+        "Receipt",
+        "Student",
+        "Date",
+        "Mode",
+        "Status",
+        "Amount",
+        "Action",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "printReceipt(row)"
+      ],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/payments/payments-page.ts"
+    },
+    {
+      "file": "src/app/features/reports/reports-page.html",
+      "line": 186,
+      "headers": [
+        "{{ column.label }}"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/reports/reports-page.ts"
+    },
+    {
+      "file": "src/app/features/reports/reports-page.html",
+      "line": 375,
+      "headers": [
+        "{{ column.label }}"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/reports/reports-page.ts"
+    },
+    {
+      "file": "src/app/features/settings/users-page.html",
+      "line": 7,
+      "headers": [
+        "User",
+        "Contact",
+        "Role",
+        "Status",
+        "Joined",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 10,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/settings/users-page.ts"
+    },
+    {
+      "file": "src/app/features/students/student-details-page.html",
+      "line": 191,
+      "headers": [
+        "Document",
+        "Category",
+        "Uploaded on",
+        "Uploaded by",
+        "Size (bytes)",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 5,
+      "sortHeaders": 10,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/students/student-details-page.ts"
+    },
+    {
+      "file": "src/app/features/students/student-details-page.html",
+      "line": 234,
+      "headers": [
+        "Date",
+        "Batch",
+        "Status",
+        "Check in",
+        "Check out",
+        "Marked by",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/students/student-details-page.ts"
+    },
+    {
+      "file": "src/app/features/students/student-details-page.html",
+      "line": 275,
+      "headers": [
+        "Date",
+        "Amount",
+        "Mode",
+        "Reference",
+        "Status",
+        "Recorded by",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 6,
+      "sortHeaders": 12,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/students/student-details-page.ts"
+    },
+    {
+      "file": "src/app/features/students/student-details-page.html",
+      "line": 330,
+      "headers": [
+        "Date",
+        "Type",
+        "Detail",
+        "",
+        "",
+        ""
+      ],
+      "buttons": [],
+      "columnFilters": 3,
+      "sortHeaders": 6,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/students/student-details-page.ts"
+    },
+    {
+      "file": "src/app/features/students/students-page.html",
+      "line": 41,
+      "headers": [
+        "#",
+        "Student",
+        "Batch / Program",
+        "Coach",
+        "Date of birth",
+        "Phone",
+        "Status",
+        "Parent / Guardian",
+        "Join date",
+        "Actions",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Reset"
+      ],
+      "buttons": [
+        "columns.reset()",
+        "openStudent(row.id)",
+        "openStudent(row.id)",
+        "editStudent(row.id)",
+        "deleteStudent(row)"
+      ],
+      "columnFilters": 8,
+      "sortHeaders": 16,
+      "hasLoading": true,
+      "hasEmpty": true,
+      "hasError": true,
+      "source": "src/app/features/students/students-page.ts"
+    },
+    {
+      "file": "src/app/features/system/module-page.html",
+      "line": 3,
+      "headers": [
+        "Receipt",
+        "Student",
+        "Date",
+        "Mode",
+        "Amount"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": true,
+      "hasError": false,
+      "source": "src/app/features/system/module-page.ts"
+    },
+    {
+      "file": "src/app/features/system/module-page.html",
+      "line": 5,
+      "headers": [
+        "Student",
+        "Period",
+        "Charge",
+        "Balance",
+        "Status"
+      ],
+      "buttons": [],
+      "columnFilters": 0,
+      "sortHeaders": 0,
+      "hasLoading": false,
+      "hasEmpty": false,
+      "hasError": false,
+      "source": "src/app/features/system/module-page.ts"
+    }
+  ],
+  "counts": {
+    "sourceFiles": 288,
+    "components": 69,
+    "tables": 49,
+    "specFiles": 56,
+    "migrations": 71
+  }
+}

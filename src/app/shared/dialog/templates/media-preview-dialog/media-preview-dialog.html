@@ -1,0 +1,18 @@
+@if (config().message) {
+  <p class="dialog-message">{{ config().message }}</p>
+}
+
+@if (config().media; as media) {
+  <figure class="media-frame">
+    @if (media.kind === 'video') {
+      <video [src]="media.src" controls playsinline></video>
+    } @else {
+      <img [src]="media.src" [alt]="media.alt ?? config().title" />
+    }
+    @if (media.alt) {
+      <figcaption>{{ media.alt }}</figcaption>
+    }
+  </figure>
+} @else {
+  <p class="media-empty">No media selected.</p>
+}

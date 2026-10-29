@@ -1,0 +1,79 @@
+{
+  "redirects": [
+    {
+      "role": "admin",
+      "route": "redirect/admin",
+      "expected": "/dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "status": "PASS"
+    },
+    {
+      "role": "receptionist",
+      "route": "redirect/reception",
+      "expected": "/dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "status": "PASS"
+    },
+    {
+      "role": "coach",
+      "route": "redirect/coach",
+      "expected": "/coach/dashboard",
+      "finalPath": "/coach/dashboard",
+      "status": "PASS"
+    },
+    {
+      "role": "parent",
+      "route": "redirect/parent",
+      "expected": "/parent/dashboard",
+      "finalPath": "/parent/dashboard",
+      "status": "PASS"
+    }
+  ],
+  "users": {
+    "sortRequests": [
+      {
+        "path": "/functions/v1/admin-manage-users",
+        "body": {
+          "action": "list",
+          "page": 1,
+          "pageSize": 5,
+          "search": "",
+          "role": "",
+          "status": "",
+          "filters": {
+            "name": "",
+            "contact": "",
+            "role": "",
+            "status": "",
+            "joined": ""
+          },
+          "sortBy": "name",
+          "sortDirection": "asc"
+        }
+      }
+    ],
+    "pageSizeRequests": [
+      {
+        "path": "/functions/v1/admin-manage-users",
+        "body": {
+          "action": "list",
+          "page": 1,
+          "pageSize": 10,
+          "search": "",
+          "role": "",
+          "status": "",
+          "filters": {
+            "name": "",
+            "contact": "",
+            "role": "",
+            "status": "",
+            "joined": ""
+          },
+          "sortBy": "name",
+          "sortDirection": "asc"
+        }
+      }
+    ]
+  },
+  "blocked": []
+}

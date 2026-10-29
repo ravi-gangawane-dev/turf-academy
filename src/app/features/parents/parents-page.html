@@ -1,0 +1,119 @@
+<div class="app-list-page parents-page">
+  @if (message()) {
+  <div class="parent-notice" role="status">
+    <span>{{ message() }}</span><button aria-label="Dismiss" (click)="message.set('')"><i
+        class="pi pi-times"></i></button>
+  </div>
+  }
+  @if (error()) {
+  <app-async-state kind="error" title="Could not load parents" [message]="error()" />
+  }
+
+  <app-page-hero class="student-list-hero" title="Parent List" subtitle="Manage and view all academy parents."
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents' }]" actionLabel="Add Parent"
+    actionIcon="pi-plus" (action)="addParent()" />
+  <section class="student-metrics parent-summary">
+    <app-summary-metric-card label="Total parents" [value]="metrics().total" icon="pi-users" />
+    <app-summary-metric-card label="Active parents" [value]="metrics().active" icon="pi-user-plus" tone="blue" />
+    <app-summary-metric-card label="Inactive parents" [value]="metrics().inactive" icon="pi-user-minus" tone="orange" />
+    <app-summary-metric-card label="Total children linked" [value]="metrics().children" icon="pi-users" tone="purple" />
+    <app-summary-metric-card label="New this month" [value]="metrics().newThisMonth" icon="pi-calendar"
+      hint="Based on registration date" />
+  </section>
+  <app-data-table class="parent-directory directory-card" [total]="parentTotal()" [page]="page()"
+    [pageSize]="pageSize()" itemLabel="parents" (pageChange)="changePage($event)"
+    (pageSizeChange)="changePageSize($event)">
+
+    <div table-content class="parent-table-wrap table-wrap">
+      <app-table-tools title="Parents" [table]="exportTable1" [customExport]="true"><button type="button"
+          (click)="exportParents()" [disabled]="exporting()">Export parents</button></app-table-tools>
+      <table #exportTable1 class="academy-table student-table reference-table no-selection">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><app-sortable-header sortKey="name" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Parent name</app-sortable-header></th>
+            <th><app-sortable-header sortKey="relation" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Relation</app-sortable-header></th>
+            <th><app-sortable-header sortKey="phone" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Phone</app-sortable-header></th>
+            <th><app-sortable-header sortKey="email" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Email</app-sortable-header></th>
+            <th><app-sortable-header sortKey="children" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Children</app-sortable-header></th>
+            <th><app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+            <th><app-sortable-header sortKey="joinedOn" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Joined on</app-sortable-header></th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th></th>
+            <th><app-column-filter label="parent name" type="search" [value]="columns.values()['name'] || ''"
+                (changed)="columns.set('name',$event)" /></th>
+            <th><app-column-filter label="relation" type="search" [value]="columns.values()['relation'] || ''"
+                (changed)="columns.set('relation',$event)" /></th>
+            <th><app-column-filter label="phone" type="search" [value]="columns.values()['phone'] || ''"
+                (changed)="columns.set('phone',$event)" /></th>
+            <th><app-column-filter label="email" type="search" [value]="columns.values()['email'] || ''"
+                (changed)="columns.set('email',$event)" /></th>
+            <th><app-column-filter label="children" type="search" [value]="columns.values()['children'] || ''"
+                (changed)="columns.set('children',$event)" /></th>
+            <th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status',$event)" /></th>
+            <th><app-column-filter label="joined on" type="date" [value]="columns.values()['joinedOn'] || ''"
+                (changed)="columns.set('joinedOn',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loadingParents()) {
+          <tr>
+            <td colspan="9"><app-async-state title="Loading parents..." /></td>
+          </tr>
+          } @else {
+          @for (row of pagedRows(); track row.id; let i = $index) {
+          <tr>
+            <td>{{ (page() - 1) * pageSize() + i + 1 }}</td>
+            <td>
+              <button class="parent-name" (click)="openDetails(row.id)">
+                <span>
+                  @if (row.photoUrl) {
+                  <img [src]="row.photoUrl" alt="" />
+                  } @else {
+                  {{ initials(row.name) }}
+                  }</span><strong>{{ row.name }}</strong>
+              </button>
+            </td>
+            <td>{{ row.relation }}</td>
+            <td><i class="pi pi-phone"></i>{{ row.mobile }}</td>
+            <td><i class="pi pi-envelope"></i>{{ emailFor(row.name) }}</td>
+            <td><i class="pi pi-users"></i>{{ row.children.length }}</td>
+            <td>
+              <app-status-badge [status]="row.status" />
+            </td>
+            <td><i class="pi pi-calendar"></i>{{ row.joinedOn?.slice(0, 10) || '—' }}</td>
+            <td>
+              <span class="row-actions">
+                <button class="icon-button" aria-label="View parent" (click)="openDetails(row.id)">
+                  <i class="pi pi-eye"></i>
+                </button><button class="icon-button" aria-label="Edit parent" (click)="edit(row)">
+                  <i class="pi pi-pencil"></i>
+                </button>
+                <button class="icon-button" aria-label="Delete parent" (click)="deleteParent(row)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </span>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="9">@if (!error()) { <app-async-state kind="empty" title="No matching parents found." /> }</td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>

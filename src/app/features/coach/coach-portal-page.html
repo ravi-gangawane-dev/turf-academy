@@ -1,0 +1,1683 @@
+<div class="coach-page">
+  @if (loading()) {
+  <app-async-state title="Loading coach portal…" />
+  } @else if (error()) {
+  <app-async-state kind="error" [title]="'Unable to load ' + title()" [message]="error()" actionLabel="Retry"
+    (action)="load()" />
+  } @else if (data(); as vm) {
+  <app-page-hero [title]="$any(view() === 'dashboard' ? vm.coach['full_name'] : title())" [subtitle]="heroSubtitle()"
+    [breadcrumbs]="heroBreadcrumbs()" [eyebrow]="view() === 'dashboard' ? 'Good day,' : ''"
+    quote="Good coaches build great players." [brandName]="academyPreferences.value().academy_name" (breadcrumbSelected)="$event === 'Dashboard' && go('/coach/dashboard')" />
+
+  @if (batchesLoading()) { <app-async-state title="Loading assigned batches…" /> }
+  @if (batchesError()) { <p class="message error" role="alert">Batches: {{ batchesError() }}</p> }
+  @if (studentsError()) { <p class="message error" role="alert">Students: {{ studentsError() }}</p> }
+  @if (attendanceError()) { <p class="message error" role="alert">Attendance: {{ attendanceError() }}</p> }
+  @if (sessionsError()) { <p class="message error" role="alert">Sessions: {{ sessionsError() }}</p> }
+  @if (notificationsError()) { <p class="message error" role="alert">Notifications: {{ notificationsError() }}</p> }
+
+  @if (
+  !batchesLoading() && !batchesError() && !vm.batches.length &&
+  view() !== 'profile' &&
+  view() !== 'support' &&
+  view() !== 'notifications'
+  ) {
+  <app-async-state kind="empty" title="No batches assigned" message="Please contact the academy administrator."
+    actionLabel="Contact academy" (action)="go('/coach/support')" />
+  } @else {
+  @switch (view()) {
+  @case ('dashboard') {
+  @if (studentsLoading() || attendanceLoading() || sessionsLoading() || notificationsLoading()) {
+    <p class="message" role="status">Dashboard panels are loading independently…</p>
+  }
+  <app-summary-cards [cards]="dashboardCards()" ariaLabel="Coach dashboard summary" />
+  <section class="coach-dashboard-grid">
+    <div class="dashboard-main">
+      <article class="card span-2">
+        <header>
+          <h2>Today's schedule</h2>
+          <button (click)="go('/coach/schedule')">
+            View all <i aria-hidden="true" class="pi pi-arrow-right"></i>
+          </button>
+        </header>
+        <div class="rows">
+          @for (s of vm.sessions.slice(0, 4); track s['id']) {
+          <button class="row" (click)="go('/coach/batches/' + s['batch_id'])">
+            <i aria-hidden="true" class="pi pi-calendar"></i><span><strong>{{ relation(s, 'batch', 'name') }}</strong><small>{{ s['title']
+                }} · {{ time(s['start_time']) }}–{{
+                time(s['end_time'])
+                }}</small></span><app-status-badge [status]="$any(s['status'])" />
+          </button>
+          } @empty {
+          <p class="empty">No sessions scheduled.</p>
+          }
+        </div>
+      </article>
+      <article class="card dashboard-batches">
+        <header>
+          <h2>My batches</h2>
+          <button (click)="go('/coach/batches')">
+            View all <i aria-hidden="true" class="pi pi-arrow-right"></i>
+          </button>
+        </header>
+        <div class="table-scroll">
+          <app-table-tools title="My batches" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table">
+            <thead>
+              <tr>
+                <th>Batch</th>
+                <th>Age group</th>
+                <th>Students</th>
+                <th>Schedule</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of vm.batches.slice(0, 4); track b.id) {
+              <tr>
+                <td>
+                  <strong>{{ b.name }}</strong>
+                </td>
+                <td>{{ b.age_group || '—' }}</td>
+                <td>{{ batchStudentCount(b.id) }}</td>
+                <td>{{ time(b.start_time) }}–{{ time(b.end_time) }}</td>
+                <td>
+                  <app-status-badge [status]="b.status" />
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+    <div class="dashboard-middle">
+      <article class="card attendance-overview">
+        <header>
+          <h2>Attendance overview</h2>
+          <span>All records</span>
+        </header>
+        <div class="attendance-visual">
+          <div class="dashboard-ring">
+            <strong>{{ attendanceSummary().rate }}%</strong><small>Overall</small>
+          </div>
+          <dl>
+            <dt><i class="present"></i>Present</dt>
+            <dd>{{ attendanceSummary().present }}</dd>
+            <dt><i class="absent"></i>Absent</dt>
+            <dd>{{ attendanceSummary().absent }}</dd>
+            <dt><i class="late"></i>Late</dt>
+            <dd>{{ attendanceSummary().late }}</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="card">
+        <header>
+          <h2>Recent check-ins</h2>
+          <button (click)="go('/coach/attendance')">View all</button>
+        </header>
+        <div class="rows">
+          @for (r of vm.attendance.slice(0, 5); track r['id']) {
+          <div class="row">
+            <i aria-hidden="true" class="pi pi-check-circle"></i><span><strong>{{ relation(r, 'student', 'full_name') }}</strong><small>{{
+                $any(r['attendance_date']) | date: 'dd MMM' }}</small></span><b>{{ time(r['check_in_at']) }}</b>
+          </div>
+          }
+        </div>
+      </article>
+      <article class="card dashboard-notifications">
+        <header>
+          <h2>Recent notifications</h2>
+          <button (click)="go('/coach/notifications')">View all</button>
+        </header>
+        @for (n of vm.notifications.slice(0, 3); track n['id']) {
+        <button (click)="markNotificationRead($any(n['id']))">
+          <i aria-hidden="true" class="pi pi-bell"></i><span><strong>{{ n['subject'] }}</strong><small>{{ n['body'] }}</small></span>
+        </button>
+        } @empty {
+        <p class="empty">No notifications.</p>
+        }
+      </article>
+    </div>
+    <aside class="dashboard-side">
+      <article class="card quick-actions">
+        <h2>Quick actions</h2>
+        <div>
+          <button (click)="go('/coach/attendance/check-in-out')">
+            <i aria-hidden="true" class="pi pi-calendar"></i><span>Take attendance<small>Check in, check out or scan</small></span></button><button
+            (click)="go('/coach/students')">
+            <i aria-hidden="true" class="pi pi-users"></i><span>View students<small>Assigned batches</small></span>
+          </button>
+        </div>
+      </article>
+      <article class="card upcoming-card">
+        <header>
+          <h2>Upcoming sessions</h2>
+          <button (click)="go('/coach/schedule')">View all</button>
+        </header>
+        @for (s of vm.sessions.slice(0, 3); track s['id']) {
+        <button (click)="go('/coach/batches/' + s['batch_id'])">
+          <time>{{ $any(s['session_date']) | date: 'dd MMM' }}</time><span><strong>{{ relation(s, 'batch', 'name')
+              }}</strong><small>{{ time(s['start_time']) }}–{{ time(s['end_time']) }}</small></span><b>{{ s['status']
+            }}</b>
+        </button>
+        } @empty {
+        <p class="empty">No upcoming sessions.</p>
+        }
+      </article>
+      <article class="coach-quote">
+        <strong>Good coaches<br />create better players<br />tomorrow.</strong><span>Turf Cricket Academy</span>
+      </article>
+    </aside>
+  </section>
+  }
+  @case ('batches') {
+  <app-summary-cards [cards]="batchCards()" ariaLabel="Assigned batch summary" />
+  <section class="card batches-workspace">
+    <app-filter-bar class="list-toolbar batch-toolbar" [showSearch]="false" (resetFilters)="resetBatchFilters()">
+      <nav aria-label="Batch status filter">
+        <button [class.active]="batchStatus() === 'all'" (click)="setBatchStatus('all')">
+          All batches</button><button [class.active]="batchStatus() === 'active'" (click)="setBatchStatus('active')">
+          Ongoing</button><button [class.active]="batchStatus() === 'paused'" (click)="setBatchStatus('paused')">
+          Paused</button><button [class.active]="batchStatus() === 'completed'" (click)="setBatchStatus('completed')">
+          Completed
+        </button>
+      </nav>
+      <label><i aria-hidden="true" class="pi pi-search"></i><input aria-label="Search assigned batches" placeholder="Search batches…"
+          [value]="batchSearch()" (input)="setBatchSearch($event)" /></label>
+      <button class="schedule-action" (click)="go('/coach/schedule')">
+        <i aria-hidden="true" class="pi pi-calendar"></i> View schedule
+      </button>
+    </app-filter-bar>
+    <div class="batch-list">
+      @for (batch of filteredBatches(); track batch.id) {
+      <article class="batch-row">
+        <div class="batch-identity">
+          <span><i aria-hidden="true" class="pi pi-users"></i></span>
+          <div>
+            <h2>
+              {{ batch.name }} <app-status-badge [status]="batch.status" />
+            </h2>
+            <p>{{ batch.skill_level || 'Academy training program' }}</p>
+            <small><i aria-hidden="true" class="pi pi-map-marker"></i> {{ batch.age_group || 'All ages' }} ·
+              Academy ground</small>
+          </div>
+        </div>
+        <div class="batch-cell">
+          <strong>Schedule</strong><span><i aria-hidden="true" class="pi pi-calendar"></i><b>{{ batchDays(batch) }}</b><small>{{
+              time(batch.start_time) }}–{{ time(batch.end_time) }}</small></span>
+        </div>
+        <div class="batch-cell student-capacity">
+          <strong>Students</strong><b>{{ batchStudentCount(batch.id) }} / {{ batch.capacity }}</b><span><i
+              [style.width.%]="
+                          batch.capacity ? (batchStudentCount(batch.id) / batch.capacity) * 100 : 0
+                        "></i></span>
+        </div>
+        <div class="batch-cell batch-attendance">
+          <strong>Attendance</strong>
+          <div class="small-ring">{{ batchAttendance(batch.id).rate }}%</div>
+          <small><i class="present"></i>{{ batchAttendance(batch.id).present }} present<br /><i class="absent"></i>{{
+            batchAttendance(batch.id).absent }} absent<br /><i class="late"></i>{{ batchAttendance(batch.id).late }}
+            late</small>
+        </div>
+        <div class="batch-cell next-session">
+          <strong>Next session</strong>
+          @if (nextSession(batch.id); as session) {
+          <b>{{ $any(session['session_date']) | date: 'EEE, dd MMM' }}</b><small>{{ time(session['start_time'])
+            }}<br />{{
+            session['venue'] || 'Academy ground'
+            }}</small>
+          } @else {
+          <b>Not scheduled</b><small>No upcoming session</small>
+          }
+        </div>
+        <div class="batch-actions">
+          <button (click)="go('/coach/students')">
+            <i aria-hidden="true" class="pi pi-users"></i> View students</button><button (click)="go('/coach/batches/' + batch.id)">
+            View details <i aria-hidden="true" class="pi pi-arrow-right"></i>
+          </button>
+        </div>
+      </article>
+      } @empty {
+      <app-async-state kind="empty" title="No matching batches" message="Try another search or status filter." />
+      }
+    </div>
+  </section>
+  }
+  @case ('batch') {
+  @if (selectedBatch(); as batch) {
+  <section class="batch-detail-head card">
+    <div>
+      <span class="batch-cover"><i aria-hidden="true" class="pi pi-users"></i></span>
+      <div>
+        <nav>
+          <button (click)="go('/coach/batches')">My batches</button><i aria-hidden="true" class="pi pi-angle-right"></i><strong>Batch
+            details</strong>
+        </nav>
+        <h2>
+          {{ batch.name }} <app-status-badge [status]="batch.status" />
+        </h2>
+        <p>{{ batch.description || batch.skill_level + ' training program' }}</p>
+      </div>
+    </div>
+    <aside>
+      <button (click)="go('/coach/students')">
+        <i aria-hidden="true" class="pi pi-users"></i> View students</button>      <button class="primary"
+        (click)="go('/coach/attendance/check-in-out')">
+        <i aria-hidden="true" class="pi pi-calendar"></i> Take attendance</button><button (click)="go('/coach/schedule')">
+        <i aria-hidden="true" class="pi pi-ellipsis-h"></i> Schedule
+      </button>
+    </aside>
+  </section>
+  <section class="batch-summary-strip card">
+    <div>
+      <i aria-hidden="true" class="pi pi-users"></i><span>Age group<strong>{{ batch.age_group || 'All ages' }}</strong></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-calendar"></i><span>Schedule<strong>{{ batchDays(batch) }}</strong><small>{{
+          time(batch.start_time) }}–{{ time(batch.end_time) }}</small></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-map-marker"></i><span>Venue<strong>{{
+          nextSession(batch.id)?.['venue'] || 'Academy ground'
+          }}</strong></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-user-plus"></i><span>Total students<strong>{{ batchStudentCount(batch.id) }}</strong></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-id-card"></i><span>Coach<strong>{{ vm.coach['full_name'] }}</strong><small>Academy
+          coach</small></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-flag"></i><span>Start date<strong>{{
+          batch.start_date ? (batch.start_date | date: 'dd MMM yyyy') : 'Not provided'
+          }}</strong></span>
+    </div>
+  </section>
+  <nav class="batch-tabs">
+    <button class="active">Overview</button><button (click)="go('/coach/students')">Students</button><button
+      (click)="go('/coach/schedule')">Schedule</button><button
+      (click)="go('/coach/attendance')">Attendance</button><button
+      (click)="go('/coach/attendance/summary')">Performance</button><button
+      (click)="go('/coach/notifications')">Announcements</button>
+  </nav>
+  <section class="batch-detail-grid">
+    <div class="batch-detail-left">
+      <article class="card batch-statistics">
+        <header>
+          <h2>Batch statistics</h2>
+          <span>All records</span>
+        </header>
+        <div>
+          <p>
+            <i aria-hidden="true" class="pi pi-users"></i><strong>{{ batchStudentCount(batch.id) }}</strong><small>Total students</small>
+          </p>
+          <p>
+            <i aria-hidden="true" class="pi pi-check-circle"></i><strong>{{ batchAttendance(batch.id).present
+              }}</strong><small>Present</small>
+          </p>
+          <p>
+            <i aria-hidden="true" class="pi pi-times-circle"></i><strong>{{ batchAttendance(batch.id).absent
+              }}</strong><small>Absent</small>
+          </p>
+          <p>
+            <i aria-hidden="true" class="pi pi-clock"></i><strong>{{ batchAttendance(batch.id).late }}</strong><small>Late</small>
+          </p>
+        </div>
+      </article>
+      <article class="card batch-information">
+        <h2>Batch information</h2>
+        <dl class="details">
+          <dt>Batch name</dt>
+          <dd>{{ batch.name }}</dd>
+          <dt>Program</dt>
+          <dd>{{ batch.skill_level || 'Not provided' }}</dd>
+          <dt>Age group</dt>
+          <dd>{{ batch.age_group || 'Not provided' }}</dd>
+          <dt>Start date</dt>
+          <dd>
+            {{
+            batch.start_date ? (batch.start_date | date: 'dd MMM yyyy') : 'Not provided'
+            }}
+          </dd>
+          <dt>End date</dt>
+          <dd>
+            {{ batch.end_date ? (batch.end_date | date: 'dd MMM yyyy') : 'Not provided' }}
+          </dd>
+          <dt>Schedule</dt>
+          <dd>
+            {{ batchDays(batch) }}, {{ time(batch.start_time) }}–{{
+            time(batch.end_time)
+            }}
+          </dd>
+          <dt>Capacity</dt>
+          <dd>{{ batch.capacity }}</dd>
+          <dt>Current strength</dt>
+          <dd>{{ batchStudentCount(batch.id) }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <app-status-badge [status]="batch.status" />
+          </dd>
+        </dl>
+      </article>
+    </div>
+    <div class="batch-detail-center">
+      <article class="card batch-trend">
+        <header>
+          <h2>Attendance overview</h2>
+          <span>Assigned records</span>
+        </header>
+        <div class="attendance-visual">
+          <div class="dashboard-ring">
+            <strong>{{ batchAttendance(batch.id).rate }}%</strong><small>Overall</small>
+          </div>
+          <dl>
+            <dt><i class="present"></i>Present</dt>
+            <dd>{{ batchAttendance(batch.id).present }}</dd>
+            <dt><i class="absent"></i>Absent</dt>
+            <dd>{{ batchAttendance(batch.id).absent }}</dd>
+            <dt><i class="late"></i>Late</dt>
+            <dd>{{ batchAttendance(batch.id).late }}</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="card sessions-table">
+        <header>
+          <h2>Recent sessions</h2>
+          <button (click)="go('/coach/schedule')">View all</button>
+        </header>
+        <div class="table-scroll">
+          <app-table-tools title="Recent sessions" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Topic / focus</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of batchSessions(batch.id, false); track s['id']) {
+              <tr>
+                <td>{{ $any(s['session_date']) | date: 'dd MMM yyyy' }}</td>
+                <td>{{ $any(s['session_date']) | date: 'EEE' }}</td>
+                <td>{{ time(s['start_time']) }}</td>
+                <td>{{ s['title'] }}</td>
+                <td>
+                  <app-status-badge [status]="$any(s['status'])" />
+                </td>
+              </tr>
+              } @empty {
+              <tr>
+                <td colspan="5"><app-async-state kind="empty" title="No sessions recorded." /></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+      <article class="card sessions-table">
+        <header>
+          <h2>Upcoming sessions</h2>
+          <button (click)="go('/coach/schedule')">View all</button>
+        </header>
+        <div class="table-scroll">
+          <app-table-tools title="Upcoming sessions" [table]="exportTable3"></app-table-tools>
+<table #exportTable3 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Topic / focus</th>
+                <th>Venue</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of batchSessions(batch.id, true); track s['id']) {
+              <tr>
+                <td>{{ $any(s['session_date']) | date: 'dd MMM yyyy' }}</td>
+                <td>{{ $any(s['session_date']) | date: 'EEE' }}</td>
+                <td>{{ time(s['start_time']) }}</td>
+                <td>{{ s['title'] }}</td>
+                <td>{{ s['venue'] || 'Academy ground' }}</td>
+              </tr>
+              } @empty {
+              <tr>
+                <td colspan="5"><app-async-state kind="empty" title="No upcoming sessions." /></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+    <aside class="batch-detail-side">
+      <article class="card detail-quick-actions">
+        <h2>Quick actions</h2>
+        <div>
+          <button (click)="go('/coach/attendance/check-in-out')">
+            <i aria-hidden="true" class="pi pi-calendar"></i>Take attendance</button><button (click)="go('/coach/students')">
+            <i aria-hidden="true" class="pi pi-users"></i>View students</button><button (click)="go('/coach/schedule')">
+            <i aria-hidden="true" class="pi pi-calendar-plus"></i>View schedule
+          </button>
+        </div>
+      </article>
+      <article class="card coach-information">
+        <h2>Coach information</h2>
+        <div class="coach-person">
+          <span>{{ initials($any(vm.coach['full_name'])) }}</span>
+          <p>
+            <strong>{{ vm.coach['full_name'] }}</strong><small>Academy coach</small>
+          </p>
+        </div>
+        <p><i aria-hidden="true" class="pi pi-envelope"></i>{{ vm.coach['email'] || 'Not provided' }}</p>
+        <p><i aria-hidden="true" class="pi pi-phone"></i>{{ vm.coach['phone'] || 'Not provided' }}</p>
+        <p>
+          <i aria-hidden="true" class="pi pi-star"></i>{{ vm.coach['experience_years'] || 0 }} years
+          experience
+        </p>
+      </article>
+      <article class="card batch-announcements">
+        <header>
+          <h2>Announcements</h2>
+          <button (click)="go('/coach/notifications')">View all</button>
+        </header>
+        @for (n of vm.notifications.slice(0, 3); track n['id']) {
+        <button (click)="markNotificationRead($any(n['id']))">
+          <i aria-hidden="true" class="pi pi-megaphone"></i><span><strong>{{ n['subject'] }}</strong><small>{{ n['body'] }}</small></span>
+        </button>
+        } @empty {
+        <p class="empty">No announcements.</p>
+        }
+      </article>
+    </aside>
+  </section>
+  }
+  }
+  @case ('students') {
+  <section class="student-hero-controls card">
+    <div>
+      <h2>Students from assigned batches</h2>
+      <p>Select a batch or search across all students you coach.</p>
+    </div>
+    <label>Select batch<select aria-label="Select assigned batch" (change)="setBatch($event)">
+        <option value="">All assigned batches</option>
+        @for (b of vm.batches; track b.id) {
+        <option [value]="b.id">{{ b.name }}</option>
+        }
+      </select></label>
+  </section>
+  <app-summary-cards [cards]="studentCards()" ariaLabel="Assigned student summary" />
+  <section class="students-workspace">
+    <article class="card table-card student-table-card">
+      <app-filter-bar class="list-toolbar student-toolbar" [showSearch]="false" (resetFilters)="resetStudentFilters()">
+        <label><i aria-hidden="true" class="pi pi-search"></i><input aria-label="Search assigned students"
+            placeholder="Search by name, ID, or phone…" [value]="search()" (input)="setSearch($event)" /></label><select
+          aria-label="Filter student status" (change)="setStatus($event)">
+          <option value="">Status: All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select><button (click)="go('/coach/attendance')">
+          <i aria-hidden="true" class="pi pi-calendar"></i> Attendance
+        </button>
+      </app-filter-bar>
+      <div class="table-scroll">
+        <app-table-tools title="Students" [table]="exportTable4" [total]="studentTotal()"></app-table-tools>
+<table #exportTable4 class="academy-table">
+          <caption class="sr-only">
+            Students assigned to this coach
+          </caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Student ID</th>
+              <th>Age</th>
+              <th>Batch</th>
+              <th>Attendance</th>
+              <th>Last attendance</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of pagedStudents(); track s.id; let index = $index) {
+            <tr [class.selected]="selectedStudentId() === s.id" (click)="selectStudent(s.id)">
+              <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+              <td>
+                <span class="student-name">
+                  @if (s.photo_url) {
+                  <img [src]="s.photo_url" [alt]="s.full_name" />
+                  } @else {
+                  <i>{{ initials(s.full_name) }}</i>
+                  }
+                  <strong>{{ s.full_name }}</strong></span>
+              </td>
+              <td>{{ s.student_code }}</td>
+              <td>{{ age(s) }}</td>
+              <td>{{ s.batch_name }}</td>
+              <td>
+                <span class="attendance-score"><b>{{ attendanceFor(s.id) }}%</b><i><em
+                      [style.width.%]="attendanceFor(s.id)"></em></i></span>
+              </td>
+              <td>
+                {{
+                lastAttendance(s.id)?.['attendance_date']
+                ? ($any(lastAttendance(s.id)?.['attendance_date'])
+                | date: 'dd MMM yyyy')
+                : 'No record'
+                }}
+              </td>
+              <td>
+                <app-status-badge [status]="s.status" />
+              </td>
+              <td>
+                <button aria-label="View student profile"
+                  (click)="$event.stopPropagation(); go('/coach/students/' + s.id)">
+                  <i aria-hidden="true" class="pi pi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="9"><app-async-state kind="empty" title="No students match the selected filters." /></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-pagination [total]="studentTotal()" [page]="page()" [pageSize]="pageSize()" itemLabel="students"
+        (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+    </article>
+    <aside class="student-side-rail">
+      @if (selectedStudent(); as student) {
+      <article class="card selected-student-card">
+        <header>
+          <h2>Student profile</h2>
+          <button (click)="go('/coach/students/' + student.id)">
+            View full profile <i aria-hidden="true" class="pi pi-arrow-right"></i>
+          </button>
+        </header>
+        <div class="student-profile-head">
+          @if (student.photo_url) {
+          <img [src]="student.photo_url" [alt]="student.full_name" />
+          } @else {
+          <span>{{ initials(student.full_name) }}</span>
+          }
+          <div>
+            <h3>
+              {{ student.full_name }} <app-status-badge [status]="student.status" />
+            </h3>
+            <p>{{ student.student_code }} · Age {{ age(student) }}</p>
+            <p>{{ student.batch_name }}</p>
+          </div>
+        </div>
+        <dl>
+          <dt><i aria-hidden="true" class="pi pi-phone"></i> Phone</dt>
+          <dd>{{ student.phone || 'Not provided' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-envelope"></i> Email</dt>
+          <dd>{{ student.email || 'Not provided' }}</dd>
+        </dl>
+      </article>
+      <article class="card student-attendance-card">
+        <header>
+          <h2>Attendance overview</h2>
+          <span>All records</span>
+        </header>
+        <div class="attendance-visual">
+          <div class="dashboard-ring">
+            <strong>{{ attendanceFor(student.id) }}%</strong><small>Present</small>
+          </div>
+          <dl>
+            <dt><i class="present"></i>Present</dt>
+            <dd>{{ studentAttendanceSummary(student.id).present }}</dd>
+            <dt><i class="absent"></i>Absent</dt>
+            <dd>{{ studentAttendanceSummary(student.id).absent }}</dd>
+            <dt><i class="late"></i>Late</dt>
+            <dd>{{ studentAttendanceSummary(student.id).late }}</dd>
+            <dt>Total sessions</dt>
+            <dd>{{ studentAttendance(student.id).length }}</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="card student-activity">
+        <header>
+          <h2>Recent activity</h2>
+          <button (click)="go('/coach/attendance')">View all</button>
+        </header>
+        @for (row of studentAttendance(student.id).slice(0, 3); track row['id']) {
+        <div>
+          <i aria-hidden="true" class="pi pi-check-circle"></i><span><strong>{{
+              row['status'] === 'checked_out' ? 'Checked out' : 'Attendance marked'
+              }}</strong><small>{{ $any(row['attendance_date']) | date: 'dd MMM yyyy' }} ·
+              {{ time(row['check_in_at']) }}</small></span>
+        </div>
+        } @empty {
+        <p class="empty">No recent activity.</p>
+        }
+      </article>
+      }
+    </aside>
+  </section>
+  }
+  @case ('student') {
+  @if (selectedStudent(); as s) {
+  <section class="coach-student-head card">
+    <div class="student-head-main">
+      @if (s.photo_url) {
+      <img [src]="s.photo_url" [alt]="s.full_name" />
+      } @else {
+      <span>{{ initials(s.full_name) }}</span>
+      }
+      <div>
+        <nav>
+          <button (click)="go('/coach/students')">My students</button><i aria-hidden="true" class="pi pi-angle-right"></i><strong>Student
+            details</strong>
+        </nav>
+        <h2>
+          {{ s.full_name }} <app-status-badge [status]="s.status" />
+        </h2>
+        <p>Student ID: {{ s.student_code }} · Age {{ age(s) }} · {{ s.batch_name }}</p>
+        <em>“Consistent practice creates confident players.”</em>
+      </div>
+    </div>
+    <aside>
+      <button (click)="go('/coach/attendance/check-in-out')">
+        <i aria-hidden="true" class="pi pi-calendar"></i> Mark attendance</button><button (click)="go('/coach/notifications')">
+        <i aria-hidden="true" class="pi pi-comment"></i> Notifications</button><button><i aria-hidden="true" class="pi pi-ellipsis-h"></i> More</button>
+    </aside>
+  </section>
+  <section class="student-summary-strip card">
+    <div>
+      <i aria-hidden="true" class="pi pi-users"></i><span>Age group<strong>{{
+          studentBatch(s)?.age_group || 'Not provided'
+          }}</strong></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-calendar"></i><span>Batch<strong>{{ s.batch_name }}</strong></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-clock"></i><span>Schedule<strong>{{
+          studentBatch(s) ? batchDays(studentBatch(s)!) : 'Not scheduled'
+          }}</strong><small>{{ time(studentBatch(s)?.start_time) }}–{{
+          time(studentBatch(s)?.end_time)
+          }}</small></span>
+    </div>
+    <div>
+      <i aria-hidden="true" class="pi pi-map-marker"></i><span>Venue<strong>{{
+          nextSession(s.batch_id)?.['venue'] || 'Academy ground'
+          }}</strong></span>
+    </div>
+    @if (primaryParent(s); as parent) {
+    <div class="parent-summary">
+      <i aria-hidden="true" class="pi pi-user"></i><span>{{ parent['full_name']
+        }}<strong>{{ parent['relation'] || 'Parent / guardian' }}</strong><small>{{ parent['phone'] || 'Phone not
+          provided' }}</small></span>
+    </div>
+    }
+  </section>
+  <nav class="batch-tabs student-tabs">
+    <button class="active">Overview</button><button (click)="go('/coach/attendance')">Attendance</button><button
+      (click)="go('/coach/attendance/summary')">Performance</button><button
+      (click)="go('/coach/schedule')">Schedule</button><button
+      (click)="go('/coach/notifications')">Notes</button><button>Documents</button><button>Parent details</button>
+  </nav>
+  <section class="coach-student-grid">
+    <div class="student-detail-left">
+      <article class="card information-card">
+        <h2>Personal information</h2>
+        <dl class="icon-details">
+          <dt><i aria-hidden="true" class="pi pi-user"></i>Full name</dt>
+          <dd>{{ s.full_name }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-calendar"></i>Date of birth</dt>
+          <dd>{{ s.date_of_birth | date: 'dd MMM yyyy' }} (Age {{ age(s) }})</dd>
+          <dt><i aria-hidden="true" class="pi pi-id-card"></i>Gender</dt>
+          <dd>{{ s.gender || 'Not provided' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-hashtag"></i>Student ID</dt>
+          <dd>{{ s.student_code }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-calendar-plus"></i>Join date</dt>
+          <dd>{{ s.joined_on | date: 'dd MMM yyyy' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-map-marker"></i>Address</dt>
+          <dd>{{ address(s.address) }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-phone"></i>Emergency contact</dt>
+          <dd>
+            {{
+            primaryParent(s)?.['phone'] ||
+            medical(s)?.['doctor_phone'] ||
+            'Not provided'
+            }}
+          </dd>
+          <dt><i aria-hidden="true" class="pi pi-heart"></i>Medical info</dt>
+          <dd>
+            {{
+            medical(s)?.['allergies'] ||
+            medical(s)?.['conditions'] ||
+            'No information provided'
+            }}
+          </dd>
+        </dl>
+      </article>
+      <article class="card information-card">
+        <h2>Parent / guardian information</h2>
+        @if (primaryParent(s); as parent) {
+        <dl class="icon-details">
+          <dt><i aria-hidden="true" class="pi pi-user"></i>Name</dt>
+          <dd>{{ parent['full_name'] }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-users"></i>Relation</dt>
+          <dd>{{ parent['relation'] || 'Guardian' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-phone"></i>Phone</dt>
+          <dd>{{ parent['phone'] || 'Not provided' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-envelope"></i>Email</dt>
+          <dd>{{ parent['email'] || 'Not provided' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-map-marker"></i>Address</dt>
+          <dd>{{ address(parent['address']) }}</dd>
+        </dl>
+        } @else {
+        <p class="empty">No guardian linked.</p>
+        }
+      </article>
+    </div>
+    <div class="student-detail-center">
+      <article class="card student-detail-attendance">
+        <header>
+          <h2>Attendance overview</h2>
+          <span>All records</span>
+        </header>
+        <div class="attendance-visual">
+          <div class="dashboard-ring">
+            <strong>{{ attendanceFor(s.id) }}%</strong><small>Present</small>
+          </div>
+          <dl>
+            <dt><i class="present"></i>Present</dt>
+            <dd>{{ studentAttendanceSummary(s.id).present }}</dd>
+            <dt><i class="absent"></i>Absent</dt>
+            <dd>{{ studentAttendanceSummary(s.id).absent }}</dd>
+            <dt><i class="late"></i>Late</dt>
+            <dd>{{ studentAttendanceSummary(s.id).late }}</dd>
+            <dt>Total sessions</dt>
+            <dd>{{ studentAttendance(s.id).length }}</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="card sessions-table">
+        <header>
+          <h2>Recent attendance</h2>
+          <button (click)="go('/coach/attendance')">View all</button>
+        </header>
+        <div class="table-scroll">
+          <app-table-tools title="Recent attendance" [table]="exportTable5"></app-table-tools>
+<table #exportTable5 class="academy-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Check in</th>
+                <th>Check out</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of studentAttendance(s.id).slice(0, 6); track row['id']) {
+              <tr>
+                <td>{{ $any(row['attendance_date']) | date: 'dd MMM yyyy' }}</td>
+                <td>{{ $any(row['attendance_date']) | date: 'EEE' }}</td>
+                <td>{{ time(row['check_in_at']) }}</td>
+                <td>{{ time(row['check_out_at']) }}</td>
+                <td>
+                  <app-status-badge [status]="row['status']" />
+                </td>
+              </tr>
+              } @empty {
+              <tr>
+                <td colspan="5"><app-async-state kind="empty" title="No attendance records." /></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+    <aside class="student-detail-side">
+      <article class="card performance-summary">
+        <header>
+          <h2>Performance summary</h2>
+          <button (click)="go('/coach/attendance/summary')">View details</button>
+        </header>
+        <div>
+          <p>
+            <i aria-hidden="true" class="pi pi-chart-bar"></i><strong>{{ attendanceFor(s.id) }}%</strong><small>Attendance</small>
+          </p>
+          <p>
+            <i aria-hidden="true" class="pi pi-check-circle"></i><strong>{{ studentAttendanceSummary(s.id).present
+              }}</strong><small>Sessions attended</small>
+          </p>
+          <p>
+            <i aria-hidden="true" class="pi pi-clock"></i><strong>{{ studentAttendanceSummary(s.id).late }}</strong><small>Late
+              arrivals</small>
+          </p>
+        </div>
+      </article>
+      <article class="card current-batch">
+        <header>
+          <h2>Current batch information</h2>
+          <button (click)="go('/coach/batches/' + s.batch_id)">View batch</button>
+        </header>
+        <dl class="details">
+          <dt>Batch name</dt>
+          <dd>{{ s.batch_name }}</dd>
+          <dt>Schedule</dt>
+          <dd>{{ studentBatch(s) ? batchDays(studentBatch(s)!) : 'Not scheduled' }}</dd>
+          <dt>Venue</dt>
+          <dd>{{ nextSession(s.batch_id)?.['venue'] || 'Academy ground' }}</dd>
+          <dt>Coach</dt>
+          <dd>{{ vm.coach['full_name'] }}</dd>
+          <dt>Batch strength</dt>
+          <dd>{{ batchStudentCount(s.batch_id) }} students</dd>
+        </dl>
+      </article>
+      <article class="card student-notes">
+        <header>
+          <h2>Notes & remarks</h2>
+          <span>Read only</span>
+        </header>
+        @if (s.notes) {
+        <div>
+          <i aria-hidden="true" class="pi pi-file-edit"></i><span><strong>Student note</strong><small>{{ s.notes }}</small></span>
+        </div>
+        }
+        @for (row of studentAttendance(s.id).slice(0, 2); track row['id']) {
+        @if (row['remarks']) {
+        <div>
+          <i aria-hidden="true" class="pi pi-comment"></i><span><strong>Attendance remark</strong><small>{{ row['remarks']
+              }}</small></span>
+        </div>
+        }
+        }
+        @if (!s.notes && !studentAttendance(s.id).length) {
+        <p class="empty">No notes recorded.</p>
+        }
+      </article>
+    </aside>
+  </section>
+  }
+  }
+  @case ('attendance') {
+  <section class="card attendance-selectors">
+    <label>Select batch<select (change)="setBatch($event)">
+        @for (batch of vm.batches; track batch.id) {
+        <option [value]="batch.id">{{ batch.name }}</option>
+        }
+      </select></label>
+    <label>Select session<select>
+        <option>
+          {{ nextSession(selectedBatchId())?.['title'] || 'Regular training session' }} ({{
+          time(
+          nextSession(selectedBatchId())?.['start_time'] || selectedBatch()?.start_time
+          )
+          }}–{{
+          time(nextSession(selectedBatchId())?.['end_time'] || selectedBatch()?.end_time)
+          }})
+        </option>
+      </select></label>
+    <label>Select date<input type="date" [value]="todayDate()" /></label>
+    <label>Select venue<select>
+        <option>{{ nextSession(selectedBatchId())?.['venue'] || 'Academy ground' }}</option>
+      </select></label>
+  </section>
+  <section class="attendance-workspace">
+    <article class="card table-card mark-attendance-table">
+      <div class="attendance-table-head">
+        <h2>Students ({{ studentTotal() }})</h2>
+        <label><i aria-hidden="true" class="pi pi-search"></i><input aria-label="Search attendance students"
+            placeholder="Search by name or ID…" (input)="setSearch($event)" /></label><select
+          aria-label="Filter students" (change)="setStatus($event)">
+          <option value="">All students</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button [disabled]="submitting()" (click)="markRemainingPresent()">
+          <i aria-hidden="true" class="pi pi-check-square"></i> Mark visible unmarked present
+        </button>
+      </div>
+      @if (actionMessage()) {
+      <p class="message" role="status">{{ actionMessage() }}</p>
+      }
+      <div class="table-scroll">
+        <app-table-tools title="Batch students" [table]="exportTable6" [total]="studentTotal()"></app-table-tools>
+<table #exportTable6 class="academy-table">
+          <caption class="sr-only">
+            Attendance for students in the selected batch
+          </caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Student ID</th>
+              <th>Age</th>
+              <th>Status</th>
+              <th>Check-in time</th>
+              <th>Check-out time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (student of pagedStudents(); track student.id; let index = $index) {
+            @let record = todayRecord(student.id);
+            <tr>
+              <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+              <td>
+                <span class="student-name">
+                  @if (student.photo_url) {
+                  <img [src]="student.photo_url" [alt]="student.full_name" />
+                  } @else {
+                  <i>{{ initials(student.full_name) }}</i>
+                  }
+                  <strong>{{ student.full_name }}</strong></span>
+              </td>
+              <td>{{ student.student_code }}</td>
+              <td>{{ age(student) }}</td>
+              <td>
+                <app-status-badge [status]="$any(record?.['status'] || 'not_marked')" />
+              </td>
+              <td>{{ time(record?.['check_in_at']) }}</td>
+              <td>{{ time(record?.['check_out_at']) }}</td>
+              <td>
+                <button aria-label="Open student profile" (click)="go('/coach/students/' + student.id)">
+                  <i aria-hidden="true" class="pi pi-eye"></i>
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="8"><app-async-state kind="empty" title="No students found for this batch." /></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (studentsError()) { <p class="message error" role="alert">{{ studentsError() }}</p> }
+      @if (studentsLoading()) { <app-async-state title="Loading students…" /> }
+      <app-pagination [total]="studentTotal()" [page]="page()" [pageSize]="pageSize()" itemLabel="students"
+        (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+    </article>
+    <aside class="attendance-side-rail">
+      <article class="card attendance-quick">
+        <h2>Quick actions</h2>
+        <div>
+          <button (click)="go('/coach/attendance/check-in-out')">
+            <i aria-hidden="true" class="pi pi-calendar"></i><span>Take attendance<small>Check in, check out or scan</small></span></button><button
+            (click)="go('/coach/attendance/history')">
+            <i aria-hidden="true" class="pi pi-list"></i><span>History<small>View records</small></span></button><button
+            (click)="go('/coach/attendance/correction')">
+            <i aria-hidden="true" class="pi pi-pencil"></i><span>Correction<small>Request a change</small></span>
+          </button>
+        </div>
+      </article>
+      <article class="card attendance-today-summary">
+        <header>
+          <h2>Attendance summary</h2>
+          <button (click)="go('/coach/attendance/summary')">View details</button>
+        </header>
+        <div class="attendance-visual">
+          <div class="dashboard-ring">
+            <strong>{{ todayBatchAttendance().rate }}%</strong><small>Present</small>
+          </div>
+          <dl>
+            <dt><i class="present"></i>Present</dt>
+            <dd>{{ todayBatchAttendance().present }}</dd>
+            <dt><i class="absent"></i>Absent</dt>
+            <dd>{{ todayBatchAttendance().absent }}</dd>
+            <dt><i class="late"></i>Late</dt>
+            <dd>{{ todayBatchAttendance().late }}</dd>
+            <dt>Total</dt>
+            <dd>{{ todayBatchAttendance().total }}</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="card today-session">
+        <header>
+          <h2>Today's session</h2>
+          <button (click)="go('/coach/schedule')">View schedule</button>
+        </header>
+        <dl class="icon-details">
+          <dt><i aria-hidden="true" class="pi pi-users"></i>Batch</dt>
+          <dd>{{ selectedBatch()?.name || 'Not selected' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-calendar"></i>Session</dt>
+          <dd>{{ nextSession(selectedBatchId())?.['title'] || 'Regular training' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-clock"></i>Time</dt>
+          <dd>
+            {{
+            time(
+            nextSession(selectedBatchId())?.['start_time'] ||
+            selectedBatch()?.start_time
+            )
+            }}–{{
+            time(
+            nextSession(selectedBatchId())?.['end_time'] || selectedBatch()?.end_time
+            )
+            }}
+          </dd>
+          <dt><i aria-hidden="true" class="pi pi-map-marker"></i>Venue</dt>
+          <dd>{{ nextSession(selectedBatchId())?.['venue'] || 'Academy ground' }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-user"></i>Coach</dt>
+          <dd>{{ vm.coach['full_name'] }}</dd>
+        </dl>
+      </article>
+    </aside>
+  </section>
+  }
+  @case ('history') {
+  <ng-container *ngTemplateOutlet="attendanceTable"></ng-container>
+  }
+  @case ('correction') {
+  <section class="card attendance-form correction-form">
+    <header>
+      <h2>Request attendance correction</h2>
+      <p>Corrections are reviewed by academy administration before records are changed.</p>
+    </header>
+    <label>Attendance record
+      <select [value]="correctionAttendanceId()" (change)="correctionAttendanceId.set($any($event.target).value)">
+        <option value="">Select a record</option>
+        @for (record of correctionRecords(); track record['id']) {
+        <option [value]="record['id']">
+          {{ relation(record, 'student', 'full_name') }} ·
+          {{ relation(record, 'batch', 'name') }} ·
+          {{ $any(record['attendance_date']) | date: 'dd MMM yyyy' }} ·
+          {{ record['status'] }}
+        </option>
+        }
+      </select></label><label>Requested status
+      <select (change)="correctionStatus.set($any($event.target).value)">
+        <option value="present">Present</option>
+        <option value="late">Late</option>
+        <option value="absent">Absent</option>
+        <option value="checked_out">Checked out</option>
+      </select></label><label>Reason
+      <textarea rows="4" [value]="correctionReason()" (input)="correctionReason.set($any($event.target).value)"
+        placeholder="Explain why this attendance record needs correction"></textarea>
+    </label>
+    <button [disabled]="submitting()" (click)="requestAttendanceCorrection()">
+      <i aria-hidden="true" class="pi pi-send"></i> {{ submitting() ? 'Submitting…' : 'Submit request' }}
+    </button>
+    @if (actionMessage()) {
+    <p class="message" role="status">{{ actionMessage() }}</p>
+    }
+  </section>
+  }
+  @case ('summary') {
+  <section class="card attendance-summary-controls">
+    <label><span>Batch</span><select (change)="setBatch($event)" [value]="selectedBatchId()">
+        @for (batch of vm.batches; track batch.id) {
+        <option [value]="batch.id">{{ batch.name }}</option>
+        }
+      </select></label><label><span>Period</span><select aria-label="Attendance period">
+        <option>Last 30 days</option>
+        <option>Last 90 days</option>
+        <option>This year</option>
+      </select></label>
+  </section>
+
+  <app-summary-cards [cards]="summaryCards()" ariaLabel="Attendance summary metrics" />
+
+  <section class="attendance-analytics-grid">
+    <article class="card attendance-trend-card">
+      <header>
+        <h2>Attendance trend</h2>
+        <span>Last 30 days</span>
+      </header>
+      <div class="trend-chart" aria-label="Attendance rate trend">
+        @for (session of summarySessions(); track session.date) {
+        <div>
+          <strong>{{ session.rate }}%</strong><i><b [style.height.%]="session.rate"></b></i><small>{{ session.date |
+            date: 'dd MMM' }}</small>
+        </div>
+        } @empty {
+        <p>No attendance trend is available.</p>
+        }
+      </div>
+    </article>
+
+    <article class="card attendance-distribution">
+      <h2>Attendance distribution</h2>
+      <div class="attendance-visual">
+        <div class="dashboard-ring" [style.--value.%]="summaryStats().rate">
+          <strong>{{ summaryStats().rate }}%</strong><small>Overall</small>
+        </div>
+        <ul>
+          <li>
+            <i class="present-dot"></i>Present <b>{{ summaryStats().present }}</b>
+          </li>
+          <li>
+            <i class="absent-dot"></i>Absent <b>{{ summaryStats().absent }}</b>
+          </li>
+          <li>
+            <i class="late-dot"></i>Late <b>{{ summaryStats().late }}</b>
+          </li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="card session-attendance">
+      <header>
+        <h2>Session-wise attendance</h2>
+      </header>
+      @for (session of summarySessions(); track session.date) {
+      <button>
+        <span><strong>{{ session.title }}</strong><small>{{ session.date | date: 'dd MMM yyyy' }}</small></span>
+        <b>{{ session.rate }}%</b><i aria-hidden="true" class="pi pi-angle-right"></i>
+      </button>
+      } @empty {
+      <p class="empty">No completed sessions.</p>
+      }
+    </article>
+  </section>
+
+  <section class="attendance-summary-lower">
+    <article class="card student-attendance-overview">
+      <header>
+        <h2>Student attendance overview</h2>
+        <button (click)="go('/coach/students')">
+          View all <i aria-hidden="true" class="pi pi-arrow-right"></i>
+        </button>
+      </header>
+      <div class="table-scroll">
+        <app-table-tools title="Student attendance overview" [table]="exportTable7"></app-table-tools>
+<table #exportTable7 class="academy-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Student ID</th>
+              <th>Total</th>
+              <th>Present</th>
+              <th>Absent</th>
+              <th>Late</th>
+              <th>Attendance</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+            student of summaryStudents().slice(0, 5);
+            track student.id;
+            let index = $index
+            ) {
+            @let totals = studentAttendanceSummary(student.id);
+            <tr>
+              <td>{{ index + 1 }}</td>
+              <td>
+                <strong>{{ student.full_name }}</strong>
+              </td>
+              <td>{{ student.student_code }}</td>
+              <td>{{ studentAttendance(student.id).length }}</td>
+              <td>{{ totals.present }}</td>
+              <td>{{ totals.absent }}</td>
+              <td>{{ totals.late }}</td>
+              <td>
+                <span class="status">{{ attendanceFor(student.id) }}%</span>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="8" class="empty">No students are assigned to this batch.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card attendance-insights">
+      <header>
+        <h2>Attendance insights</h2>
+      </header>
+      <div>
+        <i aria-hidden="true" class="pi pi-arrow-up"></i><span><strong>Overall consistency</strong><small>{{ summaryStats().rate }}%
+            average attendance for the selected batch.</small></span>
+      </div>
+      <div>
+        <i aria-hidden="true" class="pi pi-users"></i><span><strong>High-performing students</strong><small>{{ summaryStudents().length }}
+            assigned students are included.</small></span>
+      </div>
+      <div>
+        <i aria-hidden="true" class="pi pi-exclamation-circle"></i><span><strong>Needs attention</strong><small>{{ summaryStats().absent }}
+            absence records need review.</small></span>
+      </div>
+      <div>
+        <i aria-hidden="true" class="pi pi-calendar"></i><span><strong>Recorded sessions</strong><small>{{ summaryStats().sessions }}
+            sessions contain attendance records.</small></span>
+      </div>
+    </article>
+  </section>
+  }
+  @case ('check-in-out') {
+  <section class="card attendance-form">
+    <h2>{{ attendanceMode() === 'check-out' ? 'Check out student' : 'Check in student' }}</h2>
+    <div class="mode-toggle" role="group" aria-label="Attendance action">
+      <button type="button" [class.active]="attendanceMode() === 'check-in'" (click)="attendanceMode.set('check-in')">Check in</button><button
+        type="button" [class.active]="attendanceMode() === 'check-out'" (click)="attendanceMode.set('check-out')">Check out</button>
+    </div>
+    <label>Assigned batch<select (change)="setBatch($event)">
+        @for (b of vm.batches; track b.id) {
+        <option [value]="b.id">{{ b.name }}</option>
+        }
+      </select></label><label>Student<select (change)="chooseStudent($event)">
+        <option value="">Select student</option>
+        @for (s of filteredStudents(); track s.id) {
+        <option [value]="s.id">{{ s.full_name }} ({{ s.student_code }})</option>
+        }
+      </select></label><button class="submit-attendance" [disabled]="submitting()" (click)="submitAttendance()">
+      <i aria-hidden="true" class="pi" [class.pi-sign-in]="attendanceMode() === 'check-in'" [class.pi-sign-out]="attendanceMode() === 'check-out'"></i>{{ submitting() ? 'Saving…' :
+      attendanceMode() === 'check-out' ? 'Check out' : 'Check in' }}
+    </button>
+    <h3 class="qr-heading">QR scan</h3>
+    <div class="scanner-frame" [class.active]="cameraActive()">
+      <div id="coach-qr-reader" class="qr-reader"></div>
+      @if (!cameraActive()) {
+      <i aria-hidden="true" class="pi pi-qrcode"></i><span>Start the camera and align the student QR code inside the frame</span>
+      }
+    </div>
+    <button type="button" [disabled]="submitting()" (click)="cameraActive() ? stopQrCamera() : startQrCamera()">
+      <i aria-hidden="true" class="pi pi-camera"></i> {{ cameraActive() ? 'Stop camera' : 'Start camera' }}
+    </button>
+    <label>QR token<input [value]="qrToken()" (input)="qrToken.set($any($event.target).value)"
+        placeholder="Scan or enter secure token" /></label><button [disabled]="submitting()" (click)="scan()">
+      <i aria-hidden="true" class="pi pi-qrcode"></i> Submit QR attendance
+    </button>
+    @if (actionMessage()) {
+    <p class="message">{{ actionMessage() }}</p>
+    }
+  </section>
+  }
+  @case ('schedule') {
+  <section class="card schedule-controls">
+    <select aria-label="Filter schedule by batch" (change)="setBatch($event)">
+      <option value="">All batches</option>
+      @for (batch of vm.batches; track batch.id) {
+      <option [value]="batch.id">{{ batch.name }}</option>
+      }
+    </select><select aria-label="Filter by session type" (change)="setScheduleType($event)">
+      <option value="">All session types</option>
+      <option value="practice">Practice</option>
+      <option value="fitness">Fitness</option>
+      <option value="match">Match</option>
+      <option value="assessment">Assessment</option>
+    </select><strong><i aria-hidden="true" class="pi pi-calendar"></i>{{ scheduleRange() }}</strong><span><button
+        (click)="resetScheduleWeek()">Today</button><button aria-label="Previous week" (click)="changeScheduleWeek(-1)">
+        <i aria-hidden="true" class="pi pi-angle-left"></i></button><button aria-label="Next week" (click)="changeScheduleWeek(1)">
+        <i aria-hidden="true" class="pi pi-angle-right"></i></button></span>
+  </section>
+  <app-calendar-layout>
+    <article calendar-main class="card week-calendar">
+      <header>
+        <div>
+          <button [class.active]="scheduleMode() === 'week'" (click)="setScheduleMode('week')">
+            Week</button><button [class.active]="scheduleMode() === 'day'" (click)="setScheduleMode('day')">
+            Day</button><button [class.active]="scheduleMode() === 'month'" (click)="setScheduleMode('month')">
+            Month
+          </button>
+        </div>
+        <h2>{{ scheduleRange() }}</h2>
+      </header>
+      <div class="week-grid" [class.day-view]="scheduleMode() === 'day'"
+        [class.month-view]="scheduleMode() === 'month'">
+        @for (day of scheduleDays(); track dateKey(day)) {
+        <section [class.today]="isToday(day)">
+          <header>
+            <strong>{{ day | date: 'EEE' }}</strong><small>{{ day | date: 'dd MMM' }}</small>
+          </header>
+          <div>
+            @for (session of sessionsForDay(day); track session['id']) {
+            <button class="calendar-event" (click)="go('/coach/batches/' + session['batch_id'])">
+              <strong>{{ relation(session, 'batch', 'name') }}</strong><span>{{ time(session['start_time']) }}–{{
+                time(session['end_time']) }}</span><small>{{ session['title'] }} · {{ session['venue'] }}</small>
+            </button>
+            } @empty {
+            <p>No sessions</p>
+            }
+          </div>
+        </section>
+        }
+      </div>
+    </article>
+    <aside calendar-sidebar class="schedule-side-rail">
+      <article class="card mini-calendar">
+        <header>
+          <h2>{{ scheduleDays()[0] | date: 'MMMM yyyy' }}</h2>
+          <span><button aria-label="Previous week" (click)="changeScheduleWeek(-1)">
+              <i aria-hidden="true" class="pi pi-angle-left"></i></button><button aria-label="Next week" (click)="changeScheduleWeek(1)">
+              <i aria-hidden="true" class="pi pi-angle-right"></i></button></span>
+        </header>
+        <div class="mini-week">
+          @for (day of scheduleDays(); track dateKey(day)) {
+          <button [class.today]="isToday(day)">
+            <small>{{ day | date: 'EEE' }}</small><strong>{{ day | date: 'dd' }}</strong>
+          </button>
+          }
+        </div>
+      </article>
+      <article class="card upcoming-schedule">
+        <header>
+          <h2>Upcoming sessions</h2>
+          <span>{{ vm.sessions.length }} total</span>
+        </header>
+        @for (session of vm.sessions.slice(0, 5); track session['id']) {
+        <button (click)="go('/coach/batches/' + session['batch_id'])">
+          <i aria-hidden="true" class="pi pi-users"></i><span><strong>{{ relation(session, 'batch', 'name') }}</strong><small>{{
+              $any(session['session_date']) | date: 'EEE, dd MMM' }} ·
+              {{ time(session['start_time']) }}</small><small>{{ session['venue'] }}</small></span><i aria-hidden="true"
+            class="pi pi-angle-right"></i>
+        </button>
+        } @empty {
+        <p class="empty">No upcoming sessions.</p>
+        }
+      </article>
+      <article class="card session-legend">
+        <h2>Session types</h2>
+        <div>
+          <span><i class="regular"></i>Regular practice</span><span><i class="advanced"></i>Advanced
+            training</span><span><i class="match"></i>Match practice</span><span><i
+              class="fitness"></i>Fitness</span><span><i class="assessment"></i>Assessment</span><span><i
+              class="other"></i>Other</span>
+        </div>
+      </article>
+    </aside>
+  </app-calendar-layout>
+  }
+  @case ('notifications') {
+  <section class="card notifications">
+    <header>
+      <h2>Coach notifications</h2>
+      <span>{{ vm.notifications.length }} messages</span>
+      <button [disabled]="submitting() || !vm.notifications.length" (click)="markAllNotificationsRead()">
+        Mark all read
+      </button>
+    </header>
+    <app-filter-bar class="list-toolbar notification-filters" [showSearch]="false" (resetFilters)="resetNotificationFilters()" aria-label="Filter notifications">
+      <button [class.active]="notificationFilter() === 'all'" (click)="setNotificationFilter('all')">
+        All
+      </button>
+      <button [class.active]="notificationFilter() === 'unread'" (click)="setNotificationFilter('unread')">
+        Unread
+      </button>
+      <button [class.active]="notificationFilter() === 'read'" (click)="setNotificationFilter('read')">
+        Read
+      </button>
+    </app-filter-bar>
+    @if (actionMessage()) {
+    <p class="message" role="status">{{ actionMessage() }}</p>
+    }
+    @for (n of pagedNotifications(); track n['id']) {
+    <button class="notification" (click)="markNotificationRead($any(n['id']))" [class.unread]="!n['read_at']">
+      @if (n['template_key'] === 'coach_birthday' && vm.coach['photo_url']) {
+      <img class="birthday-profile-photo" [src]="$any(vm.coach['photo_url'])" alt="" />
+      } @else {
+      <i aria-hidden="true" class="pi pi-bell"></i>
+      }<span><strong>{{ n['subject'] }}</strong><small>{{ n['body'] }}</small></span><time>{{
+        $any(n['created_at']) | date: 'short' }}</time>
+    </button>
+    } @empty {
+    <p class="empty">
+      No {{ notificationFilter() === 'all' ? '' : notificationFilter() }} notifications.
+    </p>
+    }
+    <app-pagination [total]="notificationTotal()" [page]="notificationPage()" [pageSize]="pageSize()"
+      itemLabel="notifications" (pageChange)="changeNotificationPage($event)"
+      (pageSizeChange)="setPageSize($event)" />
+  </section>
+  }
+  @case ('profile') {
+  <section class="card coach-profile-hero">
+    <div class="coach-profile-photo">
+      @if (vm.coach['photo_url']) {
+      <img [src]="$any(vm.coach['photo_url'])" [alt]="$any(vm.coach['full_name'])" />
+      } @else {
+      {{ initials($any(vm.coach['full_name'])) }}
+      }
+    </div>
+    <div class="coach-profile-identity">
+      <h2>
+        {{ vm.coach['full_name'] }} <app-status-badge [status]="$any(vm.coach['status'])" />
+      </h2>
+      <p>{{ vm.coach['qualification'] || 'Academy coach' }}</p>
+      <small>{{
+        vm.coach['biography'] ||
+        'Supporting students through disciplined coaching and consistent practice.'
+        }}</small>
+      <div>
+        <span><i aria-hidden="true" class="pi pi-envelope"></i>{{ vm.coach['email'] || 'Email not provided' }}</span>
+        <span><i aria-hidden="true" class="pi pi-phone"></i>{{ vm.coach['phone'] || 'Phone not provided' }}</span>
+        <span><i aria-hidden="true" class="pi pi-id-card"></i>{{ vm.coach['employee_code'] }}</span>
+        <span><i aria-hidden="true" class="pi pi-calendar"></i>Joined
+          {{ $any(vm.coach['created_at']) | date: 'dd MMM yyyy' }}</span>
+      </div>
+    </div>
+    <button class="profile-edit-action" (click)="beginProfileEdit()">
+      <i aria-hidden="true" class="pi pi-pencil"></i> Edit profile
+    </button>
+    <aside class="coach-profile-metrics">
+      <div>
+        <i aria-hidden="true" class="pi pi-users"></i><strong>{{ vm.batches.length }}</strong><span>Batches</span><small>Assigned</small>
+      </div>
+      <div>
+        <i aria-hidden="true" class="pi pi-user-plus"></i><strong>{{ vm.students.length }}</strong><span>Students</span><small>Under
+          training</small>
+      </div>
+      <div>
+        <i aria-hidden="true" class="pi pi-calendar"></i><strong>{{ vm.sessions.length
+          }}</strong><span>Sessions</span><small>Scheduled</small>
+      </div>
+    </aside>
+  </section>
+
+  @if (profileEditing()) {
+  <section class="card profile-edit-form" aria-labelledby="coach-profile-edit-title">
+    <h2 id="coach-profile-edit-title">Update contact information</h2>
+    <label>Phone number
+      <input type="tel" autocomplete="tel" [value]="profilePhone()"
+        (input)="profilePhone.set($any($event.target).value)" /></label>
+    <label>Profile photo
+      <input type="file" accept="image/jpeg,image/png,image/webp" (change)="chooseProfilePhoto($event)" /></label>
+    <div>
+      <button type="button" (click)="profileEditing.set(false)">Cancel</button>
+      <button type="button" [disabled]="submitting()" (click)="saveProfile()">
+        {{ submitting() ? 'Saving…' : 'Save profile' }}
+      </button>
+    </div>
+    @if (actionMessage()) {
+    <p class="message" role="status">{{ actionMessage() }}</p>
+    }
+  </section>
+  }
+
+  <nav class="card coach-profile-tabs" aria-label="Profile sections">
+    <button [class.active]="profileTab() === 'personal'" (click)="profileTab.set('personal')">Personal information</button><button [class.active]="profileTab() === 'coaching'" (click)="profileTab.set('coaching')">Coaching
+      details</button><button [class.active]="profileTab() === 'preferences'" (click)="profileTab.set('preferences')">Preferences</button><button [class.active]="profileTab() === 'security'" (click)="profileTab.set('security')">Security</button>
+  </nav>
+
+  <section class="coach-profile-grid">
+    <app-ui-card class="profile-personal" title="Personal information" [hidden]="profileTab() !== 'personal'">
+      <dl class="icon-details">
+        <dt><i aria-hidden="true" class="pi pi-user"></i>Full name</dt>
+        <dd>{{ vm.coach['full_name'] }}</dd>
+        <dt><i aria-hidden="true" class="pi pi-calendar"></i>Date of birth</dt>
+        <dd>
+          {{ ($any(vm.coach['date_of_birth']) | date: 'dd MMM yyyy') || 'Not provided' }}
+        </dd>
+        <dt><i aria-hidden="true" class="pi pi-envelope"></i>Email</dt>
+        <dd>{{ vm.coach['email'] || 'Not provided' }}</dd>
+        <dt><i aria-hidden="true" class="pi pi-phone"></i>Phone</dt>
+        <dd>{{ vm.coach['phone'] || 'Not provided' }}</dd>
+        <dt><i aria-hidden="true" class="pi pi-id-card"></i>Employee code</dt>
+        <dd>{{ vm.coach['employee_code'] }}</dd>
+        <dt><i aria-hidden="true" class="pi pi-check-circle"></i>Status</dt>
+        <dd>
+          <app-status-badge [status]="$any(vm.coach['status'])" />
+        </dd>
+      </dl>
+    </app-ui-card>
+    <div class="coach-profile-center" [hidden]="profileTab() !== 'coaching'">
+      <article class="card coaching-information">
+        <header>
+          <h2>Coaching information</h2>
+        </header>
+        <dl class="icon-details">
+          <dt><i aria-hidden="true" class="pi pi-briefcase"></i>Role</dt>
+          <dd>Academy coach</dd>
+          <dt><i aria-hidden="true" class="pi pi-clock"></i>Experience</dt>
+          <dd>{{ vm.coach['experience_years'] || 0 }} years</dd>
+          <dt><i aria-hidden="true" class="pi pi-star"></i>Specialization</dt>
+          <dd>{{ coachSpecializations(vm.coach) }}</dd>
+          <dt><i aria-hidden="true" class="pi pi-graduation-cap"></i>Qualification</dt>
+          <dd>{{ vm.coach['qualification'] || 'Not provided' }}</dd>
+        </dl>
+      </article>
+      <article class="card coach-qualifications">
+        <header>
+          <h2>Qualifications & certifications</h2>
+        </header>
+        @if (vm.coach['qualification']) {
+        <div>
+          <i aria-hidden="true" class="pi pi-verified"></i><span><strong>{{ vm.coach['qualification'] }}</strong><small>Professional
+              qualification</small></span>
+        </div>
+        }
+        @for (
+        item of $any(vm.coach['coach_specializations']);
+        track item['id'] || item['specialization']
+        ) {
+        <div>
+          <i aria-hidden="true" class="pi pi-star"></i><span><strong>{{ item['specialization'] }}</strong><small>Coaching
+              specialization</small></span>
+        </div>
+        } @empty {
+        @if (!vm.coach['qualification']) {
+        <p class="empty">No qualifications have been added.</p>
+        }
+        }
+      </article>
+    </div>
+    @if (profileTab() === 'preferences') {
+    <article class="card coaching-information profile-tab-panel"><header><h2>Preferences</h2></header><dl class="icon-details"><dt><i aria-hidden="true" class="pi pi-bell"></i>Notifications</dt><dd>Academy and attendance alerts enabled</dd><dt><i aria-hidden="true" class="pi pi-calendar"></i>Schedule</dt><dd>Local academy timezone</dd><dt><i aria-hidden="true" class="pi pi-language"></i>Language</dt><dd>English</dd></dl><button (click)="go('/coach/notifications')">Manage notifications</button></article>
+    }
+    @if (profileTab() === 'security') {
+    <article class="card coaching-information profile-tab-panel"><header><h2>Security</h2></header><p>Your password and active session are managed by the secure academy account service.</p><button (click)="go('/auth/change-password')"><i aria-hidden="true" class="pi pi-key"></i> Change password</button></article>
+    }
+    <aside class="coach-profile-side">
+      <article class="card profile-activity">
+        <header>
+          <h2>Profile activity</h2>
+          <button (click)="go('/coach/notifications')">View all</button>
+        </header>
+        @for (item of vm.notifications.slice(0, 5); track item['id']) {
+        <div>
+          <i aria-hidden="true" class="pi pi-bell"></i><span><strong>{{ item['subject'] }}</strong><small>{{
+              $any(item['created_at']) | date: 'dd MMM yyyy, shortTime'
+              }}</small></span>
+        </div>
+        } @empty {
+        <p class="empty">No recent profile activity.</p>
+        }
+      </article>
+      <article class="card profile-quick-actions">
+        <h2>Quick actions</h2>
+        <div>
+          <button (click)="go('/coach/schedule')">
+            <i aria-hidden="true" class="pi pi-calendar"></i><span><strong>My schedule</strong><small>View coaching sessions</small></span>
+          </button>
+          <button (click)="go('/coach/notifications')">
+            <i aria-hidden="true" class="pi pi-bell"></i><span><strong>Notifications</strong><small>Manage academy alerts</small></span>
+          </button>
+          <button (click)="go('/coach/attendance/summary')">
+            <i aria-hidden="true" class="pi pi-chart-bar"></i><span><strong>Attendance report</strong><small>Review student
+                attendance</small></span>
+          </button>
+          <button (click)="go('/coach/support')">
+            <i aria-hidden="true" class="pi pi-question-circle"></i><span><strong>Help & support</strong><small>Contact the
+                academy</small></span>
+          </button>
+        </div>
+      </article>
+    </aside>
+  </section>
+  }
+  @case ('support') {
+<app-academy-support />
+  }
+  }
+  }
+  }
+</div>
+
+<ng-template #attendanceTable>
+  <section class="card table-card">
+    <app-filter-bar class="list-toolbar toolbar" [showSearch]="false" (resetFilters)="resetAttendanceFilters()">
+      <select aria-label="Filter by batch" (change)="setBatch($event)">
+        <option value="">All assigned batches</option>
+        @for (b of data()?.batches ?? []; track b.id) {
+        <option [value]="b.id">{{ b.name }}</option>
+        }
+      </select><select aria-label="Filter attendance status" (change)="setStatus($event)">
+        <option value="">All statuses</option>
+        <option value="checked_out">Present</option>
+        <option value="late">Late</option>
+        <option value="absent">Absent</option>
+      </select>
+      <button type="button" (click)="exportAttendance()">
+        <i aria-hidden="true" class="pi pi-download"></i> Export CSV
+      </button>
+    </app-filter-bar>
+    @if (attendanceOutbox.operations().length) {
+    <p class="message" role="status">
+      {{ attendanceOutbox.operations().length }} offline attendance action(s) pending sync.
+    </p>
+    }
+    <div class="table-scroll">
+      <app-table-tools title="Attendance report" [table]="exportTable8" [total]="attendanceTotal()"></app-table-tools>
+<table #exportTable8 class="academy-table">
+        <caption class="sr-only">
+          Attendance records for assigned students
+        </caption>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Batch</th>
+            <th>Check in</th>
+            <th>Check out</th>
+            <th>Status</th>
+            <th>Source</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of pagedAttendance(); track r['id']) {
+          <tr>
+            <td>{{ $any(r['attendance_date']) | date: 'dd MMM yyyy' }}</td>
+            <td>{{ relation(r, 'student', 'full_name') }}</td>
+            <td>{{ relation(r, 'batch', 'name') }}</td>
+            <td>{{ time(r['check_in_at']) }}</td>
+            <td>{{ time(r['check_out_at']) }}</td>
+            <td>
+              <app-status-badge [status]="r['status']" />
+            </td>
+            <td>{{ r['source'] }}</td>
+            <td>{{ r['remarks'] || '—' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8"><app-async-state kind="empty" title="No attendance records found." /></td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (attendanceError()) { <p class="message error" role="alert">{{ attendanceError() }}</p> }
+    @if (attendanceLoading()) { <app-async-state title="Loading attendance…" /> }
+    <app-pagination [total]="attendanceTotal()" [page]="page()" [pageSize]="pageSize()" itemLabel="records"
+      (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+  </section>
+</ng-template>

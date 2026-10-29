@@ -1,0 +1,305 @@
+<div class="child-page">
+  @if (loading()) {
+    <app-async-state title="Loading child profile..." />
+  } @else if (error()) {
+    <app-async-state kind="error" title="Unable to load child profile" [message]="error()" actionLabel="Retry" (action)="load()" />
+  } @else if (data(); as workspace) {
+    <app-page-hero title="Child Profile" subtitle="View complete information about your child." [breadcrumbs]="[{label:'Dashboard',route:'/parent/dashboard'},{label:'My Children',route:'/parent/children'},{label:workspace.student.fullName}]" actionLabel="Contact Academy" actionIcon="pi-comment" (action)="message()" />
+    <section class="profile-summary">
+      <div class="photo">
+        @if (workspace.student.photoUrl) {
+          <img [src]="workspace.student.photoUrl" [alt]="workspace.student.fullName" />
+        } @else {
+          {{ initials(workspace.student.fullName) }}
+        }
+      </div>
+      <div class="identity">
+        <h2>
+          {{ workspace.student.fullName }} <b>{{ workspace.student.status }}</b>
+          <button class="edit-profile" (click)="edit()">
+            <i class="pi pi-pencil"></i>
+            {{ completion().percentage === 100 ? 'Update profile' : 'Complete profile' }}
+          </button>
+        </h2>
+        <p>Student ID: {{ workspace.student.studentCode }}</p>
+        <dl>
+          <div>
+            <dt>Age</dt>
+            <dd>{{ age(workspace.student.dateOfBirth) }} years</dd>
+            <small>{{ workspace.student.dateOfBirth | date: 'dd MMM yyyy' }}</small>
+          </div>
+          <div>
+            <dt>Gender</dt>
+            <dd>{{ workspace.student.gender || 'Not provided' }}</dd>
+          </div>
+          <div>
+            <dt>Phone</dt>
+            <dd>{{ workspace.student.phone || 'Not provided' }}</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>{{ workspace.student.email || 'Not provided' }}</dd>
+          </div>
+          <div>
+            <dt>Current batch</dt>
+            <dd>{{ related(workspace.enrollment, 'batch', 'name') || 'Not enrolled' }}</dd>
+            <small>{{ related(workspace.enrollment, 'batch', 'skill_level') }}</small>
+          </div>
+          <div>
+            <dt>Join date</dt>
+            <dd>{{ workspace.student.joinedOn | date: 'dd MMM yyyy' }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="summary-metrics">
+        <article class="completion-metric">
+          <i class="pi pi-user-edit"></i><strong>{{ completion().percentage }}%</strong
+          ><span>Profile complete</span
+          ><small>{{ completion().completed }}/{{ completion().total }} details</small>
+        </article>
+        <article>
+          <i class="pi pi-users"></i><strong>{{ attendance().rate }}%</strong><span>Attendance</span
+          ><small>{{ attendance().present }}/{{ attendance().total }} sessions</small>
+        </article>
+        <article>
+          <i class="pi pi-calendar"></i><strong>{{ attendance().total }}</strong
+          ><span>Total sessions</span>
+        </article>
+        <article>
+          <i class="pi pi-wallet"></i
+          ><strong>{{ totalPaid() | academyMoney : 'symbol' : '1.2-2' }}</strong
+          ><span>Total paid</span>
+        </article>
+      </div>
+    </section>
+    <nav class="tabs" aria-label="Child profile sections">
+      <button [class.active]="tab() === 'overview'" (click)="setTab('overview')">Overview</button
+      ><button [class.active]="tab() === 'attendance'" (click)="setTab('attendance')">
+        Attendance</button
+      ><button [class.active]="tab() === 'fees'" (click)="setTab('fees')">Fees</button
+      ><button [class.active]="tab() === 'documents'" (click)="setTab('documents')">
+        Documents</button
+      ><button [class.active]="tab() === 'medical'" (click)="setTab('medical')">Medical</button>
+    </nav>
+    @if (tab() === 'overview') {
+      <section class="content-grid">
+        <article class="panel about">
+          <h2>About {{ workspace.student.fullName.split(' ')[0] }}</h2>
+          <dl>
+            <dt>Full name</dt>
+            <dd>{{ workspace.student.fullName }}</dd>
+            <dt>Date of birth</dt>
+            <dd>{{ workspace.student.dateOfBirth | date: 'dd MMM yyyy' }}</dd>
+            <dt>Gender</dt>
+            <dd>{{ workspace.student.gender || 'Not provided' }}</dd>
+            <dt>Blood group</dt>
+            <dd>{{ workspace.student.bloodGroup || 'Not provided' }}</dd>
+            <dt>Phone</dt>
+            <dd>{{ workspace.student.phone || 'Not provided' }}</dd>
+            <dt>Email</dt>
+            <dd>{{ workspace.student.email || 'Not provided' }}</dd>
+            <dt>Address</dt>
+            <dd>{{ workspace.student.address || 'Not provided' }}</dd>
+            <dt>Status</dt>
+            <dd>
+              <app-status-badge [status]="$any(workspace.student.status)" />
+            </dd>
+          </dl>
+        </article>
+        <article class="panel program">
+          <header>
+            <h2>Current Batch & Program</h2>
+            <span>{{ text(workspace.enrollment, 'status') || 'Not enrolled' }}</span>
+          </header>
+          <div class="program-name">
+            <i class="pi pi-users"></i
+            ><span
+              ><strong>{{
+                related(workspace.enrollment, 'batch', 'name') || 'Not enrolled'
+              }}</strong
+              ><small>{{
+                related(workspace.enrollment, 'batch', 'description') ||
+                  workspace.student.skillLevel
+              }}</small></span
+            >
+          </div>
+          <dl>
+            <dt>Program</dt>
+            <dd>{{ related(workspace.enrollment, 'fee_plan', 'name') || 'Not provided' }}</dd>
+            <dt>Start date</dt>
+            <dd>
+              {{
+                text(workspace.enrollment, 'valid_from')
+                  ? (text(workspace.enrollment, 'valid_from') | date: 'dd MMM yyyy')
+                  : 'Not provided'
+              }}
+            </dd>
+            <dt>Skill level</dt>
+            <dd>
+              {{
+                related(workspace.enrollment, 'batch', 'skill_level') ||
+                  workspace.student.skillLevel
+              }}
+            </dd>
+            <dt>Monthly fee</dt>
+            <dd>
+              {{
+                money(workspace.enrollment?.['monthly_fee']) | academyMoney : 'symbol' : '1.2-2'
+              }}
+            </dd>
+          </dl>
+        </article>
+        <aside>
+          <article class="panel">
+            <h2>Guardian information</h2>
+            <dl>
+              <dt>Name</dt>
+              <dd>{{ workspace.student.parentName || 'Not provided' }}</dd>
+              <dt>Relationship</dt>
+              <dd>{{ workspace.student.parentRelation || 'Guardian' }}</dd>
+              <dt>Phone</dt>
+              <dd>{{ workspace.student.parentPhone || 'Not provided' }}</dd>
+              <dt>Email</dt>
+              <dd>{{ workspace.student.parentEmail || 'Not provided' }}</dd>
+            </dl>
+          </article>
+          <article class="panel">
+            <h2>Activity summary</h2>
+            <dl>
+              <dt>Attendance records</dt>
+              <dd>{{ workspace.attendance.length }}</dd>
+              <dt>Payments</dt>
+              <dd>{{ workspace.payments.length }}</dd>
+              <dt>Documents</dt>
+              <dd>{{ workspace.documents.length }}</dd>
+              <dt>Medical profile</dt>
+              <dd>{{ workspace.medical ? 'Available' : 'Not provided' }}</dd>
+            </dl>
+          </article>
+        </aside>
+      </section>
+    }
+    @if (tab() === 'attendance') {
+      <section class="panel tab-panel">
+        <h2>Attendance history</h2>
+        <app-table-tools title="Attendance history" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Batch</th>
+              <th>Status</th>
+              <th>Check in</th>
+              <th>Check out</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of workspace.attendance; track row['id']) {
+              <tr>
+                <td>{{ text(row, 'attendance_date') | date: 'dd MMM yyyy' }}</td>
+                <td>{{ related(row, 'batch', 'name') }}</td>
+                <td>
+                  <app-status-badge [status]="$any(text(row, 'status'))" />
+                </td>
+                <td>
+                  {{
+                    text(row, 'check_in_at') ? (text(row, 'check_in_at') | date: 'shortTime') : '—'
+                  }}
+                </td>
+                <td>
+                  {{
+                    text(row, 'check_out_at')
+                      ? (text(row, 'check_out_at') | date: 'shortTime')
+                      : '—'
+                  }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5"><app-async-state kind="empty" title="No attendance history." /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+    @if (tab() === 'fees') {
+      <section class="panel tab-panel">
+        <h2>Payment history</h2>
+        <app-table-tools title="Payment history" [table]="exportTable2"></app-table-tools>
+<table #exportTable2 class="academy-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Reference</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of workspace.payments; track row['id']) {
+              <tr>
+                <td>{{ text(row, 'paid_at') | date: 'dd MMM yyyy' }}</td>
+                <td>{{ money(row['amount']) | academyMoney }}</td>
+                <td>{{ text(row, 'payment_mode') }}</td>
+                <td>{{ text(row, 'provider_reference') || text(row, 'client_reference') }}</td>
+                <td>
+                  <app-status-badge [status]="$any(text(row, 'status'))" />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5"><app-async-state kind="empty" title="No payments recorded." /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+    @if (tab() === 'documents') {
+      <section class="panel tab-panel">
+        <h2>Documents</h2>
+        <div class="document-grid">
+          @for (row of workspace.documents; track row['id']) {
+            <article>
+              <i class="pi pi-file"></i
+              ><span
+                ><strong>{{ text(row, 'file_name') }}</strong
+                ><small
+                  >{{ text(row, 'document_type') }} ·
+                  {{ text(row, 'created_at') | date: 'dd MMM yyyy' }}</small
+                ></span
+              >
+            </article>
+          } @empty {
+            <p>No documents uploaded.</p>
+          }
+        </div>
+      </section>
+    }
+    @if (tab() === 'medical') {
+      <section class="panel tab-panel">
+        <h2>Medical information</h2>
+        @if (workspace.medical; as medical) {
+          <dl class="medical">
+            <dt>Blood group</dt>
+            <dd>
+              {{ text(medical, 'blood_group') || workspace.student.bloodGroup || 'Not provided' }}
+            </dd>
+            <dt>Allergies</dt>
+            <dd>{{ text(medical, 'allergies') || 'None recorded' }}</dd>
+            <dt>Conditions</dt>
+            <dd>{{ text(medical, 'conditions') || 'None recorded' }}</dd>
+            <dt>Medications</dt>
+            <dd>{{ text(medical, 'medications') || 'None recorded' }}</dd>
+            <dt>Emergency notes</dt>
+            <dd>{{ text(medical, 'emergency_notes') || 'None recorded' }}</dd>
+          </dl>
+        } @else {
+          <p>No medical information has been recorded.</p>
+        }
+      </section>
+    }
+  }
+</div>

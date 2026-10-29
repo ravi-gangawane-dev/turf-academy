@@ -1,0 +1,42 @@
+<div class="parent-form-page">
+  <app-page-hero
+    [title]="editing() ? 'Edit Parent' : 'Add Parent'"
+    [subtitle]="editing() ? 'Update parent information and student relationship.' : 'Register a parent and link their student.'"
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents', route: '/parents' }, { label: editing() ? 'Edit Parent' : 'Add Parent' }]"
+    (breadcrumbSelected)="breadcrumb($event)"
+  />
+  @if (message()) { <div class="notice" role="alert">{{ message() }}</div> }
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <main>
+      <section class="card personal">
+        <h2><i class="pi pi-users"></i>Parent information</h2>
+        <div class="fields">
+          <label>First name *<input formControlName="firstName" placeholder="Enter first name" /></label>
+          <label>Last name *<input formControlName="lastName" placeholder="Enter last name" /></label>
+          <label>Relationship *<select formControlName="relation"><option>Father</option><option>Mother</option><option>Guardian</option></select></label>
+          <label>Occupation<input formControlName="occupation" placeholder="Enter occupation" /></label>
+          <label>Phone number *<input formControlName="phone" maxlength="10" placeholder="Enter 10 digit mobile number" /></label>
+          <label>WhatsApp number *<input formControlName="whatsapp" maxlength="16" placeholder="Mobile number or +country code and number" /></label>
+          <label>Email address<input type="email" formControlName="email" placeholder="Enter email address" /></label>
+          <label>Preferred contact<select formControlName="communication"><option>WhatsApp</option><option>Email</option><option>Phone</option></select></label>
+          <label>Address *<input formControlName="address" placeholder="Enter complete address" /></label>
+          <label>City *<input formControlName="city" placeholder="Enter city" /></label>
+          <label>State *<select formControlName="state"><option>Maharashtra</option><option>Gujarat</option><option>Karnataka</option></select></label>
+          <label>PIN code *<input formControlName="pinCode" maxlength="6" placeholder="Enter PIN code" /></label>
+        </div>
+      </section>
+      <section class="card relationship">
+        <h2><i class="pi pi-link"></i>Student relationship</h2>
+        <div class="fields two">
+          <label>Linked student<select formControlName="studentId"><option value="">Select student (optional)</option>@for (student of students(); track student.id) { <option [value]="student.id">{{ student.full_name }} · {{ student.student_code }}</option> }</select></label>
+          <label class="check"><input type="checkbox" formControlName="isPrimary" />Primary guardian</label>
+        </div>
+      </section>
+      <footer><button type="button" (click)="cancel()">Cancel</button><button class="primary" [disabled]="loading()"><i class="pi pi-check"></i>{{ loading() ? 'Saving...' : editing() ? 'Update parent' : 'Save parent' }}</button></footer>
+    </main>
+    <aside>
+      <section class="card photo"><h2><i class="pi pi-image"></i>Parent photo</h2><label class="upload" [class.has-photo]="photoUrl()">@if (photoUrl()) { <img [src]="photoUrl()" alt="Parent profile" /> } @else { <i class="pi pi-camera"></i> }<strong>{{ photoUrl() ? 'Change parent photo' : 'Upload parent photo' }}</strong><small>JPG, PNG up to 2MB</small><b>Choose file</b><input type="file" accept="image/png,image/jpeg" (change)="selectPhoto($event)" /></label></section>
+      <section class="card help"><h2><i class="pi pi-info-circle"></i>Parent account</h2><p>Contact and relationship details are stored securely in Supabase.</p><p>Linking a student makes this parent available as a guardian on the student profile.</p></section>
+    </aside>
+  </form>
+</div>

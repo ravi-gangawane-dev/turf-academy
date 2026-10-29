@@ -1,0 +1,242 @@
+:host {
+  display: contents;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(7, 25, 47, 0.65);
+  animation: dialog-fade 0.15s ease-out;
+}
+
+.dialog-panel {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #1f3527;
+  border-radius: 14px;
+  border: 1px solid #dbe6e0;
+  box-shadow: 0 24px 70px rgba(8, 34, 22, 0.35);
+  overflow: hidden;
+  animation: dialog-rise 0.18s ease-out;
+}
+
+.dialog-panel.size-small {
+  width: min(360px, 100%);
+}
+
+.dialog-panel.size-large {
+  width: min(760px, 100%);
+}
+
+.dialog-panel.size-full-screen {
+  width: min(1100px, 100%);
+  height: calc(100vh - 2rem);
+  max-height: none;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e4ede8;
+  background: #f7fbf8;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: #1d3b2a;
+}
+
+.dialog-close {
+  border: 0;
+  background: transparent;
+  color: #52615a;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+}
+
+.dialog-close:hover:not(:disabled) {
+  background: #e9f2ec;
+  color: #1d3b2a;
+}
+
+.dialog-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dialog-body {
+  padding: 1.1rem 1.25rem;
+  overflow: auto;
+}
+
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1.25rem 1rem;
+  border-top: 1px solid #eef4f0;
+  background: #fbfdfb;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.dialog-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.05rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.dialog-button.primary {
+  background: #277d47;
+  border-color: #277d47;
+  color: #fff;
+}
+
+.dialog-button.primary:hover:not(:disabled) {
+  background: #1f6a3b;
+}
+
+.dialog-button.primary.danger {
+  background: #c0392b;
+  border-color: #c0392b;
+}
+
+.dialog-button.primary.danger:hover:not(:disabled) {
+  background: #a5301f;
+}
+
+.dialog-button.secondary {
+  background: #fff;
+  border-color: #c9d5cf;
+  color: #33503f;
+}
+
+.dialog-button.secondary:hover:not(:disabled) {
+  background: #f2f7f4;
+}
+
+.dialog-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dialog-button:focus-visible,
+.dialog-close:focus-visible {
+  outline: 2px solid #277d47;
+  outline-offset: 2px;
+}
+
+.preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #eef4f0;
+  color: #33503f;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: dialog-spin 0.9s linear infinite;
+}
+
+@keyframes dialog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .dialog-backdrop {
+    padding: 0;
+    align-items: end;
+  }
+
+  .dialog-panel,
+  .dialog-panel.size-small,
+  .dialog-panel.size-large,
+  .dialog-panel.size-full-screen {
+    width: 100%;
+    height: auto;
+    max-height: 92vh;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .dialog-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dialog-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .dialog-button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-backdrop,
+  .dialog-panel {
+    animation: none;
+  }
+}

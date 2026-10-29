@@ -1,0 +1,6 @@
+@use '../students/student-form-page.scss';
+.parent-form-page { height: 100%; font-size: 12px; }
+.relationship .two { grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr); }
+.check { display: flex; align-items: center; gap: 8px; padding-top: 20px; }
+.check input { width: 18px; height: 18px; }
+.help p { margin: 10px 0; color: var(--app-muted); line-height: 1.55; }

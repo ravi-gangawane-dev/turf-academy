@@ -1,0 +1,136 @@
+<div class="app-list-page academy-events-page">
+  <app-page-hero
+    title="Events & Holidays"
+    subtitle="Plan academy dates and notify parents automatically."
+    [breadcrumbs]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Events & Holidays' }]"
+    actionLabel="Add event"
+    (action)="open()"
+  />
+  <app-notification-section-nav [showTemplates]="auth.role() === 'admin'" />
+
+  @if (error()) {
+    <div class="notice error" role="alert">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="notice" role="status">{{ message() }}</div>
+  }
+
+  
+  <section class="event-list">
+    <div class="table-wrap">
+      <app-table-tools title="Academy events" [table]="exportTable1" [total]="total()" />
+      <table #exportTable1 class="academy-table column-list-table">
+        <thead>
+          <tr>
+            <th><app-sortable-header sortKey="eventDate" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="changeSort($event)">Date</app-sortable-header></th>
+            <th><app-sortable-header sortKey="title" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="changeSort($event)">Event</app-sortable-header></th>
+            <th><app-sortable-header sortKey="eventType" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="changeSort($event)">Type</app-sortable-header></th>
+            <th><app-sortable-header sortKey="description" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="changeSort($event)">Description</app-sortable-header></th>
+            <th><app-sortable-header sortKey="status" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="changeSort($event)">Status</app-sortable-header></th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th><app-column-filter label="date" type="date" [value]="columns.values()['eventDate'] || ''" (changed)="columns.set('eventDate',$event)" /></th>
+            <th><app-column-filter label="event" type="search" [value]="columns.values()['title'] || ''" (changed)="columns.set('title',$event)" /></th>
+            <th><app-column-filter label="type" type="search" [value]="columns.values()['eventType'] || ''" (changed)="columns.set('eventType',$event)" /></th>
+            <th><app-column-filter label="description" type="search" [value]="columns.values()['description'] || ''" (changed)="columns.set('description',$event)" /></th>
+            <th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr><td colspan="6">Loading events…</td></tr>
+          } @else if (error()) {
+            <tr><td colspan="6"><button type="button" (click)="reload()">Try again</button></td></tr>
+          } @else {
+            @for (row of rows(); track row.id) {
+              <tr>
+                <td>{{ row.event_date | date: 'mediumDate': 'UTC' }}</td>
+                <td>{{ row.title }}</td>
+                <td>{{ row.event_type === 'holiday' ? 'Academy holiday' : 'Special event' }}</td>
+                <td>{{ row.description }}</td>
+                <td><app-status-badge [status]="row.status" /></td>
+                <td>
+                  <div class="event-row-actions" role="group" aria-label="Actions for {{ row.title }}">
+                    <button type="button" class="event-action edit-event-action" (click)="open(row)"
+                      [attr.aria-label]="'Edit ' + row.title" title="Edit">
+                      <i class="pi pi-pencil" aria-hidden="true"></i><span class="action-tooltip" role="tooltip">Edit</span>
+                    </button>
+                    <button type="button" class="event-action"
+                      [class.archive-event-action]="row.status === 'active'"
+                      [class.activate-event-action]="row.status !== 'active'" (click)="toggle(row)"
+                      [attr.aria-label]="(row.status === 'active' ? 'Archive ' : 'Activate ') + row.title"
+                      [title]="row.status === 'active' ? 'Archive' : 'Activate'">
+                      <i [class]="row.status === 'active' ? 'pi pi-folder' : 'pi pi-refresh'" aria-hidden="true"></i>
+                      <span class="action-tooltip" role="tooltip">{{ row.status === 'active' ? 'Archive' : 'Activate' }}</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6">No events match these filters.</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="events"
+      (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+  </section>
+</div>
+
+@if (dialogOpen()) {
+  <div class="dialog-backdrop">
+    <section
+      class="dialog"
+      appModalFocus
+      [modalBusy]="saving()"
+      (modalDismiss)="dialogOpen.set(false)"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="event-title"
+    >
+      <h2 id="event-title">{{ editingId() ? 'Edit' : 'Add' }} event</h2>
+      <p>Parents with an active student will receive an in-app notification on this date.</p>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <label
+          >Event type
+          <select formControlName="eventType">
+            <option value="holiday">Academy holiday</option>
+            <option value="special_event">Special event</option>
+          </select>
+        </label>
+        <label
+          >Event name
+          <input formControlName="title" maxlength="120" placeholder="e.g. Academy closed" />
+          @if (form.controls.title.invalid && form.controls.title.touched) {
+            <small class="field-error">Enter an event name between 2 and 120 characters.</small>
+          }
+        </label>
+        <label
+          >Date
+          <input type="date" formControlName="eventDate" />
+          @if (form.controls.eventDate.invalid && form.controls.eventDate.touched) {
+            <small class="field-error">Choose an event date.</small>
+          }
+        </label>
+        <label
+          >Details <span class="optional">(optional)</span>
+          <textarea
+            formControlName="description"
+            maxlength="1000"
+            rows="4"
+            placeholder="Add helpful details for parents"
+          ></textarea>
+        </label>
+        <footer>
+          <button type="button" (click)="dialogOpen.set(false)">Cancel</button>
+          <button class="primary" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : 'Save event' }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}

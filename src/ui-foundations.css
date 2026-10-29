@@ -1,0 +1,234 @@
+/* Shared visual contract for routed pages. Layouts stay in their feature styles. */
+.workspace > main {
+  padding: var(--app-page-gutter);
+  background: var(--app-bg);
+}
+.workspace > main > :not(router-outlet) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: 0;
+  color: var(--app-text);
+  font-size: var(--app-font-sm);
+  line-height: var(--app-line-height);
+}
+.workspace > main > :not(router-outlet) > :first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+.workspace > main :is(h1, h2, h3) {
+  color: var(--app-text);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.workspace > main h1 { font-size: var(--app-font-xl) !important; line-height: 1.2; }
+.workspace > main h2 { font-size: var(--app-font-lg) !important; line-height: 1.35; }
+.workspace > main h3 { font-size: var(--app-font-md) !important; line-height: 1.4; }
+.workspace > main :is(p, li, dt, dd, label, input, select, textarea, button, a, td) {
+  font-size: var(--app-font-sm) !important;
+  line-height: var(--app-line-height);
+}
+.workspace > main :is(small, th) { font-size: var(--app-font-xs); line-height: 1.5; }
+.workspace > main :is(strong, b, span) { line-height: inherit; }
+
+/* A heading has the same surface and spacing whether it uses PageHero or local markup. */
+.workspace > main > :not(router-outlet) .app-page-header {
+  min-width: 0;
+  min-height: 120px;
+  margin: 0 0 var(--app-space-5);
+  padding: var(--app-space-5);
+  gap: var(--app-space-5);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: linear-gradient(110deg, var(--app-card), var(--app-primary-soft));
+  box-shadow: none;
+}
+.workspace > main .app-page-header::before,
+.workspace > main .app-page-header::after { display: none; }
+.workspace > main .app-page-header h1 { margin: 4px 0 8px; }
+.workspace > main .app-page-header p { margin: 0; color: var(--app-muted); }
+.workspace > main .app-page-header :is(.hero-brand, .hero-message, blockquote) { color: var(--app-primary-dark); }
+.workspace > main .settings-page app-page-hero .app-page-header { margin-bottom: 0; }
+.workspace > main :is(.breadcrumb, .breadcrumbs, [class$='-breadcrumb'], [aria-label='Breadcrumb']) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--app-muted);
+  font-size: var(--app-font-xs);
+}
+
+.workspace > main :is(.card, .app-card, .module-card, .side-card, .dash-card, .directory-card, .notification-card) {
+  min-width: 0;
+  border-color: var(--app-border);
+  border-radius: var(--app-radius-md);
+  background-color: var(--app-card);
+  box-shadow: var(--app-shadow);
+}
+.workspace > main :is(.metrics, .student-metrics, .attendance-metrics, .notification-metrics, .report-summary, .summary-grid) {
+  gap: var(--app-grid-gap);
+}
+.workspace > main :is(.metrics, .student-metrics, .attendance-metrics, .notification-metrics, .report-summary, .summary-grid) > :is(article, button) {
+  min-width: 0;
+  border-color: var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: var(--app-card);
+  box-shadow: var(--app-shadow);
+}
+.workspace > main :is(.metrics, .student-metrics, .attendance-metrics, .notification-metrics, .report-summary, .summary-grid) :is(strong, b):not(.percent) {
+  font-size: var(--app-font-stat) !important;
+  font-weight: 750;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Fields share geometry, while search icons and custom selectors keep their own positioning. */
+.workspace > main :is(input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='file']), select, textarea),
+.interaction-dialog :is(input, textarea) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--app-control-height);
+  border: 1px solid var(--app-control-border);
+  border-radius: var(--app-radius-sm);
+  background-color: var(--app-card);
+  color: var(--app-text);
+  font: inherit;
+  font-size: var(--app-font-sm);
+}
+.workspace > main :is(input, select) { padding-block: 9px; }
+.workspace > main select:not([multiple]) {
+  padding-right: 42px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2353645b' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+.workspace > main textarea { padding: 12px; resize: vertical; }
+.workspace > main input:is([type='checkbox'], [type='radio']) { accent-color: var(--app-primary); }
+.workspace > main :is(button, .app-button, a.primary, .hero-action),
+.interaction-dialog button {
+  border-radius: var(--app-radius-sm);
+  font-size: var(--app-font-sm);
+  font-weight: 600;
+}
+.workspace > main button:not(:where(nav *, .calendar-grid *, .week-calendar *, .month-calendar *, .summary-grid *, .row, .day)),
+.workspace > main :is(.app-button, a.primary, .hero-action),
+.interaction-dialog button { min-height: var(--app-control-height); }
+.workspace > main :is(.primary, .app-button:not(.secondary), .hero-action),
+.interaction-dialog .primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--app-primary) !important;
+  background: var(--app-primary) !important;
+  color: #fff !important;
+  text-decoration: none;
+  box-shadow: none;
+}
+.workspace > main :is(.primary, .app-button:not(.secondary), .hero-action):hover:not(:disabled),
+.interaction-dialog .primary:hover { background: var(--app-primary-dark) !important; }
+button:disabled { cursor: not-allowed; }
+.workspace > main :is(button, input, select, textarea):disabled { opacity: 0.65; }
+.workspace > main .summary-grid button:disabled { opacity: 1; }
+:where(input, select, textarea, button, a, [tabindex]):focus-visible {
+  outline: 3px solid var(--app-primary);
+  outline-offset: 3px;
+}
+
+.workspace > main :is(.table-wrap, .table-scroll, .table-content) {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.workspace > main table { width: 100%; border-collapse: collapse; }
+.workspace > main th {
+  padding: 12px 16px;
+  background: var(--app-surface-muted);
+  color: var(--app-muted);
+  font-weight: 650;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.workspace > main td { padding: 14px 16px; border-bottom-color: var(--app-border); vertical-align: middle; }
+.workspace > main :is(.notice, .message, .attendance-notice, .student-action-notice) {
+  padding: 12px 16px;
+  border: 1px solid var(--app-success-border);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-success-text);
+  background: var(--app-success-bg);
+  font-size: var(--app-font-sm);
+}
+.workspace > main :is(.notice, .message, .attendance-notice).error {
+  border-color: var(--app-danger-border);
+  color: var(--app-danger);
+  background: var(--app-danger-bg);
+}
+.workspace > main :is(.empty-state, .notification-empty, .report-empty) {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--app-muted);
+}
+.workspace > main :is(.dialog, .refund-dialog, [role='dialog']), .interaction-dialog {
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: var(--app-card);
+  color: var(--app-text);
+}
+/* Page gutters belong to the shell; feature wrappers must not add a second gutter. */
+.workspace > main > :not(router-outlet) > :is(.students-page, .parents-page, .coaches-page, .coach-page, .parent-dashboard, .portal-page, .profile-form-page, .dashboard-page) {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--app-text);
+}
+.workspace > main :is(.students-page, .parents-page, .coaches-page) .student-list-hero { margin: 0; }
+.workspace > main .student-metrics { padding: 0; margin: 0 0 var(--app-grid-gap); }
+.workspace > main .student-metrics article { height: auto; min-height: 108px; }
+.workspace > main .student-metrics article > div { min-width: 0; }
+.workspace > main .student-metrics .metric-symbol { flex-shrink: 0; }
+.workspace > main .student-form-page { height: auto; }
+.workspace > main .student-form-page > form { height: auto; margin: 0; gap: var(--app-grid-gap); }
+.workspace > main .student-form-page > form > :is(main, aside) { gap: var(--app-grid-gap); }
+.workspace > main .student-form-page .card { padding: 20px; }
+@media (max-width: 860px) {
+  html:root { --app-page-gutter: 16px; --app-grid-gap: 12px; --app-font-xl: 28px; }
+  .workspace > main .app-page-header { padding: 20px; gap: 16px; }
+}
+@media (max-width: 600px) {
+  html:root { --app-page-gutter: 12px; --app-font-xl: 26px; --app-font-stat: 26px; }
+  .workspace > main .app-page-header { min-height: auto; padding: 16px; }
+  .workspace > main :is(.metrics, .student-metrics) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace > main :is(.metrics, .student-metrics) > article { padding: 14px; }
+  .workspace > main :is(.metrics, .student-metrics) :is(p, small, span) { white-space: normal !important; overflow-wrap: anywhere; }
+  .workspace > main .student-metrics article { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .workspace > main .student-metrics article > div { min-width: 0 !important; max-width: 100%; }
+  .workspace > main :is(th, td) { padding: 12px; }
+  .feature-header, .toolbar { align-items: stretch; flex-direction: column; }
+  .form-grid { grid-template-columns: 1fr; }
+  .toolbar .search-field { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+@media print {
+  .sidebar, .topbar, .api-state, .no-print { display: none !important; }
+  .workspace { padding-left: 0 !important; }
+  .workspace > main { padding: 0 !important; }
+  .app-card { box-shadow: none !important; }
+}
+.workspace > main app-filter-bar .filter-search input { border: 0 !important; background: transparent; box-shadow: none; }
+@media (max-width: 760px) {
+  .workspace > main :is(.table-wrap, .table-content, .table-scroll) > table:has(thead th:nth-child(4)) { min-width: 680px; }
+}
+.interaction-dialog { font-size: 14px; line-height: 1.5; padding: 24px; }
+.interaction-dialog h2 { font-size: 18px; font-weight: 700; }
+.interaction-dialog footer { flex-wrap: wrap; }

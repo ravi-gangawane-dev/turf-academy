@@ -1,0 +1,6 @@
+@if (config().icon) {
+  <span class="dialog-emoji" aria-hidden="true"><i class="{{ config().icon }}"></i></span>
+}
+@if (config().message) {
+  <p class="dialog-message">{{ config().message }}</p>
+}

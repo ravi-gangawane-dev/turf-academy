@@ -1,0 +1,1442 @@
+{
+  "date": "2026-10-22",
+  "roles": [
+    {
+      "role": "parent",
+      "authenticated": true
+    },
+    {
+      "role": "coach",
+      "authenticated": true
+    },
+    {
+      "role": "admin",
+      "authenticated": true
+    },
+    {
+      "role": "receptionist",
+      "authenticated": true
+    }
+  ],
+  "results": [
+    {
+      "role": "admin",
+      "route": "auth/splash",
+      "finalPath": "/auth/splash",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "v1.0.0\n\nDISCIPLINE  SKILL  SUCCESS\n\nLoading…\nTRAIN TODAY  ·  BUILD TOMORROW"
+    },
+    {
+      "role": "admin",
+      "route": "auth/login",
+      "finalPath": "/auth/login",
+      "headings": [
+        "Run the academy.Coach the future."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Run the academy.\nCoach the future.\n\nSecure attendance, enrollment, fees, and parent communication in one workspace.\n\nProtected academy access\nPermissions are enforced by Angular guards and Supabase row-level security.\n\nWELCOME BACK\n\nSign in to contin"
+    },
+    {
+      "role": "admin",
+      "route": "unauthorized",
+      "finalPath": "/unauthorized",
+      "headings": [
+        "Your role cannot open this area"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "ACCESS RESTRICTED\n\nYour role cannot open this area\nThe server also verifies permissions for every protected action.\nReturn to dashboard"
+    },
+    {
+      "role": "receptionist",
+      "route": "dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nPreparing your dashboard\n\nLoading profile, permissions,",
+      "screenshot": "docs/audit/2026-10-22-receptionist-dashboard.png"
+    },
+    {
+      "role": "coach",
+      "route": "coach/dashboard",
+      "finalPath": "/coach/dashboard",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…",
+      "screenshot": "docs/audit/2026-10-22-coach-dashboard.png"
+    },
+    {
+      "role": "parent",
+      "route": "parent/dashboard",
+      "finalPath": "/parent/dashboard",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading your family dashboard…",
+      "screenshot": "docs/audit/2026-10-22-parent-dashboard.png"
+    },
+    {
+      "role": "admin",
+      "route": "auth/forgot-password",
+      "finalPath": "/auth/forgot-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "TURF CRICKET ACADEMY\n\nSecure access.\nProtected accounts.\n\nAccount recovery and verification for academy members.\n\nACCOUNT SECURITY\n\nForgot Password\n\nEnter the email address linked to your academy account.\n\nEmail\nSend recovery email\nBack to login"
+    },
+    {
+      "role": "admin",
+      "route": "auth/reset-password",
+      "finalPath": "/auth/reset-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "TURF CRICKET ACADEMY\n\nSecure access.\nProtected accounts.\n\nAccount recovery and verification for academy members.\n\nACCOUNT SECURITY\n\nReset Password\n\nChoose a new secure password.\n\nNew password\nConfirm password\nPassword must contain:\nAt least 8 charact"
+    },
+    {
+      "role": "receptionist",
+      "route": "search",
+      "finalPath": "/search",
+      "headings": [
+        "Academy search"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nAcademy search\nAcademy search\n\nFind students,"
+    },
+    {
+      "role": "parent",
+      "route": "parent/children/:id/edit",
+      "finalPath": "/parent/children/40000000-0000-4000-8000-000000000002/edit",
+      "headings": [
+        "Complete Child Profile"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nDashboard\nStudents\nAdd Student\nAdd Student\n\nRegister a new studen"
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches",
+      "finalPath": "/coach/batches",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "admin",
+      "route": "auth/otp",
+      "finalPath": "/auth/otp",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "TURF CRICKET ACADEMY\n\nSecure access.\nProtected accounts.\n\nAccount recovery and verification for academy members.\n\nACCOUNT SECURITY\n\nOTP Verification\n\nEnter your recovery verification code.\n\nEmail\n\nEnter the code from your latest recovery email. If yo"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/add",
+      "finalPath": "/students/add",
+      "headings": [
+        "Add Student"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nStudents\nAdd Student\nAdd Student\n\nRegister a "
+    },
+    {
+      "role": "parent",
+      "route": "parent/children/:id",
+      "finalPath": "/parent/children/40000000-0000-4000-8000-000000000002",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading child profile..."
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches/:batchId",
+      "finalPath": "/coach/batches/30000000-0000-4000-8000-000000000001",
+      "headings": [
+        "Batch Details"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nDashboard\nBatch Details\nBatch Details\n\nYour coaching workspa"
+    },
+    {
+      "role": "admin",
+      "route": "auth/session-expired",
+      "finalPath": "/auth/session-expired",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [
+        " Your session has expired. For your security, please sign in again. "
+      ],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "TURF CRICKET ACADEMY\n\nSecure access.\nProtected accounts.\n\nAccount recovery and verification for academy members.\n\nACCOUNT SECURITY\n\nSession Expired\n\nYour session ended. Return to sign in or verify your account.\n\nYour session has expired. For your sec"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id/edit",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit",
+      "headings": [
+        "Edit Student"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nStudents\nAdd Student\nAdd Student\n\nRegister a "
+    },
+    {
+      "role": "parent",
+      "route": "parent/children",
+      "finalPath": "/parent/children",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students",
+      "finalPath": "/coach/students",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "admin",
+      "route": "auth/password-updated",
+      "finalPath": "/auth/password-updated",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "TURF CRICKET ACADEMY\n\nSecure access.\nProtected accounts.\n\nAccount recovery and verification for academy members.\n\nACCOUNT SECURITY\n\nPassword Updated!\n\nYour password has been successfully updated.\n\nYour password has been successfully updated. You can "
+    },
+    {
+      "role": "parent",
+      "route": "parent/attendance",
+      "finalPath": "/parent/attendance",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [
+        "Student Details"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nStudents\nStudent Details\nStudent Details\n\nVie"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students/:studentId",
+      "finalPath": "/coach/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [
+        "Student Profile"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nPreparing your dashboard\n\nLoading profile, permissi",
+      "screenshot": "docs/audit/2026-10-22-admin-dashboard.png"
+    },
+    {
+      "role": "parent",
+      "route": "parent/attendance/calendar",
+      "finalPath": "/parent/attendance/calendar",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "receptionist",
+      "route": "students",
+      "finalPath": "/students",
+      "headings": [
+        "Student List"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Batch / Program ↕",
+            "Coach ↕",
+            "Date of birth ↕",
+            "Phone ↕",
+            "Status ↕",
+            "Parent / Guardian ↕",
+            "Join date ↕",
+            "Actions"
+          ],
+          "bodyRows": 5
+        }
+      ],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nStudents\nStudent List\n\nManage and view all ac"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance",
+      "finalPath": "/coach/attendance",
+      "headings": [
+        "Today's Attendance"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "parent",
+      "route": "parent/schedule",
+      "finalPath": "/parent/schedule",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/coach",
+      "finalPath": "/dashboard/coach",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nPreparing your dashboard\n\nLoading profile, permissi"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/add",
+      "finalPath": "/parents/add",
+      "headings": [
+        "Add Parent"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nParents\nAdd Parent\nAdd Parent\n\nRegister a par"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/qr",
+      "finalPath": "/coach/attendance/qr",
+      "headings": [
+        "QR Scanner"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nDashboard\nQR Scanner\nQR Scanner\n\nYour coaching workspace and"
+    },
+    {
+      "role": "parent",
+      "route": "parent/coach",
+      "finalPath": "/parent/coach",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nPreparing your dashboard\n\nLoading profile, permissi"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id/edit",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit",
+      "headings": [
+        "Edit Parent"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nParents\nEdit Parent\nEdit Parent\n\nUpdate paren"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/check-in",
+      "finalPath": "/coach/attendance/check-in",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "parent",
+      "route": "parent/fees",
+      "finalPath": "/parent/fees",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard",
+      "finalPath": "/dashboard",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nPreparing your dashboard\n\nLoading profile, permissi"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78",
+      "headings": [
+        "Parent Details"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nParents\nParent Details\nParent Details\n\nView p"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/check-out",
+      "finalPath": "/coach/attendance/check-out",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "parent",
+      "route": "parent/payments",
+      "finalPath": "/parent/payments",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "search",
+      "finalPath": "/search",
+      "headings": [
+        "Academy search"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nDashboard\nAcademy search\nAcademy search\n\nFind stude"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents",
+      "finalPath": "/parents",
+      "headings": [
+        "Parent List"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Parent name ↑",
+            "Relation ↕",
+            "Phone ↕",
+            "Email ↕",
+            "Children ↕",
+            "Status ↕",
+            "Joined on ↕",
+            "Actions"
+          ],
+          "bodyRows": 1
+        }
+      ],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nRole: Receptionist\nAccess follows your assigned permissions.\nSearch\nTE\nTest Receptionist\nreceptionist\nDashboard\nParents\nParent List\n\nManage and view all acad"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/history",
+      "finalPath": "/",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": ""
+    },
+    {
+      "role": "parent",
+      "route": "parent/receipts",
+      "finalPath": "/",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": ""
+    },
+    {
+      "role": "admin",
+      "route": "students/add",
+      "finalPath": "/students/add",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": ""
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/correction",
+      "finalPath": "/coach/attendance/correction",
+      "headings": [
+        "Attendance Correction"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nDashboard\nAttendance Correction\nAttendance Correction\n\nYour "
+    },
+    {
+      "role": "parent",
+      "route": "parent/notifications",
+      "finalPath": "/parent/notifications",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\n17\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id/edit",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit",
+      "headings": [
+        "Edit Student"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nDashboard\nStudents\nEdit Student\nEdit Student\n\nUpdat"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/summary",
+      "finalPath": "/coach/attendance/summary",
+      "headings": [
+        "Attendance Summary"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student",
+            "Student ID",
+            "Total",
+            "Present",
+            "Absent",
+            "Late",
+            "Attendance"
+          ],
+          "bodyRows": 1
+        }
+      ],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nDashboard\nAttendance Summary\nAttendance Summary\n\nYour coachi"
+    },
+    {
+      "role": "parent",
+      "route": "parent/profile",
+      "finalPath": "/parent/profile",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [
+        "Student Details"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nDashboard\nStudents\nStudent Details\nStudent Details\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/schedule",
+      "finalPath": "/coach/schedule",
+      "headings": [
+        "My Schedule"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nDashboard\nMy Schedule\nMy Schedule\n\nYour coaching workspace a"
+    },
+    {
+      "role": "parent",
+      "route": "parent/profile/edit",
+      "finalPath": "/parent/profile/edit",
+      "headings": [
+        "Complete Your Profile"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nDashboard\nComplete Your Profile\nComplete Your Profile\n\nAdd the mi"
+    },
+    {
+      "role": "coach",
+      "route": "coach/notifications",
+      "finalPath": "/coach/notifications",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "admin",
+      "route": "students",
+      "finalPath": "/students",
+      "headings": [
+        "Student List"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Batch / Program ↕",
+            "Coach ↕",
+            "Date of birth ↕",
+            "Phone ↕",
+            "Status ↕",
+            "Parent / Guardian ↕",
+            "Join date ↕",
+            "Actions"
+          ],
+          "bodyRows": 5
+        }
+      ],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nStudents\nParents\nCoaches\nBatches\nEnrollment\nAttendance\nFees\nPayments\nNotifications\nReports\nSettings\nRole: Administrator\nFull access to manage academy operations.\nSearch\nTE\nTest Admin\nadmin\nDashboard\nStudents\nStudent List\n\nManage and view al"
+    },
+    {
+      "role": "parent",
+      "route": "parent/support",
+      "finalPath": "/parent/support",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Children\nAttendance\nSchedule\nFees\nPayments\nReceipts\nCoach\nNotifications\nProfile\nHelp & Support\nRole: Parent\nAccess follows your assigned permissions.\nTE\nTest Parent\nparent\nLoading parent portal…"
+    },
+    {
+      "role": "coach",
+      "route": "coach/profile",
+      "finalPath": "/coach/profile",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "Dashboard\nMy Batches\nMy Students\nAttendance\nSchedule\nAttendance Summary\nNotifications\nProfile\nHelp & Support\nRole: Coach\nAccess follows your assigned permissions.\nSearch\nTE\nTest Coach\ncoach\nLoading coach portal…"
+    },
+    {
+      "role": "parent",
+      "route": "redirect/parent",
+      "finalPath": "/redirect/parent",
+      "headings": [
+        "Welcome, Parent!"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "overlay": 0,
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "bodyExcerpt": "SUPPORT THEIR JOURNEY EVERY STEP\nTRAIN TODAY\nBUILD TOMORROW\nWelcome, Parent!\n\nRedirecting to your dashboard…\n\n Initializing permissions\n Preparing dashboard\n Almost ready…"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/student-allocation",
+      "error": "page.goto: net::ERR_ABORTED at http://127.0.0.1:4202/batches/student-allocation\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4202/batches/student-allocation\", waiting until \"domcontentloaded\"\u001b[22m\n",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "parents/add",
+      "error": "page.goto: net::ERR_ABORTED at http://127.0.0.1:4202/parents/add\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4202/parents/add\", waiting until \"domcontentloaded\"\u001b[22m\n",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/coach-assignment",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "coach",
+      "route": "coach/support",
+      "error": "locator.count: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id/edit",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/schedule",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "coach",
+      "route": "redirect/coach",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/capacity",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "parents",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "batches/student-allocation",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches/:id",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "batches/coach-assignment",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "batches/schedule",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "batches/capacity",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/new",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "batches",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/transfer",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/add",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/pause",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id/edit",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/cancel",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/fee-plans",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "coaches",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/history",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/new",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/check-in-out",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/transfer",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/correction",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/pause",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/history",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/cancel",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/calendar",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/fee-plans",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/offline-queue",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/history",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/plans",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "attendance",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/check-in-out",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications",
+      "error": "page.goto: Target page, context or browser has been closed",
+      "status": "ERROR"
+    }
+  ],
+  "accessibility": [
+    {
+      "role": "receptionist",
+      "route": "dashboard/reception",
+      "violations": [],
+      "incomplete": 0
+    },
+    {
+      "role": "parent",
+      "route": "parent/dashboard",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".count"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #ffffff, background color: #ef4444, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incomplete": 0
+    },
+    {
+      "role": "coach",
+      "route": "coach/dashboard",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".rows > .empty"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.14 (foreground color: #718078, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".dashboard-notifications > .empty"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.14 (foreground color: #718078, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "button:nth-child(1) > span > small"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.2 (foreground color: #6d7b74, background color: #f5faf7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "button:nth-child(2) > span > small"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.2 (foreground color: #6d7b74, background color: #f5faf7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "button:nth-child(3) > span > small"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.2 (foreground color: #6d7b74, background color: #f5faf7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "button:nth-child(4) > span > small"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.2 (foreground color: #6d7b74, background color: #f5faf7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".upcoming-card > .empty"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.14 (foreground color: #718078, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incomplete": 3
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/admin",
+      "violations": [],
+      "incomplete": 0
+    }
+  ],
+  "tableControls": [
+    {
+      "route": "students",
+      "sortRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/students",
+          "query": "?select=id%2Cphoto_path&id=in.%2840000000-0000-4000-8000-000000000003%2C74f22300-8f0c-42a2-bcbc-e94e37e0e3dd%2Cb5c16548-335d-40fc-8690-de056824e167%2Ca6fedc81-133d-4d8c-ab04-d340ac60d316%29&photo_path=not.is.null",
+          "body": null
+        },
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_student_columns_page",
+          "query": "",
+          "body": "{\"p_page\":1,\"p_size\":5,\"p_columns\":{},\"p_sort\":\"full_name\",\"p_direction\":\"asc\"}"
+        }
+      ],
+      "pageSizeRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/students",
+          "query": "?select=id%2Cphoto_path&id=in.%2840000000-0000-4000-8000-000000000003%2C74f22300-8f0c-42a2-bcbc-e94e37e0e3dd%2Cb5c16548-335d-40fc-8690-de056824e167%2Ca6fedc81-133d-4d8c-ab04-d340ac60d316%29&photo_path=not.is.null",
+          "body": null
+        },
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_student_columns_page",
+          "query": "",
+          "body": "{\"p_page\":1,\"p_size\":10,\"p_columns\":{},\"p_sort\":\"full_name\",\"p_direction\":\"asc\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/rest/v1/students",
+          "query": "?select=id%2Cphoto_path&id=in.%2840000000-0000-4000-8000-000000000003%2C74f22300-8f0c-42a2-bcbc-e94e37e0e3dd%2Cb5c16548-335d-40fc-8690-de056824e167%2Ca6fedc81-133d-4d8c-ab04-d340ac60d316%2C51606909-54bb-48c9-856b-5dc4c6eecf4f%2Cca61e9ba-a619-46ed-a633-a097ef7a47d0%2C98449290-647a-41f5-b700-73983ce899db%2C151bba96-abdd-4bf2-b79a-5dd6509c83ee%2C69d7156c-f8eb-4c66-acc4-cb893d406604%29&photo_path=not.is.null",
+          "body": null
+        }
+      ],
+      "filterRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_student_columns_page",
+          "query": "",
+          "body": "{\"p_page\":1,\"p_size\":10,\"p_columns\":{\"cf_full_name\":\"ZZ_AUDIT_NO_MATCH_20261022\"},\"p_sort\":\"full_name\",\"p_direction\":\"asc\"}"
+        }
+      ],
+      "emptyText": [
+        ""
+      ],
+      "status": "CHECKED"
+    }
+  ],
+  "blocked": []
+}

@@ -1,0 +1,163 @@
+{
+  "roles": {
+    "admin": {
+      "profileRole": "admin",
+      "active": true,
+      "queries": {
+        "students": {
+          "count": 22
+        },
+        "parents": {
+          "count": 24
+        },
+        "coaches": {
+          "count": 7
+        },
+        "batches": {
+          "count": 7
+        },
+        "enrollments": {
+          "count": 22
+        },
+        "attendance_records": {
+          "count": 11
+        },
+        "payments": {
+          "count": 45
+        },
+        "notifications": {
+          "count": 221
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      }
+    },
+    "receptionist": {
+      "profileRole": "receptionist",
+      "active": true,
+      "queries": {
+        "students": {
+          "count": 22
+        },
+        "parents": {
+          "count": 24
+        },
+        "coaches": {
+          "count": 7
+        },
+        "batches": {
+          "count": 7
+        },
+        "enrollments": {
+          "count": 22
+        },
+        "attendance_records": {
+          "count": 11
+        },
+        "payments": {
+          "count": 45
+        },
+        "notifications": {
+          "count": 221
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "adminUserListDenied": true,
+      "adminUserListHttp": 403
+    },
+    "coach": {
+      "profileRole": "coach",
+      "active": true,
+      "queries": {
+        "students": {
+          "count": 16
+        },
+        "parents": {
+          "count": 6
+        },
+        "coaches": {
+          "count": 4
+        },
+        "batches": {
+          "count": 3
+        },
+        "enrollments": {
+          "count": 16
+        },
+        "attendance_records": {
+          "count": 6
+        },
+        "payments": {
+          "count": 0
+        },
+        "notifications": {
+          "count": 0
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "adminUserListDenied": true,
+      "adminUserListHttp": 403
+    },
+    "parent": {
+      "profileRole": "parent",
+      "active": true,
+      "queries": {
+        "students": {
+          "count": 1
+        },
+        "parents": {
+          "count": 1
+        },
+        "coaches": {
+          "count": 3
+        },
+        "batches": {
+          "count": 1
+        },
+        "enrollments": {
+          "count": 1
+        },
+        "attendance_records": {
+          "count": 1
+        },
+        "payments": {
+          "count": 4
+        },
+        "notifications": {
+          "count": 17
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "adminUserListDenied": true,
+      "adminUserListHttp": 403
+    }
+  },
+  "anonymous": {
+    "students": {
+      "rows": 0
+    },
+    "parents": {
+      "rows": 0
+    },
+    "payments": {
+      "rows": 0
+    }
+  },
+  "relationships": {
+    "parentStudentsWithinLinks": true,
+    "coachStudentsWithinAssignedBatches": true,
+    "coachProbeDetails": {
+      "assignedBatches": 3,
+      "visibleStudents": 16,
+      "unexpectedCount": 0,
+      "matchedProfileToAuthenticatedUser": true
+    }
+  }
+}

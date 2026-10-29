@@ -1,0 +1,115 @@
+<div class="app-list-page coaches-page">
+  @if (message()) {
+  <div class="coach-notice">
+    <span>{{ message() }}</span><button (click)="message.set('')"><i class="pi pi-times"></i></button>
+  </div>
+  }
+  @if (error()) {
+  <app-async-state kind="error" title="Could not load coaches" [message]="error()" />
+  }
+
+  <app-page-hero title="Coach List" subtitle="Manage and view all academy coaches."
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Coaches' }]" actionLabel="Add Coach"
+    actionIcon="pi-plus" (action)="create()" />
+  <section class="coach-summary">
+    <app-summary-metric-card label="Total coaches" [value]="coachMetrics().total" icon="pi-users"
+      hint="All registered coaches" />
+    <app-summary-metric-card label="Active coaches" [value]="coachMetrics().active" icon="pi-user-plus"
+      hint="Currently active" tone="blue" />
+    <app-summary-metric-card label="Inactive coaches" [value]="coachMetrics().inactive" icon="pi-user-minus"
+      hint="Currently inactive" tone="orange" />
+    <app-summary-metric-card label="Specializations" [value]="coachMetrics().specializations" icon="pi-star"
+      hint="Training disciplines" tone="purple" />
+    <app-summary-metric-card label="Experienced" [value]="coachMetrics().experienced" icon="pi-verified"
+      hint="Five or more years" tone="teal" />
+  </section>
+  <app-data-table class="coach-directory" [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="coaches"
+    (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)">
+
+    <div table-content>
+      <app-table-tools title="Coaches" [table]="exportTable1"></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><app-sortable-header sortKey="cf_name" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Coach</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_specialization" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Specialization</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_contact" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Contact</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_experience" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Experience</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_qualification" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Qualification</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th></th>
+            <th><app-column-filter label="coach" type="search" [value]="columns.values()['name'] || ''"
+                (changed)="columns.set('name',$event)" /></th>
+            <th><app-column-filter label="specialization" type="search"
+                [value]="columns.values()['specialization'] || ''" (changed)="columns.set('specialization',$event)" />
+            </th>
+            <th><app-column-filter label="contact" type="search" [value]="columns.values()['contact'] || ''"
+                (changed)="columns.set('contact',$event)" /></th>
+            <th><app-column-filter label="experience" type="number" [value]="columns.values()['experience'] || ''"
+                (changed)="columns.set('experience',$event)" /></th>
+            <th><app-column-filter label="qualification" type="search" [value]="columns.values()['qualification'] || ''"
+                (changed)="columns.set('qualification',$event)" /></th>
+            <th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loadingCoaches()) {
+          <tr>
+            <td colspan="8"><app-async-state title="Loading coaches..." /></td>
+          </tr>
+          } @else {
+          @for (coach of coaches(); track coach.id; let i = $index) {
+          <tr>
+            <td>{{ (page() - 1) * pageSize() + i + 1 }}</td>
+            <td>
+              <button class="coach-name" (click)="openCoachDetails(coach)">
+                <span>
+                  @if (coach.photoDataUrl) {
+                  <img [src]="coach.photoDataUrl" alt="" />
+                  } @else {
+                  {{ initials(coach.name) }}
+                  }</span><strong>{{ coach.name }}</strong>
+              </button>
+            </td>
+            <td>{{ coach.specialization }}</td>
+            <td>
+              <span class="coach-contact"><span><i class="pi pi-phone"></i>+91 {{ coach.mobile }}</span><span><i
+                    class="pi pi-envelope"></i>{{ coachEmail(coach) }}</span></span>
+            </td>
+            <td>{{ coach.experienceYears ?? 0 }} years</td>
+            <td>{{ coach.qualification || 'Not provided' }}</td>
+            <td>
+              <app-status-badge [status]="$any(coach.status)" />
+            </td>
+            <td>
+              <span class="row-actions">
+                <button (click)="openCoachDetails(coach)"><i class="pi pi-eye"></i></button><button
+                  (click)="edit(coach)"><i class="pi pi-pencil"></i></button><button (click)="deleteCoach(coach)"><i
+                    class="pi pi-trash"></i></button>
+              </span>
+
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8">@if (!error()) { <app-async-state kind="empty" title="No matching coaches." /> }</td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>

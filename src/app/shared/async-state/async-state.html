@@ -1,0 +1,20 @@
+<section
+  class="state"
+  [class.error]="kind() === 'error'"
+  [attr.role]="kind() === 'error' ? 'alert' : 'status'"
+>
+  <i
+    class="pi"
+    [class.pi-spin]="kind() === 'loading'"
+    [class.pi-spinner]="kind() === 'loading'"
+    [class.pi-exclamation-triangle]="kind() === 'error'"
+    [class.pi-inbox]="kind() === 'empty'"
+  ></i>
+  <strong>{{ title() }}</strong>
+  @if (message()) {
+    <p>{{ message() }}</p>
+  }
+  @if (actionLabel()) {
+    <button type="button" (click)="action.emit()">{{ actionLabel() }}</button>
+  }
+</section>

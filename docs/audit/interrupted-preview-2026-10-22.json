@@ -1,0 +1,1187 @@
+{
+  "date": "2026-10-22",
+  "origin": "http://127.0.0.1:4312",
+  "roles": [
+    {
+      "role": "admin",
+      "authenticated": true
+    },
+    {
+      "role": "receptionist",
+      "authenticated": true
+    },
+    {
+      "role": "coach",
+      "authenticated": true
+    }
+  ],
+  "results": [
+    {
+      "role": "admin",
+      "route": "auth/splash",
+      "finalPath": "/auth/splash",
+      "headings": [],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/login",
+      "finalPath": "/auth/login",
+      "headings": [
+        "Run the academy.Coach the future."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "unauthorized",
+      "finalPath": "/unauthorized",
+      "headings": [
+        "Your role cannot open this area"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/forgot-password",
+      "finalPath": "/auth/forgot-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/reset-password",
+      "finalPath": "/auth/reset-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/otp",
+      "finalPath": "/auth/otp",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/session-expired",
+      "finalPath": "/auth/session-expired",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [
+        " Your session has expired. For your security, please sign in again. "
+      ],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/password-updated",
+      "finalPath": "/auth/password-updated",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED",
+      "screenshot": "docs/audit/production-2026-10-22-admin.png"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/coach",
+      "finalPath": "/dashboard/coach",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard",
+      "finalPath": "/dashboard",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "search",
+      "finalPath": "/search",
+      "headings": [
+        "Academy search"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/add",
+      "finalPath": "/students/add",
+      "headings": [
+        "Add Student"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id/edit",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit",
+      "headings": [
+        "Edit Student"
+      ],
+      "alerts": [],
+      "httpErrors": [],
+      "errors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "tables": [],
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "students",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "parents/add",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/add\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/add\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id/edit",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "parents",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "batches/student-allocation",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/student-allocation\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/student-allocation\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "batches/coach-assignment",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/coach-assignment\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/coach-assignment\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "batches/schedule",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/schedule\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/schedule\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "batches/capacity",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/capacity\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/capacity\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "batches",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/add",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches/add\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches/add\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id/edit",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001/edit\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001/edit\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "coaches",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/new",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/new\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/new\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/transfer",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/transfer\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/transfer\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/pause",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/pause\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/pause\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/cancel",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/cancel\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/cancel\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/fee-plans",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/fee-plans\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/fee-plans\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/check-in-out",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/check-in-out\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/check-in-out\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/correction",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/correction\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/correction\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/calendar",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/calendar\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/calendar\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/offline-queue",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/offline-queue\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/offline-queue\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees/plans",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/plans\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/plans\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/events",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/events\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/events\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "reports",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/reports\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/reports\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "auth/change-password",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/auth/change-password\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/auth/change-password\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees/discounts",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/discounts\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/discounts\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees/late-fees",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/late-fees\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/late-fees\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees/pending",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/pending\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/pending\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "fees/summary",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/summary\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/summary\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/new",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/new\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/new\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/partial",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/partial\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/partial\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/full",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/full\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/full\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/receipts",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/receipts\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/receipts\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/refunds",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/refunds\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/refunds\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "payments/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/whatsapp",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/whatsapp\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/whatsapp\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/templates",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/templates\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/templates\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/failed",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/failed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/failed\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/delivery-status",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/delivery-status\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/delivery-status\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "reports/coach",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/reports/coach\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/reports/coach\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "reports/batch",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/reports/batch\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/reports/batch\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/users",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/users\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/users\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/audit-logs",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/audit-logs\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/audit-logs\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/profile",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/profile\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/profile\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/regional",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/regional\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/regional\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/attendance",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/attendance\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/attendance\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/fees",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/fees\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/fees\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/notifications",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/notifications\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/notifications\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/roles",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/roles\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/roles\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/permissions",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/permissions\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/permissions\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/theme",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/theme\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/theme\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "settings/backup",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/backup\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/backup\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "design/:section/:view",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/design/foundations/colors\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/design/foundations/colors\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "handoff/:view",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/handoff/overview\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/handoff/overview\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "redirect/admin",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/redirect/admin\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/redirect/admin\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "login",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/login\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/login\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/manual-check-in",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/manual-check-in\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/manual-check-in\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/manual-check-out",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/manual-check-out\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/manual-check-out\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/qr",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/qr\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/qr\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "dashboard/reception",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/dashboard/reception\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/dashboard/reception\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "search",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/search\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/search\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/add",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students/add\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students/add\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id/edit",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students/69d7156c-f8eb-4c66-acc4-cb893d406604\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "students",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/students\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/students\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/add",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/add\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/add\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id/edit",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/parents\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/parents\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/student-allocation",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/student-allocation\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/student-allocation\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/coach-assignment",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/coach-assignment\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/coach-assignment\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/schedule",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/schedule\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/schedule\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/capacity",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches/capacity\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches/capacity\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/batches\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/batches\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches/:id",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches/20000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coaches\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coaches\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/new",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/new\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/new\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/transfer",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/transfer\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/transfer\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/pause",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/pause\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/pause\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/cancel",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/cancel\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/cancel\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/fee-plans",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/fee-plans\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/fee-plans\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/enrollments/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/enrollments/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/check-in-out",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/check-in-out\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/check-in-out\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/correction",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/correction\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/correction\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/calendar",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/calendar\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/calendar\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/offline-queue",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/attendance/offline-queue\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/attendance/offline-queue\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/plans",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/plans\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/plans\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/events",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/events\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/events\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/discounts",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/discounts\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/discounts\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/late-fees",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/late-fees\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/late-fees\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/pending",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/pending\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/pending\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/summary",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/fees/summary\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/fees/summary\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/new",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/new\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/new\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/partial",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/partial\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/partial\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/full",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/full\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/full\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/receipts",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/receipts\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/receipts\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/history",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/history\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/history\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/whatsapp",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/whatsapp\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/whatsapp\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/failed",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/failed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/failed\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/delivery-status",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/notifications/delivery-status\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/notifications/delivery-status\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "redirect/reception",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/redirect/reception\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/redirect/reception\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "settings/users",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/settings/users\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/settings/users\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/refunds",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/payments/refunds\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/payments/refunds\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/dashboard",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/dashboard\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/dashboard\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/batches\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/batches\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches/:batchId",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/batches/30000000-0000-4000-8000-000000000001\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/batches/30000000-0000-4000-8000-000000000001\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/students\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/students\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students/:studentId",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/students/69d7156c-f8eb-4c66-acc4-cb893d406604\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/students/69d7156c-f8eb-4c66-acc4-cb893d406604\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/attendance\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/attendance\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/qr",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/attendance/qr\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/attendance/qr\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/check-in",
+      "status": "ERROR",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4312/coach/attendance/check-in\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4312/coach/attendance/check-in\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    }
+  ],
+  "accessibility": [
+    {
+      "role": "admin",
+      "route": "dashboard/admin",
+      "violations": [],
+      "incomplete": 2
+    }
+  ],
+  "tableControls": [],
+  "blocked": [],
+  "backend": {
+    "admin": {
+      "counts": {
+        "students": {
+          "count": 22
+        },
+        "parents": {
+          "count": 24
+        },
+        "coaches": {
+          "count": 7
+        },
+        "batches": {
+          "count": 7
+        },
+        "enrollments": {
+          "count": 22
+        },
+        "attendance_records": {
+          "count": 11
+        },
+        "payments": {
+          "count": 45
+        },
+        "notifications": {
+          "count": 221
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "payments": [
+        {
+          "view": "history",
+          "status": 400,
+          "error": {
+            "code": "P0001",
+            "details": null,
+            "hint": null,
+            "message": "Invalid payment view"
+          }
+        },
+        {
+          "view": "list",
+          "status": 200,
+          "error": null,
+          "rows": 5
+        }
+      ],
+      "adminList": {
+        "status": 200
+      },
+      "providerConfiguration": {
+        "status": 200,
+        "channels": [
+          "in_app",
+          "whatsapp"
+        ]
+      }
+    },
+    "receptionist": {
+      "counts": {
+        "students": {
+          "count": 22
+        },
+        "parents": {
+          "count": 24
+        },
+        "coaches": {
+          "count": 7
+        },
+        "batches": {
+          "count": 7
+        },
+        "enrollments": {
+          "count": 22
+        },
+        "attendance_records": {
+          "count": 11
+        },
+        "payments": {
+          "count": 45
+        },
+        "notifications": {
+          "count": 221
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "payments": [
+        {
+          "view": "history",
+          "status": 400,
+          "error": {
+            "code": "P0001",
+            "details": null,
+            "hint": null,
+            "message": "Invalid payment view"
+          }
+        },
+        {
+          "view": "list",
+          "status": 200,
+          "error": null,
+          "rows": 5
+        }
+      ],
+      "adminList": {
+        "status": 403,
+        "error": "Edge Function returned a non-2xx status code"
+      },
+      "providerConfiguration": {
+        "status": 200,
+        "channels": [
+          "in_app",
+          "whatsapp"
+        ]
+      }
+    },
+    "coach": {
+      "counts": {
+        "students": {
+          "count": 16
+        },
+        "parents": {
+          "count": 6
+        },
+        "coaches": {
+          "count": 4
+        },
+        "batches": {
+          "count": 3
+        },
+        "enrollments": {
+          "count": 16
+        },
+        "attendance_records": {
+          "count": 6
+        },
+        "payments": {
+          "count": 0
+        },
+        "notifications": {
+          "count": 0
+        },
+        "academy_settings": {
+          "count": 1
+        }
+      },
+      "payments": [],
+      "adminList": {
+        "status": 403,
+        "error": "Edge Function returned a non-2xx status code"
+      },
+      "scope": {
+        "assignedBatches": 3,
+        "visible": 16,
+        "withinAssignments": true,
+        "errors": []
+      }
+    }
+  }
+}

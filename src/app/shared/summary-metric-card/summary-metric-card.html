@@ -1,0 +1,23 @@
+@if (route(); as destination) {
+  <a class="metric-card" [class]="'metric-card ' + tone()" [routerLink]="destination">
+    <span class="metric-icon"><i class="pi {{ icon() }}" aria-hidden="true"></i></span>
+    <span class="metric-copy">
+      <span class="metric-label">{{ label() }}</span>
+      <strong>{{ value() ?? '—' }}</strong>
+      @if (hint()) {
+        <span class="metric-hint">{{ hint() }}</span>
+      }
+    </span>
+  </a>
+} @else {
+  <article class="metric-card" [class]="'metric-card ' + tone()">
+    <span class="metric-icon"><i class="pi {{ icon() }}" aria-hidden="true"></i></span>
+    <span class="metric-copy">
+      <span class="metric-label">{{ label() }}</span>
+      <strong>{{ value() ?? '—' }}</strong>
+      @if (hint()) {
+        <span class="metric-hint">{{ hint() }}</span>
+      }
+    </span>
+  </article>
+}

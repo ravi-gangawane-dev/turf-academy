@@ -1,0 +1,430 @@
+{
+  "date": "2026-10-27",
+  "scope": "Read-only route checks; writes blocked; no form submission or provider sends.",
+  "results": [
+    {
+      "role": "admin",
+      "path": "/dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "failures": [
+        {
+          "path": "/rest/v1/academy_settings",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Dashboard unavailable"
+      ]
+    },
+    {
+      "role": "admin",
+      "path": "/students",
+      "finalPath": "/students",
+      "failures": [
+        {
+          "path": "/rest/v1/academy_settings",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/parents",
+      "finalPath": "/parents",
+      "failures": [
+        {
+          "path": "/rest/v1/academy_settings",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/coaches",
+      "finalPath": "/coaches",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/batches",
+      "finalPath": "/batches",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/enrollments",
+      "finalPath": "/enrollments",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/attendance",
+      "finalPath": "/attendance",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/attendance/check-in-out",
+      "finalPath": "/attendance/check-in-out",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/attendance/history",
+      "error": "locator.innerText: Error: strict mode violation: locator('main') resolved to 2 elements:\n    1) <main _ngcontent-ng-c132417076=\"\">…</main> aka getByRole('main').filter({ hasText: 'DashboardAttendanceAttendance' })\n    2)"
+    },
+    {
+      "role": "admin",
+      "path": "/attendance/calendar",
+      "error": "locator.innerText: Error: strict mode violation: locator('main') resolved to 2 elements:\n    1) <main _ngcontent-ng-c132417076=\"\">…</main> aka getByRole('main').filter({ hasText: 'DashboardAttendanceCalendarAttendance Ca"
+    },
+    {
+      "role": "admin",
+      "path": "/fees",
+      "finalPath": "/fees",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/fees/plans",
+      "finalPath": "/fees/plans",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/fees/discounts",
+      "finalPath": "/fees/discounts",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/fees/late-fees",
+      "finalPath": "/fees/late-fees",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/payments",
+      "finalPath": "/payments",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/payments/history",
+      "finalPath": "/payments/history",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/notifications",
+      "finalPath": "/notifications",
+      "failures": [
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Sent\tOct 23, 4:29 PM\tNot linked\tView detailsCopy messageView history"
+      ]
+    },
+    {
+      "role": "admin",
+      "path": "/notifications/templates",
+      "finalPath": "/notifications/templates",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/notifications/events",
+      "finalPath": "/notifications/events",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/reports",
+      "finalPath": "/reports",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/settings",
+      "finalPath": "/settings",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/settings/users",
+      "finalPath": "/settings/users",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/settings/audit-logs",
+      "finalPath": "/settings/audit-logs",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/students",
+      "finalPath": "/students",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/attendance/check-in-out",
+      "finalPath": "/attendance/check-in-out",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/fees",
+      "finalPath": "/fees",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/payments/history",
+      "finalPath": "/payments/history",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "receptionist",
+      "path": "/notifications",
+      "finalPath": "/notifications",
+      "failures": [
+        {
+          "path": "/functions/v1/notification-delivery",
+          "status": 503
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "External delivery is unavailable until the provider is configured.",
+        "Sent\tOct 23, 4:29 PM\tNot linked\tView detailsCopy messageView history"
+      ]
+    },
+    {
+      "role": "coach",
+      "path": "/coach/dashboard",
+      "finalPath": "/coach/dashboard",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "coach",
+      "path": "/coach/students",
+      "finalPath": "/coach/students",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "coach",
+      "path": "/coach/attendance",
+      "finalPath": "/coach/attendance",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "coach",
+      "path": "/coach/schedule",
+      "finalPath": "/coach/schedule",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "coach",
+      "path": "/coach/notifications",
+      "finalPath": "/coach/notifications",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "parent",
+      "path": "/parent/dashboard",
+      "finalPath": "/parent/dashboard",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Dashboard unavailable"
+      ]
+    },
+    {
+      "role": "parent",
+      "path": "/parent/children",
+      "finalPath": "/parent/children",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Unable to load this page"
+      ]
+    },
+    {
+      "role": "parent",
+      "path": "/parent/attendance",
+      "finalPath": "/parent/attendance",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Unable to load this page"
+      ]
+    },
+    {
+      "role": "parent",
+      "path": "/parent/fees",
+      "finalPath": "/parent/fees",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Unable to load this page"
+      ]
+    },
+    {
+      "role": "parent",
+      "path": "/parent/payments",
+      "finalPath": "/parent/payments",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Unable to load this page"
+      ]
+    },
+    {
+      "role": "parent",
+      "path": "/parent/notifications",
+      "finalPath": "/parent/notifications",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Unable to load this page"
+      ]
+    }
+  ]
+}

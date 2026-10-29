@@ -1,0 +1,76 @@
+<div class="profile-form-page">
+  <app-page-hero title="Complete Your Profile" subtitle="Add the missing information to keep your family account complete." [breadcrumbs]="[{label: 'Dashboard', route: '/parent/dashboard'}, {label: 'Complete Your Profile'}]" ><div hero-actions><button type="button" (click)="cancel()"><i class="pi pi-arrow-left"></i>Parent Profile</button></div></app-page-hero>
+  @if (loading()) {
+    <section class="state"><i class="pi pi-spin pi-spinner"></i>Loading profile...</section>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <section class="form-card">
+        <h2>Personal and contact information</h2>
+        <div class="fields">
+          <label>First name *<input formControlName="firstName" /></label
+          ><label>Last name *<input formControlName="lastName" /></label
+          ><label
+            >Relationship *<select formControlName="relation">
+              <option>Father</option>
+              <option>Mother</option>
+              <option>Guardian</option>
+            </select></label
+          ><label
+            >Phone number *<input
+              formControlName="phone"
+              inputmode="numeric"
+              maxlength="10" /></label
+          ><label
+            >WhatsApp number *<input
+              formControlName="whatsapp"
+              inputmode="numeric"
+              maxlength="10" /></label
+          ><label>Email address<input formControlName="email" type="email" /></label
+          ><label>Occupation<input formControlName="occupation" /></label
+          ><label>Address *<input formControlName="address" /></label
+          ><label>City *<input formControlName="city" /></label
+          ><label>State *<input formControlName="state" /></label
+          ><label
+            >PIN code *<input formControlName="pinCode" inputmode="numeric" maxlength="6"
+          /></label>
+        </div>
+      </section>
+      <aside>
+        <section class="photo-card">
+          <h2>Profile photo</h2>
+          <div class="photo">
+            @if (photoUrl()) {
+              <img [src]="photoUrl()" alt="Profile preview" />
+            } @else {
+              <i class="pi pi-user"></i>
+            }
+          </div>
+          <label class="upload"
+            ><i class="pi pi-camera"></i>Choose photo<input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="choosePhoto($event)" /></label
+          ><small>JPG, PNG or WebP up to 2 MB</small>
+        </section>
+        <section class="tip">
+          <i class="pi pi-shield"></i>Your changes apply only to your own parent profile.
+        </section>
+      </aside>
+      <footer>
+        @if (error()) {
+          <p>{{ error() }}</p>
+        }
+        <button type="button" (click)="cancel()">Cancel</button
+        ><button type="submit" [disabled]="saving()">
+          <i
+            class="pi"
+            [class.pi-spin]="saving()"
+            [class.pi-spinner]="saving()"
+            [class.pi-check]="!saving()"
+          ></i
+          >{{ saving() ? 'Saving...' : 'Save profile' }}
+        </button>
+      </footer>
+    </form>
+  }
+</div>

@@ -1,0 +1,65 @@
+<div class="app-list-page attendance-section attendance-dashboard">
+  @if (message() || error()) {
+  <div class="attendance-notice" [class.error]="error()">{{ error() || message() }}</div>
+  }
+  <app-page-hero title="Attendance Dashboard" subtitle="Monitor today's attendance across all academy batches."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Attendance Dashboard' }
+    ]"></app-page-hero>
+  <app-attendance-view-navigation />
+
+  @if (store.loading()) {
+  <app-async-state title="Loading attendance..." />
+  }
+  @if (store.apiError()) {
+  <app-async-state kind="error" title="Attendance could not be loaded" [message]="store.apiError()" actionLabel="Retry"
+    (action)="store.loadAttendanceWorkspace()" />
+  }
+  <section class="attendance-metrics">
+    <app-summary-metric-card label="Total Students" [value]="metrics().total" icon="pi-users"
+      hint="Active enrollments" />
+    <app-summary-metric-card label="Present Today" [value]="metrics().present" icon="pi-check-circle"
+      [hint]="metrics().rate + '%'" tone="green" />
+    <app-summary-metric-card label="Absent / Unmarked" [value]="metrics().absent" icon="pi-user-minus"
+      [hint]="percentage(metrics().absent) + '%'" tone="orange" />
+    <app-summary-metric-card label="Late Today" [value]="metrics().late" icon="pi-clock" [hint]="metrics().late + '%'"
+      tone="purple" />
+  </section>
+  <section class="dashboard-row bottom-row">
+    <article class="dash-card recent">
+      <header>
+        <h2>Recent Check-ins</h2>
+        <a routerLink="/attendance/history">View All</a>
+      </header>
+      @for (row of recent(); track row.id) {
+      <div>
+        <span class="att-avatar">{{ initials(row.studentName) }}</span><strong>{{ row.studentName }}</strong><small>{{
+          row.batchName }}</small><time>{{ row.attendance?.checkInAt || '—' }}</time><app-status-badge
+          [status]="$any(row.attendance?.status || '—')" />
+      </div>
+      } @empty {
+      @if (!store.loading() && !store.apiError()) {
+      <app-async-state kind="empty" title="No check-ins yet" message="No attendance has been recorded today." />
+      }
+      }
+    </article>
+    <article class="dash-card quick-attendance">
+      <h2>Quick Actions</h2>
+      <div>
+        <a routerLink="/attendance/check-in-out"><i class="pi pi-qrcode"></i>Check In / Check Out</a><a
+          routerLink="/attendance/history"><i class="pi pi-history"></i>Attendance History &amp; Corrections</a><a
+          routerLink="/attendance/calendar"><i class="pi pi-calendar"></i>Calendar View</a>
+      </div>
+    </article>@if (whatsappData(); as data) {
+    <section class="whatsapp-action-card">
+      <h3>Notify Parent</h3>
+      <p>WhatsApp message prepared for:</p>
+      <p><strong>{{ data.parentPhone }}</strong></p>
+      <button type="button" class="whatsapp-btn" (click)="sendWhatsApp()">
+        Send WhatsApp to Parent
+      </button>
+    </section>
+    }
+</section>
+</div>

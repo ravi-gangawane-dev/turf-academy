@@ -1,0 +1,3668 @@
+{
+  "authResults": [
+    {
+      "role": "receptionist",
+      "authenticated": true
+    },
+    {
+      "role": "coach",
+      "authenticated": true
+    },
+    {
+      "role": "parent",
+      "authenticated": true
+    },
+    {
+      "role": "admin",
+      "authenticated": true
+    }
+  ],
+  "results": [
+    {
+      "role": "admin",
+      "route": "auth/splash",
+      "finalPath": "/auth/splash",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/login",
+      "finalPath": "/auth/login",
+      "headings": [
+        "Run the academy.Coach the future."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/receptionist-dashboard-reception.png",
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/dashboard",
+      "finalPath": "/coach/dashboard",
+      "headings": [
+        "Test Coach"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Batch",
+            "Age group",
+            "Students",
+            "Schedule",
+            "Status"
+          ],
+          "bodyRows": 0,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/coach-coach-dashboard.png",
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/dashboard",
+      "finalPath": "/parent/dashboard",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/parent-parent-dashboard.png",
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "unauthorized",
+      "finalPath": "/unauthorized",
+      "headings": [
+        "Your role cannot open this area"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "REVIEW"
+    },
+    {
+      "role": "receptionist",
+      "route": "search",
+      "finalPath": "/search",
+      "headings": [
+        "Academy search"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches",
+      "finalPath": "/coach/batches",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/children/:id/edit",
+      "finalPath": "/parent/children/40000000-0000-4000-8000-000000000002/edit",
+      "headings": [
+        "Add Student"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/forgot-password",
+      "finalPath": "/auth/forgot-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/reset-password",
+      "finalPath": "/auth/reset-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/add",
+      "finalPath": "/students/add",
+      "headings": [
+        "Add Student"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/batches/:batchId",
+      "finalPath": "/coach/batches/30000000-0000-4000-8000-000000000001",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/children/:id",
+      "finalPath": "/parent/children/40000000-0000-4000-8000-000000000002",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/otp",
+      "finalPath": "/auth/otp",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id/edit",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students",
+      "finalPath": "/coach/students",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/children",
+      "finalPath": "/parent/children",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/session-expired",
+      "finalPath": "/auth/session-expired",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [
+        " Your session has expired. For your security, please sign in again. "
+      ],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "students/:id",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/students/:studentId",
+      "finalPath": "/coach/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "auth/password-updated",
+      "finalPath": "/auth/password-updated",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/attendance",
+      "finalPath": "/parent/attendance",
+      "headings": [],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "students",
+      "finalPath": "/students",
+      "headings": [
+        "Student List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Batch / Program ↕",
+            "Coach ↕",
+            "Date of birth ↕",
+            "Phone ↕",
+            "Status ↕",
+            "Parent / Guardian ↕",
+            "Join date ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance",
+      "finalPath": "/coach/attendance",
+      "headings": [
+        "Today's Attendance"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student",
+            "Student ID",
+            "Age",
+            "Status",
+            "Check-in time",
+            "Check-out time",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/attendance/calendar",
+      "finalPath": "/parent/attendance/calendar",
+      "headings": [
+        "Attendance Calendar"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-dashboard-admin.png",
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/add",
+      "finalPath": "/parents/add",
+      "headings": [
+        "Add Parent"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/qr",
+      "finalPath": "/coach/attendance/qr",
+      "headings": [
+        "QR Scanner"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/schedule",
+      "finalPath": "/parent/schedule",
+      "headings": [
+        "Training Schedule"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id/edit",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit",
+      "headings": [
+        "Edit Parent"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/coach",
+      "finalPath": "/dashboard/coach",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/check-in",
+      "finalPath": "/coach/attendance/check-in",
+      "headings": [
+        "Manual Check In"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents/:id",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78",
+      "headings": [
+        "Parent Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/coach",
+      "finalPath": "/parent/coach",
+      "headings": [
+        "Coach Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "parents",
+      "finalPath": "/parents",
+      "headings": [
+        "Parent List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Parent name ↑",
+            "Relation ↕",
+            "Phone ↕",
+            "Email ↕",
+            "Children ↕",
+            "Status ↕",
+            "Joined on ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 20
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/check-out",
+      "finalPath": "/coach/attendance/check-out",
+      "headings": [
+        "Manual Check Out"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard/reception",
+      "finalPath": "/dashboard/reception",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-dashboard-reception.png",
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/fees",
+      "finalPath": "/parent/fees",
+      "headings": [
+        "Fees Overview"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Month",
+            "Base",
+            "Discount",
+            "Late fee",
+            "Amount",
+            "Paid",
+            "Outstanding",
+            "Due date",
+            "Status"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/student-allocation",
+      "finalPath": "/batches/student-allocation",
+      "headings": [
+        "Student Allocation"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↑",
+            "Batch ↕",
+            "Status ↕",
+            "Start ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        },
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Added ↑",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/history",
+      "finalPath": "/coach/attendance/history",
+      "headings": [
+        "Attendance History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date",
+            "Student",
+            "Batch",
+            "Check in",
+            "Check out",
+            "Status",
+            "Source",
+            "Remarks"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard",
+      "finalPath": "/dashboard",
+      "headings": [
+        "Test Admin"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/coach-assignment",
+      "finalPath": "/batches/coach-assignment",
+      "headings": [
+        "Coach Assignment"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 12
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/payments",
+      "finalPath": "/parent/payments",
+      "headings": [
+        "Payment History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date ↓",
+            "Amount ↕",
+            "Method ↕",
+            "Transaction ID ↕",
+            "Status ↕",
+            "Receipt"
+          ],
+          "bodyRows": 4,
+          "buttons": 4
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/correction",
+      "finalPath": "/coach/attendance/correction",
+      "headings": [
+        "Attendance Correction"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "search",
+      "finalPath": "/search",
+      "headings": [
+        "Academy search"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/attendance/summary",
+      "finalPath": "/coach/attendance/summary",
+      "headings": [
+        "Attendance Summary"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student",
+            "Student ID",
+            "Total",
+            "Present",
+            "Absent",
+            "Late",
+            "Attendance"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/schedule",
+      "finalPath": "/batches/schedule",
+      "headings": [
+        "Batch Schedule"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/receipts",
+      "finalPath": "/parent/receipts",
+      "headings": [
+        "Receipt Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/add",
+      "finalPath": "/students/add",
+      "headings": [
+        "Add Student"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/schedule",
+      "finalPath": "/coach/schedule",
+      "headings": [
+        "My Schedule"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches/capacity",
+      "finalPath": "/batches/capacity",
+      "headings": [
+        "Batch Capacity"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        },
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Added ↑",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id/edit",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit",
+      "headings": [
+        "Edit Student"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/notifications",
+      "finalPath": "/parent/notifications",
+      "headings": [
+        "Notifications"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/notifications",
+      "finalPath": "/coach/notifications",
+      "headings": [
+        "Notifications"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "batches",
+      "finalPath": "/batches",
+      "headings": [
+        "Batches"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students/:id",
+      "finalPath": "/students/69d7156c-f8eb-4c66-acc4-cb893d406604",
+      "headings": [
+        "Student Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/profile",
+      "finalPath": "/coach/profile",
+      "headings": [
+        "Coach Profile"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches/:id",
+      "finalPath": "/coaches/20000000-0000-4000-8000-000000000001",
+      "headings": [
+        "Coach Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/profile",
+      "finalPath": "/parent/profile",
+      "headings": [
+        "Parent Profile"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "students",
+      "finalPath": "/students",
+      "headings": [
+        "Student List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Batch / Program ↕",
+            "Coach ↕",
+            "Date of birth ↕",
+            "Phone ↕",
+            "Status ↕",
+            "Parent / Guardian ↕",
+            "Join date ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 20
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "coach/support",
+      "finalPath": "/coach/support",
+      "headings": [
+        "Help & Support"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "students",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "parent",
+      "route": "parent/profile/edit",
+      "finalPath": "/parent/profile/edit",
+      "headings": [
+        "Complete Your Profile"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "coaches",
+      "finalPath": "/coaches",
+      "headings": [
+        "Coach List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Coach ↕",
+            "Specialization ↕",
+            "Contact ↕",
+            "Experience ↕",
+            "Qualification ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 20
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "parents/add",
+      "finalPath": "/parents/add",
+      "headings": [
+        "Add Parent"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "coach",
+      "route": "payments",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "coach",
+      "route": "settings/users",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id/edit",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit",
+      "headings": [
+        "Edit Parent"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments",
+      "finalPath": "/enrollments",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Fee plan ↕",
+            "Monthly fee ↕",
+            "Validity ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "parent/support",
+      "finalPath": "/parent/support",
+      "headings": [
+        "Help & Support"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "students",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "admin",
+      "route": "parents/:id",
+      "finalPath": "/parents/5e975d64-64ea-4d29-84a0-1414da5f7c78",
+      "headings": [
+        "Parent Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "payments",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/new",
+      "finalPath": "/enrollments/new",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "parent",
+      "route": "settings/users",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "admin",
+      "route": "parents",
+      "finalPath": "/parents",
+      "headings": [
+        "Parent List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Parent name ↑",
+            "Relation ↕",
+            "Phone ↕",
+            "Email ↕",
+            "Children ↕",
+            "Status ↕",
+            "Joined on ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 20
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/transfer",
+      "finalPath": "/enrollments/transfer",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "batches/student-allocation",
+      "finalPath": "/batches/student-allocation",
+      "headings": [
+        "Student Allocation"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↑",
+            "Batch ↕",
+            "Status ↕",
+            "Start ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        },
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Added ↑",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/pause",
+      "finalPath": "/enrollments/pause",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "batches/coach-assignment",
+      "finalPath": "/batches/coach-assignment",
+      "headings": [
+        "Coach Assignment"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 17
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/cancel",
+      "finalPath": "/enrollments/cancel",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "batches/schedule",
+      "finalPath": "/batches/schedule",
+      "headings": [
+        "Batch Schedule"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 10
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/fee-plans",
+      "finalPath": "/enrollments/fee-plans",
+      "headings": [
+        "Fee Plans"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Plan name ↕",
+            "Description ↕",
+            "Duration ↕",
+            "Monthly fee ↕",
+            "Total fee ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "batches/capacity",
+      "finalPath": "/batches/capacity",
+      "headings": [
+        "Batch Capacity"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 10
+        },
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Added ↑",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "enrollments/history",
+      "finalPath": "/enrollments/history",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Recorded at ↓",
+            "Effective date ↕",
+            "Student ↕",
+            "Action ↕",
+            "Batch ↕",
+            "Performed by ↕",
+            "Reason ↕"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "batches",
+      "finalPath": "/batches",
+      "headings": [
+        "Batches"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Batch ↑",
+            "Schedule ↕",
+            "Coaches ↕",
+            "Capacity ↕",
+            "Status ↕",
+            "Monthly fee ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 10
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance",
+      "finalPath": "/attendance",
+      "headings": [
+        "Attendance Dashboard"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/add",
+      "finalPath": "/coaches/add",
+      "headings": [
+        "Add Coach"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/check-in-out",
+      "finalPath": "/attendance/check-in-out",
+      "headings": [
+        "Student Check In / Check Out"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student",
+            "Action",
+            "Time",
+            "Batch",
+            "Parent update"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        },
+        {
+          "headers": [
+            "Schedule",
+            "Batch / Program",
+            "Inside"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id/edit",
+      "finalPath": "/coaches/20000000-0000-4000-8000-000000000001/edit",
+      "headings": [
+        "Edit Coach"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/correction",
+      "finalPath": "/attendance/correction",
+      "headings": [
+        "Attendance Corrections"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Date ↕",
+            "Batch ↕",
+            "Current ↕",
+            "Requested ↕",
+            "Reason ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 0,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "coaches/:id",
+      "finalPath": "/coaches/20000000-0000-4000-8000-000000000001",
+      "headings": [
+        "Coach Details"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/history",
+      "finalPath": "/attendance/history",
+      "headings": [
+        "Attendance History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date",
+            "Student",
+            "Student code",
+            "Day",
+            "Check In",
+            "Check Out",
+            "Status",
+            "Batch",
+            "Source",
+            "Remarks"
+          ],
+          "bodyRows": 11,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "coaches",
+      "finalPath": "/coaches",
+      "headings": [
+        "Coach List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Coach ↕",
+            "Specialization ↕",
+            "Contact ↕",
+            "Experience ↕",
+            "Qualification ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 20
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/calendar",
+      "finalPath": "/attendance/calendar",
+      "headings": [
+        "Attendance Calendar"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments",
+      "finalPath": "/enrollments",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Batch ↕",
+            "Fee plan ↕",
+            "Monthly fee ↕",
+            "Validity ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "attendance/offline-queue",
+      "finalPath": "/attendance/offline-queue",
+      "headings": [
+        "Offline Queue"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Type ↕",
+            "Date ↓",
+            "Time ↕",
+            "Status ↕",
+            "Reason ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/new",
+      "finalPath": "/enrollments/new",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/plans",
+      "finalPath": "/fees/plans",
+      "headings": [
+        "Fee Plans"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Plan name ↕",
+            "Description ↕",
+            "Duration ↕",
+            "Monthly fee ↕",
+            "Total fee ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/transfer",
+      "finalPath": "/enrollments/transfer",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees",
+      "finalPath": "/fees",
+      "headings": [
+        "Monthly Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student name ↕",
+            "Batch ↕",
+            "Fee plan ↕",
+            "Month ↕",
+            "Monthly charge ↕",
+            "Due date ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/pause",
+      "finalPath": "/enrollments/pause",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications",
+      "finalPath": "/notifications",
+      "headings": [
+        "Notifications"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/cancel",
+      "finalPath": "/enrollments/cancel",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/events",
+      "finalPath": "/notifications/events",
+      "headings": [
+        "Events & Holidays"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date ↓",
+            "Event ↕",
+            "Type ↕",
+            "Description ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/fee-plans",
+      "finalPath": "/enrollments/fee-plans",
+      "headings": [
+        "Fee Plans"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Plan name ↕",
+            "Description ↕",
+            "Duration ↕",
+            "Monthly fee ↕",
+            "Total fee ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/discounts",
+      "finalPath": "/fees/discounts",
+      "headings": [
+        "Discounts"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Name ↕",
+            "Kind ↕",
+            "Value ↕",
+            "Validity ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/late-fees",
+      "finalPath": "/fees/late-fees",
+      "headings": [
+        "Late Fee Rules"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Name ↕",
+            "Kind ↕",
+            "Value ↕",
+            "Grace days ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "enrollments/history",
+      "finalPath": "/enrollments/history",
+      "headings": [
+        "Enrollment List"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Recorded at ↓",
+            "Effective date ↕",
+            "Student ↕",
+            "Action ↕",
+            "Batch ↕",
+            "Performed by ↕",
+            "Reason ↕"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance",
+      "finalPath": "/attendance",
+      "headings": [
+        "Attendance Dashboard"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/pending",
+      "finalPath": "/fees/pending",
+      "headings": [
+        "Pending Fees"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Period ↕",
+            "Base ↕",
+            "Discount ↕",
+            "Late fee ↕",
+            "Paid ↕",
+            "Balance ↕",
+            "Status ↕"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/check-in-out",
+      "finalPath": "/attendance/check-in-out",
+      "headings": [
+        "Student Check In / Check Out"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student",
+            "Action",
+            "Time",
+            "Batch",
+            "Parent update"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        },
+        {
+          "headers": [
+            "Schedule",
+            "Batch / Program",
+            "Inside"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "fees/summary",
+      "finalPath": "/fees/summary",
+      "headings": [
+        "Fee Summary"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Period ↕",
+            "Base ↕",
+            "Discount ↕",
+            "Late fee ↕",
+            "Paid ↕",
+            "Balance ↕",
+            "Status ↕"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/correction",
+      "finalPath": "/attendance/correction",
+      "headings": [
+        "Attendance Corrections"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Date ↕",
+            "Batch ↕",
+            "Current ↕",
+            "Requested ↕",
+            "Reason ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 0,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments",
+      "finalPath": "/payments",
+      "headings": [
+        "Payment History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/history",
+      "finalPath": "/attendance/history",
+      "headings": [
+        "Attendance History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date",
+            "Student",
+            "Student code",
+            "Day",
+            "Check In",
+            "Check Out",
+            "Status",
+            "Batch",
+            "Source",
+            "Remarks"
+          ],
+          "bodyRows": 11,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/new",
+      "finalPath": "/payments/new",
+      "headings": [
+        "Record Payment"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/calendar",
+      "finalPath": "/attendance/calendar",
+      "headings": [
+        "Attendance Calendar"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/partial",
+      "finalPath": "/payments/partial",
+      "headings": [
+        "Partially Paid Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "attendance/offline-queue",
+      "finalPath": "/attendance/offline-queue",
+      "headings": [
+        "Offline Queue"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student ↕",
+            "Type ↕",
+            "Date ↓",
+            "Time ↕",
+            "Status ↕",
+            "Reason ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/full",
+      "finalPath": "/payments/full",
+      "headings": [
+        "Fully Paid Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "fees/plans",
+      "finalPath": "/fees/plans",
+      "headings": [
+        "Fee Plans"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Plan name ↕",
+            "Description ↕",
+            "Duration ↕",
+            "Monthly fee ↕",
+            "Total fee ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/receipts",
+      "finalPath": "/payments/receipts",
+      "headings": [
+        "Receipts"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "fees",
+      "finalPath": "/fees",
+      "headings": [
+        "Monthly Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "#",
+            "Student name ↕",
+            "Batch ↕",
+            "Fee plan ↕",
+            "Month ↕",
+            "Monthly charge ↕",
+            "Due date ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 15
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/history",
+      "finalPath": "/payments/history",
+      "headings": [
+        "Payment History"
+      ],
+      "alerts": [
+        " This request could not be completed. Please try again. If the problem continues, contact the academy administrator. Retry"
+      ],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 400,
+          "path": "/rest/v1/rpc/get_payment_list_page"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/receptionist-payments-history.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "notifications",
+      "finalPath": "/notifications",
+      "headings": [
+        "Notifications"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-notifications.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/whatsapp",
+      "finalPath": "/notifications/whatsapp",
+      "headings": [
+        "WhatsApp notifications"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/receptionist-notifications-whatsapp.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/events",
+      "finalPath": "/notifications/events",
+      "headings": [
+        "Events & Holidays"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date ↓",
+            "Event ↕",
+            "Type ↕",
+            "Description ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/failed",
+      "finalPath": "/notifications/failed",
+      "headings": [
+        "Failed deliveries"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/receptionist-notifications-failed.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "reports",
+      "finalPath": "/reports",
+      "headings": [
+        "Reports"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "notifications/delivery-status",
+      "finalPath": "/notifications/delivery-status",
+      "headings": [
+        "Delivery status"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/receptionist-notifications-delivery-status.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "auth/change-password",
+      "finalPath": "/auth/change-password",
+      "headings": [
+        "Secure access.Protected accounts."
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "receptionist",
+      "route": "settings/users",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "receptionist",
+      "route": "payments/refunds",
+      "authorizationProbe": true,
+      "status": "DENIED_AS_EXPECTED",
+      "finalPath": "/unauthorized"
+    },
+    {
+      "role": "admin",
+      "route": "fees/discounts",
+      "finalPath": "/fees/discounts",
+      "headings": [
+        "Discounts"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Name ↕",
+            "Kind ↕",
+            "Value ↕",
+            "Validity ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "fees/late-fees",
+      "finalPath": "/fees/late-fees",
+      "headings": [
+        "Late Fee Rules"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Name ↕",
+            "Kind ↕",
+            "Value ↕",
+            "Grace days ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "fees/pending",
+      "finalPath": "/fees/pending",
+      "headings": [
+        "Pending Fees"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Period ↕",
+            "Base ↕",
+            "Discount ↕",
+            "Late fee ↕",
+            "Paid ↕",
+            "Balance ↕",
+            "Status ↕"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "fees/summary",
+      "finalPath": "/fees/summary",
+      "headings": [
+        "Fee Summary"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Student ↕",
+            "Period ↕",
+            "Base ↕",
+            "Discount ↕",
+            "Late fee ↕",
+            "Paid ↕",
+            "Balance ↕",
+            "Status ↕"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments",
+      "finalPath": "/payments",
+      "headings": [
+        "Payment History"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/new",
+      "finalPath": "/payments/new",
+      "headings": [
+        "Record Payment"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/partial",
+      "finalPath": "/payments/partial",
+      "headings": [
+        "Partially Paid Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/full",
+      "finalPath": "/payments/full",
+      "headings": [
+        "Fully Paid Charges"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/receipts",
+      "finalPath": "/payments/receipts",
+      "headings": [
+        "Receipts"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/refunds",
+      "finalPath": "/payments/refunds",
+      "headings": [
+        "Refunds"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "payments/history",
+      "finalPath": "/payments/history",
+      "headings": [
+        "Payment History"
+      ],
+      "alerts": [
+        " This request could not be completed. Please try again. If the problem continues, contact the academy administrator. Retry"
+      ],
+      "tables": [
+        {
+          "headers": [
+            "Receipt ↕",
+            "Student ↕",
+            "Date ↓",
+            "Mode ↕",
+            "Status ↕",
+            "Amount ↕",
+            "Action"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 400,
+          "path": "/rest/v1/rpc/get_payment_list_page"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-payments-history.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/whatsapp",
+      "finalPath": "/notifications/whatsapp",
+      "headings": [
+        "WhatsApp notifications"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-notifications-whatsapp.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/templates",
+      "finalPath": "/notifications/templates",
+      "headings": [
+        "Notification Templates"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Name ↑",
+            "Key ↕",
+            "Channel ↕",
+            "Message ↕",
+            "Status ↕",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 10
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/failed",
+      "finalPath": "/notifications/failed",
+      "headings": [
+        "Failed deliveries"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 5
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-notifications-failed.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "notifications/delivery-status",
+      "finalPath": "/notifications/delivery-status",
+      "headings": [
+        "Delivery status"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Message ↕",
+            "Recipient ↕",
+            "Channel ↕",
+            "Type ↕",
+            "Status ↕",
+            "Date ↓",
+            "Actions"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/notification-delivery"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-notifications-delivery-status.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "reports/coach",
+      "finalPath": "/reports/coach",
+      "headings": [
+        "Reports",
+        "Turf Cricket Academy"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Coach",
+            "Batches",
+            "Students",
+            "Sessions",
+            "Attendance records",
+            "Attendance"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        },
+        {
+          "headers": [
+            "Coach",
+            "Batches",
+            "Students",
+            "Sessions",
+            "Attendance records",
+            "Attendance"
+          ],
+          "bodyRows": 7,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "reports/batch",
+      "finalPath": "/reports/batch",
+      "headings": [
+        "Reports",
+        "Turf Cricket Academy"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Batch",
+            "Code",
+            "Status",
+            "Capacity",
+            "Assigned coaches"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        },
+        {
+          "headers": [
+            "Batch",
+            "Code",
+            "Status",
+            "Capacity",
+            "Assigned coaches"
+          ],
+          "bodyRows": 7,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings",
+      "finalPath": "/settings",
+      "headings": [
+        "Academy Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/users",
+      "finalPath": "/settings/users",
+      "headings": [
+        "Users & Roles"
+      ],
+      "alerts": [
+        "This request could not be completed. Please try again. If the problem continues, contact the academy administrator."
+      ],
+      "tables": [
+        {
+          "headers": [
+            "User ↕",
+            "Contact ↕",
+            "Role ↕",
+            "Status ↕",
+            "Joined ↓"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/admin-manage-users"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-settings-users.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "settings/audit-logs",
+      "finalPath": "/settings/audit-logs",
+      "headings": [
+        "Audit log"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Date ↓",
+            "Action ↕",
+            "Table ↕",
+            "Record ↕",
+            "Account ↕"
+          ],
+          "bodyRows": 5,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/profile",
+      "finalPath": "/settings/profile",
+      "headings": [
+        "Profile Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/regional",
+      "finalPath": "/settings/regional",
+      "headings": [
+        "Regional Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/attendance",
+      "finalPath": "/settings/attendance",
+      "headings": [
+        "Attendance Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/fees",
+      "finalPath": "/settings/fees",
+      "headings": [
+        "Fees Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/notifications",
+      "finalPath": "/settings/notifications",
+      "headings": [
+        "Notifications Settings"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/roles",
+      "finalPath": "/settings/roles",
+      "headings": [
+        "Users & Roles"
+      ],
+      "alerts": [
+        "This request could not be completed. Please try again. If the problem continues, contact the academy administrator."
+      ],
+      "tables": [
+        {
+          "headers": [
+            "User ↕",
+            "Contact ↕",
+            "Role ↕",
+            "Status ↕",
+            "Joined ↓"
+          ],
+          "bodyRows": 1,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [
+        {
+          "status": 401,
+          "path": "/functions/v1/admin-manage-users"
+        }
+      ],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "screenshot": "docs/audit/admin-settings-roles.png",
+      "status": "REVIEW"
+    },
+    {
+      "role": "admin",
+      "route": "settings/permissions",
+      "finalPath": "/settings/permissions",
+      "headings": [
+        "Role Permissions"
+      ],
+      "alerts": [],
+      "tables": [
+        {
+          "headers": [
+            "Role",
+            "Permissions"
+          ],
+          "bodyRows": 4,
+          "buttons": 0
+        }
+      ],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/theme",
+      "finalPath": "/settings/theme",
+      "headings": [
+        "Appearance"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "settings/backup",
+      "finalPath": "/settings/backup",
+      "headings": [
+        "Academy Data Export"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "design/:section/:view",
+      "finalPath": "/design/foundations/colors",
+      "headings": [
+        "Design System"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    },
+    {
+      "role": "admin",
+      "route": "handoff/:view",
+      "finalPath": "/handoff/overview",
+      "headings": [
+        "Developer Handoff"
+      ],
+      "alerts": [],
+      "tables": [],
+      "errors": [],
+      "httpErrors": [],
+      "desktopOverflow": 0,
+      "mobileOverflow": 0,
+      "status": "LOADED"
+    }
+  ],
+  "blocked": []
+}

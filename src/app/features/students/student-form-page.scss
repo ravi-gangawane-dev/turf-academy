@@ -1,0 +1,208 @@
+:host {
+  display: block;
+  height: 100%;
+}
+.student-form-page {
+  height: 100%;
+  font-size: 12px;
+}
+form {
+  height: calc(100% - 144px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 10px;
+  margin: 12px;
+}
+main,
+aside {
+  min-height: 0;
+  display: grid;
+  gap: 10px;
+}
+main {
+  grid-template-rows: auto auto auto;
+  align-content: start;
+}
+aside {
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1.25fr);
+}
+.card,
+main > footer {
+  padding: 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: #fff;
+}
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+h2 i {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--app-primary);
+  background: #e8f5eb;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 12px;
+}
+label {
+  display: grid;
+  gap: 4px;
+  color: #1d2943;
+  font-weight: 600;
+}
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 11px;
+  border: 1px solid #d5ded9;
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+}
+main > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+button {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid #d5ded9;
+  border-radius: 7px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+}
+.primary {
+  border-color: var(--app-primary);
+  color: #fff;
+  background: var(--app-primary);
+}
+.photo {
+  display: flex;
+  flex-direction: column;
+}
+.personal {
+  min-height: 0;
+}
+.program .fields {
+  align-items: end;
+}
+.upload {
+  position: relative;
+  overflow: hidden;
+  min-height: 150px;
+  flex: 1;
+  place-content: center;
+  justify-items: center;
+  border: 1px dashed #c8d6ce;
+  border-radius: 7px;
+}
+.upload.has-photo {
+  justify-content: end;
+  padding: 10px;
+  color: #fff;
+  background: #0b3e2f;
+}
+.upload img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.upload.has-photo::after {
+  position: absolute;
+  inset: 45% 0 0;
+  content: '';
+  background: linear-gradient(transparent, rgb(3 28 21 / 85%));
+}
+.upload.has-photo strong,
+.upload.has-photo small,
+.upload.has-photo b {
+  position: relative;
+  z-index: 1;
+}
+.upload.has-photo b {
+  border-color: #fff;
+  color: #fff;
+  background: rgb(0 0 0 / 18%);
+}
+.upload > i {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--app-primary);
+  background: #e7f4ea;
+  font-size: 18px;
+}
+.upload strong,
+.upload small,
+.upload b {
+  margin-top: 8px;
+}
+.upload small {
+  color: var(--app-muted);
+}
+.upload b {
+  padding: 7px 12px;
+  border: 1px solid var(--app-primary);
+  border-radius: 5px;
+  color: var(--app-primary);
+}
+.upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.guardian label {
+  margin-top: 8px;
+}
+.notice {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #9a3412;
+  background: #fff7ed;
+}
+@media (max-width: 1100px) {
+  form {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+  .fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  aside {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+}
+@media (max-width: 600px) {
+  .fields,
+  aside {
+    grid-template-columns: 1fr;
+  }
+  .student-form-page,
+  form {
+    height: auto;
+  }
+  form {
+    margin: 8px;
+  }
+}

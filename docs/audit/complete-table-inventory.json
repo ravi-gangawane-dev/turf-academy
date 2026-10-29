@@ -1,0 +1,1183 @@
+[
+  {
+    "file": "src/app/features/attendance/attendance-calendar-page.html",
+    "line": 166,
+    "headers": [
+      "Date",
+      "Student",
+      "Batch",
+      "Check In",
+      "Check Out",
+      "Status",
+      "Remarks"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": false,
+    "hasError": false,
+    "source": "src/app/features/attendance/attendance-calendar-page.ts"
+  },
+  {
+    "file": "src/app/features/attendance/attendance-correction-page.html",
+    "line": 28,
+    "headers": [
+      "Student",
+      "Date",
+      "Batch",
+      "Current",
+      "Requested",
+      "Reason",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "resolve(row['id'], true)",
+      "resolve(row['id'], false)"
+    ],
+    "columnFilters": 7,
+    "sortHeaders": 14,
+    "hasLoading": false,
+    "hasEmpty": false,
+    "hasError": false,
+    "source": "src/app/features/attendance/attendance-correction-page.ts"
+  },
+  {
+    "file": "src/app/features/attendance/attendance-history-page.html",
+    "line": 72,
+    "headers": [
+      "{{ col }}"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": false,
+    "hasError": false,
+    "source": "src/app/features/attendance/attendance-history-page.ts"
+  },
+  {
+    "file": "src/app/features/attendance/offline-queue-page.html",
+    "line": 46,
+    "headers": [
+      "#",
+      "Student",
+      "Type",
+      "Date",
+      "Time",
+      "Status",
+      "Reason",
+      "Actions"
+    ],
+    "buttons": [
+      "retry(row.id)",
+      "discard(row.id)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 12,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/attendance/offline-queue-page.ts"
+  },
+  {
+    "file": "src/app/features/attendance/qr-attendance-page.html",
+    "line": 407,
+    "headers": [
+      "Student",
+      "Action",
+      "Time",
+      "Batch",
+      "Parent update"
+    ],
+    "buttons": [
+      "prepareSavedWhatsApp(event.studentId, event.batchId, event.action === 'Check in' ? 'check_in' : 'check_out', event.name)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/attendance/qr-attendance-page.ts"
+  },
+  {
+    "file": "src/app/features/attendance/qr-attendance-page.html",
+    "line": 456,
+    "headers": [
+      "Schedule",
+      "Batch / Program",
+      "Inside"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/attendance/qr-attendance-page.ts"
+  },
+  {
+    "file": "src/app/features/batches/batches-page.html",
+    "line": 225,
+    "headers": [
+      "Student",
+      "Batch",
+      "Status",
+      "Start",
+      "Action",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "resetColumnFilters()",
+      "cancelEnrollment(e.id)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 8,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/batches/batches-page.ts"
+  },
+  {
+    "file": "src/app/features/batches/batches-page.html",
+    "line": 283,
+    "headers": [
+      "#",
+      "Batch",
+      "Schedule",
+      "Coaches",
+      "Capacity",
+      "Status",
+      "Monthly fee",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "resetColumnFilters()",
+      "unassign(b.id, c.coach_id)",
+      "edit(b)",
+      "remove(b)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/batches/batches-page.ts"
+  },
+  {
+    "file": "src/app/features/batches/batches-page.html",
+    "line": 416,
+    "headers": [
+      "Student",
+      "Batch",
+      "Added",
+      "Actions",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [
+      "waitAction(w.batch_id, w.student_id, 'promote')",
+      "waitAction(w.batch_id, w.student_id, 'remove')"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 6,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/batches/batches-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 65,
+    "headers": [
+      "Batch",
+      "Age group",
+      "Students",
+      "Schedule",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": false,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 396,
+    "headers": [
+      "Date",
+      "Day",
+      "Time",
+      "Topic / focus",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 433,
+    "headers": [
+      "Date",
+      "Day",
+      "Time",
+      "Topic / focus",
+      "Venue"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 535,
+    "headers": [
+      "#",
+      "Student",
+      "Student ID",
+      "Age",
+      "Batch",
+      "Attendance",
+      "Last attendance",
+      "Status",
+      "Actions"
+    ],
+    "buttons": [
+      "selectStudent(s.id)",
+      "$event.stopPropagation(); go('/coach/students/' + s.id)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 818,
+    "headers": [
+      "Date",
+      "Day",
+      "Check in",
+      "Check out",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 956,
+    "headers": [
+      "#",
+      "Student",
+      "Student ID",
+      "Age",
+      "Status",
+      "Check-in time",
+      "Check-out time",
+      "Actions"
+    ],
+    "buttons": [
+      "go('/coach/students/' + student.id)"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 1198,
+    "headers": [
+      "#",
+      "Student",
+      "Student ID",
+      "Total",
+      "Present",
+      "Absent",
+      "Late",
+      "Attendance"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coach/coach-portal-page.html",
+    "line": 1640,
+    "headers": [
+      "Date",
+      "Student",
+      "Batch",
+      "Check in",
+      "Check out",
+      "Status",
+      "Source",
+      "Remarks"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/coach/coach-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/coaches/coach-details-page.html",
+    "line": 9,
+    "headers": [
+      "Batch",
+      "Present",
+      "Late",
+      "Absent",
+      "Total records"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/coaches/coach-details-page.ts"
+  },
+  {
+    "file": "src/app/features/coaches/coaches-page.html",
+    "line": 40,
+    "headers": [
+      "#",
+      "Coach",
+      "Specialization",
+      "Contact",
+      "Experience",
+      "Qualification",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "openCoachDetails(coach)",
+      "openCoachDetails(coach)",
+      "edit(coach)",
+      "deleteCoach(coach)"
+    ],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/coaches/coaches-page.ts"
+  },
+  {
+    "file": "src/app/features/enrollments/enrollments-page.html",
+    "line": 18,
+    "headers": [
+      "Student",
+      "Batch",
+      "Fee plan",
+      "Monthly fee",
+      "Validity",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "['/students', row.student_id]"
+    ],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/enrollments/enrollments-page.ts"
+  },
+  {
+    "file": "src/app/features/enrollments/enrollments-page.html",
+    "line": 204,
+    "headers": [
+      "Recorded at",
+      "Effective date",
+      "Student",
+      "Action",
+      "Batch",
+      "Performed by",
+      "Reason",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 7,
+    "sortHeaders": 14,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/enrollments/enrollments-page.ts"
+  },
+  {
+    "file": "src/app/features/fees/fee-operations-page.html",
+    "line": 60,
+    "headers": [
+      "Student",
+      "Period",
+      "Base",
+      "Discount",
+      "Late fee",
+      "Paid",
+      "Balance",
+      "Status",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 8,
+    "sortHeaders": 16,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/fees/fee-operations-page.ts"
+  },
+  {
+    "file": "src/app/features/fees/fee-operations-page.html",
+    "line": 85,
+    "headers": [
+      "Name",
+      "Kind",
+      "Value",
+      "{{ view === 'late-fees' ? 'Grace days' : 'Validity' }}",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [
+      "open(row)",
+      "remove(row)"
+    ],
+    "columnFilters": 5,
+    "sortHeaders": 10,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/fees/fee-operations-page.ts"
+  },
+  {
+    "file": "src/app/features/fees/fee-plans-page.html",
+    "line": 30,
+    "headers": [
+      "#",
+      "Plan name",
+      "Description",
+      "Duration",
+      "Monthly fee",
+      "Total fee",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "open(plan)",
+      "open(plan, true)",
+      "remove(plan)"
+    ],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/fees/fee-plans-page.ts"
+  },
+  {
+    "file": "src/app/features/fees/fees-page.html",
+    "line": 35,
+    "headers": [
+      "#",
+      "Student name",
+      "Batch",
+      "Fee plan",
+      "Month",
+      "Monthly charge",
+      "Due date",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "downloadInvoice(row.id)",
+      "confirmPay(row.id, row.balancePaise, row.studentName)",
+      "['/students',row.studentId]"
+    ],
+    "columnFilters": 7,
+    "sortHeaders": 14,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/fees/fees-page.ts"
+  },
+  {
+    "file": "src/app/features/notifications/academy-events-page.html",
+    "line": 20,
+    "headers": [
+      "Date",
+      "Event",
+      "Type",
+      "Description",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "reload()",
+      "open(row)",
+      "toggle(row)"
+    ],
+    "columnFilters": 5,
+    "sortHeaders": 10,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/notifications/academy-events-page.ts"
+  },
+  {
+    "file": "src/app/features/notifications/notification-templates-page.html",
+    "line": 84,
+    "headers": [
+      "Name",
+      "Key",
+      "Channel",
+      "Message",
+      "Status",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "open(row)",
+      "toggle(row)"
+    ],
+    "columnFilters": 5,
+    "sortHeaders": 10,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/notifications/notification-templates-page.ts"
+  },
+  {
+    "file": "src/app/features/notifications/notifications-page.html",
+    "line": 15,
+    "headers": [
+      "Message",
+      "Recipient",
+      "Channel",
+      "Type",
+      "Status",
+      "Date",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "delivery(row)"
+    ],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/notifications/notifications-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-child-profile-page.html",
+    "line": 186,
+    "headers": [
+      "Date",
+      "Batch",
+      "Status",
+      "Check in",
+      "Check out"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-child-profile-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-child-profile-page.html",
+    "line": 230,
+    "headers": [
+      "Date",
+      "Amount",
+      "Method",
+      "Reference",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-child-profile-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-dashboard-page.html",
+    "line": 242,
+    "headers": [
+      "Date",
+      "Status",
+      "Check in",
+      "Check out"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-dashboard-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-dashboard-page.html",
+    "line": 279,
+    "headers": [
+      "Date",
+      "Amount",
+      "Method",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-dashboard-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-details-page.html",
+    "line": 37,
+    "headers": [
+      "Date",
+      "Record",
+      "Action",
+      "By"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-details-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-details-page.html",
+    "line": 41,
+    "headers": [
+      "Date",
+      "Amount",
+      "Status",
+      "Receipts"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-details-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-portal-page.html",
+    "line": 106,
+    "headers": [
+      "Date",
+      "Session",
+      "Check in",
+      "Check out",
+      "Duration",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 6,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-portal-page.html",
+    "line": 259,
+    "headers": [
+      "Month",
+      "Base",
+      "Discount",
+      "Late fee",
+      "Amount",
+      "Paid",
+      "Outstanding",
+      "Due date",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parent-portal-page.html",
+    "line": 316,
+    "headers": [
+      "Date",
+      "Amount",
+      "Method",
+      "Transaction ID",
+      "Status",
+      "Receipt"
+    ],
+    "buttons": [
+      "open(receipt(p, 'url'))"
+    ],
+    "columnFilters": 0,
+    "sortHeaders": 10,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/parents/parent-portal-page.ts"
+  },
+  {
+    "file": "src/app/features/parents/parents-page.html",
+    "line": 41,
+    "headers": [
+      "#",
+      "Parent name",
+      "Relation",
+      "Phone",
+      "Email",
+      "Children",
+      "Status",
+      "Joined on",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "openDetails(row.id)",
+      "openDetails(row.id)",
+      "edit(row)",
+      "deleteParent(row)"
+    ],
+    "columnFilters": 7,
+    "sortHeaders": 14,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/parents/parents-page.ts"
+  },
+  {
+    "file": "src/app/features/payments/payments-page.html",
+    "line": 57,
+    "headers": [
+      "Receipt",
+      "Student",
+      "Date",
+      "Mode",
+      "Status",
+      "Amount",
+      "Action",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "printReceipt(row)"
+    ],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/payments/payments-page.ts"
+  },
+  {
+    "file": "src/app/features/reports/reports-page.html",
+    "line": 186,
+    "headers": [
+      "{{ column.label }}"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/reports/reports-page.ts"
+  },
+  {
+    "file": "src/app/features/reports/reports-page.html",
+    "line": 375,
+    "headers": [
+      "{{ column.label }}"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/reports/reports-page.ts"
+  },
+  {
+    "file": "src/app/features/settings/users-page.html",
+    "line": 7,
+    "headers": [
+      "User",
+      "Contact",
+      "Role",
+      "Status",
+      "Joined",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 10,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/settings/users-page.ts"
+  },
+  {
+    "file": "src/app/features/students/student-details-page.html",
+    "line": 191,
+    "headers": [
+      "Document",
+      "Category",
+      "Uploaded on",
+      "Uploaded by",
+      "Size (bytes)",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 5,
+    "sortHeaders": 10,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/students/student-details-page.ts"
+  },
+  {
+    "file": "src/app/features/students/student-details-page.html",
+    "line": 234,
+    "headers": [
+      "Date",
+      "Batch",
+      "Status",
+      "Check in",
+      "Check out",
+      "Marked by",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/students/student-details-page.ts"
+  },
+  {
+    "file": "src/app/features/students/student-details-page.html",
+    "line": 275,
+    "headers": [
+      "Date",
+      "Amount",
+      "Mode",
+      "Reference",
+      "Status",
+      "Recorded by",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 6,
+    "sortHeaders": 12,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/students/student-details-page.ts"
+  },
+  {
+    "file": "src/app/features/students/student-details-page.html",
+    "line": 330,
+    "headers": [
+      "Date",
+      "Type",
+      "Detail",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "columnFilters": 3,
+    "sortHeaders": 6,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/students/student-details-page.ts"
+  },
+  {
+    "file": "src/app/features/students/students-page.html",
+    "line": 41,
+    "headers": [
+      "#",
+      "Student",
+      "Batch / Program",
+      "Coach",
+      "Date of birth",
+      "Phone",
+      "Status",
+      "Parent / Guardian",
+      "Join date",
+      "Actions",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Reset"
+    ],
+    "buttons": [
+      "columns.reset()",
+      "openStudent(row.id)",
+      "openStudent(row.id)",
+      "editStudent(row.id)",
+      "deleteStudent(row)"
+    ],
+    "columnFilters": 8,
+    "sortHeaders": 16,
+    "hasLoading": true,
+    "hasEmpty": true,
+    "hasError": true,
+    "source": "src/app/features/students/students-page.ts"
+  },
+  {
+    "file": "src/app/features/system/module-page.html",
+    "line": 3,
+    "headers": [
+      "Receipt",
+      "Student",
+      "Date",
+      "Mode",
+      "Amount"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": true,
+    "hasError": false,
+    "source": "src/app/features/system/module-page.ts"
+  },
+  {
+    "file": "src/app/features/system/module-page.html",
+    "line": 5,
+    "headers": [
+      "Student",
+      "Period",
+      "Charge",
+      "Balance",
+      "Status"
+    ],
+    "buttons": [],
+    "columnFilters": 0,
+    "sortHeaders": 0,
+    "hasLoading": false,
+    "hasEmpty": false,
+    "hasError": false,
+    "source": "src/app/features/system/module-page.ts"
+  },
+  {
+    "file": "src/app/features/settings/audit-log-page.ts",
+    "line": 91,
+    "headers": [
+      "Date",
+      "Action",
+      "Table",
+      "Record",
+      "Account",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "buttons": [],
+    "sortHeaders": 10,
+    "columnFilters": 0
+  },
+  {
+    "file": "src/app/features/settings/settings-tools-page.ts",
+    "line": 62,
+    "headers": [
+      "Role",
+      "Permissions",
+      "{{ role }}"
+    ],
+    "buttons": [],
+    "sortHeaders": 0,
+    "columnFilters": 0
+  }
+]

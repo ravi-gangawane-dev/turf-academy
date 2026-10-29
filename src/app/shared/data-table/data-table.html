@@ -1,0 +1,12 @@
+<ng-content select="[table-heading]" />
+<ng-content select="[table-toolbar]" />
+<ng-content />
+<div class="table-content"><ng-content select="[table-content]" /></div>
+<app-pagination
+  [total]="total"
+  [page]="page"
+  [pageSize]="pageSize"
+  [itemLabel]="itemLabel"
+  (pageChange)="pageChange.emit($event)"
+  (pageSizeChange)="pageSizeChange.emit($event)"
+/>

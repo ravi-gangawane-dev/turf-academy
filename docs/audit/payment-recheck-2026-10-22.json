@@ -1,0 +1,38 @@
+[
+  {
+    "role": "admin",
+    "view": "history",
+    "status": 400,
+    "error": {
+      "code": "P0001",
+      "details": null,
+      "hint": null,
+      "message": "Invalid payment view"
+    }
+  },
+  {
+    "role": "admin",
+    "view": "list",
+    "status": 200,
+    "error": null,
+    "rows": 5
+  },
+  {
+    "role": "receptionist",
+    "view": "history",
+    "status": 400,
+    "error": {
+      "code": "P0001",
+      "details": null,
+      "hint": null,
+      "message": "Invalid payment view"
+    }
+  },
+  {
+    "role": "receptionist",
+    "view": "list",
+    "status": 200,
+    "error": null,
+    "rows": 5
+  }
+]

@@ -1,0 +1,92 @@
+<div class="app-list-page users-settings-panel">
+  <div class="users-overview-grid">
+      <div class="settings-section users-section">
+        <header class="users-heading">
+          <span class="users-icon"><i class="pi pi-users" aria-hidden="true"></i></span>
+          <div>
+            <h2>Users & Roles</h2>
+            <p>Manage who can access your academy.</p>
+          </div>
+          <button type="button" class="primary invite-user-button" (click)="inviteOpen.set(true)"><i class="pi pi-user-plus" aria-hidden="true"></i> Invite User</button>
+        </header>
+
+        <div class="user-capabilities">
+          <article>
+            <i class="pi pi-user-plus" aria-hidden="true"></i>
+            <h3>Invite users</h3>
+            <p>Add team members with an email invitation to set up their account.</p>
+          </article>
+          <article>
+            <i class="pi pi-id-card" aria-hidden="true"></i>
+            <h3>Assign roles</h3>
+            <p>Choose Admin, Receptionist, Coach, or Parent for each account.</p>
+          </article>
+          <article>
+            <i class="pi pi-lock" aria-hidden="true"></i>
+            <h3>Control access</h3>
+            <p>Review accounts and update their active, inactive, or suspended status.</p>
+          </article>
+        </div>
+
+      </div>
+
+<section class="users-section role-permissions" aria-labelledby="role-permissions-title">
+  <header class="users-heading">
+    <span class="users-icon"><i class="pi pi-shield" aria-hidden="true"></i></span>
+    <div>
+      <h2 id="role-permissions-title">Role Permissions</h2>
+      <p>Review the access included with each role. Assign a user's role in the table below.</p>
+    </div>
+    <span class="access-badge">Read only</span>
+  </header>
+  <div class="table-wrap">
+    <app-table-tools title="Role permissions" [table]="permissionsTable"></app-table-tools>
+    <table #permissionsTable class="academy-table data-table permissions-table">
+      <thead><tr><th scope="col">Role</th><th scope="col">Permissions</th></tr></thead>
+      <tbody>
+        @for (role of permissionRoles; track role) {
+        <tr>
+          <th scope="row" class="permission-role">{{ role }}</th>
+          <td><div class="permission-list">
+            @for (permission of rolePermissions[role]; track permission) {
+            <span class="permission-chip">{{ permission }}</span>
+            }
+          </div></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+@if(message()){<div class="notice success">{{message()}}</div>}@if(error()){<div class="notice error" role="alert">{{error()}}</div>}
+<section class="app-card users-table-card">
+<div class="table-wrap">
+  <app-table-tools title="Users" [table]="exportTable1" [total]="total()"></app-table-tools>
+<table #exportTable1 class="academy-table data-table">
+    <thead>
+      <tr>
+        <th><app-sortable-header sortKey="name" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="sortColumn('name')">User</app-sortable-header></th>
+        <th><app-sortable-header sortKey="email" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="sortColumn('email')">Contact</app-sortable-header></th>
+        <th><app-sortable-header sortKey="role" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="sortColumn('role')">Role</app-sortable-header></th>
+        <th><app-sortable-header sortKey="status" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="sortColumn('status')">Status</app-sortable-header></th>
+        <th><app-sortable-header sortKey="createdAt" [activeSort]="sortBy" [direction]="sortDirection" (sortChange)="sortColumn('createdAt')">Joined</app-sortable-header></th>
+      </tr>
+      <tr class="column-filters">
+        <th><label><input aria-label="Filter by user name" type="search" [(ngModel)]="filters.name" (ngModelChange)="scheduleFilters()" placeholder="Filter name" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+        <th><label><input aria-label="Filter by email or phone" type="search" [(ngModel)]="filters.contact" (ngModelChange)="scheduleFilters()" placeholder="Filter contact" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+        <th><label><input aria-label="Filter by role" type="search" [(ngModel)]="filters.role" (ngModelChange)="scheduleFilters()" placeholder="Filter role" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+        <th><label><input aria-label="Filter by status" type="search" [(ngModel)]="filters.status" (ngModelChange)="scheduleFilters()" placeholder="Filter status" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+        <th><label><input aria-label="Filter by join date" type="date" [(ngModel)]="filters.joined" (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(user of users();track user.id){<tr><td><strong>{{user.full_name}}</strong></td><td>{{user.email||'—'}}<small>{{user.phone||''}}</small></td><td><select #role [value]="user.role" (change)="changeAccess(user,role.value,status.value)" [disabled]="saving()"><option value="admin">Admin</option><option value="receptionist">Receptionist</option><option value="coach">Coach</option><option value="parent">Parent</option></select></td><td><select #status [value]="user.status" (change)="changeAccess(user,role.value,status.value)" [disabled]="saving()"><option value="active">Active</option><option value="inactive">Inactive</option><option value="suspended">Suspended</option></select></td><td>{{user.created_at.slice(0,10)}}</td></tr>}@empty{<tr><td colspan="5">@if (!error()) { <app-async-state [kind]="loading() ? 'loading' : 'empty'" [title]="loading() ? 'Loading users...' : 'No matching user accounts found.'" /> }</td></tr>}
+    </tbody>
+  </table>
+</div>
+<app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="users" (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+</section>
+@if(inviteOpen()){<div class="dialog-backdrop" role="presentation" (click)="$event.target === $event.currentTarget && inviteOpen.set(false)"><form class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="inviteOpen.set(false)" aria-labelledby="invite-dialog-title" [formGroup]="form" (ngSubmit)="invite()"><header><h2 id="invite-dialog-title">Invite academy user</h2><button type="button" (click)="inviteOpen.set(false)" aria-label="Close"><i class="pi pi-times"></i></button></header><label>Full name<input formControlName="fullName"></label><label>Email<input type="email" formControlName="email"></label><label>Phone<input formControlName="phone"></label><label>Role<select formControlName="role"><option value="admin">Admin</option><option value="receptionist">Receptionist</option><option value="coach">Coach</option><option value="parent">Parent</option></select></label><footer><button type="button" (click)="inviteOpen.set(false)">Cancel</button><button class="primary" [disabled]="saving()||form.invalid">{{saving()?'Sending…':'Send Invitation'}}</button></footer></form></div>}
+</div>

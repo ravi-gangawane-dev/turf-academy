@@ -1,0 +1,46 @@
+@if (message(); as data) {
+  <section class="whatsapp-action" aria-label="Parent attendance message">
+    <header>
+      <i class="pi pi-whatsapp" aria-hidden="true"></i>
+      <div>
+        <h2>{{ data.studentName }}: {{ data.action === 'check_in' ? 'check-in' : 'check-out' }} update</h2>
+        <p>
+          WhatsApp opens with this message prepared. Review it and press Send there — academy
+          staff send it, this page does not.
+        </p>
+      </div>
+    </header>
+    <p class="recipient">Parent: <strong>{{ data.parentName || 'Linked parent' }} ({{ data.parentPhone }})</strong></p>
+    <pre class="preview" aria-label="WhatsApp message preview">{{ preview() }}</pre>
+    <button
+      type="button"
+      class="whatsapp-open"
+      [disabled]="!!recipientError()"
+      (click)="open()"
+    >
+      <i class="pi pi-whatsapp" aria-hidden="true"></i> Open WhatsApp for parent
+    </button>
+    @if (opened()) {
+      <p role="status">WhatsApp opening requested. Press Send in WhatsApp. Delivery unconfirmed.</p>
+    }
+    @if (recipientError()) {
+      <p class="error" role="alert">{{ recipientError() }}</p>
+    }
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+  </section>
+} @else if (studentId()) {
+  <section class="whatsapp-action missing" aria-label="Parent notification unavailable">
+    <h2>{{ preparationError() ? 'WhatsApp message unavailable' : 'Parent WhatsApp number missing' }}</h2>
+    @if (preparationError()) {
+      <p class="error" role="alert">{{ studentName() }}: attendance saved. {{ preparationError() }}</p>
+    } @else {
+    <p>
+      Attendance is saved, but this student has no linked parent phone number, so no WhatsApp
+      message can be prepared.
+    </p>
+    }
+    <a [routerLink]="['/students', studentId()]">Review linked parent</a>
+  </section>
+}

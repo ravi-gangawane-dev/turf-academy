@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.history-corrections-page {
+  display: grid;
+  /* Explicit zero floor: child tables must never size the outer page track. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.history-corrections-page > [role='tabpanel'] {
+  min-width: 0;
+}
+
+.view-tabs {
+  display: inline-flex;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #dfe8e2;
+  border-radius: 12px;
+  background: #fff;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  box-shadow: 0 3px 12px rgba(22, 58, 37, 0.04);
+}
+
+.view-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #385546;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.view-tabs button i {
+  font-size: 0.95rem;
+}
+
+.view-tabs button:hover {
+  background: #f1f6f3;
+}
+
+.view-tabs button.active {
+  background: #087a43;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(8, 122, 67, 0.18);
+}
+
+.view-tabs button:focus-visible {
+  outline: 2px solid #076b38;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .history-corrections-page {
+    gap: 14px;
+    padding-bottom: 16px;
+  }
+
+  .view-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .view-tabs button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 8px;
+    font-size: 0.78rem;
+  }
+}

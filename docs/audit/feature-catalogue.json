@@ -1,0 +1,1230 @@
+{
+  "date": "2026-10-22",
+  "counts": {
+    "WORKING": 30,
+    "NOT WORKING": 4,
+    "PARTIALLY WORKING": 93,
+    "MISSING": 0,
+    "NEEDS IMPROVEMENT": 9,
+    "NOT VERIFIED": 16
+  },
+  "total": 152,
+  "features": [
+    {
+      "id": "F001",
+      "module": "auth",
+      "feature": "/auth/splash — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/splash. Submissions/destructive actions not executed. src/app/app.routes.ts:37",
+      "priority": "P2"
+    },
+    {
+      "id": "F002",
+      "module": "login",
+      "feature": "/login — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/login. Submissions/destructive actions not executed. src/app/app.routes.ts:40 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F003",
+      "module": "auth",
+      "feature": "/auth/login — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/login. Submissions/destructive actions not executed. src/app/app.routes.ts:42",
+      "priority": "P2"
+    },
+    {
+      "id": "F004",
+      "module": "unauthorized",
+      "feature": "/unauthorized — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /unauthorized. Submissions/destructive actions not executed. src/app/app.routes.ts:47",
+      "priority": "P2"
+    },
+    {
+      "id": "F005",
+      "module": "auth",
+      "feature": "/auth/forgot-password — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/forgot-password. Submissions/destructive actions not executed. src/app/app.routes.ts:53",
+      "priority": "P2"
+    },
+    {
+      "id": "F006",
+      "module": "auth",
+      "feature": "/auth/reset-password — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/reset-password. Submissions/destructive actions not executed. src/app/app.routes.ts:61",
+      "priority": "P2"
+    },
+    {
+      "id": "F007",
+      "module": "auth",
+      "feature": "/auth/otp — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/otp. Submissions/destructive actions not executed. src/app/app.routes.ts:70",
+      "priority": "P2"
+    },
+    {
+      "id": "F008",
+      "module": "auth",
+      "feature": "/auth/session-expired — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/session-expired. Submissions/destructive actions not executed. src/app/app.routes.ts:79",
+      "priority": "P2"
+    },
+    {
+      "id": "F009",
+      "module": "auth",
+      "feature": "/auth/password-updated — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/password-updated. Submissions/destructive actions not executed. src/app/app.routes.ts:87",
+      "priority": "P2"
+    },
+    {
+      "id": "F010",
+      "module": "redirect",
+      "feature": "/redirect/admin — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /dashboard/admin. Submissions/destructive actions not executed. src/app/app.routes.ts:96 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F011",
+      "module": "redirect",
+      "feature": "/redirect/coach — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/dashboard. Submissions/destructive actions not executed. src/app/app.routes.ts:102 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F012",
+      "module": "redirect",
+      "feature": "/redirect/reception — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: receptionist: LOADED → /dashboard/reception. Submissions/destructive actions not executed. src/app/app.routes.ts:108 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F013",
+      "module": "redirect",
+      "feature": "/redirect/parent — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/dashboard. Submissions/destructive actions not executed. src/app/app.routes.ts:119 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F014",
+      "module": "coach",
+      "feature": "/coach/dashboard — route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard read/render and desktop automated-accessibility scope. color-contrast: 12 nodes production-runtime-2026-10-22.json.",
+      "priority": "P2"
+    },
+    {
+      "id": "F015",
+      "module": "coach",
+      "feature": "/coach/batches — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/batches. Submissions/destructive actions not executed. src/app/app.routes.ts:145",
+      "priority": "P2"
+    },
+    {
+      "id": "F016",
+      "module": "coach",
+      "feature": "/coach/batches/:batchId — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/batches/30000000-0000-4000-8000-000000000001. Submissions/destructive actions not executed. src/app/app.routes.ts:151",
+      "priority": "P2"
+    },
+    {
+      "id": "F017",
+      "module": "coach",
+      "feature": "/coach/students — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/students. Submissions/destructive actions not executed. src/app/app.routes.ts:157",
+      "priority": "P2"
+    },
+    {
+      "id": "F018",
+      "module": "coach",
+      "feature": "/coach/students/:studentId — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/students/69d7156c-f8eb-4c66-acc4-cb893d406604. Submissions/destructive actions not executed. src/app/app.routes.ts:163",
+      "priority": "P2"
+    },
+    {
+      "id": "F019",
+      "module": "coach",
+      "feature": "/coach/attendance — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance. Submissions/destructive actions not executed. src/app/app.routes.ts:169",
+      "priority": "P2"
+    },
+    {
+      "id": "F020",
+      "module": "coach",
+      "feature": "/coach/attendance/qr — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/qr. Submissions/destructive actions not executed. src/app/app.routes.ts:175",
+      "priority": "P2"
+    },
+    {
+      "id": "F021",
+      "module": "coach",
+      "feature": "/coach/attendance/check-in — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/check-in. Submissions/destructive actions not executed. src/app/app.routes.ts:181",
+      "priority": "P2"
+    },
+    {
+      "id": "F022",
+      "module": "coach",
+      "feature": "/coach/attendance/check-out — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/check-out. Submissions/destructive actions not executed. src/app/app.routes.ts:187",
+      "priority": "P2"
+    },
+    {
+      "id": "F023",
+      "module": "coach",
+      "feature": "/coach/attendance/history — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/history. Submissions/destructive actions not executed. src/app/app.routes.ts:193",
+      "priority": "P2"
+    },
+    {
+      "id": "F024",
+      "module": "coach",
+      "feature": "/coach/attendance/correction — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/correction. Submissions/destructive actions not executed. src/app/app.routes.ts:199",
+      "priority": "P2"
+    },
+    {
+      "id": "F025",
+      "module": "coach",
+      "feature": "/coach/attendance/summary — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/attendance/summary. Submissions/destructive actions not executed. src/app/app.routes.ts:205",
+      "priority": "P2"
+    },
+    {
+      "id": "F026",
+      "module": "coach",
+      "feature": "/coach/schedule — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/schedule. Submissions/destructive actions not executed. src/app/app.routes.ts:211",
+      "priority": "P2"
+    },
+    {
+      "id": "F027",
+      "module": "coach",
+      "feature": "/coach/notifications — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/notifications. Submissions/destructive actions not executed. src/app/app.routes.ts:217",
+      "priority": "P2"
+    },
+    {
+      "id": "F028",
+      "module": "coach",
+      "feature": "/coach/profile — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/profile. Submissions/destructive actions not executed. src/app/app.routes.ts:223",
+      "priority": "P2"
+    },
+    {
+      "id": "F029",
+      "module": "coach",
+      "feature": "/coach/support — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: coach: LOADED → /coach/support. Submissions/destructive actions not executed. src/app/app.routes.ts:229",
+      "priority": "P2"
+    },
+    {
+      "id": "F030",
+      "module": "dashboard",
+      "feature": "/dashboard/admin — route/read experience",
+      "status": "WORKING",
+      "evidence": "Dashboard read/render and desktop automated-accessibility scope. No violations in selected axe rules; not manual/site-wide certification. production-runtime-2026-10-22.json.",
+      "priority": "P2"
+    },
+    {
+      "id": "F031",
+      "module": "dashboard",
+      "feature": "/dashboard/coach — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /dashboard/coach. Submissions/destructive actions not executed. src/app/app.routes.ts:244",
+      "priority": "P2"
+    },
+    {
+      "id": "F032",
+      "module": "dashboard",
+      "feature": "/dashboard/reception — route/read experience",
+      "status": "WORKING",
+      "evidence": "Dashboard read/render and desktop automated-accessibility scope. No violations in selected axe rules; not manual/site-wide certification. production-runtime-2026-10-22.json.",
+      "priority": "P2"
+    },
+    {
+      "id": "F033",
+      "module": "parent",
+      "feature": "/parent/dashboard — route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Dashboard read/render and desktop automated-accessibility scope. color-contrast: 1 nodes production-runtime-2026-10-22.json.",
+      "priority": "P2"
+    },
+    {
+      "id": "F034",
+      "module": "parent",
+      "feature": "/parent/children/:id/edit — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/children/40000000-0000-4000-8000-000000000002/edit. Submissions/destructive actions not executed. src/app/app.routes.ts:268",
+      "priority": "P2"
+    },
+    {
+      "id": "F035",
+      "module": "parent",
+      "feature": "/parent/children/:id — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/children/40000000-0000-4000-8000-000000000002. Submissions/destructive actions not executed. src/app/app.routes.ts:276",
+      "priority": "P2"
+    },
+    {
+      "id": "F036",
+      "module": "parent",
+      "feature": "/parent/children — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/children. Submissions/destructive actions not executed. src/app/app.routes.ts:286",
+      "priority": "P2"
+    },
+    {
+      "id": "F037",
+      "module": "parent",
+      "feature": "/parent/attendance — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/attendance. Submissions/destructive actions not executed. src/app/app.routes.ts:292",
+      "priority": "P2"
+    },
+    {
+      "id": "F038",
+      "module": "parent",
+      "feature": "/parent/attendance/calendar — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/attendance/calendar. Submissions/destructive actions not executed. src/app/app.routes.ts:298",
+      "priority": "P2"
+    },
+    {
+      "id": "F039",
+      "module": "parent",
+      "feature": "/parent/schedule — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/schedule. Submissions/destructive actions not executed. src/app/app.routes.ts:304",
+      "priority": "P2"
+    },
+    {
+      "id": "F040",
+      "module": "parent",
+      "feature": "/parent/coach — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/coach. Submissions/destructive actions not executed. src/app/app.routes.ts:310",
+      "priority": "P2"
+    },
+    {
+      "id": "F041",
+      "module": "parent",
+      "feature": "/parent/fees — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/fees. Submissions/destructive actions not executed. src/app/app.routes.ts:316",
+      "priority": "P2"
+    },
+    {
+      "id": "F042",
+      "module": "parent",
+      "feature": "/parent/payments — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/payments. Submissions/destructive actions not executed. src/app/app.routes.ts:322",
+      "priority": "P2"
+    },
+    {
+      "id": "F043",
+      "module": "parent",
+      "feature": "/parent/receipts — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/receipts. Submissions/destructive actions not executed. src/app/app.routes.ts:328",
+      "priority": "P2"
+    },
+    {
+      "id": "F044",
+      "module": "parent",
+      "feature": "/parent/notifications — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/notifications. Submissions/destructive actions not executed. src/app/app.routes.ts:334",
+      "priority": "P2"
+    },
+    {
+      "id": "F045",
+      "module": "parent",
+      "feature": "/parent/profile — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/profile. Submissions/destructive actions not executed. src/app/app.routes.ts:340",
+      "priority": "P2"
+    },
+    {
+      "id": "F046",
+      "module": "parent",
+      "feature": "/parent/profile/edit — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/profile/edit. Submissions/destructive actions not executed. src/app/app.routes.ts:346",
+      "priority": "P2"
+    },
+    {
+      "id": "F047",
+      "module": "parent",
+      "feature": "/parent/support — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: parent: LOADED → /parent/support. Submissions/destructive actions not executed. src/app/app.routes.ts:356",
+      "priority": "P2"
+    },
+    {
+      "id": "F048",
+      "module": "dashboard",
+      "feature": "/dashboard — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /dashboard. Submissions/destructive actions not executed. src/app/app.routes.ts:362",
+      "priority": "P2"
+    },
+    {
+      "id": "F049",
+      "module": "search",
+      "feature": "/search — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /search; receptionist: LOADED → /search. Submissions/destructive actions not executed. src/app/app.routes.ts:371",
+      "priority": "P2"
+    },
+    {
+      "id": "F050",
+      "module": "students",
+      "feature": "/students/add — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /students/add; receptionist: LOADED → /students/add. Submissions/destructive actions not executed. src/app/app.routes.ts:377",
+      "priority": "P2"
+    },
+    {
+      "id": "F051",
+      "module": "students",
+      "feature": "/students/:id/edit — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit; receptionist: LOADED → /students/69d7156c-f8eb-4c66-acc4-cb893d406604/edit. Submissions/destructive actions not executed. src/app/app.routes.ts:385",
+      "priority": "P2"
+    },
+    {
+      "id": "F052",
+      "module": "students",
+      "feature": "/students/:id — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /students/69d7156c-f8eb-4c66-acc4-cb893d406604; receptionist: LOADED → /students/69d7156c-f8eb-4c66-acc4-cb893d406604. Submissions/destructive actions not executed. src/app/app.routes.ts:393",
+      "priority": "P2"
+    },
+    {
+      "id": "F053",
+      "module": "students",
+      "feature": "/students — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /students; receptionist: LOADED → /students. Submissions/destructive actions not executed. src/app/app.routes.ts:401",
+      "priority": "P2"
+    },
+    {
+      "id": "F054",
+      "module": "parents",
+      "feature": "/parents/add — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /parents/add; receptionist: LOADED → /parents/add. Submissions/destructive actions not executed. src/app/app.routes.ts:409",
+      "priority": "P2"
+    },
+    {
+      "id": "F055",
+      "module": "parents",
+      "feature": "/parents/:id/edit — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit; receptionist: LOADED → /parents/5e975d64-64ea-4d29-84a0-1414da5f7c78/edit. Submissions/destructive actions not executed. src/app/app.routes.ts:416",
+      "priority": "P2"
+    },
+    {
+      "id": "F056",
+      "module": "parents",
+      "feature": "/parents/:id — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /parents/5e975d64-64ea-4d29-84a0-1414da5f7c78; receptionist: LOADED → /parents/5e975d64-64ea-4d29-84a0-1414da5f7c78. Submissions/destructive actions not executed. src/app/app.routes.ts:423",
+      "priority": "P2"
+    },
+    {
+      "id": "F057",
+      "module": "parents",
+      "feature": "/parents — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /parents; receptionist: LOADED → /parents. Submissions/destructive actions not executed. src/app/app.routes.ts:430",
+      "priority": "P2"
+    },
+    {
+      "id": "F058",
+      "module": "batches",
+      "feature": "/batches/student-allocation — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /batches/student-allocation; receptionist: LOADED → /batches/student-allocation. Submissions/destructive actions not executed. src/app/app.routes.ts:436",
+      "priority": "P2"
+    },
+    {
+      "id": "F059",
+      "module": "batches",
+      "feature": "/batches/coach-assignment — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /batches/coach-assignment; receptionist: LOADED → /batches/coach-assignment. Submissions/destructive actions not executed. src/app/app.routes.ts:442",
+      "priority": "P2"
+    },
+    {
+      "id": "F060",
+      "module": "batches",
+      "feature": "/batches/schedule — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /batches/schedule; receptionist: LOADED → /batches/schedule. Submissions/destructive actions not executed. src/app/app.routes.ts:448",
+      "priority": "P2"
+    },
+    {
+      "id": "F061",
+      "module": "batches",
+      "feature": "/batches/capacity — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /batches/capacity; receptionist: LOADED → /batches/capacity. Submissions/destructive actions not executed. src/app/app.routes.ts:454",
+      "priority": "P2"
+    },
+    {
+      "id": "F062",
+      "module": "batches",
+      "feature": "/batches — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /batches; receptionist: LOADED → /batches. Submissions/destructive actions not executed. src/app/app.routes.ts:460",
+      "priority": "P2"
+    },
+    {
+      "id": "F063",
+      "module": "coaches",
+      "feature": "/coaches/add — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /coaches/add. Submissions/destructive actions not executed. src/app/app.routes.ts:466",
+      "priority": "P2"
+    },
+    {
+      "id": "F064",
+      "module": "coaches",
+      "feature": "/coaches/:id/edit — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /coaches/20000000-0000-4000-8000-000000000001/edit. Submissions/destructive actions not executed. src/app/app.routes.ts:473",
+      "priority": "P2"
+    },
+    {
+      "id": "F065",
+      "module": "coaches",
+      "feature": "/coaches/:id — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /coaches/20000000-0000-4000-8000-000000000001; receptionist: LOADED → /coaches/20000000-0000-4000-8000-000000000001. Submissions/destructive actions not executed. src/app/app.routes.ts:480",
+      "priority": "P2"
+    },
+    {
+      "id": "F066",
+      "module": "coaches",
+      "feature": "/coaches — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /coaches; receptionist: LOADED → /coaches. Submissions/destructive actions not executed. src/app/app.routes.ts:487",
+      "priority": "P2"
+    },
+    {
+      "id": "F067",
+      "module": "enrollments",
+      "feature": "/enrollments — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments; receptionist: LOADED → /enrollments. Submissions/destructive actions not executed. src/app/app.routes.ts:494",
+      "priority": "P2"
+    },
+    {
+      "id": "F068",
+      "module": "enrollments",
+      "feature": "/enrollments/new — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/new; receptionist: LOADED → /enrollments/new. Submissions/destructive actions not executed. src/app/app.routes.ts:501",
+      "priority": "P2"
+    },
+    {
+      "id": "F069",
+      "module": "enrollments",
+      "feature": "/enrollments/transfer — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/transfer; receptionist: LOADED → /enrollments/transfer. Submissions/destructive actions not executed. src/app/app.routes.ts:508",
+      "priority": "P2"
+    },
+    {
+      "id": "F070",
+      "module": "enrollments",
+      "feature": "/enrollments/pause — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/pause; receptionist: LOADED → /enrollments/pause. Submissions/destructive actions not executed. src/app/app.routes.ts:515",
+      "priority": "P2"
+    },
+    {
+      "id": "F071",
+      "module": "enrollments",
+      "feature": "/enrollments/cancel — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/cancel; receptionist: LOADED → /enrollments/cancel. Submissions/destructive actions not executed. src/app/app.routes.ts:522",
+      "priority": "P2"
+    },
+    {
+      "id": "F072",
+      "module": "enrollments",
+      "feature": "/enrollments/fee-plans — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/fee-plans; receptionist: LOADED → /enrollments/fee-plans. Submissions/destructive actions not executed. src/app/app.routes.ts:529",
+      "priority": "P2"
+    },
+    {
+      "id": "F073",
+      "module": "enrollments",
+      "feature": "/enrollments/history — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /enrollments/history; receptionist: LOADED → /enrollments/history. Submissions/destructive actions not executed. src/app/app.routes.ts:535",
+      "priority": "P2"
+    },
+    {
+      "id": "F074",
+      "module": "attendance",
+      "feature": "/attendance — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance; receptionist: LOADED → /attendance. Submissions/destructive actions not executed. src/app/app.routes.ts:542",
+      "priority": "P2"
+    },
+    {
+      "id": "F075",
+      "module": "attendance",
+      "feature": "/attendance/check-in-out — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/check-in-out; receptionist: LOADED → /attendance/check-in-out. Submissions/destructive actions not executed. src/app/app.routes.ts:549",
+      "priority": "P2"
+    },
+    {
+      "id": "F076",
+      "module": "attendance",
+      "feature": "/attendance/manual-check-in — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/check-in-out. Submissions/destructive actions not executed. src/app/app.routes.ts:556 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F077",
+      "module": "attendance",
+      "feature": "/attendance/manual-check-out — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/check-in-out. Submissions/destructive actions not executed. src/app/app.routes.ts:561 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F078",
+      "module": "attendance",
+      "feature": "/attendance/qr — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/check-in-out. Submissions/destructive actions not executed. src/app/app.routes.ts:566 Alias/redirect navigation scope only.",
+      "priority": "P2"
+    },
+    {
+      "id": "F079",
+      "module": "attendance",
+      "feature": "/attendance/correction — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/correction; receptionist: LOADED → /attendance/correction. Submissions/destructive actions not executed. src/app/app.routes.ts:571",
+      "priority": "P2"
+    },
+    {
+      "id": "F080",
+      "module": "attendance",
+      "feature": "/attendance/history — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/history; receptionist: LOADED → /attendance/history. Submissions/destructive actions not executed. src/app/app.routes.ts:580",
+      "priority": "P2"
+    },
+    {
+      "id": "F081",
+      "module": "attendance",
+      "feature": "/attendance/calendar — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/calendar; receptionist: LOADED → /attendance/calendar. Submissions/destructive actions not executed. src/app/app.routes.ts:589",
+      "priority": "P2"
+    },
+    {
+      "id": "F082",
+      "module": "attendance",
+      "feature": "/attendance/offline-queue — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /attendance/offline-queue; receptionist: LOADED → /attendance/offline-queue. Submissions/destructive actions not executed. src/app/app.routes.ts:598",
+      "priority": "P2"
+    },
+    {
+      "id": "F083",
+      "module": "fees",
+      "feature": "/fees/plans — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees/plans; receptionist: LOADED → /fees/plans. Submissions/destructive actions not executed. src/app/app.routes.ts:605",
+      "priority": "P2"
+    },
+    {
+      "id": "F084",
+      "module": "fees",
+      "feature": "/fees — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees; receptionist: LOADED → /fees. Submissions/destructive actions not executed. src/app/app.routes.ts:611",
+      "priority": "P2"
+    },
+    {
+      "id": "F085",
+      "module": "notifications",
+      "feature": "/notifications — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications; receptionist: LOADED → /notifications. Submissions/destructive actions not executed. src/app/app.routes.ts:617",
+      "priority": "P2"
+    },
+    {
+      "id": "F086",
+      "module": "notifications",
+      "feature": "/notifications/events — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications/events; receptionist: LOADED → /notifications/events. Submissions/destructive actions not executed. src/app/app.routes.ts:624",
+      "priority": "P2"
+    },
+    {
+      "id": "F087",
+      "module": "reports",
+      "feature": "/reports — route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Fresh production-preview: admin: LOADED → /reports. Submissions/destructive actions not executed. src/app/app.routes.ts:630",
+      "priority": "P2"
+    },
+    {
+      "id": "F088",
+      "module": "auth",
+      "feature": "/auth/change-password — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /auth/change-password. Submissions/destructive actions not executed. src/app/app.routes.ts:636",
+      "priority": "P2"
+    },
+    {
+      "id": "F089",
+      "module": "fees",
+      "feature": "/fees/discounts — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees/discounts; receptionist: LOADED → /fees/discounts. Submissions/destructive actions not executed. src/app/app.routes.ts:642",
+      "priority": "P2"
+    },
+    {
+      "id": "F090",
+      "module": "fees",
+      "feature": "/fees/late-fees — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees/late-fees; receptionist: LOADED → /fees/late-fees. Submissions/destructive actions not executed. src/app/app.routes.ts:647",
+      "priority": "P2"
+    },
+    {
+      "id": "F091",
+      "module": "fees",
+      "feature": "/fees/pending — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees/pending; receptionist: LOADED → /fees/pending. Submissions/destructive actions not executed. src/app/app.routes.ts:652",
+      "priority": "P2"
+    },
+    {
+      "id": "F092",
+      "module": "fees",
+      "feature": "/fees/summary — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /fees/summary; receptionist: LOADED → /fees/summary. Submissions/destructive actions not executed. src/app/app.routes.ts:657",
+      "priority": "P2"
+    },
+    {
+      "id": "F093",
+      "module": "payments",
+      "feature": "/payments — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments; receptionist: LOADED → /payments. Submissions/destructive actions not executed. src/app/app.routes.ts:663",
+      "priority": "P2"
+    },
+    {
+      "id": "F094",
+      "module": "payments",
+      "feature": "/payments/new — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments/new; receptionist: LOADED → /payments/new. Submissions/destructive actions not executed. src/app/app.routes.ts:671",
+      "priority": "P2"
+    },
+    {
+      "id": "F095",
+      "module": "payments",
+      "feature": "/payments/partial — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments/partial; receptionist: LOADED → /payments/partial. Submissions/destructive actions not executed. src/app/app.routes.ts:679",
+      "priority": "P2"
+    },
+    {
+      "id": "F096",
+      "module": "payments",
+      "feature": "/payments/full — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments/full; receptionist: LOADED → /payments/full. Submissions/destructive actions not executed. src/app/app.routes.ts:687",
+      "priority": "P2"
+    },
+    {
+      "id": "F097",
+      "module": "payments",
+      "feature": "/payments/receipts — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments/receipts; receptionist: LOADED → /payments/receipts. Submissions/destructive actions not executed. src/app/app.routes.ts:695",
+      "priority": "P2"
+    },
+    {
+      "id": "F098",
+      "module": "payments",
+      "feature": "/payments/refunds — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /payments/refunds. Submissions/destructive actions not executed. src/app/app.routes.ts:700",
+      "priority": "P2"
+    },
+    {
+      "id": "F099",
+      "module": "payments",
+      "feature": "/payments/history — route/read experience",
+      "status": "NOT WORKING",
+      "evidence": "I01: live history RPC returns400 Invalid payment view; list control returns200. Fresh browser/backend evidence.",
+      "priority": "P1"
+    },
+    {
+      "id": "F100",
+      "module": "notifications",
+      "feature": "/notifications/whatsapp — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications/whatsapp; receptionist: LOADED → /notifications/whatsapp. Submissions/destructive actions not executed. src/app/app.routes.ts:719",
+      "priority": "P2"
+    },
+    {
+      "id": "F101",
+      "module": "notifications",
+      "feature": "/notifications/templates — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications/templates. Submissions/destructive actions not executed. src/app/app.routes.ts:724",
+      "priority": "P2"
+    },
+    {
+      "id": "F102",
+      "module": "notifications",
+      "feature": "/notifications/failed — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications/failed; receptionist: LOADED → /notifications/failed. Submissions/destructive actions not executed. src/app/app.routes.ts:730",
+      "priority": "P2"
+    },
+    {
+      "id": "F103",
+      "module": "notifications",
+      "feature": "/notifications/delivery-status — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /notifications/delivery-status; receptionist: LOADED → /notifications/delivery-status. Submissions/destructive actions not executed. src/app/app.routes.ts:735",
+      "priority": "P2"
+    },
+    {
+      "id": "F104",
+      "module": "reports",
+      "feature": "/reports/coach — route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Fresh production-preview: admin: LOADED → /reports/coach. Submissions/destructive actions not executed. src/app/app.routes.ts:741",
+      "priority": "P2"
+    },
+    {
+      "id": "F105",
+      "module": "reports",
+      "feature": "/reports/batch — route/read experience",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "Fresh production-preview: admin: LOADED → /reports/batch. Submissions/destructive actions not executed. src/app/app.routes.ts:746",
+      "priority": "P2"
+    },
+    {
+      "id": "F106",
+      "module": "settings",
+      "feature": "/settings — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings. Submissions/destructive actions not executed. src/app/app.routes.ts:752",
+      "priority": "P2"
+    },
+    {
+      "id": "F107",
+      "module": "settings",
+      "feature": "/settings/users — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/users. Submissions/destructive actions not executed. src/app/app.routes.ts:758",
+      "priority": "P2"
+    },
+    {
+      "id": "F108",
+      "module": "settings",
+      "feature": "/settings/audit-logs — route/read experience",
+      "status": "WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/audit-logs. Submissions/destructive actions not executed. src/app/app.routes.ts:765",
+      "priority": "P2"
+    },
+    {
+      "id": "F109",
+      "module": "settings",
+      "feature": "/settings/profile — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/profile. Submissions/destructive actions not executed. src/app/app.routes.ts:772",
+      "priority": "P2"
+    },
+    {
+      "id": "F110",
+      "module": "settings",
+      "feature": "/settings/regional — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/regional. Submissions/destructive actions not executed. src/app/app.routes.ts:778",
+      "priority": "P2"
+    },
+    {
+      "id": "F111",
+      "module": "settings",
+      "feature": "/settings/attendance — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/attendance. Submissions/destructive actions not executed. src/app/app.routes.ts:784",
+      "priority": "P2"
+    },
+    {
+      "id": "F112",
+      "module": "settings",
+      "feature": "/settings/fees — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/fees. Submissions/destructive actions not executed. src/app/app.routes.ts:790",
+      "priority": "P2"
+    },
+    {
+      "id": "F113",
+      "module": "settings",
+      "feature": "/settings/notifications — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/notifications. Submissions/destructive actions not executed. src/app/app.routes.ts:796",
+      "priority": "P2"
+    },
+    {
+      "id": "F114",
+      "module": "settings",
+      "feature": "/settings/roles — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/roles. Submissions/destructive actions not executed. src/app/app.routes.ts:802",
+      "priority": "P2"
+    },
+    {
+      "id": "F115",
+      "module": "settings",
+      "feature": "/settings/permissions — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/permissions. Submissions/destructive actions not executed. src/app/app.routes.ts:808",
+      "priority": "P2"
+    },
+    {
+      "id": "F116",
+      "module": "settings",
+      "feature": "/settings/theme — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/theme. Submissions/destructive actions not executed. src/app/app.routes.ts:815",
+      "priority": "P2"
+    },
+    {
+      "id": "F117",
+      "module": "settings",
+      "feature": "/settings/backup — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /settings/backup. Submissions/destructive actions not executed. src/app/app.routes.ts:822",
+      "priority": "P2"
+    },
+    {
+      "id": "F118",
+      "module": "design",
+      "feature": "/design/:section/:view — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /design/foundations/colors. Submissions/destructive actions not executed. src/app/app.routes.ts:830",
+      "priority": "P2"
+    },
+    {
+      "id": "F119",
+      "module": "handoff",
+      "feature": "/handoff/:view — route/read experience",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Fresh production-preview: admin: LOADED → /handoff/overview. Submissions/destructive actions not executed. src/app/app.routes.ts:843",
+      "priority": "P2"
+    },
+    {
+      "id": "F120",
+      "module": "Build",
+      "feature": "Production Angular build",
+      "status": "WORKING",
+      "evidence": "Fresh production build passed; build-2026-10-22.txt. Does not compile Deno edge entrypoint.",
+      "priority": "P3"
+    },
+    {
+      "id": "F121",
+      "module": "Testing",
+      "feature": "Full Angular unit-test command",
+      "status": "WORKING",
+      "evidence": "Full npm test -- --watch=false passed104 files/433 tests. Former provider/spec-import blockers cleared; unit-2026-10-22.txt.",
+      "priority": "P1"
+    },
+    {
+      "id": "F122",
+      "module": "Testing",
+      "feature": "Isolated pure logic tests",
+      "status": "WORKING",
+      "evidence": "Utility suites execute within the fresh full passing suite; old isolated19-test result is not represented as a separate fresh run.",
+      "priority": "P3"
+    },
+    {
+      "id": "F123",
+      "module": "Authorization",
+      "feature": "Four-role sessions and sampled read boundaries",
+      "status": "WORKING",
+      "evidence": "Fresh four-role sessions, read-scope and negative-access probes. Write authorization not exercised. production-runtime-2026-10-22.json.",
+      "priority": "P2"
+    },
+    {
+      "id": "F124",
+      "module": "WhatsApp",
+      "feature": "Admin QR and bulk manual Click-to-Chat",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Historical live admin/bulk attendance tests passed; current unit suite passes. Fresh attendance writes/external sends not run under audit-only restriction.",
+      "priority": "P2"
+    },
+    {
+      "id": "F125",
+      "module": "WhatsApp",
+      "feature": "Receptionist complete E2E assertion",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Historical receptionist E2E race read checkout prematurely; later response/read succeeded. No current live rerun; historical trace is not a current whole-flow pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F126",
+      "module": "WhatsApp",
+      "feature": "Message sent or delivered confirmation",
+      "status": "NOT VERIFIED",
+      "evidence": "URL opening does not establish sending or delivery. No recipient receipt available.",
+      "priority": "P2"
+    },
+    {
+      "id": "F127",
+      "module": "Notifications",
+      "feature": "Local edge-provider deployability",
+      "status": "PARTIALLY WORKING",
+      "evidence": "Provider syntax repaired and mocked tests pass. Live configuration read succeeds. Deno entrypoint/deployment/actual delivery unverified; Deno executable unavailable.",
+      "priority": "P1"
+    },
+    {
+      "id": "F128",
+      "module": "Attendance",
+      "feature": "Business-date consistency",
+      "status": "NOT WORKING",
+      "evidence": "I05: workspace/message use India date; identifyQr still UTC at repository.ts:154. Static mismatch; no live midnight write.",
+      "priority": "P2"
+    },
+    {
+      "id": "F129",
+      "module": "Parents",
+      "feature": "Consent/status preservation on edit",
+      "status": "NOT WORKING",
+      "evidence": "I04: parent status/address now preserved, but preferences replacement at parent-form-page.ts:102 drops whatsapp:false. Static confirmed; live save not run.",
+      "priority": "P2"
+    },
+    {
+      "id": "F130",
+      "module": "Offline",
+      "feature": "Queue identity and replay",
+      "status": "PARTIALLY WORKING",
+      "evidence": "I06: persisted operations have no account namespace; cross-account replay scenario untested.",
+      "priority": "P2"
+    },
+    {
+      "id": "F131",
+      "module": "Attendance",
+      "feature": "Database checkout preconditions",
+      "status": "PARTIALLY WORKING",
+      "evidence": "I07: local staff SQL lacks open-check-in guard present in coach SQL; live mutation not run.",
+      "priority": "P2"
+    },
+    {
+      "id": "F132",
+      "module": "Architecture",
+      "feature": "Component decomposition",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "69 OnPush components,17 inline templates; coach1125/report723 lines;21 component specs contain only one creation check.",
+      "priority": "P3"
+    },
+    {
+      "id": "F133",
+      "module": "Testing",
+      "feature": "Colocated component spec presence and execution",
+      "status": "WORKING",
+      "evidence": "All69 production components have specs;104 total spec files pass. This proves presence/execution, not exhaustive behavioral coverage.",
+      "priority": "P2"
+    },
+    {
+      "id": "F134",
+      "module": "Tooling",
+      "feature": "Configured project lint command",
+      "status": "NOT WORKING",
+      "evidence": "I11: npm run lint exists but fails: Cannot find lint target for the specified project. angular.json lacks target; lint-2026-10-22.txt.",
+      "priority": "P2"
+    },
+    {
+      "id": "F135",
+      "module": "Auth",
+      "feature": "UI login/logout audit logs, recovery email, reset, OTP and password change",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F136",
+      "module": "Students",
+      "feature": "Create/edit/delete and document/photo persistence",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F137",
+      "module": "Parents",
+      "feature": "Create/link/unlink/delete and primary-parent persistence",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F138",
+      "module": "Coaches",
+      "feature": "Create/edit/delete and assignment writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F139",
+      "module": "Batches",
+      "feature": "Create/edit/delete, waitlist and schedule writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F140",
+      "module": "Enrollments",
+      "feature": "Create/transfer/pause/cancel/fee-plan writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F141",
+      "module": "Attendance",
+      "feature": "Corrections, offline retry/discard and coach writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F142",
+      "module": "Fees",
+      "feature": "Generate charges, discounts, late fees and fee-plan writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F143",
+      "module": "Payments",
+      "feature": "Record/allocate/refund and receipt generation",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F144",
+      "module": "Notifications",
+      "feature": "Compose/send/retry, templates and events writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F145",
+      "module": "Settings",
+      "feature": "User/role/permission and preference writes",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F146",
+      "module": "Storage",
+      "feature": "Upload/delete/download and storage write-policy lifecycle",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F147",
+      "module": "Backup",
+      "feature": "Restore drill and external retention",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F148",
+      "module": "PWA",
+      "feature": "Production install/update and cross-account offline replay",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F149",
+      "module": "Exports",
+      "feature": "Every-module CSV/PDF completeness and parity",
+      "status": "NOT VERIFIED",
+      "evidence": "Not executed end to end under audit-only restriction; code/test existence is not a current pass.",
+      "priority": "P2"
+    },
+    {
+      "id": "F150",
+      "module": "Attendance",
+      "feature": "Large-roster selection",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I08: first 500-row workspace page consumed without continuation; current small data does not exercise limit.",
+      "priority": "P2"
+    },
+    {
+      "id": "F151",
+      "module": "WhatsApp",
+      "feature": "Settings test recipient",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I09: settings uses contactPhone but falls back to9130451715; constructs check-in link while generic test-message variables are unused. Actual attendance remains relationship-driven.",
+      "priority": "P3"
+    },
+    {
+      "id": "F152",
+      "module": "Accessibility",
+      "feature": "Representative dashboard accessibility",
+      "status": "NEEDS IMPROVEMENT",
+      "evidence": "I10: current dashboard axe violations, detailed below; manual/all-route accessibility incomplete.",
+      "priority": "P2"
+    }
+  ]
+}

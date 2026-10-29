@@ -1,0 +1,341 @@
+❯ Building...
+✔ Building...
+Application bundle generation complete. [17.321 seconds] - 2026-10-22T04:18:22.703Z
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90mC:/Users/ravig/OneDrive/Desktop/website/tap/turf-academy-ui[39m
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/auth/auth.service.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1561[2mms[22m[39m
+     [33m[2m✓[22m[39m creates a mock staff session [33m 406[2mms[22m[39m
+     [33m[2m✓[22m[39m clears the active session on logout [33m 368[2mms[22m[39m
+     [33m[2m✓[22m[39m applies the coach permission boundary [33m 405[2mms[22m[39m
+     [33m[2m✓[22m[39m separates parent child access from student management [33m 372[2mms[22m[39m
+[90mstderr[2m | src/app/features/enrollments/enrollments-page.spec.ts[2m > [22m[2mEnrollment workflows[2m > [22m[2mawaits creation, blocks duplicate submissions and preserves inputs on failure
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:36.683Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge writes[2m > [22m[2mfocuses the charge dialog and dismisses it with Escape only when idle
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:36.529Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/enrollments/enrollments-page.spec.ts[2m > [22m[2mEnrollment workflows[2m > [22m[2mrejects an end date before the start date
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:36.783Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/fees/fee-operations-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 2203[2mms[22m[39m
+     [33m[2m✓[22m[39m requests paged search results and uses server totals [33m 1800[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects invalid discounts and shows server errors inside the dialog [33m 321[2mms[22m[39m
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge writes[2m > [22m[2mawaits payment, prevents duplicate clicks and retries with the same reference
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:37.092Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batch-waitlist.spec.ts[2m > [22m[2mBatch waitlist[2m > [22m[2mrenders column controls and independent pagination in student-allocation
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:37.021Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-portal-page.spec.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 2454[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 1236[2mms[22m[39m
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge writes[2m > [22m[2mloads actual enrollments and preserves a rejected charge for correction
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:3 (2.115.0) 2026-10-22T04:18:37.273Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/enrollments/enrollments-page.spec.ts[2m > [22m[2mEnrollment workflows[2m > [22m[2mrefreshes after reactivation and reports rejected writes
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:3 (2.115.0) 2026-10-22T04:18:37.346Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/notifications/academy-events-page.spec.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 2475[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 994[2mms[22m[39m
+     [33m[2m✓[22m[39m opens the add dialog with today as the default date [33m 365[2mms[22m[39m
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge writes[2m > [22m[2mrejects payments above the selected outstanding balance
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:4 (2.115.0) 2026-10-22T04:18:37.373Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batch-waitlist.spec.ts[2m > [22m[2mBatch waitlist[2m > [22m[2mcombines column filters/sort, resets pages, debounces and avoids duplicate requests
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:37.327Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge writes[2m > [22m[2mdoes not accept the old free-text month format or a zero payment
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:5 (2.115.0) 2026-10-22T04:18:37.492Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batch-waitlist.spec.ts[2m > [22m[2mBatch waitlist[2m > [22m[2mignores stale results and supports backend page correction, errors and retry
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:3 (2.115.0) 2026-10-22T04:18:37.578Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/notifications/notifications-page.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2932[2mms[22m[39m
+     [33m[2m✓[22m[39m renders Supabase notifications and route filters [33m 1278[2mms[22m[39m
+     [33m[2m✓[22m[39m filters the list to birthday notifications [33m 548[2mms[22m[39m
+     [33m[2m✓[22m[39m filters notifications by check-in and check-out template [33m 784[2mms[22m[39m
+[90mstderr[2m | src/app/features/batches/batch-waitlist.spec.ts[2m > [22m[2mBatch waitlist[2m > [22m[2mrefreshes rows and capacity totals after removal
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:4 (2.115.0) 2026-10-22T04:18:37.658Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/enrollments/enrollments-page.spec.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 2978[2mms[22m[39m
+     [33m[2m✓[22m[39m shows the enrollment selected by the action link after options load [33m 1225[2mms[22m[39m
+     [33m[2m✓[22m[39m loads real enrollment names, codes, plan amounts and dates [33m 613[2mms[22m[39m
+[90mstderr[2m | src/app/features/fees/fees-page.spec.ts[2m > [22m[2mMonthly charge totals[2m > [22m[2mkeeps collection totals stable when filtering and changing pages
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:6 (2.115.0) 2026-10-22T04:18:37.583Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/batches/batch-waitlist.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2817[2mms[22m[39m
+     [33m[2m✓[22m[39m renders column controls and independent pagination in capacity [33m 2066[2mms[22m[39m
+     [33m[2m✓[22m[39m renders column controls and independent pagination in student-allocation [33m 332[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/layout/staff-layout/staff-layout.spec.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 2665[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 887[2mms[22m[39m
+     [33m[2m✓[22m[39m lists the staff navigation for an administrator [33m 361[2mms[22m[39m
+     [33m[2m✓[22m[39m lists the parent navigation and hides the global search for a parent [33m 316[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/students/students-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 3045[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 3042[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/fees/fees-page.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 3507[2mms[22m[39m
+     [33m[2m✓[22m[39m focuses the payment dialog and dismisses it with Escape only when idle [33m 1530[2mms[22m[39m
+     [33m[2m✓[22m[39m focuses the charge dialog and dismisses it with Escape only when idle [33m 594[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps collection totals stable when filtering and changing pages [33m 859[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/offline-queue-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 420[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 420[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/attendance-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 405[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 404[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/manual-check-in-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 923[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 922[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/reports/reports-page.spec.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 716[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-form-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 185[2mms[22m[39m
+[90mstderr[2m | src/app/features/attendance/attendance-correction-page.spec.ts[2m > [22m[2mAttendanceCorrectionPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:7 (2.115.0) 2026-10-22T04:18:38.922Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/attendance-correction-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 305[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 301[2mms[22m[39m
+[90mstderr[2m | src/app/features/auth/login-page.spec.ts[2m > [22m[2mLoginPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:39.042Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/auth/login-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 230[2mms[22m[39m
+[90mstderr[2m | src/app/features/settings/users-page.spec.ts[2m > [22m[2mUsersPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:4 (2.115.0) 2026-10-22T04:18:39.046Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/parents/parent-profile-form-page.spec.ts[2m > [22m[2mParentProfileFormPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:39.134Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-profile-form-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 469[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 468[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/settings/users-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 593[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 592[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coaches/coach-form-page.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 780[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/students/student-details-page.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 4938[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 2848[2mms[22m[39m
+     [33m[2m✓[22m[39m returns to the student list when the route has no id [33m 401[2mms[22m[39m
+     [33m[2m✓[22m[39m loads the attendance history when the attendance tab is selected [33m 328[2mms[22m[39m
+     [33m[2m✓[22m[39m sorts the history table by the requested column [33m 516[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/auth/auth-utility-page.spec.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 752[2mms[22m[39m
+     [33m[2m✓[22m[39m submits a valid password without requiring the hidden email and signs out after success [33m 402[2mms[22m[39m
+[90mstderr[2m | src/app/features/fees/fee-plans-page.spec.ts[2m > [22m[2mFee plan dialog[2m > [22m[2muses configured currency and restores focus after Escape, but stays open while saving
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:8 (2.115.0) 2026-10-22T04:18:39.710Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batches-page.spec.ts[2m > [22m[2mBatch saves[2m > [22m[2mkeeps the form after failure and reuses its draft ID on retry
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:39.665Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/coaches/coaches-page.spec.ts[2m > [22m[2mCoachesPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:5 (2.115.0) 2026-10-22T04:18:39.799Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batches-page.spec.ts[2m > [22m[2mBatch directory[2m > [22m[2mrenders missing schedules, every coach, status and an accessible edit action
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:3 (2.115.0) 2026-10-22T04:18:39.903Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/fees/fee-plans-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 415[2mms[22m[39m
+     [33m[2m✓[22m[39m uses configured currency and restores focus after Escape, but stays open while saving [33m 415[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/students/student-form-page.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 1045[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 320[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-details-page.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 799[2mms[22m[39m
+     [33m[2m✓[22m[39m changes page size for activity [33m 335[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/auth/role-redirect-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 176[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coaches/coaches-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1239[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 1239[2mms[22m[39m
+[90mstderr[2m | src/app/features/settings/academy-settings-page.spec.ts[2m > [22m[2mAcademySettingsPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:5 (2.115.0) 2026-10-22T04:18:40.138Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/batches/batches-page.spec.ts[2m > [22m[2mAllocation filtering and pagination[2m > [22m[2mrequests the filtered batch page from the server
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:4 (2.115.0) 2026-10-22T04:18:40.158Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/settings/academy-settings-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/batches/batches-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 660[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps the form after failure and reuses its draft ID on retry [33m 334[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/report-data.spec.ts[2m > [22m[2mComplete report data[2m > [22m[2mexports every matching parent under a smaller server cap with stable filters and ordering
+[22m[39mGoTrueClient@sb-unit-test-auth-token:1 (2.115.0) 2026-10-22T04:18:40.363Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/payments/payments-page.spec.ts[2m > [22m[2mPayment workflows[2m > [22m[2mretains entered payments and their reference across failed retries
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:40.358Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/report-data.spec.ts[2m > [22m[2mComplete report data[2m > [22m[2mloads every report, enrollment, batch and coach row even when the server cap is below 500
+[22m[39mGoTrueClient@sb-unit-test-auth-token:2 (2.115.0) 2026-10-22T04:18:40.380Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/dashboard/dashboard-page.spec.ts[2m > [22m[2mDashboardPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:40.408Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/payments/payments-page.spec.ts[2m > [22m[2mPayment workflows[2m > [22m[2mlimits a second refund to the remaining refundable amount and retains its retry key
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:2 (2.115.0) 2026-10-22T04:18:40.406Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coach/coach-portal-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 718[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 717[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/dashboard/dashboard-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 250[2mms[22m[39m
+[90mstderr[2m | src/app/features/payments/payments-page.spec.ts[2m > [22m[2mPayment workflows[2m > [22m[2muses settlement filters and whole-result totals from the server on every page
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:3 (2.115.0) 2026-10-22T04:18:40.459Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/report-data.spec.ts[2m > [22m[2mComplete report data[2m > [22m[2mfails the whole report when a later page fails instead of returning a partial export
+[22m[39mGoTrueClient@sb-unit-test-auth-token:3 (2.115.0) 2026-10-22T04:18:40.501Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/system/module-page.spec.ts[2m > [22m[2mModulePage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:9 (2.115.0) 2026-10-22T04:18:40.461Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/report-data.spec.ts[2m > [22m[2mComplete report data[2m > [22m[2mkeeps partial payments, includes full refunds and applies the same batch/date scope to refunds
+[22m[39mGoTrueClient@sb-unit-test-auth-token:4 (2.115.0) 2026-10-22T04:18:40.518Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/report-data.spec.ts[2m > [22m[2mComplete report data[2m > [22m[2mincludes more than ten student payments and more than a server page of refunds
+[22m[39mGoTrueClient@sb-unit-test-auth-token:5 (2.115.0) 2026-10-22T04:18:40.531Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/data-table/table-tools.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 225[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/report-data.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 220[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/auth/unauthorized-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/payments/payments-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 270[2mms[22m[39m
+[90mstderr[2m | src/app/features/system/module-page.spec.ts[2m > [22m[2mModulePage[2m > [22m[2muses the route data for the title and description
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:10 (2.115.0) 2026-10-22T04:18:40.589Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/system/module-page.spec.ts[2m > [22m[2mModulePage[2m > [22m[2msummarises collected, outstanding, transaction and overdue counts
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:11 (2.115.0) 2026-10-22T04:18:40.630Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/system/module-page.spec.ts[2m > [22m[2mModulePage[2m > [22m[2mlists the payment transactions with their receipt numbers
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:12 (2.115.0) 2026-10-22T04:18:40.669Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/state/academy.store.spec.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 128[2mms[22m[39m
+[90mstderr[2m | src/app/features/parents/parent-dashboard-page.spec.ts[2m > [22m[2mParentDashboardPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:40.706Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coaches/coach-details-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 204[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/whatsapp-confirmation-dialog/whatsapp-confirmation-dialog.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 386[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-dashboard-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 262[2mms[22m[39m
+[90mstderr[2m | src/app/features/system/module-page.spec.ts[2m > [22m[2mModulePage[2m > [22m[2mlists fee charges instead of payments for the fees section
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:13 (2.115.0) 2026-10-22T04:18:40.719Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/system/module-page.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/settings/audit-log-page.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 332[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2mloads reference data beyond the first server page
+[22m[39mGoTrueClient@sb-unit-test-auth-token:1 (2.115.0) 2026-10-22T04:18:40.910Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/dashboard/recent-activity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 134[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2mexports every matching history page rather than only the visible page
+[22m[39mGoTrueClient@sb-unit-test-auth-token:2 (2.115.0) 2026-10-22T04:18:40.925Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2muses the enrollment student for charges and preserves decimal amounts
+[22m[39mGoTrueClient@sb-unit-test-auth-token:3 (2.115.0) 2026-10-22T04:18:40.941Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/settings/settings-navigation.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 68[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2mrejects charges outside the enrollment validity before insertion
+[22m[39mGoTrueClient@sb-unit-test-auth-token:4 (2.115.0) 2026-10-22T04:18:40.955Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2mrecovers a committed payment when its response was lost
+[22m[39mGoTrueClient@sb-unit-test-auth-token:5 (2.115.0) 2026-10-22T04:18:40.970Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/enrollment-finance-services.spec.ts[2m > [22m[2mEnrollment and financial services[2m > [22m[2mdoes not turn a mismatched payment or rejected write into success
+[22m[39mGoTrueClient@sb-unit-test-auth-token:6 (2.115.0) 2026-10-22T04:18:40.989Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/enrollment-finance-services.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/system/developer-handoff-page.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 213[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/system/search-page.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+[90mstderr[2m | src/app/features/coach/coach-portal.service.spec.ts[2m > [22m[2mComplete coach dashboard and schedule reads[2m > [22m[2mincludes every session beyond 1,000 while keeping scope, date window and stable order
+[22m[39mGoTrueClient@sb-unit-test-auth-token:1 (2.115.0) 2026-10-22T04:18:41.040Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/notification-section-nav/notification-section-nav.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/pagination/pagination.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+[90mstderr[2m | src/app/features/coach/coach-portal.service.spec.ts[2m > [22m[2mComplete coach dashboard and schedule reads[2m > [22m[2mrejects attendance page failure instead of returning misleading partial data
+[22m[39mGoTrueClient@sb-unit-test-auth-token:2 (2.115.0) 2026-10-22T04:18:41.056Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/coach/coach-portal.service.spec.ts[2m > [22m[2mComplete coach dashboard and schedule reads[2m > [22m[2mrejects sessions page failure instead of returning misleading partial data
+[22m[39mGoTrueClient@sb-unit-test-auth-token:3 (2.115.0) 2026-10-22T04:18:41.068Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/coach/coach-portal.service.spec.ts[2m > [22m[2mComplete coach dashboard and schedule reads[2m > [22m[2mrejects an unexpectedly empty page before the reported total
+[22m[39mGoTrueClient@sb-unit-test-auth-token:4 (2.115.0) 2026-10-22T04:18:41.075Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/coach/coach-portal.service.spec.ts[2m > [22m[2mComplete coach dashboard and schedule reads[2m > [22m[2mmakes no queries when the coach has no assigned batches
+[22m[39mGoTrueClient@sb-unit-test-auth-token:5 (2.115.0) 2026-10-22T04:18:41.080Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/attendance-history-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 365[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coach/coach-portal.service.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/data-table/data-table.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 100[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/summary-metric-card/summary-metric-card.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/attendance-calendar-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 124[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/settings/settings-tools-page.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 131[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/interaction-dialog/interaction-dialog.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 79[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/enrollments/enrollment-metrics.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 110[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/filter-bar/filter-bar.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 100[2mms[22m[39m
+[90mstderr[2m | src/app/features/parents/parents-page.spec.ts[2m > [22m[2mParentsPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:1 (2.115.0) 2026-10-22T04:18:41.155Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/sortable-header/sortable-header.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/page-hero/page-hero.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/status-badge/status-badge.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 103[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-child-profile-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 110[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/toast/toast-host.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parents-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 473[2mms[22m[39m
+     [33m[2m✓[22m[39m should create [33m 472[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/async-state/async-state.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/summary-cards/summary-cards.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/domain-services.spec.ts[2m > [22m[2mEnrollmentsService[2m > [22m[2mloads the students, batches, plans and enrollments that back the workspace
+[22m[39mGoTrueClient@sb-unit-test-auth-token:7 (2.115.0) 2026-10-22T04:18:41.460Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/domain-services.spec.ts[2m > [22m[2mEnrollmentsService[2m > [22m[2mscopes the history page to the student, batch, action and date filters
+[22m[39mGoTrueClient@sb-unit-test-auth-token:8 (2.115.0) 2026-10-22T04:18:41.469Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/domain-services.spec.ts[2m > [22m[2mEnrollmentsService[2m > [22m[2mreports the exact number of matching history rows
+[22m[39mGoTrueClient@sb-unit-test-auth-token:9 (2.115.0) 2026-10-22T04:18:41.476Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/features/auth/auth-splash-page.spec.ts[2m > [22m[2mAuthSplashPage[2m > [22m[2mshould create
+[22m[39mGoTrueClient@sb-ttuigbkaluozglzgepsh-auth-token:6 (2.115.0) 2026-10-22T04:18:41.494Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/domain-services.spec.ts[2m > [22m[2mNotificationTemplatesService[2m > [22m[2mnever lists SMS templates and applies the channel, status and search filters
+[22m[39mGoTrueClient@sb-unit-test-auth-token:10 (2.115.0) 2026-10-22T04:18:41.484Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/domain-services.spec.ts[2m > [22m[2mNotificationTemplatesService[2m > [22m[2msorts by the requested column and pages the result set
+[22m[39mGoTrueClient@sb-unit-test-auth-token:11 (2.115.0) 2026-10-22T04:18:41.494Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/system/design-system-page.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/offline/attendance-outbox.service.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/auth/auth-splash-page.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/domain-services.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/academy-support.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/api/supabase-attendance-workspace.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/state/academy.facade.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/column-filter/column-filter.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/api/http-academy.repositories.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+[90mstderr[2m | src/app/core/api/supabase-attendance.repository.spec.ts[2m > [22m[2mSupabaseAttendanceRepository.workspace[2m > [22m[2mlists a student and a batch once even when several rows repeat them
+[22m[39mGoTrueClient@sb-unit-test-auth-token:1 (2.115.0) 2026-10-22T04:18:41.712Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/api/supabase-attendance.repository.spec.ts[2m > [22m[2mSupabaseAttendanceRepository.workspace[2m > [22m[2mreports a database failure as a data request error
+[22m[39mGoTrueClient@sb-unit-test-auth-token:2 (2.115.0) 2026-10-22T04:18:41.719Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/notification-list.spec.ts[2m > [22m[2mNotification backend list query[2m > [22m[2mcombines exact category, scope, status, search, stable sorting and backend count
+[22m[39mGoTrueClient@sb-unit-test-auth-token:6 (2.115.0) 2026-10-22T04:18:41.718Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+[90mstderr[2m | src/app/core/supabase/notification-list.spec.ts[2m > [22m[2mNotification backend list query[2m > [22m[2mkeeps birthday matching across student and coach template variants
+[22m[39mGoTrueClient@sb-unit-test-auth-token:7 (2.115.0) 2026-10-22T04:18:41.724Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/api/supabase-attendance.repository.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/notification-list.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/whatsapp-action/whatsapp-action.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/notifications/notifications-query.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/qr-attendance-page.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/app.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+[90mstderr[2m | src/app/core/supabase/notification-templates-list.spec.ts[2m > [22m[2mTemplate backend list query[2m > [22m[2mfetches only the six preview keys independently of table filters
+[22m[39mGoTrueClient@sb-unit-test-auth-token:1 (2.115.0) 2026-10-22T04:18:41.784Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/notification-providers.spec.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/notifications/notification-templates-page.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/notification-templates-list.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/calendar-layout/calendar-layout.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/attendance-calendar.service.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/auth/auth-guard.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/auth/user-management.service.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/auth/role-guard.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/ui-card/ui-card.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/interceptors/api.interceptor.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/data-error.spec.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/payment-balances.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/auth/permissions.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/supabase-client.service.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/attendance-timestamp.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/payments/receipt-pdf.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/reports/report-csv.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/shared/academy-money.pipe.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/attendance/attendance-calendar-export.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/api/app-http.error.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coach/coach-attendance-outbox.service.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/coach/latest-query.guard.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/core/supabase/mutation-attempt.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m [30m[42m turf-academy-ui [49m[39m src/app/features/parents/parent-fee-summary.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m104 passed[39m[22m[90m (104)[39m
+[2m      Tests [22m [1m[32m433 passed[39m[22m[90m (433)[39m
+[2m   Start at [22m 09:48:23
+[2m   Duration [22m 18.50s[2m (transform 28.72s, setup 29.29s, import 42.30s, tests 49.49s, environment 624.65s)[22m
+

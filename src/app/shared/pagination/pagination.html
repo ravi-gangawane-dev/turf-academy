@@ -1,0 +1,33 @@
+<footer class="pagination">
+  <span>Showing {{ firstRecord }} to {{ lastRecord }} of {{ total }} {{ itemLabel }}</span>
+  <nav aria-label="Table pagination">
+    <button aria-label="Previous page" [disabled]="page === 1" (click)="selectPage(page - 1)">
+      <i class="pi pi-angle-left"></i>
+    </button>
+    @for (item of visiblePages; track item) {
+      <button
+        [class.current]="page === item"
+        [attr.aria-label]="'Page ' + item"
+        [attr.aria-current]="page === item ? 'page' : null"
+        (click)="selectPage(item)"
+      >
+        {{ item }}
+      </button>
+    }
+    <button aria-label="Next page" [disabled]="page === pageCount" (click)="selectPage(page + 1)">
+      <i class="pi pi-angle-right"></i>
+    </button>
+  </nav>
+  @if (showPageSize) {
+    <select
+      aria-label="Rows per page"
+      [value]="pageSize"
+      #size
+      (change)="selectPageSize(size.value)"
+    >
+      @for (option of availablePageSizes; track option) {
+        <option [value]="option" [selected]="option === pageSize">{{ option }} / page</option>
+      }
+    </select>
+  }
+</footer>

@@ -1,0 +1,64 @@
+# Documentation inventory - 27 October 2026
+
+Scanned all 58 Markdown documents (7,596 lines) present at the start of this review in the repository root, docs/ and deployment/. Historical status claims were reconciled against current source and selected read-only API/browser checks. Scanning a document does not validate every historical assertion. See [current findings](../FUNCTIONALITY_API_AUDIT_2026-10-27.md).
+
+| Document | Lines | SHA-256 at review |
+|---|---:|---|
+| [API_INTEGRATION_REPORT.md](../../API_INTEGRATION_REPORT.md) | 668 | `e62e7674c534d6ff490b5bbc2095a56151e81b0a8606f74ccfc568c20068a5be` |
+| [deployment/backend-release-2026-10-19/README.md](../../deployment/backend-release-2026-10-19/README.md) | 46 | `aeed029251a27172fdb5391b946b6cd65fc2f9baa6ae31b3cab637ebe2aadb17` |
+| [deployment/README.md](../../deployment/README.md) | 23 | `29fadb07fcacd4d7591d7a519d9f92ee7a481911eab45b149a363ab2b81937eb` |
+| [docs/ACCOUNT_RECOVERY.md](../../docs/ACCOUNT_RECOVERY.md) | 100 | `b9fb09b888e2105b1fda26fe7a25facbfc99173e4e3f37552b375e1efbe25a5b` |
+| [docs/ADMIN_PORTAL_GAP_ANALYSIS.md](../../docs/ADMIN_PORTAL_GAP_ANALYSIS.md) | 141 | `82da7e46e3ebd763cc4d209d838f901d27407eb6afd1cd83d440adc544d58b03` |
+| [docs/APPLICATION_AUDIT_2026-10-21.md](../../docs/APPLICATION_AUDIT_2026-10-21.md) | 187 | `de1ccd344a42878cb9f2946b430653333938793c0f984edb91ff2d26d17e8e55` |
+| [docs/audit/COMPONENT-AND-TABLE-AUDIT.md](../../docs/audit/COMPONENT-AND-TABLE-AUDIT.md) | 253 | `707c0dee5f8f4db084436e157d3cf6cb8f01aae18f09c5dcf56286b4017d3e10` |
+| [docs/audit/FULL-REPORT.md](../../docs/audit/FULL-REPORT.md) | 356 | `07abe637e263901c12a81b65bb12beedf600d9ab2e513e5acb421543de7346d0` |
+| [docs/audit/IMPROVEMENT-RECOMMENDATIONS.md](../../docs/audit/IMPROVEMENT-RECOMMENDATIONS.md) | 42 | `66f7799b299418648dd6d73ffd22e55010f3c46e8d02f76995114addea13e130` |
+| [docs/audit/MISSING-FEATURES.md](../../docs/audit/MISSING-FEATURES.md) | 14 | `e4e0d351cfe71a7cbec7fb17c9adf33d5dc115becdea918b86a703d8bf67d678` |
+| [docs/audit/NOT-VERIFIED-FEATURES.md](../../docs/audit/NOT-VERIFIED-FEATURES.md) | 32 | `0d647c3bf93ccf4557f3c5ca0df248ef8101ab133ab211f185cc07e92296afe4` |
+| [docs/audit/NOT-WORKING-FEATURES-2026-10-21.md](../../docs/audit/NOT-WORKING-FEATURES-2026-10-21.md) | 25 | `8bc1ab24fe758c88292c229f6646c082a6654bb8f4d964a033d6da4aae606198` |
+| [docs/audit/NOT-WORKING-FEATURES.md](../../docs/audit/NOT-WORKING-FEATURES.md) | 34 | `e0d4b8e0a5dd64fff3c8715a0a26313a8feef7fadbca6061d214619c6c7c87c3` |
+| [docs/audit/PARTIALLY-WORKING-FEATURES.md](../../docs/audit/PARTIALLY-WORKING-FEATURES.md) | 135 | `70510eda6d2e18ddd9c53e83a47c5bf56bcdc7ba54369d62751c1fec48cd0b5c` |
+| [docs/audit/previous-audit/COMPONENT-AND-TABLE-AUDIT.md](../../docs/audit/previous-audit/COMPONENT-AND-TABLE-AUDIT.md) | 164 | `f653b4e3769adc9cc00b6b8d844cee7d0912026e6f827c167f552b5768aaf3da` |
+| [docs/audit/previous-audit/IMPROVEMENT-RECOMMENDATIONS.md](../../docs/audit/previous-audit/IMPROVEMENT-RECOMMENDATIONS.md) | 42 | `e0ef9a730c2094a9316f657a83dfa6ce96f968468f7c3259f66768e2c0157a81` |
+| [docs/audit/previous-audit/MISSING-FEATURES.md](../../docs/audit/previous-audit/MISSING-FEATURES.md) | 15 | `f2d95cc34c575b17b01cf904a8c6d8b48d1883835a22d70d12130e633c5c5c0c` |
+| [docs/audit/previous-audit/NOT-VERIFIED-FEATURES.md](../../docs/audit/previous-audit/NOT-VERIFIED-FEATURES.md) | 48 | `511e336af76d0d97c68dea2ae3f36a9ba8af0caa8e9fadf2a1099b9649d415cb` |
+| [docs/audit/previous-audit/NOT-WORKING-FEATURES.md](../../docs/audit/previous-audit/NOT-WORKING-FEATURES.md) | 96 | `c1e6ce56ef3e00f0b3e68c93964c70483f6a6c991411117a3058fbf106d64755` |
+| [docs/audit/previous-audit/PARTIALLY-WORKING-FEATURES.md](../../docs/audit/previous-audit/PARTIALLY-WORKING-FEATURES.md) | 142 | `b9b051303cdffb067fef58e82499e769572c22f627e1f0dacbb9a521c6dd3b9e` |
+| [docs/audit/previous-audit/PRIORITY-FIX-PLAN.md](../../docs/audit/previous-audit/PRIORITY-FIX-PLAN.md) | 31 | `1a438aca99308c62b480df04f68f22cbb25da026d3430740b1d9545a44d1d5a9` |
+| [docs/audit/previous-audit/PROJECT-AUDIT-SUMMARY.md](../../docs/audit/previous-audit/PROJECT-AUDIT-SUMMARY.md) | 229 | `02512800faeb38e86ba32538ac01fe37d3a0e29d17ba84c234ce7a5575335b08` |
+| [docs/audit/previous-audit/WORKING-FEATURES.md](../../docs/audit/previous-audit/WORKING-FEATURES.md) | 51 | `d3501d7fa131a1dfca54e7ba8142f5d1df81f17d85a3bfc2cd424252cd702bc5` |
+| [docs/audit/PRIORITY-FIX-PLAN.md](../../docs/audit/PRIORITY-FIX-PLAN.md) | 23 | `629f9f2e064343b644fc3ce71114044602e494a7f78c9dc20a5e98243169d83e` |
+| [docs/audit/PROJECT-AUDIT-SUMMARY.md](../../docs/audit/PROJECT-AUDIT-SUMMARY.md) | 248 | `30562a43c5eff460b9c0d6cbaa9f2054342d33fd925c88fb58b83fa967d03efd` |
+| [docs/audit/WORKING-FEATURES.md](../../docs/audit/WORKING-FEATURES.md) | 61 | `fcbf29824b1108bbcfca6711f2f9faab1e4d1dd0d90b6771942851e074205e13` |
+| [docs/BACKEND_RELEASE_PREFLIGHT.md](../../docs/BACKEND_RELEASE_PREFLIGHT.md) | 43 | `750b8e3592dc947c59878e1c7f3df1a97c26ce53948eb2d6b82c54057dd15d8c` |
+| [docs/BACKUP_RESTORE.md](../../docs/BACKUP_RESTORE.md) | 77 | `1593b638d4bc6742a23456792a9011d86369043d2074697bcb8b4554ad52fd54` |
+| [docs/CONTINUATION_STATUS.md](../../docs/CONTINUATION_STATUS.md) | 79 | `1e4f83967969824275add0d074815d9cd8bf905dc31fe163e3bb7230c0c12bce` |
+| [docs/FIX_PLAN_2026-10-19.md](../../docs/FIX_PLAN_2026-10-19.md) | 168 | `e93802851c8f79b99192c0a024df17d8b03e6741f3c3125483f473a93365d859` |
+| [docs/FUNCTIONALITY_AUDIT_2026-10-15.md](../../docs/FUNCTIONALITY_AUDIT_2026-10-15.md) | 75 | `54fd7f5422c2d9b0433e1426d6950e443d9fa23ce3b2eeabb42892b51f0ab31f` |
+| [docs/FUNCTIONALITY_STATUS_2026-10-19.md](../../docs/FUNCTIONALITY_STATUS_2026-10-19.md) | 67 | `76bb19effaa2146dc513a313bb409701da8921b53afe5e6b83e2926ed7b35697` |
+| [docs/LIVE_RELEASE_VERIFICATION.md](../../docs/LIVE_RELEASE_VERIFICATION.md) | 96 | `e06036fd1ad7a16dec7b988cadad1509569ee009d46e218a0a68b8a08b91eae0` |
+| [docs/notification-db-tests.md](../../docs/notification-db-tests.md) | 38 | `149b265768aa2dec9398953603ac54d3f16714323172cc156bb841a9b1cbc9f5` |
+| [docs/NOTIFICATION_DELIVERY_SETUP.md](../../docs/NOTIFICATION_DELIVERY_SETUP.md) | 45 | `1d864ed41c109277b4c430f51c77f0f956817db83804803d819dc68baa2db776` |
+| [docs/NOTIFICATION_PHASE1_ACCEPTANCE_2026-10-23.md](../../docs/NOTIFICATION_PHASE1_ACCEPTANCE_2026-10-23.md) | 38 | `52b0499e67e766fe81d0a68084e623c78d7d505c15963ad1731d9133ede02507` |
+| [docs/notifications-improvement-tracker.md](../../docs/notifications-improvement-tracker.md) | 405 | `542b557882c9007dfe08a0ba2e0c5636a6320c2fe3123797c9f627b448c74743` |
+| [docs/OPEN_FUNCTIONAL_GAPS_2026-10-19.md](../../docs/OPEN_FUNCTIONAL_GAPS_2026-10-19.md) | 42 | `c9e5f8f1e83db4081c76d3a76c7a508c568c1e9fc074891aa2b67f4a2ec6774d` |
+| [docs/P0_BLOCKERS_RESOLUTION.md](../../docs/P0_BLOCKERS_RESOLUTION.md) | 50 | `89c0c3d7bd25a846ad058ad10a69e84100692e054eab2d8cc36aa7e273804ba8` |
+| [docs/P1_BLOCKERS_RESOLUTION.md](../../docs/P1_BLOCKERS_RESOLUTION.md) | 403 | `a8567d5e40d5222659872de30d5e25a0b35ecb4532be3098675196fa7f983ae7` |
+| [docs/PATIL_WHATSAPP_TEST_2026-10-21.md](../../docs/PATIL_WHATSAPP_TEST_2026-10-21.md) | 45 | `c1c263cf3d3fa8ba79695ce91f626ca3e0fdaa3e6e80ca78c3ccdba6c04194b9` |
+| [docs/PROJECT_FUNCTIONALITY.md](../../docs/PROJECT_FUNCTIONALITY.md) | 29 | `dedeebadb497c5dc7dbcdb3ebacde89f972c96a9a03538c3c03d751a91e26f9e` |
+| [docs/PROJECT_STATUS_REPORT_2026-10-19.md](../../docs/PROJECT_STATUS_REPORT_2026-10-19.md) | 109 | `314b0e838113af5de66100df4e9a175e36acdbad9d0e963404665121bdf03635` |
+| [docs/QR_CAMERA_VERIFICATION_PLAN.md](../../docs/QR_CAMERA_VERIFICATION_PLAN.md) | 63 | `1aefc43112a8346d1ede5d92b52cc9e1c145b84cedf3751c7822d73817764def` |
+| [docs/RELEASE_2026-10-19.md](../../docs/RELEASE_2026-10-19.md) | 82 | `6398434b05678e75fbc642225721bb70f14d56e222e23509778a06aa5494e0a2` |
+| [docs/REMAINING_TASKS_REPORT.md](../../docs/REMAINING_TASKS_REPORT.md) | 48 | `6f0da72655d6ac9f89fe4ee92f06cce8ad83f7ffbeeae023d991bb906c91c15c` |
+| [docs/REPAIR_TRACKER.md](../../docs/REPAIR_TRACKER.md) | 63 | `66920258af17e556632478017e5733aae93fc3ed5271b033b68f9835f9c13b4f` |
+| [docs/supabase-deployment.md](../../docs/supabase-deployment.md) | 74 | `df9880915e587e1ef27de5b9e0490be37c66e4825d365859af5e22d9ec89e542` |
+| [docs/supabase-implementation-audit.md](../../docs/supabase-implementation-audit.md) | 39 | `80d202f873f5f9c9f6f19f397a828643fe9e5815305bbe576ad177b189a4e22e` |
+| [docs/TABLE_OPERATIONS_AUDIT.md](../../docs/TABLE_OPERATIONS_AUDIT.md) | 87 | `6bd1e80cde2a957bd11732dc6a45229d18044ea70563cd672bfb10c551f5835c` |
+| [docs/TEST_CREDENTIALS_SETUP.md](../../docs/TEST_CREDENTIALS_SETUP.md) | 43 | `cc3eef7e43bfcc9507558416689258cfe86a6851d27fdeb1a64549bfc59c8d93` |
+| [docs/UNIFIED_ATTENDANCE_2026-10-20.md](../../docs/UNIFIED_ATTENDANCE_2026-10-20.md) | 43 | `4258986c0f23d8c9e7586ea7120d34b4ca0efeb3cb827ec374c9c9419761672f` |
+| [FIX_IMPLEMENTATION_REPORT.md](../../FIX_IMPLEMENTATION_REPORT.md) | 717 | `d3e1e3666d4ef9b30a6eae84f9136f4c1ed633dd9e8a057c554f2d98c3f035e6` |
+| [FULL_PROJECT_AUDIT.md](../../FULL_PROJECT_AUDIT.md) | 179 | `42bc87a95270374e376f49be74fc412c66679b310bc9f31a8a743e170ad8c9ab` |
+| [HARDCODED_DATA_REPORT.md](../../HARDCODED_DATA_REPORT.md) | 378 | `1d8cdb17bfe863bb2b490c4f644e65b5916b8407a7146afaa876713b1fa06ce6` |
+| [PRIORITY_ACTION_PLAN.md](../../PRIORITY_ACTION_PLAN.md) | 621 | `ad83aeeb60dfecec50375de7ca0dc9c2035ed4f7eda818cdbcd2411d65068940` |
+| [README.md](../../README.md) | 99 | `4c2b8b0089e39435fc7d289f13be3122895f19c19a72585adc889f0c4bcb7f24` |
+| [WHATSAPP_FEATURE_GUIDE.md](../../WHATSAPP_FEATURE_GUIDE.md) | 45 | `58c9e45b4ed260dedf6a44fffb7a1c0edcd7e9ada1ca9dcd410a096f0e76dd1c` |

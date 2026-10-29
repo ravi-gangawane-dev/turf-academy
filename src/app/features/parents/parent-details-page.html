@@ -1,0 +1,58 @@
+<div class="parent-details-page">
+  <app-page-hero title="Parent Details" subtitle="View parent information and linked students." [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents', route: '/parents' }, { label: 'Parent Details' }]" (breadcrumbSelected)="breadcrumb($event)" />
+  @if (success()) { <div class="notice success">{{ success() }}</div> }
+  @if (error()) { <app-async-state kind="error" title="Parent details request failed" [message]="error()" /> }
+  @if (loading()) { <app-async-state title="Loading parent details..." /> }
+  @if (parent(); as item) {
+    <div class="profile-grid">
+      <section class="profile-card">
+        <div class="avatar">@if (item.photo_url) { <img [src]="item.photo_url" alt="Parent profile" /> } @else { {{ initials(item.full_name) }} }</div>
+        <div class="identity"><div class="title"><h2 class="profile-name">{{ item.full_name }}</h2><app-status-badge [status]="$any(item.status)" /></div><h2>{{ item.relation || 'Guardian' }}</h2>
+          <div class="facts">
+            <div><i aria-hidden="true" class="pi pi-id-card"></i><span>Parent ID<strong>{{ item.id }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-phone"></i><span>Phone<strong>{{ item.phone }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-whatsapp"></i><span>WhatsApp<strong>{{ item.whatsapp || item.phone }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-envelope"></i><span>Email<strong>{{ item.email || 'Not provided' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-briefcase"></i><span>Occupation<strong>{{ item.occupation || 'Not provided' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-map-marker"></i><span>Address<strong>{{ addressPart('formatted') }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-map"></i><span>City / PIN<strong>{{ addressPart('city') }} · {{ addressPart('pinCode') }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-comments"></i><span>Preferred contact<strong>{{ preference() }}</strong></span></div>
+          </div>
+        </div>
+      </section>
+      <aside class="quick-card"><h2>Quick actions</h2><button (click)="edit()"><i aria-hidden="true" class="pi pi-pencil"></i>Edit parent</button><button (click)="selectTab('compose')"><i aria-hidden="true" class="pi pi-comment"></i>Send message</button><button (click)="selectTab('payments')"><i aria-hidden="true" class="pi pi-wallet"></i>Payment history</button><button (click)="list()"><i aria-hidden="true" class="pi pi-arrow-left"></i>Back to parents</button></aside>
+    </div>
+    <nav class="tabs"><button [class.active]="tab()==='children'" (click)="selectTab('children')"><i aria-hidden="true" class="pi pi-users"></i>Linked students</button><button [class.active]="tab()==='activity'" (click)="selectTab('activity')"><i aria-hidden="true" class="pi pi-history"></i>Activity</button><button [class.active]="tab()==='notifications'" (click)="selectTab('notifications')"><i aria-hidden="true" class="pi pi-bell"></i>Notifications</button></nav>
+    @if(tab()!=='children'){
+      <section class="detail-panel">
+        @if(panelLoading()){<app-async-state title="Loading details..." />}
+        @if(tab()==='compose'){
+          <h2>Send message</h2><form [formGroup]="compose" (ngSubmit)="sendMessage()"><fieldset [disabled]="sending()">
+          <label>Channel<select formControlName="channel"><option value="in_app">In-app</option><option value="email">Email</option><option value="whatsapp">WhatsApp</option></select></label>
+          <label>Subject<input formControlName="subject" maxlength="120"></label><label>Message<textarea formControlName="body" maxlength="1600" rows="5"></textarea></label>
+          <button class="primary" [disabled]="compose.invalid">{{sending()?'Saving?':'Queue message'}}</button></fieldset></form>
+        }
+        @if(tab()==='activity' && !panelLoading() && !error()){
+          <h2>Parent and linked student activity</h2><app-table-tools title="Parent activity" [table]="exportTable1" [total]="total()"></app-table-tools>
+<table #exportTable1 class="academy-table"><thead><tr><th>Date</th><th>Record</th><th>Action</th><th>By</th></tr></thead><tbody>@for(event of activities();track event.id){<tr><td>{{event.created_at|date:'medium'}}</td><td>{{event.table_name}}</td><td>{{event.action}}</td><td>{{event.actor}}</td></tr>}@empty{<tr><td colspan="4"><app-async-state kind="empty" title="No activity recorded." /></td></tr>}</tbody></table>
+        }
+        @if(tab()==='payments' && !panelLoading() && !error()){
+          <h2>Payment history for linked students</h2><app-table-tools title="Payment history" [table]="exportTable2" [total]="total()"></app-table-tools>
+<table #exportTable2 class="academy-table"><thead><tr><th>Date</th><th>Amount</th><th>Status</th><th>Receipts</th></tr></thead><tbody>@for(payment of transactions();track payment.id){<tr><td>{{payment.paid_at|date:'mediumDate'}}</td><td>{{payment.amount|academyMoney}}</td><td><app-status-badge [status]="payment.status" /></td><td><a routerLink="/payments/receipts" [queryParams]="{student:payment.student_id}">View student receipts</a></td></tr>}@empty{<tr><td colspan="4"><app-async-state kind="empty" title="No payments for linked students." /></td></tr>}</tbody></table>
+        }
+        @if(tab()==='notifications' && !panelLoading() && !error()){
+          <h2>Notifications</h2><button (click)="selectTab('compose')">New message</button>@for(notice of notices();track notice.id){<article><strong>{{notice.subject||'Notification'}}</strong><p>{{notice.body}}</p><small>{{notice.channel}} &middot; <app-status-badge [status]="notice.status" /> &middot; {{notice.created_at|date:'medium'}}</small></article>}@empty{<app-async-state kind="empty" title="No notifications." />}
+        }
+        @if(tab()!=='compose' && !panelLoading() && !error()){<app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="records" (pageChange)="selectTab(tab(), $event)" (pageSizeChange)="setPageSize($event)" />}
+      </section>
+    }
+    <div class="content-grid" [hidden]="tab()!=='children'">
+      <section class="students-card"><header><div><h2>Linked students</h2><p>Students connected to this parent or guardian.</p></div></header>
+        @if (item.student_parents?.length) {
+          <div class="student-list">@for (link of item.student_parents; track link.student.id) { <button (click)="openStudent(link.student.id)"><span class="student-avatar">{{ initials(link.student.full_name) }}</span><span><strong>{{ link.student.full_name }}</strong><small>{{ link.student.student_code }} · {{ link.student.status }}</small></span>@if (link.is_primary) { <b>Primary</b> }<i aria-hidden="true" class="pi pi-angle-right"></i></button> }</div>
+        } @else { <app-async-state kind="empty" title="No linked students" message="Edit this parent to link a student." /> }
+      </section>
+      <aside class="side-stack"><section><h2>Contact summary</h2><dl><div><dt>Relation</dt><dd>{{ item.relation || 'Guardian' }}</dd></div><div><dt>Phone</dt><dd>{{ item.phone }}</dd></div><div><dt>Email</dt><dd>{{ item.email || 'Not provided' }}</dd></div></dl></section><section><h2>Account status</h2><dl><div><dt>Status</dt><dd><app-status-badge [status]="item.status" /></dd></div><div><dt>Students linked</dt><dd>{{ item.student_parents?.length || 0 }}</dd></div><div><dt>Created</dt><dd>{{ item.created_at?.slice(0, 10) }}</dd></div></dl></section><section><h2>Communication</h2><p>Preferred channel</p><strong>{{ preference() }}</strong></section></aside>
+    </div>
+  }
+</div>

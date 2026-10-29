@@ -1,0 +1,133 @@
+<div class="app-frame" [class.menu-open]="menuOpen()">
+  <button class="scrim" aria-label="Close navigation" (click)="toggleMenu()"></button>
+  <aside class="sidebar">
+    <div class="brand">
+      <img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="210" height="100" />
+    </div>
+    <nav aria-label="Main navigation">
+      @for (item of navigationItems(); track item.label) {
+      @if (auth.hasPermission(item.permission)) {
+      @if (item.route) {
+      @if (item.route === '/coach/attendance') {
+      <div class="nav-item-with-action">
+        <a [routerLink]="itemRoute(item)" routerLinkActive="active" (click)="menuOpen.set(false)"><i class="pi"
+            [class]="'pi ' + item.icon"></i>{{ itemLabel(item) }}</a>
+        <button type="button" class="nav-expand" aria-label="Attendance options"
+          [attr.aria-expanded]="coachAttendanceMenuOpen()" (click)="toggleCoachAttendanceMenu($event)">
+          <i class="pi" [class.pi-chevron-down]="!coachAttendanceMenuOpen()"
+            [class.pi-chevron-up]="coachAttendanceMenuOpen()"></i>
+        </button>
+      </div>
+      @if (coachAttendanceMenuOpen()) {
+      <div class="enrollment-subnav attendance-subnav">
+        <a routerLink="/coach/attendance" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active"
+          (click)="menuOpen.set(false)">Today</a>
+        <a routerLink="/coach/attendance/check-in-out" routerLinkActive="active" (click)="menuOpen.set(false)">Check In /
+          Out</a>
+        <a routerLink="/coach/attendance/history" routerLinkActive="active" (click)="menuOpen.set(false)">History</a>
+        <a routerLink="/coach/attendance/correction" routerLinkActive="active"
+          (click)="menuOpen.set(false)">Correction</a>
+        <a routerLink="/coach/attendance/summary" routerLinkActive="active" (click)="menuOpen.set(false)">Summary</a>
+      </div>
+      }
+      } @else {
+      <a [routerLink]="itemRoute(item)" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' }" (click)="menuOpen.set(false)"><i class="pi"
+          [class]="'pi ' + item.icon"></i>{{ itemLabel(item) }}</a> }
+      } @else {
+      <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><i class="pi"
+          [class]="'pi ' + item.icon"></i>{{ item.label
+        }}<small>soon</small></span>
+      }
+      }
+      }
+    </nav>
+    <div class="sidebar-help">
+      <i class="pi pi-shield"></i>
+      <div>
+        <strong>Role:
+          {{
+          auth.session()?.user?.role === 'admin'
+          ? 'Administrator'
+          : (auth.session()?.user?.role | titlecase)
+          }}</strong><small>{{
+          auth.session()?.user?.role === 'admin'
+          ? 'Full access to manage academy operations.'
+          : 'Access follows your assigned permissions.'
+          }}</small>
+      </div>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <button class="menu-button" aria-label="Open navigation" (click)="toggleMenu()">
+        <i class="pi pi-bars"></i>
+      </button>
+      @if (auth.role() !== 'parent') {
+      <label class="search"><i class="pi pi-search"></i><span class="sr-only">Search</span><input
+          aria-label="Search academy" placeholder="Search students, parents, batches…" [value]="globalSearch()"
+          (input)="globalSearch.set($any($event.target).value)" (keydown.enter)="submitGlobalSearch()" /></label>
+      }
+      <div class="top-actions">
+        @if (
+        auth.hasPermission('notifications:read') ||
+        auth.role() === 'parent' ||
+        auth.role() === 'coach'
+        ) {
+        <a class="notification-button" [routerLink]="
+              auth.role() === 'parent'
+                ? '/parent/notifications'
+                : auth.role() === 'coach'
+                  ? '/coach/notifications'
+                  : '/notifications'
+            " [attr.aria-label]="bellLabel()"><i class="pi pi-bell" aria-hidden="true"></i>
+          @if (bellCount()) {
+          <span class="count">{{ bellCount() }}</span>
+          }
+        </a>
+        }
+        <div class="profile">
+          <b>
+            @if (profilePhoto()) {
+            <img [src]="profilePhoto()" alt="Profile photo" />
+            } @else {
+            {{ auth.session()?.user?.name?.slice(0, 2)?.toUpperCase() }}
+            }</b><span><strong>{{ auth.session()?.user?.name }}</strong><small>{{ auth.session()?.user?.role
+              }}</small></span>
+        </div>
+        <button aria-label="Sign out" title="Sign out" (click)="logout()">
+          <i class="pi pi-sign-out"></i>
+        </button>
+      </div>
+    </header>
+    @if (academy.loading()) {
+    <div class="api-state loading-state" role="status">
+      <i class="pi pi-spin pi-spinner"></i> Synchronizing academy data…
+    </div>
+    }
+    @if (!academy.attendanceOutbox.online()) {
+    <div class="api-state offline-state" role="status">
+      <i class="pi pi-wifi"></i>Offline · reconnect to save changes through the API
+      @if (academy.attendanceOutbox.operations().length) {
+      · {{ academy.attendanceOutbox.operations().length }} pending
+      }
+    </div>
+    }
+    @if (academy.attendanceOutbox.online() && academy.attendanceOutbox.operations().length) {
+    <div class="api-state pending-state" role="status">
+      <i class="pi pi-sync" [class.pi-spin]="academy.attendanceOutbox.syncing()"></i>{{
+      academy.attendanceOutbox.operations().length }} attendance changes need attention
+      <button (click)="academy.attendanceOutbox.retry()">Retry sync</button>
+    </div>
+    }
+    @if (academy.apiError()) {
+    <div class="api-state error-state" role="alert">
+      <i class="pi pi-exclamation-circle"></i>{{ academy.apiError()
+      }}<button (click)="academy.refresh()">Retry</button>
+    </div>
+    }
+    <main><router-outlet /></main>
+  </div>
+</div>
+<app-toast-host />

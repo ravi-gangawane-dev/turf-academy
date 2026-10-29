@@ -1,0 +1,180 @@
+<div class="app-list-page attendance-section queue-page">
+  @if (message()) {
+    <div class="queue-message" role="status">{{ message() }}</div>
+  }
+  <app-page-hero
+    title="Offline Queue"
+    subtitle="Review and synchronize queued attendance."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Attendance', route: '/attendance' },
+      { label: 'Offline Queue' },
+    ]"
+    ><div hero-actions>
+      <label
+        ><i class="pi pi-search"></i
+        ><input
+          aria-label="Search students"
+          [value]="query()"
+          (input)="setQuery($event)"
+          placeholder="Search student, ID, type or status"
+      /></label></div
+  ></app-page-hero>
+  <app-attendance-view-navigation />
+
+  <div class="queue-info">
+    <i class="pi pi-info-circle"></i>These records are stored on this device until they synchronize.
+  </div>
+  <div class="queue-layout">
+    <main>
+      <section class="queue-metrics">
+        <app-summary-metric-card label="Queued Records" [value]="store.attendanceOutbox.operations().length" icon="pi-cloud-upload" [hint]="pending() + ' awaiting sync'" />
+        <app-summary-metric-card label="Last Sync Attempt" [value]="formatDate(store.attendanceOutbox.lastSyncAt())" icon="pi-sync" [hint]="failed() + ' need attention'" tone="orange" />
+        <app-summary-metric-card label="Device Status" [value]="store.attendanceOutbox.online() ? 'Online' : 'Offline'" icon="pi-wifi" [hint]="store.attendanceOutbox.syncing() ? 'Synchronizing' : 'Idle'" tone="blue" />
+        <app-summary-metric-card label="Local Queue" [value]="store.attendanceOutbox.operations().length" icon="pi-database" hint="IndexedDB records" tone="purple" />
+      </section>
+      <section class="pending-records">
+        <header>
+          <h2>Queued Attendance Records ({{ rows().length }})</h2>
+          <button
+            [disabled]="store.attendanceOutbox.syncing() || !store.attendanceOutbox.online()"
+            (click)="sync()"
+          >
+            <i class="pi pi-sync"></i> Sync Now
+          </button>
+        </header>
+        <div class="table-wrap">
+          <app-table-tools title="Offline queue" [table]="exportTable1" [total]="rows().length"></app-table-tools>
+<table #exportTable1 class="academy-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th><app-sortable-header sortKey="student" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Student</app-sortable-header></th>
+                <th><app-sortable-header sortKey="type" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Type</app-sortable-header></th>
+                <th><app-sortable-header sortKey="date" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Date</app-sortable-header></th>
+                <th><app-sortable-header sortKey="time" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Time</app-sortable-header></th>
+                <th><app-sortable-header sortKey="status" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Status</app-sortable-header></th>
+                <th><app-sortable-header sortKey="reason" [activeSort]="sortKey()" [direction]="sortDirection()" (sortChange)="setSort($event)">Reason</app-sortable-header></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of pagedRows(); track row.id; let index = $index) {
+                <tr>
+                  <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+                  <td>
+                    <div class="student">
+                      <span>{{ initials(row.studentName) }}</span>
+                      <div>
+                        <b>{{ row.studentName }}</b
+                        ><small>{{ row.studentCode }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <em [class.out]="row.type === 'Check Out'">{{ row.type }}</em>
+                  </td>
+                  <td>{{ row.date }}</td>
+                  <td>{{ row.time }}</td>
+                  <td>
+                    <strong>{{ row.status }}</strong>
+                  </td>
+                  <td>{{ row.failureReason || '—' }}</td>
+                  <td>
+                    <button (click)="retry(row.id)" [disabled]="!store.attendanceOutbox.online()">
+                      Retry</button
+                    ><button (click)="discard(row.id)">Remove</button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8">
+                    <app-async-state kind="empty" title="No queued attendance records." />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [total]="rows().length"
+          [page]="page()"
+          [pageSize]="pageSize()"
+          itemLabel="queue records"
+          (pageChange)="page.set($event)"
+          (pageSizeChange)="setPageSize($event)"
+        />
+      </section>
+      <div class="queue-bottom">
+        <section>
+          <h2>Device Information</h2>
+          <dl>
+            <dt><i class="pi pi-mobile"></i>Browser / device</dt>
+            <dd>{{ deviceName }}</dd>
+            <dt><i class="pi pi-clock"></i>Local Time</dt>
+            <dd>{{ localTime().toLocaleString('en-IN') }}</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Actions</h2>
+          <div class="queue-actions">
+            <button (click)="sync()" [disabled]="!store.attendanceOutbox.online()">
+              <i class="pi pi-sync"></i
+              ><span><b>Sync Now</b><small>Retry eligible records</small></span></button
+            ><button
+              class="clear"
+              (click)="clear()"
+              [disabled]="!store.attendanceOutbox.operations().length"
+            >
+              <i class="pi pi-trash"></i
+              ><span><b>Clear Queue</b><small>Remove local queue records</small></span></button
+            ><button class="export" (click)="export()" [disabled]="!rows().length">
+              <i class="pi pi-download"></i
+              ><span><b>Export Queue</b><small>Export visible filtered records</small></span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+    <aside>
+      <section class="side-card sync-status">
+        <h2><i class="pi pi-stopwatch"></i>Sync Status</h2>
+        <dl>
+          <dt>Total queued</dt>
+          <dd>{{ store.attendanceOutbox.operations().length }}</dd>
+          <dt>Pending</dt>
+          <dd>{{ pending() }}</dd>
+          <dt>Failed/conflict</dt>
+          <dd>{{ failed() }}</dd>
+        </dl>
+        <p>
+          <i class="pi pi-info-circle"></i
+          >{{
+            store.attendanceOutbox.online()
+              ? 'Connected and ready to sync.'
+              : 'Connect to the internet to synchronize.'
+          }}
+        </p>
+      </section>
+      <section class="side-card attempts">
+        <header><h2>Recent Sync Attempts</h2></header>
+        @for (attempt of store.attendanceOutbox.syncAttempts(); track attempt.at) {
+          <article [class.success]="!attempt.failed">
+            <i
+              class="pi"
+              [class.pi-check-circle]="!attempt.failed"
+              [class.pi-exclamation-circle]="attempt.failed"
+            ></i>
+            <div>
+              <b>{{ formatDate(attempt.at) }}</b
+              ><small>{{ attempt.synced }} synced · {{ attempt.failed }} failed</small>
+            </div>
+            <em>{{ attempt.failed ? 'Attention' : 'Success' }}</em>
+          </article>
+        } @empty {
+          <p>No sync attempts in this session.</p>
+        }
+      </section>
+    </aside>
+  </div>
+</div>

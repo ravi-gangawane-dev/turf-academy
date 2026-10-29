@@ -1,0 +1,92 @@
+[
+  {
+    "role": "admin",
+    "route": "notifications",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Notifications"
+    ]
+  },
+  {
+    "role": "admin",
+    "route": "notifications/whatsapp",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "WhatsApp notifications"
+    ]
+  },
+  {
+    "role": "admin",
+    "route": "notifications/failed",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Failed deliveries"
+    ]
+  },
+  {
+    "role": "admin",
+    "route": "notifications/delivery-status",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Delivery status"
+    ]
+  },
+  {
+    "role": "admin",
+    "route": "settings/users",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Users & Roles"
+    ]
+  },
+  {
+    "role": "admin",
+    "route": "settings/roles",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Users & Roles"
+    ]
+  },
+  {
+    "role": "receptionist",
+    "route": "notifications",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Notifications"
+    ]
+  },
+  {
+    "role": "receptionist",
+    "route": "notifications/whatsapp",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "WhatsApp notifications"
+    ]
+  },
+  {
+    "role": "receptionist",
+    "route": "notifications/failed",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Failed deliveries"
+    ]
+  },
+  {
+    "role": "receptionist",
+    "route": "notifications/delivery-status",
+    "httpErrors": [],
+    "alerts": [],
+    "headings": [
+      "Delivery status"
+    ]
+  }
+]

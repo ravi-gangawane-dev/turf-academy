@@ -1,0 +1,496 @@
+[
+  {
+    "route": "students",
+    "status": "ERROR",
+    "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('main app-sortable-header button').first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" aria-pressed=\"false\" class=\"table-sort-header\" _ngcontent-ng-c2974161048=\"\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <vite-error-overlay></vite-error-overlay> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <vite-error-overlay></vite-error-overlay> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    15 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <vite-error-overlay></vite-error-overlay> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+  },
+  {
+    "route": "parents",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/parent_directory_columns",
+          "query": "?select=*&order=full_name.desc%2Cid.asc&offset=0&limit=5",
+          "body": null
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/parent_directory_columns",
+          "query": "?select=*&order=full_name.desc%2Cid.asc&offset=0&limit=10",
+          "body": null
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter parent name",
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/parent_directory_columns",
+          "query": "?select=*&order=full_name.desc%2Cid.asc&full_name=ilike.%25ZZ%5C_AUDIT%5C_NO%5C_MATCH%5C_48291%25&offset=0&limit=10",
+          "body": null
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "No matching parents found.",
+        "Showing 0 to 0 of 0 parents"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "coaches",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"coaches\",\"p_page\":1,\"p_size\":5,\"p_filters\":{\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"coaches\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter coach",
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"coaches\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"cf_name\":\"ZZ_AUDIT_NO_MATCH_48291\",\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "No matching coaches.",
+        "Showing 0 to 0 of 0 coaches"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "batches",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"batches\",\"p_page\":1,\"p_size\":5,\"p_filters\":{\"student\":\"\",\"batch\":\"\",\"schedule\":\"\",\"coach\":\"\",\"capacity\":\"\",\"columnStatus\":\"\",\"fee\":\"\",\"start\":\"\",\"search\":\"\",\"status\":\"all\",\"batchId\":\"\",\"coachId\":\"\",\"view\":\"list\",\"omitWaitlist\":\"true\",\"sortBy\":\"name\",\"sortDirection\":\"desc\"}}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"batches\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"student\":\"\",\"batch\":\"\",\"schedule\":\"\",\"coach\":\"\",\"capacity\":\"\",\"columnStatus\":\"\",\"fee\":\"\",\"start\":\"\",\"search\":\"\",\"status\":\"all\",\"batchId\":\"\",\"coachId\":\"\",\"view\":\"list\",\"omitWaitlist\":\"true\",\"sortBy\":\"name\",\"sortDirection\":\"desc\"}}"
+        }
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "enrollments",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"enrollments\",\"p_page\":1,\"p_size\":5,\"p_filters\":{\"search\":\"\",\"status\":\"\",\"batchId\":\"\",\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"enrollments\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"search\":\"\",\"status\":\"\",\"batchId\":\"\",\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter student",
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"enrollments\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"cf_student\":\"ZZ_AUDIT_NO_MATCH_48291\",\"search\":\"\",\"status\":\"\",\"batchId\":\"\",\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "No matching enrollments.",
+        "Showing 0 to 0 of 0 records"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "attendance/history",
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/attendance_records",
+          "query": "?select=*%2Cstudent%3Astudents%21inner%28id%2Cstudent_code%2Cfull_name%29%2Cbatch%3Abatches%28id%2Cname%29&attendance_date=gte.2026-07-23&attendance_date=lte.2026-10-21&order=attendance_date.desc%2Cid.asc&offset=0&limit=10",
+          "body": null
+        }
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "fees/plans",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"plans\",\"p_page\":1,\"p_size\":5,\"p_filters\":{\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"plans\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter plan name",
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"plans\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"cf_name\":\"ZZ_AUDIT_NO_MATCH_48291\",\"search\":\"\",\"status\":\"all\",\"sortBy\":\"cf_name\",\"sortDirection\":\"asc\"}}"
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "Not in use",
+        "No fee plans match your filters.",
+        "Showing 0 to 0 of 0 fee plans"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "fees",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"charges\",\"p_page\":1,\"p_size\":5,\"p_filters\":{\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"charges\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter student name",
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_staff_list_page",
+          "query": "",
+          "body": "{\"p_resource\":\"charges\",\"p_page\":1,\"p_size\":10,\"p_filters\":{\"cf_student\":\"ZZ_AUDIT_NO_MATCH_48291\",\"sortBy\":\"cf_student\",\"sortDirection\":\"asc\"}}"
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "No monthly charges match your filters.",
+        "Showing 0 to 0 of 0 records"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "payments",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_payment_list_page",
+          "query": "",
+          "body": "{\"p_columns\":{},\"p_view\":\"list\",\"p_offset\":0,\"p_limit\":5,\"p_student_ids\":null,\"p_search\":\"\",\"p_status\":\"all\",\"p_sort_by\":\"receipt\",\"p_sort_direction\":\"asc\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/rest/v1/monthly_charge_balances",
+          "query": "?select=*%2Cstudent%3Astudents%28*%29&order=due_date.desc%2Cid.asc&offset=0&limit=500",
+          "body": null
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_payment_list_page",
+          "query": "",
+          "body": "{\"p_columns\":{},\"p_view\":\"list\",\"p_offset\":0,\"p_limit\":10,\"p_student_ids\":null,\"p_search\":\"\",\"p_status\":\"all\",\"p_sort_by\":\"receipt\",\"p_sort_direction\":\"asc\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/rest/v1/monthly_charge_balances",
+          "query": "?select=*%2Cstudent%3Astudents%28*%29&order=due_date.desc%2Cid.asc&offset=0&limit=500",
+          "body": null
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter receipt",
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_payment_list_page",
+          "query": "",
+          "body": "{\"p_columns\":{\"cf_receipt\":\"ZZ_AUDIT_NO_MATCH_48291\"},\"p_view\":\"list\",\"p_offset\":0,\"p_limit\":10,\"p_student_ids\":null,\"p_search\":\"\",\"p_status\":\"all\",\"p_sort_by\":\"receipt\",\"p_sort_direction\":\"asc\"}"
+        },
+        {
+          "method": "GET",
+          "path": "/rest/v1/monthly_charge_balances",
+          "query": "?select=*%2Cstudent%3Astudents%28*%29&order=due_date.desc%2Cid.asc&offset=0&limit=500",
+          "body": null
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "No payment records found.",
+        "Showing 0 to 0 of 0 payments"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "notifications",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/notifications",
+          "query": "?select=*&order=subject.asc%2Cid.asc&offset=0&limit=5",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.delivered",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.queued",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.sent",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.failed",
+          "body": null
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/notifications",
+          "query": "?select=*&order=subject.asc%2Cid.asc&offset=0&limit=10",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.delivered",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.queued",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.sent",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.failed",
+          "body": null
+        }
+      ]
+    },
+    "filter": {
+      "label": "Filter message",
+      "backendRequests": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/notifications",
+          "query": "?select=*&order=subject.asc%2Cid.asc&subject=ilike.%25ZZ%5C_AUDIT%5C_NO%5C_MATCH%5C_48291%25&offset=0&limit=10",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.delivered",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.queued",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.sent",
+          "body": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/rest/v1/notifications",
+          "query": "?select=id&status=eq.failed",
+          "body": null
+        }
+      ],
+      "bodyRows": 1,
+      "emptyText": [
+        "Notifications",
+        "Notifications",
+        "Notifications",
+        "No notifications found",
+        "No delivery records match these filters.",
+        "Showing 0 to 0 of 0 notifications"
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "settings/users",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/functions/v1/admin-manage-users",
+          "query": "",
+          "body": "{\"action\":\"list\",\"page\":1,\"pageSize\":5,\"search\":\"\",\"role\":\"\",\"status\":\"\",\"filters\":{\"name\":\"\",\"contact\":\"\",\"role\":\"\",\"status\":\"\",\"joined\":\"\"},\"sortBy\":\"name\",\"sortDirection\":\"asc\"}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/functions/v1/admin-manage-users",
+          "query": "",
+          "body": "{\"action\":\"list\",\"page\":1,\"pageSize\":10,\"search\":\"\",\"role\":\"\",\"status\":\"\",\"filters\":{\"name\":\"\",\"contact\":\"\",\"role\":\"\",\"status\":\"\",\"joined\":\"\"},\"sortBy\":\"name\",\"sortDirection\":\"asc\"}"
+        }
+      ]
+    },
+    "status": "CHECKED"
+  },
+  {
+    "route": "settings/audit-logs",
+    "sort": {
+      "present": true,
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_audit_log_page",
+          "query": "",
+          "body": "{\"p_offset\":0,\"p_limit\":5,\"p_filters\":{\"date\":\"\",\"action\":\"\",\"table\":\"\",\"record\":\"\",\"account\":\"\"},\"p_sort_by\":\"occurred_at\",\"p_sort_direction\":\"asc\"}"
+        }
+      ]
+    },
+    "pagination": {
+      "backendRequests": [
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/get_audit_log_page",
+          "query": "",
+          "body": "{\"p_offset\":0,\"p_limit\":10,\"p_filters\":{\"date\":\"\",\"action\":\"\",\"table\":\"\",\"record\":\"\",\"account\":\"\"},\"p_sort_by\":\"occurred_at\",\"p_sort_direction\":\"asc\"}"
+        }
+      ]
+    },
+    "status": "CHECKED"
+  }
+]

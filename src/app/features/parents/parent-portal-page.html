@@ -1,0 +1,639 @@
+<div class="portal-page">
+  @if (loading()) {
+  <app-async-state title="Loading parent portal…" />
+  } @else if (error()) {
+  <app-async-state kind="error" title="Unable to load this page" [message]="error()" actionLabel="Retry"
+    (action)="load()" />
+  } @else if (data(); as vm) {
+  <app-page-hero [title]="viewTitle()" subtitle="Manage your family account and student activity."
+    [breadcrumbs]="[{label:'Dashboard',route:'/parent/dashboard'},{label:viewTitle()}]">
+    <div hero-actions>@if (vm.children.length && view !== 'children' && view !== 'profile' && view !== 'support') {
+      <label>Viewing child<select [value]="vm.selected?.workspace?.student?.id" (change)="changeChild($event)">
+          @for (child of vm.children; track child.workspace.student.id) {
+          <option [value]="child.workspace.student.id"
+            [selected]="child.workspace.student.id === vm.selected?.workspace?.student?.id">
+            {{ child.workspace.student.fullName }}
+          </option>
+          }
+        </select></label>
+      }
+    </div>
+  </app-page-hero>
+  @if (view === 'support') {
+  <app-academy-support />
+  } @else if (vm.selected; as child) {
+  @switch (view) {
+  @case ('children') {
+  <section class="children-grid">
+    @for (item of vm.children; track item.workspace.student.id) {
+    <article>
+      <div class="photo">
+        @if (item.workspace.student.photoUrl) {
+        <img [src]="item.workspace.student.photoUrl" alt="" />
+        } @else {
+        {{ initials(item.workspace.student.fullName) }}
+        }
+      </div>
+      <div class="child-details">
+        <h2>{{ item.workspace.student.fullName }}</h2>
+        <p>
+          {{ item.workspace.student.studentCode }} ·
+          {{ related(item.workspace.enrollment, 'batch', 'name') || 'Not enrolled' }}
+        </p>
+        <app-status-badge [status]="item.workspace.student.status" />
+        <dl>
+          <dt>Attendance</dt>
+          <dd>{{ item.workspace.attendance.length }} records</dd>
+          <dt>Joined</dt>
+          <dd>{{ item.workspace.student.joinedOn | date: 'dd MMM yyyy' }}</dd>
+          <dt>Profile completion</dt>
+          <dd>{{ childCompletion(item.workspace.student) }}%</dd>
+        </dl>
+        <div class="completion-bar">
+          <i [style.width.%]="childCompletion(item.workspace.student)"></i>
+        </div>
+        <footer>
+          <button (click)="childProfile(item.workspace.student.id)">
+            <i class="pi pi-eye"></i> View profile
+          </button>
+          <button class="secondary" (click)="editChild(item.workspace.student.id)">
+            <i class="pi pi-pencil"></i>
+            {{ childCompletion(item.workspace.student) === 100 ? 'Update' : 'Complete' }}
+          </button>
+        </footer>
+      </div>
+    </article>
+    } @empty {
+    <app-async-state kind="empty" title="No children linked to your profile." />
+    }
+  </section>
+  }
+  @case ('attendance') {
+  <section class="kpis">
+    <app-summary-metric-card label="Total sessions" [value]="attendance().total" icon="pi-calendar" />
+    <app-summary-metric-card label="Present" [value]="attendance().present" icon="pi-check-circle" tone="green" />
+    <app-summary-metric-card label="Absent" [value]="attendance().absent" icon="pi-user-minus" tone="orange" />
+    <app-summary-metric-card label="Late" [value]="attendance().late" icon="pi-clock" tone="purple" />
+    <app-summary-metric-card label="Attendance" [value]="attendance().rate + '%'" icon="pi-chart-line" tone="blue" />
+  </section>
+  <section class="card">
+    <header>
+      <h2>Attendance history</h2>
+      <div class="table-actions">
+        <label class="compact-filter">Search<input type="search" placeholder="Status or remarks"
+            [value]="attendanceSearch()" (input)="searchAttendance($event)" /></label>
+        <label class="compact-filter">From<input type="date" (change)="filterAttendanceDate('from', $event)" /></label>
+        <label class="compact-filter">To<input type="date" (change)="filterAttendanceDate('to', $event)" /></label>
+        <select aria-label="Filter attendance status" (change)="filterAttendance($event)">
+          <option value="">All statuses</option>
+          <option value="present">Present</option>
+          <option value="late">Late</option>
+          <option value="checked_out">Checked out</option>
+          <option value="absent">Absent</option>
+        </select>
+        <button (click)="go('/parent/attendance/calendar')">Calendar view</button>
+      </div>
+    </header>
+    <app-table-tools title="Attendance history" [table]="exportTable1"
+      [total]="vm.attendancePage.total"></app-table-tools>
+    <table #exportTable1 class="academy-table">
+      <caption class="sr-only">
+        Attendance history for the selected child
+      </caption>
+      <thead>
+        <tr>
+          <th><app-sortable-header sortKey="date" [activeSort]="attendanceSortBy()"
+              [direction]="attendanceSortDirection()" (sortChange)="sortAttendance($event)">Date</app-sortable-header>
+          </th>
+          <th>Session</th>
+          <th><app-sortable-header sortKey="checkIn" [activeSort]="attendanceSortBy()"
+              [direction]="attendanceSortDirection()" (sortChange)="sortAttendance($event)">Check
+              in</app-sortable-header></th>
+          <th>Check out</th>
+          <th>Duration</th>
+          <th><app-sortable-header sortKey="status" [activeSort]="attendanceSortBy()"
+              [direction]="attendanceSortDirection()" (sortChange)="sortAttendance($event)">Status</app-sortable-header>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of vm.attendancePage.rows; track r['id']) {
+        <tr>
+          <td>{{ text(r, 'attendance_date') | date: 'dd MMM yyyy' }}</td>
+          <td>{{ related(r, 'batch', 'name') }}</td>
+          <td>
+            {{
+            text(r, 'check_in_at') ? (text(r, 'check_in_at') | date: 'shortTime') : '—'
+            }}
+          </td>
+          <td>
+            {{
+            text(r, 'check_out_at')
+            ? (text(r, 'check_out_at') | date: 'shortTime')
+            : '—'
+            }}
+          </td>
+          <td>{{ duration(r) }}</td>
+          <td>
+            <app-status-badge [status]="$any(text(r, 'status'))" />
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6"><app-async-state kind="empty" title="No attendance records yet." /></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <app-pagination [total]="vm.attendancePage.total" [page]="attendancePage()" [pageSize]="attendancePageSize()"
+      itemLabel="attendance records" (pageChange)="setAttendancePage($event)"
+      (pageSizeChange)="setAttendancePageSize($event)" />
+  </section>
+  }
+  @case ('calendar') {
+  <section class="card calendar">
+    <header>
+      <button (click)="shiftMonth(-1)"><i class="pi pi-angle-left"></i></button>
+      <h2>{{ month() | date: 'MMMM yyyy' }}</h2>
+      <button (click)="today()">Today</button>
+      <button (click)="shiftMonth(1)"><i class="pi pi-angle-right"></i></button>
+    </header>
+    <div class="week">
+      @for (d of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track d) {
+      <b>{{ d }}</b>
+      }
+    </div>
+    <div class="days">
+      @for (d of calendarDays(); track $index) {
+      @if (d) {
+      <span [class]="d.status"><b>{{ d.day }}</b><small>{{ d.status || '—' }}</small></span>
+      } @else {
+      <span></span>
+      }
+      }
+    </div>
+    <footer>
+      <i class="present"></i>Present <i class="absent"></i>Absent <i class="late"></i>Late
+      <i class="holiday"></i>Holiday <i class="no-session"></i>No session
+    </footer>
+  </section>
+  }
+  @case ('schedule') {
+  <section class="card">
+    <header>
+      <h2>Upcoming sessions</h2>
+      <span>{{ related(child.workspace.enrollment, 'batch', 'name') }}</span>
+    </header>
+    <div class="schedule">
+      @for (s of schedule(); track s.id) {
+      <article>
+        <time>{{ s.date | date: 'EEE'
+          }}<strong>{{
+            s.date
+            | date
+            : 'dd
+            MMM'
+            }}</strong></time><span><strong>{{ s.name }}</strong><small>{{ s.start }} – {{ s.end }}</small><small><i
+              class="pi pi-map-marker"></i>{{ s.venue }}</small><small><i class="pi pi-user"></i>{{ s.coach
+            }}</small></span><b>{{ s.status }}</b>
+      </article>
+      } @empty {
+      <app-async-state kind="empty" title="No batch schedule is configured." />
+      }
+    </div>
+  </section>
+  }
+  @case ('coach') {
+  <section class="coach-grid">
+    @for (link of vm.coaches; track link['coach']['id']) {
+    <article class="card coach">
+      <div class="photo">
+        @if (link['coach']['photo_url']) {
+        <img [src]="link['coach']['photo_url']" [alt]="link['coach']['full_name']" />
+        } @else {
+        {{ initials(link['coach']['full_name']) }}
+        }
+      </div>
+      <h2>{{ link['coach']['full_name'] }}</h2>
+      <p>{{ link['is_primary'] ? 'Primary coach' : 'Assistant coach' }}</p>
+      <dl>
+        <dt>Experience</dt>
+        <dd>{{ link['coach']['experience_years'] }} years</dd>
+        <dt>Qualification</dt>
+        <dd>{{ link['coach']['qualification'] || 'Not provided' }}</dd>
+        <dt>Email</dt>
+        <dd>{{ link['coach']['email'] || 'Academy contact' }}</dd>
+        <dt>Phone</dt>
+        <dd>{{ link['coach']['phone'] || 'Academy contact' }}</dd>
+      </dl>
+    </article>
+    } @empty {
+    <div class="card empty">No coach is assigned to this batch.</div>
+    }
+  </section>
+  }
+  @case ('fees') {
+  <section class="kpis">
+    <app-summary-metric-card label="Total charges" [value]="fees().total | academyMoney : 'symbol' : '1.2-2'"
+      icon="pi-receipt" />
+    <app-summary-metric-card label="Paid" [value]="fees().paid | academyMoney : 'symbol' : '1.2-2'"
+      icon="pi-check-circle" tone="green" />
+    <app-summary-metric-card label="Pending" [value]="fees().pending | academyMoney : 'symbol' : '1.2-2'"
+      icon="pi-clock" tone="orange" />
+    <app-summary-metric-card label="Fee plan" [value]="related(child.workspace.enrollment, 'fee_plan', 'name') || '—'"
+      icon="pi-wallet" tone="blue" />
+  </section>
+  <section class="card">
+    <h2>Pending fees</h2>
+    <app-table-tools title="Pending fees" [table]="exportTable2"></app-table-tools>
+    <table #exportTable2 class="academy-table">
+      <caption class="sr-only">
+        Fee charges for the selected child
+      </caption>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Base</th>
+          <th>Discount</th>
+          <th>Late fee</th>
+          <th>Amount</th>
+          <th>Paid</th>
+          <th>Outstanding</th>
+          <th>Due date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of vm.charges; track c['id']) {
+        <tr>
+          <td>{{ c['charge_month'] | date: 'MMM yyyy' }}</td>
+          <td>{{ c['base_amount'] | academyMoney }}</td>
+          <td>{{ c['discount_amount'] | academyMoney }}</td>
+          <td>{{ c['late_fee_amount'] | academyMoney }}</td>
+          <td>{{ c['final_amount'] | academyMoney }}</td>
+          <td>{{ c['paid_amount'] | academyMoney }}</td>
+          <td>{{ c['balance_amount'] | academyMoney }}</td>
+          <td>{{ c['due_date'] | date: 'dd MMM yyyy' }}</td>
+          <td>
+            <app-status-badge [status]="$any(c['status'])" />
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="9"><app-async-state kind="empty" title="No fee charges are available for this student." /></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  }
+  @case ('payments') {
+  <section class="card">
+    <header>
+      <h2>Payment history</h2>
+      <label class="compact-filter">Search<input type="search" placeholder="Mode or transaction ID"
+          [value]="paymentSearch()" (input)="searchPayments($event)" /></label>
+      <select aria-label="Filter payment status" (change)="filterPayments($event)">
+        <option value="">All statuses</option>
+        <option value="successful">Successful</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+        <option value="refunded">Refunded</option>
+      </select>
+    </header>
+    <app-table-tools title="Payment history" [table]="exportTable3" [total]="vm.paymentPage.total"></app-table-tools>
+    <table #exportTable3 class="academy-table">
+      <caption class="sr-only">
+        Payment history for the selected child
+      </caption>
+      <thead>
+        <tr>
+          <th><app-sortable-header sortKey="date" [activeSort]="paymentSortBy()" [direction]="paymentSortDirection()"
+              (sortChange)="sortPayments($event)">Date</app-sortable-header></th>
+          <th><app-sortable-header sortKey="amount" [activeSort]="paymentSortBy()" [direction]="paymentSortDirection()"
+              (sortChange)="sortPayments($event)">Amount</app-sortable-header></th>
+          <th><app-sortable-header sortKey="mode" [activeSort]="paymentSortBy()" [direction]="paymentSortDirection()"
+              (sortChange)="sortPayments($event)">Method</app-sortable-header></th>
+          <th><app-sortable-header sortKey="reference" [activeSort]="paymentSortBy()"
+              [direction]="paymentSortDirection()" (sortChange)="sortPayments($event)">Transaction
+              ID</app-sortable-header></th>
+          <th><app-sortable-header sortKey="status" [activeSort]="paymentSortBy()" [direction]="paymentSortDirection()"
+              (sortChange)="sortPayments($event)">Status</app-sortable-header></th>
+          <th>Receipt</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of vm.paymentPage.rows; track p['id']) {
+        <tr>
+          <td>{{ text(p, 'paid_at') | date: 'dd MMM yyyy' }}</td>
+          <td>{{ money(value(p, 'amount')) | academyMoney }}</td>
+          <td>{{ p['payment_mode'] }}</td>
+          <td>{{ p['provider_reference'] || p['client_reference'] || '—' }}</td>
+          <td>
+            <app-status-badge [status]="$any(p['status'])" />
+          </td>
+          <td>
+            @if (receipt(p, 'receipt_number')) {
+            <button (click)="open(receipt(p, 'url'))">
+              {{ receipt(p, 'receipt_number') || 'View' }}
+            </button>
+            } @else {
+            —
+            }
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6"><app-async-state kind="empty" title="No payment history." /></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    <app-pagination [total]="vm.paymentPage.total" [page]="paymentPage()" [pageSize]="paymentPageSize()"
+      itemLabel="payments" (pageChange)="setPaymentPage($event)" (pageSizeChange)="setPaymentPageSize($event)" />
+  </section>
+  }
+  @case ('receipt') {
+  <section class="receipt card">
+    <img class="receipt-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" />
+    <h2>Payment Receipt</h2>
+    @if (vm.paymentPage.rows[0]; as payment) {
+    <dl>
+      <dt>Receipt no.</dt>
+      <dd>{{ receipt(payment, 'receipt_number') || 'Pending issue' }}</dd>
+      <dt>Date</dt>
+      <dd>{{ text(payment, 'paid_at') | date: 'dd MMM yyyy' }}</dd>
+      <dt>Student</dt>
+      <dd>{{ child.workspace.student.fullName }}</dd>
+      <dt>Parent / guardian</dt>
+      <dd>{{ vm.parent['full_name'] }}</dd>
+      <dt>Fee period</dt>
+      <dd>{{ related(payment, 'monthly_charge', 'charge_month') | date: 'MMM yyyy' }}</dd>
+      <dt>Original charge</dt>
+      <dd>
+        {{ money(related(payment, 'monthly_charge', 'base_amount')) | academyMoney }}
+      </dd>
+      <dt>Discount</dt>
+      <dd>
+        {{
+        money(related(payment, 'monthly_charge', 'discount_amount')) | academyMoney
+        }}
+      </dd>
+      <dt>Late fee</dt>
+      <dd>
+        {{
+        money(related(payment, 'monthly_charge', 'late_fee_amount')) | academyMoney
+        }}
+      </dd>
+      <dt>Paid amount</dt>
+      <dd>{{ money(value(payment, 'amount')) | academyMoney }}</dd>
+      <dt>Method</dt>
+      <dd>{{ payment['payment_mode'] }}</dd>
+      <dt>Transaction ID</dt>
+      <dd>{{ payment['provider_reference'] || payment['client_reference'] || '—' }}</dd>
+      <dt>Status</dt>
+      <dd><app-status-badge [status]="$any(payment['status'])" /></dd>
+    </dl>
+    <div class="receipt-actions">
+      @if (receipt(payment, 'url')) {
+      <button (click)="open(receipt(payment, 'url'))">
+        <i class="pi pi-eye"></i> View / Download
+      </button>
+      }
+      <button (click)="printReceipt()"><i class="pi pi-print"></i> Print</button>
+    </div>
+    } @else {
+    <p>No receipt is available.</p>
+    }
+  </section>
+  }
+  @case ('notifications') {
+  <section class="card">
+    <header class="notifications-head">
+      <h2>Notifications</h2>
+      <div class="table-actions">
+        <select aria-label="Filter notification type" (change)="filterNotifications($event)">
+          <option value="">All types</option>
+          <option value="attendance">Attendance</option>
+          <option value="fee">Fees</option>
+          <option value="payment">Payments</option>
+          <option value="batch">Batch updates</option>
+          <option value="announcement">Announcements</option>
+        </select>
+        <button (click)="toggleUnread()">
+          {{ notificationUnreadOnly() ? 'Show all' : 'Unread only' }}
+        </button>
+        @if (vm.notificationPage.total) {
+        <button (click)="markAllRead()">Mark all as read</button>
+        }
+      </div>
+    </header>
+    <div class="notifications">
+      @for (n of vm.notificationPage.rows; track n['id']) {
+      @if (n['template_key'] === 'student_birthday') {
+      <article class="birthday-notification" [class.unread]="!n['read_at']">
+        <div class="birthday-profile">
+          @if (n['profile_photo_url']) {
+          <img [src]="n['profile_photo_url']" [alt]="(n['profile_name'] || 'Student') + ' profile photo'" />
+          } @else {
+          <span class="birthday-profile-fallback" aria-hidden="true">
+            <i class="pi pi-user"></i>
+          </span>
+          }
+          <span class="birthday-cake" aria-hidden="true">🎂</span>
+        </div>
+        <div class="birthday-content">
+          <header class="birthday-brand">
+            <img src="/branding/turf-cricket-academy-logo.png" alt="" />
+            <strong>Turf Cricket Academy</strong>
+          </header>
+          <h3>
+            {{
+            n['subject'] ||
+            '🎉 Happy Birthday, ' + (n['profile_name'] || 'our cricket champion') + '! 🎂'
+            }}
+          </h3>
+          <p class="birthday-message">{{ n['body'] }}</p>
+        </div>
+        <div class="birthday-meta">
+          <time>{{ n['created_at'] | date: 'dd MMM, h:mm a' }}</time>
+          @if (!n['read_at']) {
+          <span class="birthday-new">New</span>
+          }
+          <div class="birthday-cricket-art" aria-hidden="true">
+            <span class="birthday-crown">♕</span>
+            <span class="birthday-ball"></span>
+            <span class="birthday-bat">🏏</span>
+            <span class="birthday-confetti">✨</span>
+          </div>
+        </div>
+        @if (!n['read_at']) {
+        <button class="birthday-read" (click)="markRead(n['id'])"
+          [attr.aria-label]="'Mark birthday notification as read'">
+          <i class="pi pi-angle-right"></i>
+        </button>
+        }
+      </article>
+      } @else {
+      <article [class.unread]="!n['read_at']">
+        @if (n['profile_photo_url']) {
+        <img class="notification-profile-photo" [src]="n['profile_photo_url']" alt="" />
+        } @else {
+        <i class="pi" [class.pi-wallet]="n['template_key']?.includes('fee')"
+          [class.pi-bell]="!n['template_key']?.includes('fee')"></i>
+        }
+        <span><strong>{{
+            n['subject'] ||
+            'Academy
+            update'
+            }}</strong>
+          <p>{{ n['body'] }}</p>
+          <small>{{ n['created_at'] | date: 'dd MMM yyyy, shortTime' }}</small>
+        </span>
+        @if (!n['read_at']) {
+        <button (click)="markRead(n['id'])" aria-label="Mark notification as read">
+          <i class="pi pi-check"></i>
+        </button>
+        }
+      </article>
+      }
+      } @empty {
+      <app-async-state kind="empty" title="No notifications." />
+      }
+    </div>
+    <app-pagination [total]="vm.notificationPage.total" [page]="notificationPage()" [pageSize]="notificationPageSize()"
+      itemLabel="notifications" (pageChange)="setNotificationPage($event)"
+      (pageSizeChange)="setNotificationPageSize($event)" />
+  </section>
+  }
+  @case ('profile') {
+  <section class="profile-grid">
+    <article class="card profile-progress">
+      <header>
+        <div>
+          <small>Profile completion</small>
+          <h2>{{ profileCompletion().percentage }}% complete</h2>
+        </div>
+        <div class="profile-percent">{{ profileCompletion().percentage }}%</div>
+      </header>
+      <div class="progress-track" role="progressbar" aria-label="Profile completion" aria-valuemin="0"
+        aria-valuemax="100" [attr.aria-valuenow]="profileCompletion().percentage">
+        <i [style.width.%]="profileCompletion().percentage"></i>
+      </div>
+      <div class="profile-stages">
+        @for (
+        stage of ['Identity', 'Contact', 'Address', 'Complete'];
+        track stage;
+        let index = $index
+        ) {
+        <span [class.done]="profileCompletion().stage > index"><i>{{ index + 1 }}</i><b>{{ stage }}</b></span>
+        }
+      </div>
+      <p>
+        {{ profileCompletion().completed }} of {{ profileCompletion().total }} details
+        completed.
+      </p>
+      @if (profileCompletion().missing.length) {
+      <div class="missing">
+        <strong>Complete these details</strong>
+        <ul>
+          @for (field of profileCompletion().missing; track field) {
+          <li>{{ field }}</li>
+          }
+        </ul>
+      </div>
+      } @else {
+      <div class="all-complete">
+        <i class="pi pi-check-circle"></i>Your parent profile is complete.
+      </div>
+      }
+      <button class="complete-profile-action" (click)="go('/parent/profile/edit')">
+        <i class="pi pi-pencil"></i>{{
+        profileCompletion().percentage === 100 ? 'Update profile' : 'Complete profile'
+        }}
+      </button>
+    </article>
+    <article class="card profile">
+      <header class="profile-identity">
+        <div class="photo">
+          @if (vm.parent['photo_url']) {
+          <img [src]="vm.parent['photo_url']" [alt]="vm.parent['full_name']" />
+          } @else {
+          {{ initials(vm.parent['full_name']) }}
+          }
+        </div>
+        <div>
+          <small>Parent / Guardian</small>
+          <h2>{{ vm.parent['full_name'] }}</h2>
+          <p>{{ vm.parent['relation'] || 'Parent / Guardian' }}</p>
+          <app-status-badge [status]="$any(vm.parent['status'])" />
+        </div>
+        <button class="profile-edit" (click)="go('/parent/profile/edit')">
+          <i class="pi pi-pencil"></i>Edit
+        </button>
+      </header>
+      <dl>
+        <dt>Email</dt>
+        <dd>{{ vm.parent['email'] || 'Not provided' }}</dd>
+        <dt>Phone</dt>
+        <dd>{{ vm.parent['phone'] }}</dd>
+        <dt>WhatsApp</dt>
+        <dd>{{ vm.parent['whatsapp'] || vm.parent['phone'] }}</dd>
+        <dt>Occupation</dt>
+        <dd>{{ vm.parent['occupation'] || 'Not provided' }}</dd>
+        <dt>Address</dt>
+        <dd>{{ addressText(vm.parent['address']) }}</dd>
+        <dt>Linked children</dt>
+        <dd>{{ vm.children.length }}</dd>
+      </dl>
+      <button class="password-action" (click)="go('/auth/reset-password')">
+        <i class="pi pi-lock"></i>Change password
+      </button>
+    </article>
+    <article class="card linked-children-card">
+      <header>
+        <div>
+          <small>Family</small>
+          <h2>Linked children</h2>
+        </div>
+        <b>{{ vm.children.length }}</b>
+      </header>
+      @for (item of vm.children; track item.workspace.student.id) {
+      <button class="linked" (click)="childProfile(item.workspace.student.id)">
+        <span class="linked-photo">
+          @if (item.workspace.student.photoUrl) {
+          <img [src]="item.workspace.student.photoUrl" [alt]="item.workspace.student.fullName" />
+          } @else {
+          {{ initials(item.workspace.student.fullName) }}
+          }
+        </span>
+        <span class="linked-copy">
+          <strong>{{ item.workspace.student.fullName }}</strong>
+          <small>{{ item.workspace.student.studentCode }} ·
+            {{
+            related(item.workspace.enrollment, 'batch', 'name') || 'Not enrolled'
+            }}</small>
+        </span>
+        <app-status-badge [status]="item.workspace.student.status" />
+        <i class="pi pi-angle-right"></i>
+      </button>
+      } @empty {
+      <div class="empty linked-empty">No children linked to this profile.</div>
+      }
+    </article>
+  </section>
+  }
+
+  }
+  } @else {
+  <section class="state">
+    <i class="pi pi-users"></i><strong>No child linked</strong><span>Please contact Turf Cricket Academy to link your
+      child.</span>
+    <div class="state-actions">
+      <button (click)="go('/parent/support')">Contact academy</button>
+      <button (click)="load()">Refresh</button>
+    </div>
+  </section>
+  }
+  }
+</div>

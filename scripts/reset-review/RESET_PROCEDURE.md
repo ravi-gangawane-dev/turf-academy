@@ -1,0 +1,96 @@
+> Historical review procedure. This reset was subsequently approved and executed with an explicit backup waiver; see docs/DATA_RESET_RESULT_2026-10-28.md. This is not approval for any future reset.
+
+# Controlled reset procedure (not approved for execution)
+
+This procedure is deliberately not an application migration. It must never run at deploy,
+login, app startup, or automatically after a refresh. The linked development and production
+configurations share a hosted project. Stop if any prerequisite is missing.
+
+## Preparation and evidence gates
+
+1. Obtain a privileged, read-only catalog inventory using `inventory-readonly.sql`. Save its
+   output in ignored backup storage. Compare actual tables, FKs (including cross-schema),
+   policies, grants, triggers, functions, sequences and migration ledger with source.
+2. Produce a reviewed manifest with project reference, environment, timestamp, exact table
+   allowlist and predicates, expected counts, retained administrator UUIDs, exact auth IDs,
+   exact owned storage paths, required retained configuration, and audit/history decisions.
+   Unknown tables/counts/ownership are blockers. Never interpret an RLS-hidden zero as empty.
+3. Confirm recovery: consistent database dump plus roles/configuration and full auth coverage,
+   storage bytes/metadata and hashes; isolated restore rehearsal with count, FK, schema, RLS,
+   grants, sign-in and file-download checks. A JSON records export is insufficient. Backups
+   should also exist off this laptop in controlled durable storage.
+4. Rehearse this procedure against that isolated restore. Compute a child-before-parent
+   topological order from live foreign keys. Cycles must be resolved by an individually
+   reviewed supported data operation, never constraint/trigger disabling or CASCADE guessing.
+5. Obtain explicit approval of that manifest, plus separate production authorization and
+   specific auth, storage and audit-history removal approvals. Approval must identify the
+   retained admin IDs and backup evidence. Current state is NOT approved.
+
+## Execute only after all gates pass
+
+1. Recheck project identity and retained-admin sign-in/recovery. Record current producer
+   state; arrange a maintenance window that stops frontend writes, notification workers,
+   scheduled business generation and external integrations. Do not disable security or
+   database triggers. Refresh backup/manifest if rows or owned files changed after approval.
+2. Begin a database transaction with a short lock timeout and bounded statement timeout.
+   Acquire the necessary business-table locks in a consistent reviewed order. Compare live
+   row IDs/counts and schema fingerprint to the approved manifest; abort on drift.
+3. Run DELETE statements restricted to explicit approved tables/predicates in the verified
+   child-first order. Preserve schema, sequences unless separately approved, RLS, triggers,
+   indexes, functions, migrations, settings and retained administrator profiles. No TRUNCATE,
+   DROP, session_replication_role, trigger disabling or RLS changes are permitted.
+4. Include independent histories/junctions explicitly. Notification events are not removed
+   automatically by notification deletion. Existing profile/auth and actor relations need
+   explicit handling; do not delete retained admins or null arbitrary relations to bypass FKs.
+5. Audit triggers remain enabled and may append audit rows during deletion. If explicitly
+   approved, clear approved business/audit history after other data modifications using
+   an already-authorized database role. If existing grants prevent a required deletion,
+   roll back and revise the plan; do not grant new deletion access as a workaround.
+6. Before committing, verify expected retained rows and zero counts for approved cleared
+   tables, no FK or intentionally unconstrained orphaned histories, unchanged security and
+   schema fingerprints, and retained-admin profile. Any mismatch rolls back the transaction.
+   Record exact affected row counts in a private operation journal. Commit only on success.
+7. Delete only approved non-admin auth IDs through the supported Auth Admin API after
+   dependency cleanup. Check retained-admin exclusion before EVERY request. Persist the
+   per-account result. Not-found is success only for an already-approved deleted ID. Never
+   delete a new/unapproved account discovered after the manifest. Do not rely on profile
+   count as an auth count. Auth-provider logs may be immutable; flag this instead of claiming
+   an entirely empty auth schema.
+8. Remove only approved owned object paths with the Storage API after verifying recoverable
+   copies and retained branding references. Never SQL-delete storage.objects. Log results,
+   confirm object absence, preserve bucket configuration/policies. Treat a missing approved
+   object as already completed; unexpected objects remain untouched and trigger review.
+9. Recheck app audit/auth history generated by account/storage operations. An explicitly
+   approved final business-history sweep may be needed; provider security logs and the
+   off-database reset journal remain governed by their own retention requirements.
+10. Clear only reviewed app data on each application origin/client. Preserve unrelated
+    browser data, passwords and required recovery material. Remove legacy attendance queues
+    before reconnecting clients so old actions cannot replay. Do not enable mock mode.
+11. Validate with retained admin: zero dashboard statistics, empty tables/charts, zero-record
+    pagination, working filters/search, notifications and payments; unchanged RLS/grants and
+    unauthorized-access denial. In the isolated rehearsal, create a clearly named temporary
+    record through the app API and verify cross-view visibility and cleanup. In production,
+    any smoke-test creation must be part of the approved manifest and all derived rows must
+    be cleaned; otherwise report it untested, not passed.
+12. Restore only approved producer settings; verify no old records reappear after reload,
+    login and a scheduler interval. Issue final actual per-table/account/object results and
+    unresolved limitations. Do not recreate seeds or dummy records.
+
+## Idempotency and partial failures
+
+- Reusing the SAME approved manifest is the only retry scope; never widen it to all rows
+  currently present. SQL predicates should target approved row identities or an explicitly
+  approved frozen table snapshot. Empty approved sets are no-ops.
+- Each phase records started/completed state and before/after counts. A database failure
+  rolls back that transaction. Auth and Storage are separate, resumable API phases with
+  durable per-ID/per-path progress. Do not claim they roll back with SQL.
+- Never rerun seed scripts, migrations, account provisioning or identity sequence resets to
+  make the application look empty. Restoring data requires a distinct recovery operation.
+- If new records appear, ownership changes, admin recovery fails, a backup hash fails, a
+  security fingerprint changes, or an FK deletion fails, stop and obtain a revised review.
+
+## Current execution gate
+
+BLOCKED: no verified database backup/restore, no privileged live schema/auth inventory,
+no selected retained admin UUID, and no explicit reset/production/auth/storage/audit approval.
+No part of this document authorizes running a destructive statement.

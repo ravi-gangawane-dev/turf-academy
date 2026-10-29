@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-27",
+  "scope": "Read-only route checks; writes blocked; no form submission or provider sends.",
+  "results": [
+    {
+      "role": "admin",
+      "path": "/dashboard/admin",
+      "finalPath": "/dashboard/admin",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/students",
+      "finalPath": "/students",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/parents",
+      "finalPath": "/parents",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/attendance/history",
+      "finalPath": "/attendance/history",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/attendance/calendar",
+      "finalPath": "/attendance/calendar",
+      "failures": [],
+      "blocked": [],
+      "errors": [],
+      "messages": []
+    },
+    {
+      "role": "admin",
+      "path": "/notifications",
+      "finalPath": "/notifications",
+      "failures": [
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400,
+          "message": "column notifications.manual_state does not exist"
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Sent\tOct 23, 4:29 PM\tNot linked\tView detailsCopy messageView history"
+      ]
+    },
+    {
+      "role": "receptionist",
+      "path": "/notifications",
+      "finalPath": "/notifications",
+      "failures": [
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400,
+          "message": "column notifications.manual_state does not exist"
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        },
+        {
+          "path": "/rest/v1/notifications",
+          "status": 400
+        }
+      ],
+      "blocked": [],
+      "errors": [],
+      "messages": [
+        "Sent\tOct 23, 4:29 PM\tNot linked\tView detailsCopy messageView history"
+      ]
+    }
+  ]
+}

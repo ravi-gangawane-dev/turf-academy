@@ -1,0 +1,163 @@
+.payments-page {
+  display: grid;
+  gap: 1rem;
+}
+.breadcrumbs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: #65736d;
+}
+.breadcrumbs a {
+  color: #277b47;
+  text-decoration: none;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #dde5e1;
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+.page-heading p,
+.page-heading span {
+  margin: 0;
+  color: #6c7872;
+}
+.page-heading h1 {
+  margin: 0.2rem 0;
+}
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 9px;
+  background: #267d46;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.metrics article {
+  background: #fff;
+  border: 1px solid #dde5e1;
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.metrics small {
+  color: #68766f;
+}
+.metrics strong {
+  font-size: 1.4rem;
+}
+.notice {
+  padding: 0.8rem 1rem;
+  border-radius: 9px;
+  background: #e8f6ed;
+  color: #176536;
+}
+.notice.error {
+  background: #fff0f0;
+  color: #a52b2b;
+}
+.payment-form {
+  padding: 1.25rem;
+}
+.payment-form form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.payment-form label {
+  display: grid;
+  gap: 0.4rem;
+}
+.payment-form input,
+.payment-form select {
+  min-height: 42px;
+  border: 1px solid #ccd7d1;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+.table-wrap {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.8rem;
+  border-bottom: 1px solid #e7ece9;
+}
+td small {
+  display: block;
+  color: #78847e;
+}
+.status {
+  border-radius: 99px;
+  background: #e7f5eb;
+  color: #277645;
+  padding: 0.25rem 0.55rem;
+}
+.status.danger {
+  background: #fdeaea;
+  color: #aa3030;
+}
+.refund-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e7ece9;
+}
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: #07192fa6;
+}
+.refund-dialog {
+  width: min(520px, 100%);
+  background: #fff;
+  border: 1px solid #dce5e0;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px #0004;
+}
+.refund-dialog form {
+  grid-template-columns: 1fr;
+}
+.refund-dialog textarea {
+  min-height: 100px;
+  border: 1px solid #ccd7d1;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+@media (max-width: 800px) {
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .page-heading {
+    align-items: flex-start;
+    gap: 1rem;
+    flex-direction: column;
+  }
+  .payment-form form {
+    grid-template-columns: 1fr;
+  }
+}

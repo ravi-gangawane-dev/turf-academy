@@ -1,0 +1,144 @@
+<main class="login-page">
+  <section class="login-brand">
+    <div>
+      <img
+        class="brand-logo"
+        src="/branding/turf-cricket-academy-logo.png"
+        alt="Turf Cricket Academy"
+      />
+      <p class="eyebrow">Turf Cricket Academy</p>
+      <h1>Secure access.<br /><em>Protected accounts.</em></h1>
+      <p class="intro">Account recovery and verification for academy members.</p>
+    </div>
+  </section>
+  <section class="login-form-wrap">
+    <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="mobile-logo">
+        <img src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" />
+      </div>
+      <p class="eyebrow">Account security</p>
+      <h2>{{ title }}</h2>
+      <p class="subtext">{{ description }}</p>
+      @if (kind === 'expired') {
+        <div class="notice error" role="alert">
+          Your session has expired. For your security, please sign in again.
+        </div>
+        <a class="login-button utility-link" routerLink="/auth/login">Back to login</a>
+      } @else if (kind === 'success') {
+        <div class="result-icon success-icon"><i class="pi pi-check"></i></div>
+        <p class="result-copy">
+          Your password has been successfully updated. You can now log in with your new password.
+        </p>
+        <a class="login-button utility-link" routerLink="/auth/login">Back to login</a>
+      } @else {
+        @if (message()) {
+          <div class="notice success" role="status">{{ message() }}</div>
+        }
+        @if (error()) {
+          <div class="notice error" role="alert">{{ error() }}</div>
+          @if (kind === 'password' || kind === 'otp') {
+            <a routerLink="/auth/forgot-password">Request a new reset link</a>
+          }
+        }
+        @if (kind === 'email' || kind === 'otp') {
+          <div class="login-field">
+            <label for="recovery-email">Email</label>
+            <div>
+              <i class="pi pi-envelope"></i
+              ><input
+                id="recovery-email"
+                type="email"
+                formControlName="identity"
+                autocomplete="email"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+            </div>
+          </div>
+        }
+        @if (kind === 'otp') {
+          <p class="recovery-help" id="code-help">Enter the code from your latest recovery email. If your email only contains a reset link, use that link instead. Each request can only be used once.</p>
+          <div class="login-field">
+            <label for="otp">Verification code</label>
+            <div>
+              <i class="pi pi-key"></i
+              ><input
+                id="otp"
+                formControlName="code"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="10"
+                aria-describedby="code-help"
+              />
+            </div>
+          </div>
+        }
+        @if (kind === 'password') {
+          <div class="login-field">
+            <label for="new-password">New password</label>
+            <div>
+              <i class="pi pi-lock"></i
+              ><input
+                id="new-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                autocomplete="new-password"
+              /><button
+                class="password-toggle"
+                type="button"
+                (click)="togglePassword()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              >
+                <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+              </button>
+            </div>
+          </div>
+          <div class="login-field">
+            <label for="confirm-password">Confirm password</label>
+            <div>
+              <i class="pi pi-lock"></i
+              ><input
+                id="confirm-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+              />
+            </div>
+          </div>
+          <div class="password-rules">
+            <strong>Password must contain:</strong>
+            <span>At least 8 characters</span>
+            <span>A mix of letters and numbers</span>
+            <span>One special character</span>
+          </div>
+        }
+        @if (attempted() && form.invalid) {
+          <p class="notice error" role="alert">
+            @if (kind === 'password') {
+              Passwords need at least 8 characters, including a letter, a number and a special
+              character.
+            } @else if (kind === 'otp') {
+              @if (form.controls.identity.invalid) {
+                Enter the email address used to request recovery.
+              } @else {
+                Enter the complete verification code from your email (6 to 10 digits).
+              }
+            } @else {
+              Enter a valid email address.
+            }
+          </p>
+        }
+        <button class="login-button" [disabled]="submitting()">
+          {{ submitting() ? 'Please wait…' : kind === 'password' ? 'Update password' : kind === 'otp' ? 'Verify code' : 'Send recovery email' }}</button>
+        @if (kind === 'email' && message()) {
+          <p class="recovery-help">Check your inbox and spam folder. Only registered accounts receive a recovery email.</p>
+          <a class="recovery-code-link" routerLink="/auth/otp">Enter verification code</a>
+        }
+        @if (kind === 'otp' && !error()) {
+          <a class="recovery-code-link" routerLink="/auth/forgot-password">Request a new recovery email</a>
+        }
+        <a class="back-to-login" routerLink="/auth/login"><i class="pi pi-arrow-left" aria-hidden="true"></i>Back to login</a>
+      }
+    </form>
+  </section>
+</main>

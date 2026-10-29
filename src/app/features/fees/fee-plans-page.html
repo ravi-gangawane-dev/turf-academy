@@ -1,0 +1,144 @@
+<div class="app-list-page fee-plans-page">
+
+  <app-page-hero title="Fee Plans" subtitle="Create, import and manage fee plans for different programs and batches." [breadcrumbs]="[
+      { label: 'Dashboard', route: '/dashboard' },
+      { label: 'Fee Plans' }
+    ]" actionLabel="Add Fee Plan" (action)="openAdd()"></app-page-hero>
+  <app-fee-view-navigation />
+  @if (message()) {
+    <div class="notice" role="status">{{ message() }}</div>
+  }
+  @if (uploadMessage()) {
+    <div class="notice success" role="status">{{ uploadMessage() }}</div>
+  }
+  @if (uploadError()) {
+    <div class="notice error" role="alert">{{ uploadError() }}</div>
+  }
+  @if (uploadProgress()) {
+    <div class="upload-progress" role="status">{{ uploadProgress() }}</div>
+  }
+  @if (loading()) {
+    <app-async-state title="Loading fee plans…" />
+  } @else if (error() && !dialogOpen()) {
+    <app-async-state kind="error" title="Fee plans could not be loaded" [message]="error()" actionLabel="Retry" (action)="reload()" />
+  }
+  <section class="metrics" [attr.aria-busy]="loading()">
+    <app-summary-metric-card label="Total Fee Plans" [value]="metrics().total" icon="pi-globe" hint="Fee plans in system" />
+    <app-summary-metric-card label="Active Plans" [value]="metrics().active" icon="pi-check-circle" hint="Currently active" tone="blue" />
+    <app-summary-metric-card label="Inactive Plans" [value]="metrics().inactive" icon="pi-ban" hint="Not in use" tone="orange" />
+    <app-summary-metric-card label="Average Fee" [value]="metrics().averagePaise / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-users" hint="Per month" tone="purple" />
+  </section>
+  <app-data-table
+    class="plans-card"
+    [total]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="changePage($event)"
+    (pageSizeChange)="setPageSize($event)"
+    itemLabel="fee plans"
+  >
+
+    <div table-content class="table-wrap">
+      <app-table-tools title="Fee plans" [table]="exportTable1">
+        <button type="button" class="upload-button" aria-label="Import fee plans from CSV" title="Import fee plans from CSV" (click)="upload()">
+          <i class="pi pi-upload" aria-hidden="true"></i> Import from CSV
+        </button>
+        <button type="button" class="upload-button" aria-label="Download sample CSV" title="Download sample CSV" (click)="downloadSampleCsv()" [attr.aria-busy]="sampleDownloading()">
+          <i class="pi pi-download" aria-hidden="true"></i>
+          @if (sampleDownloading()) {
+            <span>Generating…</span>
+          } @else {
+            <span>Download Sample CSV</span>
+          }
+        </button>
+      </app-table-tools>
+<table #exportTable1 class="academy-table">
+        <thead><tr><th>#</th><th><app-sortable-header sortKey="cf_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Plan name</app-sortable-header></th><th><app-sortable-header sortKey="cf_description" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Description</app-sortable-header></th><th><app-sortable-header sortKey="cf_duration" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Duration</app-sortable-header></th><th><app-sortable-header sortKey="cf_fee" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Monthly fee</app-sortable-header></th><th><app-sortable-header sortKey="cf_totalFee" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Total fee</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th></th><th><app-column-filter label="plan name" type="search" [value]="columns.values()['name'] || ''" (changed)="columns.set('name',$event)" /></th><th><app-column-filter label="description" type="search" [value]="columns.values()['description'] || ''" (changed)="columns.set('description',$event)" /></th><th><app-column-filter label="duration" type="number" [value]="columns.values()['duration'] || ''" (changed)="columns.set('duration',$event)" /></th><th><app-column-filter label="monthly fee" type="number" [value]="columns.values()['fee'] || ''" (changed)="columns.set('fee',$event)" /></th><th><app-column-filter label="total fee" type="number" [value]="columns.values()['totalFee'] || ''" (changed)="columns.set('totalFee',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><button type="button" (click)="columns.reset()">Reset</button></th></tr></thead>
+        <tbody>
+          @for (plan of visiblePlans(); track plan.id; let index = $index) {
+            <tr>
+              <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+              <td>
+                <strong>{{ plan.name }}</strong>
+              </td>
+              <td>{{ plan.description }}</td>
+              <td>{{ duration(plan) }}</td>
+              <td>{{ plan.monthlyFeePaise / 100 | academyMoney : 'symbol' : '1.2-2' }}</td>
+              <td>
+                {{
+                  (plan.monthlyFeePaise * plan.durationMonths) / 100
+                    | academyMoney : 'symbol' : '1.2-2'
+                }}
+              </td>
+              <td>
+                <app-status-badge [status]="$any(plan.status)" />
+              </td>
+              <td>
+                <div class="actions">
+                  <button aria-label="Edit {{ plan.name }}" (click)="open(plan)">
+                    <i class="pi pi-pencil"></i></button>
+                  <button aria-label="View {{ plan.name }}" (click)="open(plan, true)">
+                    <i class="pi pi-eye"></i></button>
+                  <button
+                    class="delete"
+                    aria-label="Delete {{ plan.name }}"
+                    (click)="remove(plan)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">@if (!loading() && !error()) { <app-async-state kind="empty" title="No fee plans match your filters." /> }</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>
+@if (dialogOpen()) {
+  <div class="dialog-backdrop" role="presentation" (click)="$event.target === $event.currentTarget && close()">
+    <section
+      class="plan-dialog"
+      appModalFocus
+      [modalBusy]="saving()"
+      (modalDismiss)="close()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="plan-title"
+    >
+      <header>
+        <h2 id="plan-title">
+          {{ readOnly() ? 'Fee Plan Details' : editingId() ? 'Edit Fee Plan' : 'Add Fee Plan' }}
+        </h2>
+        <button aria-label="Close" (click)="close()"><i class="pi pi-times"></i></button>
+      </header>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <label>Plan name<input formControlName="name" /></label>
+        <label>Description<textarea formControlName="description"></textarea></label>
+        <div>
+          <label>Duration (months)<input
+              type="number"
+              min="1"
+              max="60"
+              formControlName="durationMonths" /></label>
+          <label>Monthly fee ({{ preferences.currency() }})<input type="number" min="1" step="0.01" formControlName="monthlyFeeRupees"
+          /></label>
+        </div>
+        <label>Status<select formControlName="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+        @if (error()) {
+          <p class="form-error" role="alert">{{ error() }}</p>
+        }
+        <footer>
+          <button type="button" (click)="close()">Close</button>
+          @if (!readOnly()) {
+            <button class="primary" type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save Fee Plan' }}</button>
+          }
+        </footer>
+      </form>
+    </section>
+  </div>
+}

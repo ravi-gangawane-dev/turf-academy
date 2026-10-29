@@ -1,0 +1,291 @@
+<div class="app-list-page enrollment-page">
+
+  <app-page-hero title="Enrollment List" subtitle="Manage student enrollments, batch changes and enrollment history."
+    [breadcrumbs]="[{label: 'Dashboard', route: '/dashboard', icon: 'pi-home' }, { label: 'Enrollment List' }]">
+    <div hero-actions><a class="primary" routerLink="/enrollments/new">New Enrollment</a></div>
+  </app-page-hero>
+
+  @if (loading()) {
+  <app-async-state title="Loading enrollments…" />
+  } @else if (view === 'list') {
+  <app-enrollment-metrics [metrics]="metrics()" />
+  <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="changePage($event)"
+    (pageSizeChange)="setPageSize($event)">
+    <div table-content class="table-scroll">
+      <app-table-tools title="Enrollments" [table]="exportTable1" [customExport]="true"><button type="button"
+          class="secondary" (click)="exportRows()" [disabled]="!total() || exporting()">Export
+          enrollments</button></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th><app-sortable-header sortKey="cf_student" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Student</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_batch" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Batch</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_plan" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Fee plan</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_fee" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Monthly fee</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_validity" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Validity</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''"
+                (changed)="columns.set('student',$event)" /></th>
+            <th><app-column-filter label="batch" type="search" [value]="columns.values()['batch'] || ''"
+                (changed)="columns.set('batch',$event)" /></th>
+            <th><app-column-filter label="fee plan" type="search" [value]="columns.values()['plan'] || ''"
+                (changed)="columns.set('plan',$event)" /></th>
+            <th><app-column-filter label="monthly fee" type="number" [value]="columns.values()['fee'] || ''"
+                (changed)="columns.set('fee',$event)" /></th>
+            <th><app-column-filter label="validity" type="search" [value]="columns.values()['validity'] || ''"
+                (changed)="columns.set('validity',$event)" /></th>
+            <th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of visibleRows(); track row.id) {
+          <tr>
+            <td>
+              <a [routerLink]="['/students', row.student_id]">{{
+                row.student?.full_name ?? 'Student unavailable'
+                }}</a><small>{{ row.student?.student_code }}</small>
+            </td>
+            <td>{{ row.batch?.name ?? 'Batch unavailable' }}</td>
+            <td>{{ row.plan?.name ?? 'Plan unavailable' }}</td>
+            <td>{{ row.monthly_fee | academyMoney }}</td>
+            <td>
+              {{ row.valid_from | date: 'dd MMM yyyy'
+              }}<small>{{
+                row.valid_till ? (row.valid_till | date: 'dd MMM yyyy') : 'No end date'
+                }}</small>
+            </td>
+            <td><app-status-badge [status]="row.status" /></td>
+            <td>
+              <div class="action-buttons">
+                @if (row.status === 'active') {
+                  <button class="action-transfer" title="Transfer" routerLink="/enrollments/transfer"
+                    [queryParams]="{ enrollment: row.id }">
+                    <i class="pi pi-arrow-right-arrow-left"></i>
+                  </button>
+                  <button class="action-pause" title="Pause" routerLink="/enrollments/"
+                    (click)="pause(row.id)">
+                    <i class="pi pi-pause-circle"></i>
+                  </button>
+                  <button class="action-cancel" title="Cancel" routerLink="/enrollments/cancel"
+                    [queryParams]="{ enrollment: row.id }">
+                    <i class="pi pi-times-circle"></i>
+                  </button>
+                }
+                @if (row.status === 'paused') {
+                  <button class="action-reactivate" title="Reactivate" routerLink="/enrollments/"
+                    (click)="reactivate(row.id)">
+                    <i class="pi pi-replay"></i>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7">@if (!loading() && !error()) { <app-async-state kind="empty"
+                title="No matching enrollments." /> }</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+
+    </div>
+  </app-data-table>
+  } @else if (view === 'new') {
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset [disabled]="saving()">
+      <legend>Enrollment details</legend>
+      <div class="fields">
+        <label>Student *<select formControlName="studentId" (change)="studentChanged()">
+            <option value="">Select student</option>
+            @for (student of eligibleStudents(); track student.id) {
+            <option [value]="student.id">
+              {{ student.full_name }} · {{ student.student_code }}
+            </option>
+            }
+          </select></label>
+        <label>Batch *<select formControlName="batchId" (change)="batchChanged()">
+            <option value="">Select batch</option>
+            @for (batch of activeBatches(); track batch.id) {
+            <option [value]="batch.id">{{ batch.name }} · {{ batch.code }}</option>
+            }
+          </select></label>
+        <label>Fee plan *<select formControlName="feePlanId" (change)="planChanged()">
+            <option value="">Select fee plan</option>
+            @for (plan of activePlans(); track plan.id) {
+            <option [value]="plan.id">
+              {{ plan.name }} · {{ plan.monthly_fee | academyMoney }}/month
+            </option>
+            }
+          </select></label>
+        <label>Start date *<input type="date" formControlName="startDate" /></label><label>End date (optional)<input
+            type="date" formControlName="dueDate" [min]="form.controls.startDate.value" /></label>
+        <label class="wide">Notes<textarea formControlName="notes" maxlength="1000" rows="3"></textarea>
+        </label>
+      </div>
+      @if (selectedStudent(); as student) {
+      <p class="summary">
+        {{ student.full_name }} · {{ student.student_code }} · Born
+        {{ student.date_of_birth | date: 'dd MMM yyyy' }} ·
+        {{ student.phone || 'No phone recorded' }}.
+        <a [routerLink]="['/students', student.id, 'edit']">Edit student profile</a>
+      </p>
+      }
+      @if (selectedPlan(); as plan) {
+      <p class="summary">
+        Monthly fee: <strong>{{ plan.monthly_fee | academyMoney }}</strong> ·
+        {{ plan.name }} ({{ plan.duration_months }} months). Payments are recorded separately
+        under Fees.
+      </p>
+      }
+      @if (form.touched && form.invalid) {
+      <p class="error" role="alert">
+        Complete all required fields. The end date must be on or after the start date.
+      </p>
+      }
+      <footer>
+        <a routerLink="/enrollments">Back to enrollments</a><button class="primary" type="submit">
+          {{ saving() ? 'Saving…' : 'Create enrollment' }}
+        </button>
+      </footer>
+    </fieldset>
+  </form>
+  } @else if (view === 'history') {
+  <section class="card">
+
+    @if (historyError()) {
+    <app-async-state kind="error" title="Enrollment history could not be loaded" [message]="historyError()"
+      actionLabel="Retry" (action)="loadHistory()" />
+    }
+    @if (historyLoading()) {
+    <app-async-state title="Loading history…" />
+    }
+    <p>
+      {{ historyTotal() }} matching activities
+
+    </p>
+    <app-data-table [total]="historyTotal()" [page]="page()" [pageSize]="pageSize()"
+      (pageChange)="historyPageChanged($event)" (pageSizeChange)="setPageSize($event)">
+      <div table-content class="table-scroll">
+        <app-table-tools title="Enrollment history" [table]="exportTable2" [customExport]="true"><button type="button"
+            (click)="historyColumns.reset()">Reset filters</button><button type="button" (click)="exportHistory()"
+            [disabled]="exporting() || historyLoading() || !historyTotal()">Export history</button></app-table-tools>
+        <table #exportTable2 class="academy-table">
+          <thead>
+            <tr>
+              <th><app-sortable-header sortKey="created_at" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Recorded at</app-sortable-header>
+              </th>
+              <th><app-sortable-header sortKey="effective_on" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Effective
+                  date</app-sortable-header></th>
+              <th><app-sortable-header sortKey="student_text" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Student</app-sortable-header></th>
+              <th><app-sortable-header sortKey="action_text" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Action</app-sortable-header></th>
+              <th><app-sortable-header sortKey="batch_text" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Batch</app-sortable-header></th>
+              <th><app-sortable-header sortKey="actor_text" [activeSort]="historySort()"
+                  [direction]="historyDirection()" (sortChange)="sortHistory($event)">Performed by</app-sortable-header>
+              </th>
+              <th><app-sortable-header sortKey="reason" [activeSort]="historySort()" [direction]="historyDirection()"
+                  (sortChange)="sortHistory($event)">Reason</app-sortable-header></th>
+            </tr>
+            <tr class="column-filters">
+              <th><app-column-filter label="recorded at" type="date"
+                  [value]="historyColumns.values()['recorded_date'] || ''"
+                  (changed)="historyColumns.set('recorded_date',$event)" /></th>
+              <th><app-column-filter label="effective date" type="date"
+                  [value]="historyColumns.values()['effective_on'] || ''"
+                  (changed)="historyColumns.set('effective_on',$event)" /></th>
+              <th><app-column-filter label="student" type="search"
+                  [value]="historyColumns.values()['student_text'] || ''"
+                  (changed)="historyColumns.set('student_text',$event)" /></th>
+              <th><app-column-filter label="action" type="search" [value]="historyColumns.values()['action_text'] || ''"
+                  (changed)="historyColumns.set('action_text',$event)" /></th>
+              <th><app-column-filter label="batch" type="search" [value]="historyColumns.values()['batch_text'] || ''"
+                  (changed)="historyColumns.set('batch_text',$event)" /></th>
+              <th><app-column-filter label="performed by" type="search"
+                  [value]="historyColumns.values()['actor_text'] || ''"
+                  (changed)="historyColumns.set('actor_text',$event)" /></th>
+              <th><app-column-filter label="reason" type="search" [value]="historyColumns.values()['reason'] || ''"
+                  (changed)="historyColumns.set('reason',$event)" /></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of historyRows(); track row.id) {
+            <tr>
+              <td>{{ row.created_at | date: 'dd MMM yyyy, HH:mm' }}</td>
+              <td>{{ row.effective_on | date: 'dd MMM yyyy' }}</td>
+              <td>
+                {{ row.enrollment.student.full_name
+                }}<small>{{ row.enrollment.student.student_code }}</small>
+              </td>
+              <td>{{ historyAction(row) | titlecase }}</td>
+              <td>{{ row.from_batch?.name || '—' }} → {{ row.to_batch?.name || '—' }}</td>
+              <td>{{ row.actor?.full_name || row.changed_by || 'System' }}</td>
+              <td>{{ row.reason || '—' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="7">@if (!historyLoading() && !historyError()) { <app-async-state kind="empty"
+                  title="No matching enrollment history." /> }</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-data-table>
+  </section>
+  } @else {
+  <form class="card" [formGroup]="actionForm" (ngSubmit)="applyAction()">
+    <fieldset [disabled]="saving()">
+      <legend>{{ title }}</legend>
+      <div class="fields">
+        <label>Enrollment *<select #enrollment [value]="selectedId()" (change)="selectedId.set(enrollment.value)">
+            <option value="">Select enrollment</option>
+            @for (row of actionableRows(); track row.id) {
+            <option [value]="row.id" [selected]="row.id === selectedId()">
+              {{ row.student?.full_name }} · {{ row.batch?.name }} · {{ row.status }}
+            </option>
+            }
+          </select></label>
+        @if (view === 'transfer') {
+        <label>Destination batch *<select formControlName="batchId">
+            <option value="">Select batch</option>
+            @for (batch of activeBatches(); track batch.id) {
+            @if (batch.id !== selectedRow()?.batch_id) {
+            <option [value]="batch.id">{{ batch.name }}</option>
+            }
+            }
+          </select></label>
+        }
+        <label class="wide">Reason *<textarea formControlName="reason" minlength="3" maxlength="1000"
+            rows="3"></textarea>
+        </label>
+      </div>
+      <p>This change takes effect immediately and is recorded in enrollment history.</p>
+      @if (view === 'cancel') {
+      <p>
+        Cancelling ends this enrollment. Any refund must be recorded separately under Payments.
+      </p>
+      }
+      <footer>
+        <a routerLink="/enrollments">Back to enrollments</a><button type="submit" class="primary">{{ saving() ?
+          'Saving…' : title }}</button>
+      </footer>
+    </fieldset>
+  </form>
+  }
+</div>

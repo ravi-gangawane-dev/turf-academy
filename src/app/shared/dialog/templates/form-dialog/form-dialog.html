@@ -1,0 +1,57 @@
+@if (config().message) {
+  <p class="dialog-message">{{ config().message }}</p>
+}
+
+<form [formGroup]="form()!" class="dialog-form" (ngSubmit)="stateChange.emit({ valid: form()!.valid, value: form()!.getRawValue() })">
+  @for (field of config().fields ?? []; track field.id) {
+    <div class="field">
+      @if (field.type !== 'checkbox') {
+        <label [for]="'dialog-field-' + field.id">{{ field.label }}</label>
+      }
+
+      @switch (field.type) {
+        @case ('textarea') {
+          <textarea
+            [id]="'dialog-field-' + field.id"
+            [formControlName]="field.id"
+            [attr.rows]="field.rows ?? 3"
+            [attr.placeholder]="field.placeholder ?? null"
+          ></textarea>
+        }
+        @case ('select') {
+          <select [id]="'dialog-field-' + field.id" [formControlName]="field.id">
+            @for (option of field.options ?? []; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        }
+        @case ('checkbox') {
+          <label class="checkbox" [for]="'dialog-field-' + field.id">
+            <input type="checkbox" [id]="'dialog-field-' + field.id" [formControlName]="field.id" />
+            <span>{{ field.label }}</span>
+          </label>
+        }
+        @default {
+          <input
+            [id]="'dialog-field-' + field.id"
+            [type]="field.type"
+            [formControlName]="field.id"
+            [attr.placeholder]="field.placeholder ?? null"
+          />
+        }
+      }
+
+      @if (controlOf(field.id).invalid && controlOf(field.id).touched) {
+        <p class="field-error" role="alert">
+          @if (controlOf(field.id).hasError('required')) {
+            {{ field.label }} is required.
+          } @else if (controlOf(field.id).hasError('minlength')) {
+            {{ field.label }} is too short.
+          } @else {
+            {{ field.label }} is invalid.
+          }
+        </p>
+      }
+    </div>
+  }
+</form>

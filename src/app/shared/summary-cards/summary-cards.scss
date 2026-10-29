@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+button {
+  min-height: 100px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 45px 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  border: 1px solid #dce6e1;
+  border-radius: 12px;
+  color: #14221b;
+  background: #fff;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(13, 56, 39, 0.035);
+}
+button:disabled {
+  opacity: 1;
+}
+button.clickable {
+  cursor: pointer;
+}
+button > i {
+  grid-row: 1 / 3;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #078345;
+  background: #e6f7ed;
+  font-size: 18px;
+}
+button span {
+  display: grid;
+  gap: 2px;
+  color: #66776f;
+}
+button small {
+  color: #75847d;
+}
+button strong {
+  grid-column: 2;
+  font-size: 24px;
+}
+button em {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+button.blue > i {
+  color: #2563eb;
+  background: #e9f0ff;
+}
+button.orange > i {
+  color: #e8750b;
+  background: #fff1df;
+}
+button.purple > i {
+  color: #7c3aed;
+  background: #f0e9ff;
+}
+@media (max-width: 1050px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 620px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

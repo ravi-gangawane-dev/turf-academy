@@ -1,0 +1,22 @@
+
+/* Shared spacing and table containment for every Attendance view. */
+.workspace > main .attendance-section { min-width:0; width:100%; color:var(--app-text); }
+.workspace > main .attendance-section > app-page-hero { order:-1; }
+.workspace > main .attendance-section :is(.manual-layout,.history-layout,.calendar-layout,.queue-layout,.qr-layout) { gap:20px; min-width:0; }
+.workspace > main .attendance-section .history-layout { grid-template-columns:minmax(0,1fr); }
+.workspace > main .attendance-section :is(main,aside,.table-wrap,.records,.pending-records,.scanner-panel) { min-width:0; }
+.workspace > main .attendance-section :is(.manual-layout,.history-layout,.calendar-layout,.queue-layout)>main { gap:20px; }
+.workspace > main .attendance-section .table-wrap { width:100%; overflow-x:auto; }
+.workspace > main .attendance-section table { width:100%; border-collapse:collapse; }
+.workspace > main .attendance-section :is(th,td) { padding:12px; vertical-align:middle; }
+.workspace > main .attendance-section th { background:#f8fafc; color:#172238; font-weight:700; }
+.workspace > main .attendance-section :is(.manual-card,.side-card,.scanner-panel,.records,.pending-records,.correction-card,.main-calendar) { border-radius:12px; }
+.workspace > main .attendance-section .queue-metrics article { height:auto; min-height:108px; }
+.workspace > main .attendance-section .queue-metrics article>span { min-width:0; overflow-wrap:anywhere; }
+.workspace > main .attendance-section .view-switch { flex-wrap:wrap; }
+.workspace > main .attendance-section :is(.info,.queue-info) { margin:0; }
+@media(max-width:700px) {
+ .workspace > main .attendance-section :is(.manual-layout,.qr-layout,.queue-layout,.calendar-layout,.history-layout) { grid-template-columns:minmax(0,1fr); }
+ .workspace > main .attendance-section :is(.manual-layout,.qr-layout,.queue-layout)>aside { grid-template-columns:minmax(0,1fr); }
+ .workspace > main .attendance-section :is(.records,.pending-records)>header { flex-wrap:wrap; gap:12px; }
+}

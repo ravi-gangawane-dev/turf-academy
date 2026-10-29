@@ -1,0 +1,9 @@
+Plan name,Monthly fee (₹),Duration (months),Status,Registration fee (₹),Description
+"Junior Development",1250,3,active,0,"Beginner program for ages 5-8"
+"Youth Program",2400,6,active,500,"Core program for ages 9-12"
+"Advanced Program",4500,12,active,1000,"Competitive training track"
+"Elite Program",7800,12,inactive,2500,"Pre-professional track"
+"Summer Batch Camp",950,2,active,0,"2-week intensive summer camp"
+"Winter Workshop",750,1,active,0,"Weekend workshop series"
+"Career Track Masterclass",3200,6,inactive,0,"Adult career transition program"
+"Team Skills Camp",1800,4,active,0,"Team building and collaboration"

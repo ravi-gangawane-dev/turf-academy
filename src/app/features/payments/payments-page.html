@@ -1,0 +1,161 @@
+<div class="app-list-page payments-page">
+
+  <app-page-hero
+    title="{{ view === 'receipts' ? 'Receipts' : view === 'new' ? 'Record Payment' : view === 'partial' ? 'Partially Paid Charges' : view === 'full' ? 'Fully Paid Charges' : view === 'refunds' ? 'Refunds' : 'Payment History' }}"
+    subtitle="Transactions, charge settlement and receipts."
+    [breadcrumbs]="[{label: 'Dashboard', route: '/dashboard'}, {label: (view === 'receipts' ? 'Receipts' : view === 'new' ? 'Record Payment' : view === 'partial' ? 'Partially Paid Charges' : view === 'full' ? 'Fully Paid Charges' : view === 'refunds' ? 'Refunds' : 'Payment History')}]">
+    <div hero-actions><a class="primary" routerLink="/payments/new"><i class="pi pi-plus"></i>Record payment</a></div>
+  </app-page-hero>
+  <app-payment-view-navigation />
+  @if (error()) {
+  <div class="notice error" role="alert">
+    {{ error() }} <button (click)="ngOnInit()">Retry</button>
+  </div>
+  }
+  @if (message()) {
+  <div class="notice success" role="status">{{ message() }}</div>
+  }
+  <section class="metrics">
+    <app-summary-metric-card label="Net collection" [value]="metrics().total / 100 | academyMoney : 'symbol' : '1.2-2'"
+      icon="pi-wallet" hint="After refunds" />
+    <app-summary-metric-card label="Transactions" [value]="metrics().transactions" icon="pi-arrow-right-arrow-left"
+      tone="blue" />
+    <app-summary-metric-card label="Receipts" [value]="metrics().receipts" icon="pi-receipt" tone="purple" />
+    <app-summary-metric-card label="Amount refunded"
+      [value]="metrics().refunded / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-undo" tone="orange" />
+  </section>
+  @if (view === 'new') {
+  <section class="payment-form app-card">
+    <h2>Payment details</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>Outstanding charge<select formControlName="chargeId" #charge (change)="chargeChanged(charge.value)">
+          <option value="">Select student and period</option>
+          @for (item of charges(); track item.id) {
+          <option [value]="item.id">
+            {{ item.studentName }} · {{ item.period }} ·
+            {{ item.balancePaise / 100 | academyMoney }}
+          </option>
+          }
+        </select></label><label>Amount ({{preferences.currency()}})<input type="number" min="0.01" step="0.01"
+          formControlName="amountRupees" /></label><label>Payment mode<select formControlName="mode">
+          <option value="cash">Cash</option>
+          <option value="upi">UPI</option>
+          <option value="card">Card</option>
+          <option value="bank_transfer">Bank transfer</option>
+          <option value="online">Online</option>
+        </select></label><label>Provider reference<input formControlName="providerReference"
+          autocomplete="off" /></label><button class="primary" [disabled]="saving()">
+        {{ saving() ? 'Recording…' : 'Record payment' }}
+      </button>
+    </form>
+  </section>
+  } @else {
+  <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="payments"
+    (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)">
+
+    <div table-content class="table-wrap">
+      <app-table-tools title="Payments" [table]="exportTable1"></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th><app-sortable-header sortKey="receipt" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Receipt</app-sortable-header></th>
+            <th><app-sortable-header sortKey="student" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Student</app-sortable-header></th>
+            <th><app-sortable-header sortKey="date" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Date</app-sortable-header></th>
+            <th><app-sortable-header sortKey="mode" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Mode</app-sortable-header></th>
+            <th><app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Status</app-sortable-header></th>
+            <th><app-sortable-header sortKey="amount" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Amount</app-sortable-header></th>
+            <th>Action</th>
+          </tr>
+          <tr class="column-filters">
+            <th><app-column-filter label="receipt" type="search" [value]="columns.values()['receipt'] || ''"
+                (changed)="columns.set('receipt',$event)" /></th>
+            <th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''"
+                (changed)="columns.set('student',$event)" /></th>
+            <th><app-column-filter label="date" type="date" [value]="columns.values()['paid_day'] || ''"
+                (changed)="columns.set('paid_day',$event)" /></th>
+            <th><app-column-filter label="mode" type="search" [value]="columns.values()['payment_mode'] || ''"
+                (changed)="columns.set('payment_mode',$event)" /></th>
+            <th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status',$event)" /></th>
+            <th><app-column-filter label="amount" type="number" [value]="columns.values()['amount'] || ''"
+                (changed)="columns.set('amount',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pageRows(); track row.id) {
+          <tr>
+            <td>{{ row.receiptNumber || '—' }}</td>
+            <td>
+              <strong>{{ row.studentName }}</strong><small>{{ row.studentCode }}</small>
+            </td>
+            <td>{{ row.paidAt | date: 'medium' }}</td>
+            <td>{{ row.mode | titlecase }}</td>
+            <td>
+              <app-status-badge [status]="$any(row.status)" />
+            </td>
+            <td>{{ row.amountPaise / 100 | academyMoney }}</td>
+            <td>
+              <button [disabled]="!row.receiptNumber" (click)="printReceipt(row)" aria-label="Print receipt">
+                <i class="pi pi-print"></i>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7">
+              @if (!error()) { <app-async-state [kind]="loading() ? 'loading' : 'empty'"
+                [title]="loading() ? 'Loading payments...' : 'No payment records found.'" /> }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+  }
+  @if (view === 'refunds') {
+  <section class="payment-form app-card">
+    <h2>Refund actions</h2>
+    @for (row of filteredRows(); track row.id) {
+    <div class="refund-row">
+      <span><strong>{{ row.studentName }}</strong> · {{ row.receiptNumber }} ·
+        {{ row.amountPaise / 100 | academyMoney }}</span><button class="primary" [disabled]="row.status === 'refunded'"
+        (click)="openRefund(row)">
+        {{ row.status === 'refunded' ? 'Refunded' : 'Refund' }}
+      </button>
+    </div>
+    } @empty {
+    <p>No refundable payments found.</p>
+    }
+  </section>
+  }
+</div>
+@if (refundPayment(); as payment) {
+<div class="dialog-backdrop">
+  <section class="payment-form app-card refund-dialog" appModalFocus [modalBusy]="saving()"
+    (modalDismiss)="refundPayment.set(null)" role="dialog" aria-modal="true" aria-labelledby="refund-title">
+    <h2 id="refund-title">Refund {{ payment.receiptNumber }}</h2>
+    @if(error()){<p role="alert">{{error()}}</p>}
+    @if(refundForm.touched && refundForm.invalid){<p>Enter a refund up to {{payment.refundablePaise/100|academyMoney}}
+      and a reason of at least three characters.</p>}
+    <form [formGroup]="refundForm" (ngSubmit)="submitRefund()">
+      <label>Amount ({{preferences.currency()}})<input type="number" min="0.01" step="0.01"
+          [max]="payment.refundablePaise / 100" formControlName="amountRupees" /></label><label>Reason<textarea
+          formControlName="reason"></textarea></label>
+      <div>
+        <button type="button" [disabled]="saving()" (click)="refundPayment.set(null)">Cancel</button>
+        <button class="primary" [disabled]="saving()">
+          {{ saving() ? 'Refunding…' : 'Confirm refund' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+}

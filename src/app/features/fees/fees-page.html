@@ -1,0 +1,157 @@
+<div class="app-list-page charges-page">
+
+  <app-page-hero title="Monthly Charges" subtitle="Manage monthly charges for fee plans and batches." [breadcrumbs]="[{label: 'Dashboard', route: '/dashboard'}, {label: 'Monthly Charges'}]" actionLabel="Add Monthly Charge" (action)="openChargeDialog()"></app-page-hero>
+  <app-fee-view-navigation />
+  @if (error()) {
+    <div class="notice error" role="alert">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="notice" role="status">{{ message() }}</div>
+  }
+  @if (receiptNumber()) {
+    <div class="notice receipt" role="status">
+      <strong>Receipt {{ receiptNumber() }}</strong><a routerLink="/payments/receipts">View receipts</a>
+    </div>
+  }
+  @if (loading()) { <app-async-state title="Loading charges…" /> }
+  <section class="metrics">
+    <app-summary-metric-card label="Total Students" [value]="metrics().students" icon="pi-users" hint="With monthly charges" />
+    <app-summary-metric-card label="Total Monthly Collection" [value]="metrics().total / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-wallet" hint="Expected collection" tone="blue" />
+    <app-summary-metric-card label="Pending Collection" [value]="metrics().pending / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-clock" hint="Open balances" tone="orange" />
+    <app-summary-metric-card label="Overdue" [value]="metrics().overdue / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-exclamation-circle" hint="Past due date" tone="red" />
+  </section>
+  <app-data-table
+    class="charges-card"
+    [total]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    itemLabel="records"
+    (pageChange)="changePage($event)"
+
+    (pageSizeChange)="setPageSize($event)"
+>
+    
+    <div table-content class="table-wrap">
+      <app-table-tools title="Fees" [table]="exportTable1"></app-table-tools>
+<table #exportTable1 class="academy-table">
+        <thead><tr><th>#</th><th><app-sortable-header sortKey="cf_student" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student name</app-sortable-header></th><th><app-sortable-header sortKey="cf_batch" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch</app-sortable-header></th><th><app-sortable-header sortKey="cf_plan" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Fee plan</app-sortable-header></th><th><app-sortable-header sortKey="cf_period" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Month</app-sortable-header></th><th><app-sortable-header sortKey="cf_amount" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Monthly charge</app-sortable-header></th><th><app-sortable-header sortKey="cf_due_date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Due date</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th></th><th><app-column-filter label="student name" type="search" [value]="columns.values()['student'] || ''" (changed)="columns.set('student',$event)" /></th><th><app-column-filter label="batch" type="search" [value]="columns.values()['batch'] || ''" (changed)="columns.set('batch',$event)" /></th><th><app-column-filter label="fee plan" type="search" [value]="columns.values()['plan'] || ''" (changed)="columns.set('plan',$event)" /></th><th><app-column-filter label="month" type="month" [value]="columns.values()['period'] || ''" (changed)="columns.set('period',$event)" /></th><th><app-column-filter label="monthly charge" type="number" [value]="columns.values()['amount'] || ''" (changed)="columns.set('amount',$event)" /></th><th><app-column-filter label="due date" type="date" [value]="columns.values()['due_date'] || ''" (changed)="columns.set('due_date',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><button type="button" (click)="columns.reset()">Reset</button></th></tr></thead>
+        <tbody>
+          @for (row of pagedRows(); track row.id; let index = $index) {
+            <tr>
+              <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+              <td>
+                <strong>{{ row.studentName }}</strong>
+              </td>
+              <td>{{ row.batchName }}</td>
+              <td>{{ row.planName }}</td>
+              <td>{{ row.period }}</td>
+              <td>{{ row.amountPaise / 100 | academyMoney : 'symbol' : '1.2-2' }}</td>
+              <td>{{ row.dueDate | date: 'dd MMM yyyy' }}</td>
+              <td>
+                <app-status-badge [status]="row.status" />
+              </td>
+              <td>
+                <div class="actions">
+                  <button
+                    [disabled]="!!invoiceLoading()"
+                    (click)="downloadInvoice(row.id)"
+                    title="Download invoice"
+                    aria-label="Download invoice for {{ row.studentName }}"
+                  >
+                    <i class="pi pi-file"></i></button
+                  ><button
+                    class="pay"
+                    [disabled]="row.balancePaise === 0 || submitting() || loading()"
+                    (click)="confirmPay(row.id, row.balancePaise, row.studentName)"
+                    aria-label="Pay {{ row.studentName }}"
+                  >
+                    <i class="pi pi-wallet"></i></button
+                  ><button
+                    [routerLink]="['/students',row.studentId]"
+                    title="View student"
+                    aria-label="View student {{ row.studentName }}"
+                  >
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9">
+                @if (!loading() && !error()) { <app-async-state kind="empty" title="No monthly charges match your filters." /> }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-data-table>
+</div>
+
+@if (selectedChargeId()) {
+  <div class="dialog-backdrop">
+    <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="selectedChargeId.set('')" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+      <header>
+        <h2 id="payment-title">Record Payment</h2>
+        <button aria-label="Close" [disabled]="submitting()" (click)="selectedChargeId.set('')">
+          <i class="pi pi-times"></i>
+        </button>
+      </header>
+      <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()">
+        @if (error()) { <p role="alert">{{ error() }}</p> }
+        @if (paymentForm.touched && paymentForm.invalid) { <p role="alert">Enter a positive payment amount no greater than the outstanding balance.</p> }
+        <label>Amount ({{preferences.currency()}})<input type="number" min="0.01" step="0.01" formControlName="amountRupees" /></label
+        ><label
+          >Payment mode<select formControlName="mode">
+            <option value="cash">Cash</option>
+            <option value="upi">UPI</option>
+            <option value="online">Online</option>
+          </select></label
+        >
+        <footer>
+          <button type="button" [disabled]="submitting()" (click)="selectedChargeId.set('')">Cancel</button
+          ><button class="primary" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Saving…' : 'Save payment' }}
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}
+@if (chargeDialogOpen()) {
+  <div class="dialog-backdrop">
+    <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="chargeDialogOpen.set(false)" role="dialog" aria-modal="true" aria-labelledby="charge-title">
+      <header>
+        <h2 id="charge-title">Add Monthly Charge</h2>
+        <button aria-label="Close" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">
+          <i class="pi pi-times"></i>
+        </button>
+      </header>
+      <form [formGroup]="chargeForm" (ngSubmit)="addCharge()">
+        @if (error()) { <p role="alert">{{ error() }}</p> }
+        @if (optionsLoading()) { <app-async-state title="Loading enrollments…" /> }
+        @if (chargeForm.touched && chargeForm.invalid) { <p role="alert">Select an enrollment, month and due date, and enter a positive amount.</p> }
+        <label
+          >Student enrollment<select
+            formControlName="enrollmentId"
+            (change)="enrollmentChanged(chargeForm.controls.enrollmentId.value)"
+          >
+            <option value="">Select student</option>
+            @for (row of enrollmentOptions(); track row.id) {
+              <option [value]="row.id">{{ row.studentName }} · {{ row.batchName }}</option>
+            }
+          </select></label
+        ><label>Month<input type="month" formControlName="period" (change)="chargePeriodChanged()" /></label
+        ><label>Due date<input type="date" formControlName="dueDate" /></label
+        ><label
+          >Monthly charge ({{preferences.currency()}})<input type="number" min="0.01" step="0.01" formControlName="amountRupees"
+        /></label>
+        <footer>
+          <button type="button" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">Cancel</button
+          ><button class="primary" type="submit" [disabled]="submitting() || optionsLoading()">{{ submitting() ? 'Saving…' : 'Add Charge' }}</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+}

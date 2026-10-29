@@ -1,0 +1,61 @@
+[
+  {
+    "time": "2026-10-21T11:05:13.883Z",
+    "url": "https://ttuigbkaluozglzgepsh.supabase.co/rest/v1/attendance_records",
+    "status": 200,
+    "method": "GET",
+    "attendance": []
+  },
+  {
+    "time": "2026-10-21T11:05:15.049Z",
+    "url": "https://ttuigbkaluozglzgepsh.supabase.co/rest/v1/attendance_records",
+    "status": 200,
+    "method": "GET",
+    "attendance": [
+      {
+        "check_in_at": "2026-10-21T11:05:14.729252+00:00",
+        "check_out_at": null
+      }
+    ]
+  },
+  {
+    "time": "2026-10-21T11:05:16.475Z",
+    "url": "https://ttuigbkaluozglzgepsh.supabase.co/rest/v1/attendance_records",
+    "status": 200,
+    "method": "GET",
+    "attendance": [
+      {
+        "id": "3d10d444-874e-4afe-92b2-2331ecdee2b1",
+        "check_in_at": "2026-10-21T11:05:14.729252+00:00",
+        "check_out_at": null,
+        "status": "present"
+      }
+    ]
+  },
+  {
+    "time": "2026-10-21T11:05:17.088Z",
+    "url": "https://ttuigbkaluozglzgepsh.supabase.co/rest/v1/rpc/attendance_check_out",
+    "status": 200,
+    "method": "POST",
+    "attendance": [
+      {
+        "id": "3d10d444-874e-4afe-92b2-2331ecdee2b1",
+        "check_in_at": "2026-10-21T11:05:14.729252+00:00",
+        "check_out_at": "2026-10-21T11:05:17.077937+00:00",
+        "status": "checked_out"
+      }
+    ]
+  },
+  {
+    "time": "2026-10-21T11:05:17.493Z",
+    "url": "https://ttuigbkaluozglzgepsh.supabase.co/rest/v1/attendance_records",
+    "status": 200,
+    "method": "GET",
+    "attendance": [
+      {
+        "check_in_at": "2026-10-21T11:05:14.729252+00:00",
+        "check_out_at": "2026-10-21T11:05:17.077937+00:00"
+      }
+    ]
+  }
+]

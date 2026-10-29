@@ -1,0 +1,174 @@
+<div class="app-list-page attendance-section manual-page" [class.checkout-page]="isCheckout">
+  @if (message()) {
+    <div class="manual-notice" role="status">{{ message() }}</div>
+  }
+  @if (store.loading()) {
+    <app-async-state title="Loading attendance..." />
+  }
+  @if (error() || store.apiError()) {
+    <app-async-state
+      kind="error"
+      title="Attendance could not be updated"
+      [message]="error() || store.apiError()"
+      actionLabel="Retry"
+      (action)="retry()"
+    />
+  }
+  <app-page-hero
+    title="Manual Check {{ isCheckout ? 'Out' : 'In' }}"
+    subtitle="Record student attendance manually."
+    [breadcrumbs]="[
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+      { label: 'Attendance', route: '/attendance' },
+      { label: 'Manual Check ' + (isCheckout ? 'Out' : 'In') },
+    ]"
+  ></app-page-hero>
+
+  <div class="info">
+    <i class="pi pi-info-circle"></i>Mark student check {{ isCheckout ? 'out' : 'in' }} manually
+    when they {{ isCheckout ? 'leave' : 'arrive at' }} the academy.
+  </div>
+  <div class="manual-layout">
+    <main>
+      <section class="manual-card search-student">
+        <h2>1. Search Student</h2>
+        <div>
+          <label
+            ><input
+              aria-label="Search students"
+              placeholder="Search by name or student ID"
+              [(ngModel)]="query" /><i class="pi pi-search"></i
+          ></label>
+        </div>
+        <small>Matching Students</small>
+        <footer>
+          @for (row of rows().slice(0, 5); track row.id) {
+            <button
+              type="button"
+              class="student-choice"
+              [class.selected]="selectedId() === row.id"
+              [attr.aria-pressed]="selectedId() === row.id"
+              (click)="select(row.id)"
+            >
+              <strong>{{ row.studentName }}</strong
+              ><small>{{ code(row.studentId) }}</small
+              ><span>{{ row.batchName }}</span>
+            </button>
+          } @empty {
+            <span>No enrolled students match your search.</span>
+          }
+        </footer>
+      </section>
+      @if (selected(); as row) {
+        <section class="manual-card student-info">
+          <h2>2. Student Information</h2>
+          <div>
+            <span class="profile-avatar">{{ initials(row.studentName) }}</span>
+            <div class="identity">
+              <h3>{{ row.studentName }}</h3>
+              <dl>
+                <dt>Student ID</dt>
+                <dd>{{ code(row.studentId) }}</dd>
+                <dt>Batch</dt>
+                <dd class="purple">{{ row.batchName }}</dd>
+                <dt>Attendance</dt>
+                <dd>{{ row.attendance?.status || 'Not recorded today' }}</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+      } @else {
+        <section class="manual-card student-info">
+          <h2>2. Student Information</h2>
+          <p class="selection-hint">
+            Select a student above to review their details before confirming.
+          </p>
+        </section>
+      }
+      <section class="manual-card check-details">
+        <h2>3. Confirm Check {{ isCheckout ? 'Out' : 'In' }}</h2>
+        <p>The current academy date and time will be recorded securely when you confirm.</p>
+        <footer>
+          <a routerLink="/attendance"><i class="pi pi-times"></i> Cancel</a
+          ><button
+            [disabled]="saving() || store.loading() || !selected()"
+            (click)="submitAttendance()"
+          >
+            <i class="pi pi-check"></i> Check {{ isCheckout ? 'Out' : 'In' }} Student          </button>
+        </footer>
+      </section>
+      @if (whatsappData(); as data) {
+        <app-whatsapp-action [message]="data" />
+      }
+      @if (isCheckout) {
+        <section class="manual-card checkout-summary">
+          <h2>Current Attendance</h2>
+          <div>
+            <article>
+              <i class="pi pi-clock"></i
+              ><span
+                >Check In Time<b>{{ selected()?.attendance?.checkInAt || '—' }}</b></span
+              >
+            </article>
+            <article>
+              <i class="pi pi-clock"></i
+              ><span
+                >Check Out Time<b>{{ selected()?.attendance?.checkOutAt || '—' }}</b></span
+              >
+            </article>
+            <article>
+              <i class="pi pi-calendar"></i
+              ><span
+                >Status<b>{{ selected()?.attendance?.status || 'Not checked in' }}</b></span
+              >
+            </article>
+          </div>
+        </section>
+      }
+    </main>
+    <aside>
+      <section class="side-card today">
+        <header>
+          <h2><i class="pi pi-chart-line"></i> Today's Summary</h2>
+          <a routerLink="/attendance">View Dashboard</a>
+        </header>
+        <div>
+          <span
+            >Present<b>{{ todaySummary().present }}</b></span
+          ><span
+            >Absent<b>{{ todaySummary().absent }}</b></span
+          ><span
+            >Late<b>{{ todaySummary().late }}</b></span
+          ><span
+            >Total<b>{{ todaySummary().total }}</b></span
+          >
+        </div>
+      </section>
+      <section class="side-card recent-check">
+        <h2><i class="pi pi-clock"></i> Recent Check-Ins</h2>
+        @for (item of recent(); track item.id) {
+          <article>
+            <span>{{ initials(item.studentName) }}</span>
+            <div>
+              <b>{{ item.studentName }}</b
+              ><small>{{ code(item.studentId) }}</small>
+            </div>
+            <time>{{ item.attendance?.checkInAt || '—' }}</time
+            ><em>{{ item.attendance?.status }}</em>
+          </article>
+        } @empty {
+          <p>No attendance has been recorded today.</p>
+        }
+        <a routerLink="/attendance/history">View All <i class="pi pi-angle-right"></i></a>
+      </section>
+      <section class="side-card important">
+        <h2><i class="pi pi-info-circle"></i> Important Notes</h2>
+        <ul>
+          <li>Please ensure correct student before marking attendance.</li>
+          <li>You can edit attendance within the same day.</li>
+          <li>For corrections, use Attendance Correction module.</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,296 @@
+<section class="app-settings-page">
+  <app-page-hero [title]="pageInfo().label" [subtitle]="pageInfo().description" [breadcrumbs]="breadcrumbs()"></app-page-hero>
+
+  <div class="settings-tabs">
+    @for (section of sections; track section) {
+    <button class="tab-button" [class.active]="activeSection() === section" (click)="setActiveSection(section)"
+      [attr.aria-pressed]="activeSection() === section">
+      {{ section === 'users' ? 'Users & Roles' : section === 'tools' ? 'Tools & Data' : (section | titlecase) }}
+    </button>
+    }
+  </div>
+
+  <div class="settings-content">
+    @if (activeSection() === 'users') {
+      <app-users-settings-panel />
+    } @else {
+    <form [formGroup]="form" class="settings-form" (ngSubmit)="save()">
+      @switch (activeSection()) {
+      @case ('all settings') {
+      <section class="settings-section">
+        <h2 class="section-title">All settings</h2>
+        <p class="settings-description">Choose a section to manage your academy or explore the available tools.</p>
+        <div class="settings-directory">
+          @for (item of settingsDirectory; track item.path) {
+          <a class="settings-directory-card" [routerLink]="item.path">
+            <span class="users-icon"><i class="pi" [class]="'pi ' + item.icon" aria-hidden="true"></i></span>
+            <span><strong>{{ item.label }}</strong><small>{{ item.description }}</small></span>
+            <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+          }
+        </div>
+      </section>
+      }
+      @case ('profile') {
+      <div class="settings-section">
+        <h2 class="section-title">Academy Profile</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-academyName">Academy Name</label>
+            <input id="settings-academyName" formControlName="academyName" type="text" placeholder="Turf Cricket Academy" class="form-control" />
+
+            @if (form.controls.academyName.errors && (form.controls.academyName.touched ||
+            form.controls.academyName.dirty)) {
+            <small class="error-text">Name is required and must be under 120 characters</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-academyCode">Academy Code</label>
+            <input id="settings-academyCode" formControlName="academyCode" type="text" placeholder="TCM" class="form-control" maxlength="10" />
+            @if (form.controls.academyCode.errors && (form.controls.academyCode.touched ||
+            form.controls.academyCode.dirty)) {
+            <small class="error-text">Code must be 2-10 uppercase letters</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-academyLogo">Academy Logo URL</label>
+            <input id="settings-academyLogo" formControlName="academyLogo" type="text" placeholder="https://example.com/logo.png"
+              class="form-control" />
+            @if (form.controls.academyLogo.errors && (form.controls.academyLogo.touched ||
+            form.controls.academyLogo.dirty)) {
+            <small class="error-text">Maximum 500 characters</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-academyDescription">Academy Description</label>
+            <textarea id="settings-academyDescription" formControlName="academyDescription" rows="3" class="form-control"
+              placeholder="Turf Cricket Academy - Excellence in Cricket Training"></textarea>
+            @if (form.controls.academyDescription.errors && (form.controls.academyDescription.touched ||
+            form.controls.academyDescription.dirty)) {
+            <small class="error-text">Maximum 500 characters</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-contactEmail">Contact Email</label>
+            <input id="settings-contactEmail" formControlName="contactEmail" type="email" placeholder="contact@turfcricket.academy"
+              class="form-control" />
+            @if (form.controls.contactEmail.errors && (form.controls.contactEmail.touched ||
+            form.controls.contactEmail.dirty)) {
+            <small class="error-text">Valid email required</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-contactPhone">Contact Phone</label>
+            <input id="settings-contactPhone" formControlName="contactPhone" type="tel" placeholder="+91 98765 43210" class="form-control"
+              maxlength="30" />
+            @if (form.controls.contactPhone.errors && (form.controls.contactPhone.touched ||
+            form.controls.contactPhone.dirty)) {
+            <small class="error-text">Maximum 30 characters</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-address">Full Address</label>
+            <textarea id="settings-address" formControlName="address" rows="3" class="form-control"
+              placeholder="Kishor Gole Fitness Club, Police Chowki, Daud Rd, beside the main field"></textarea>
+            @if (form.controls.address.errors && (form.controls.address.touched || form.controls.address.dirty)) {
+            <small class="error-text">Maximum 500 characters</small>
+            }
+          </div>
+        </div>
+      </div>
+      }
+      @case ('operations') {
+      <div class="settings-section">
+        <h2 class="section-title">Operations Settings</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-timezone">Timezone</label>
+            <select id="settings-timezone" formControlName="timezone" class="form-control">
+              <option value="Asia/Kolkata">Asia/Kolkata (UTC+5:30)</option>
+              <option value="UTC">UTC</option>
+              <option value="Asia/Dubai">Asia/Dubai (UTC+4)</option>
+              <option value="Europe/London">Europe/London (UTC+0)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="settings-currencyCode">Currency Code</label>
+            <input id="settings-currencyCode" formControlName="currencyCode" type="text" placeholder="INR" class="form-control" maxlength="3"
+              inputmode="text" />
+            @if (form.controls.currencyCode.errors && (form.controls.currencyCode.touched ||
+            form.controls.currencyCode.dirty)) {
+            <small class="error-text">3-letter currency code required (e.g., INR, USD)</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-attendanceGraceMinutes">Attendance Grace Minutes</label>
+            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0" max="180" step="1"
+              class="form-control" />
+            @if (form.controls.attendanceGraceMinutes.errors && (form.controls.attendanceGraceMinutes.touched ||
+            form.controls.attendanceGraceMinutes.dirty)) {
+            <small class="error-text">Must be between 0 and 180 minutes</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-feeDueDay">Fee Due Day</label>
+            <input id="settings-feeDueDay" formControlName="feeDueDay" type="number" min="1" max="28" step="1" class="form-control" />
+            @if (form.controls.feeDueDay.errors && (form.controls.feeDueDay.touched || form.controls.feeDueDay.dirty)) {
+            <small class="error-text">Must be between 1 and 28</small>
+            }
+          </div>
+        </div>
+      </div>
+      }
+      @case ('attendance') {
+      <div class="settings-section">
+        <h2 class="section-title">Attendance & QR Settings</h2>
+        <p class="settings-description">
+          Configuration for attendance check-in and QR code management
+        </p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-attendanceGraceMinutes">Default Check-in Window</label>
+            <p class="muted-text">
+              Minutes after scheduled time before check-in is marked as late
+            </p>
+            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0" max="180" step="1"
+              class="form-control" readonly />
+            <small>
+              Same as Operations settings (shared configuration)
+            </small>
+          </div>
+        </div>
+      </div>
+      }
+      @case ('notifications') {
+      <div class="settings-section">
+        <h2 class="section-title">Notifications & Communication</h2>
+        <p class="settings-description">
+          Configure notification channels and messaging preferences
+        </p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-inApp">In-App Notifications</label>
+            <p class="muted-text">
+              Enable in-app notifications for attendance, fees, and announcements
+            </p>
+            <input id="settings-inApp" formControlName="inApp" type="checkbox" class="form-check-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="settings-email">Email Notifications</label>
+            <p class="muted-text">
+              Send email notifications for fees, admissions, and events
+            </p>
+            <input id="settings-email" formControlName="email" type="checkbox" class="form-check-input" />
+          </div>
+
+          <div class="form-group">
+            <label for="settings-whatsapp">WhatsApp Notifications</label>
+            <p class="muted-text">
+              Send WhatsApp notifications (click-to-chat). Delivery not verified.
+            </p>
+            <input id="settings-whatsapp" formControlName="whatsapp" type="checkbox" class="form-check-input" />
+            <small class="muted-text">
+              Opens WhatsApp chat window. Delivery cannot be verified here.
+            </small>
+          </div>
+
+          <label>
+            Test recipient phone number
+            <input type="tel" [value]="testRecipient()" (input)="testRecipient.set($any($event.target).value)"
+              [disabled]="auth.role() !== 'admin'" />
+          </label>
+          <button type="button" class="primary-button" aria-label="Preview test WhatsApp message"
+            (click)="openTestWhatsAppMessage()" [disabled]="auth.role() !== 'admin'">
+            Test WhatsApp Message
+          </button>
+          @if (error()) {
+          <small class="error-text">{{ error() }}</small>
+          }
+          @if (message()) {
+          <small class="success-text">{{ message() }}</small>
+          }
+        </div>
+      </div>
+      }
+      @case ('tools') {
+      <div class="settings-section">
+        <h2 class="section-title">Tools & Data</h2>
+        <p class="settings-description">
+          Data export, theme preferences, and academy records
+        </p>
+        <section class="appearance-panel" aria-labelledby="appearance-title">
+          <h3 id="appearance-title"><i class="pi pi-palette" aria-hidden="true"></i> Appearance</h3>
+          <p class="muted-text">Choose the theme for this device. Changes apply immediately.</p>
+          <div class="theme-options">
+            @for (choice of themes; track choice.id) {
+            <button type="button" class="theme-choice" [class.selected]="deviceTheme() === choice.id"
+              [attr.aria-pressed]="deviceTheme() === choice.id" (click)="setDeviceTheme(choice.id)">
+              <span class="theme-swatch" [attr.data-theme]="choice.id" aria-hidden="true"></span>
+              <strong>{{ choice.label }}</strong>
+              <small>{{ choice.description }}</small>
+              @if (deviceTheme() === choice.id) { <i class="pi pi-check-circle" aria-hidden="true"></i> }
+            </button>
+            }
+          </div>
+        </section>
+        <section class="data-export-panel" aria-labelledby="data-export-title">
+          <span class="users-icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+          <div>
+            <h3 id="data-export-title">Academy Data Export</h3>
+            <p class="muted-text">Download academy records as JSON, including student, attendance, and financial records.</p>
+            <p class="muted-text">Uploaded files, login accounts, QR tokens, and audit history are not included. Use your database provider's backup tools for a complete backup and restore. Store exported records securely.</p>
+            <button type="button" class="primary-button" (click)="exportData()" [disabled]="busy() || auth.role() !== 'admin'">
+              <i class="pi" [class.pi-download]="!busy()" [class.pi-spinner]="busy()" [class.pi-spin]="busy()" aria-hidden="true"></i>
+              {{ busy() ? 'Preparing export...' : 'Download academy data' }}
+            </button>
+            @if (progress()) { <p role="status" aria-live="polite">{{ progress() }}</p> }
+          </div>
+        </section>
+      </div>
+      }
+      }
+      @if (activeSection() !== 'users' && activeSection() !== 'all settings' && activeSection() !== 'tools') {
+      <footer class="settings-footer">
+        <span class="muted-text">Changes apply when you save.</span>
+        <button type="submit" class="primary-button" [disabled]="loading() || saving() || auth.role() !== 'admin'">
+          <i class="pi" [class.pi-save]="!saving()" [class.pi-spinner]="saving()" [class.pi-spin]="saving()" aria-hidden="true"></i>
+          {{ saving() ? 'Saving...' : 'Save changes' }}
+        </button>
+      </footer>
+      }
+    </form>
+    }
+  </div>
+</section>
+
+@if (loading()) {
+<div class="loading-state" role="status">
+  <div class="spinner"></div>
+  <p>Loading academy settings...</p>
+</div>
+}
+
+@if (error()) {
+<div class="error-state" role="alert">
+  <p>Error: {{ error() }}</p>
+  <button class="secondary-button" (click)="load()">Retry</button>
+</div>
+}
+
+@if (message()) {
+<div class="success-state" role="status">
+  <p>{{ message() }}</p>
+</div>
+}

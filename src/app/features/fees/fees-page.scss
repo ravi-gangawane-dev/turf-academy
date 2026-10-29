@@ -1,0 +1,341 @@
+:host {
+  display: block;
+}
+.charges-page {
+  display: grid;
+  gap: 20px;
+}
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64746b;
+}
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.page-heading h1 {
+  margin: 0 0 4px;
+}
+.page-heading p {
+  margin: 0;
+  color: #64746b;
+}
+.heading-icon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  color: #16864b;
+  background: #e3f5e9;
+  font-size: 29px;
+  font-weight: 800;
+}
+.primary {
+  border-color: #16864b !important;
+  color: #fff !important;
+  background: #16864b !important;
+}
+.page-heading > button {
+  margin-left: auto;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.page-heading > button i {
+  margin-right: 8px;
+}
+.notice {
+  margin: 0;
+}
+.receipt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.metrics article {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 126px;
+  padding: 20px;
+  border: 1px solid #e2e8e5;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(7 25 47 / 4%);
+}
+.metrics article > i {
+  display: grid;
+  place-items: center;
+  flex: 0 0 64px;
+  height: 64px;
+  border-radius: 14px;
+  color: #16864b;
+  background: #e3f5e9;
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 800;
+}
+.metrics .collection > i {
+  color: #2684d9;
+  background: #e4f2fd;
+}
+.metrics .pending > i {
+  color: #ec8a0a;
+  background: #fff0da;
+}
+.metrics .overdue > i {
+  color: #ec3d43;
+  background: #fee4e4;
+}
+.metrics span,
+.metrics strong,
+.metrics small {
+  display: block;
+}
+.metrics span,
+.metrics small {
+  color: #64746b;
+}
+.metrics strong {
+  margin: 6px 0;
+  font-size: 25px;
+}
+.charges-card {
+  overflow: hidden;
+  border: 1px solid #e2e8e5;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(7 25 47 / 4%);
+}
+.charges-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+}
+.charges-card h2 {
+  margin: 0;
+}
+.filters {
+  display: flex;
+  gap: 10px;
+}
+.filters select,
+.filters input {
+  height: 42px;
+  border: 1px solid #d9e1dd;
+  border-radius: 7px;
+  background: #fff;
+}
+.filters select {
+  min-width: 155px;
+  padding: 0 12px;
+}
+.filters label {
+  position: relative;
+}
+.filters label i {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  translate: 0 -50%;
+  color: #718078;
+}
+.filters input {
+  width: 235px;
+  padding: 0 12px 0 38px;
+}
+.charges-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.charges-card th,
+.charges-card td {
+  padding: 14px 12px;
+  border: 1px solid #e8ecea;
+  text-align: left;
+  white-space: nowrap;
+}
+.charges-card th {
+  background: #f4f5f5;
+}
+.charges-card th:first-child,
+.charges-card td:first-child {
+  width: 45px;
+  text-align: center;
+}
+.charges-card th:last-child,
+.charges-card td:last-child {
+  width: 145px;
+  text-align: center;
+}
+.status {
+  display: inline-flex;
+  min-width: 70px;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: #147a45;
+  background: #dff5e7;
+  font-weight: 700;
+}
+.status.pending {
+  color: #d66b04;
+  background: #fff0db;
+}
+.status.overdue {
+  color: #df3036;
+  background: #fee5e5;
+}
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.actions button,
+.charges-card > footer button {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border: 0;
+  border-radius: 7px;
+  color: #64746b;
+  background: #f2f4f5;
+}
+.actions .pay {
+  color: #16864b;
+  background: #e8f5ed;
+}
+.charges-card > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  color: #64746b;
+}
+.charges-card > footer div {
+  display: flex;
+  gap: 7px;
+}
+.charges-card > footer button {
+  border: 1px solid #dbe3df;
+  background: #fff;
+}
+.charges-card > footer button.current {
+  color: #fff;
+  background: #16864b;
+}
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(7 25 47 / 54%);
+}
+.dialog {
+  width: min(520px, 100%);
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+}
+.dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8e5;
+}
+.dialog h2 {
+  margin: 0;
+}
+.dialog header button {
+  border: 0;
+  background: none;
+}
+.dialog form {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+.dialog label {
+  display: grid;
+  gap: 7px;
+  font-weight: 700;
+}
+.dialog input,
+.dialog select {
+  width: 100%;
+  min-height: 43px;
+  padding: 9px 12px;
+  border: 1px solid #d7dfdb;
+  border-radius: 8px;
+  background: #fff;
+}
+.dialog form > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 5px;
+}
+.dialog footer button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #d7dfdb;
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 700;
+}
+@media (max-width: 1100px) {
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .charges-card {
+    overflow-x: auto;
+  }
+  .charges-card > header,
+  .charges-card > footer,
+  .charges-card table {
+    min-width: 1050px;
+  }
+}
+@media (max-width: 650px) {
+  .page-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .page-heading > button {
+    width: 100%;
+    margin: 0;
+  }
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  .metrics article {
+    min-height: 105px;
+  }
+  .receipt {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
