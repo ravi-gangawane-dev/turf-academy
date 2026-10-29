@@ -10,8 +10,8 @@ major_version = 17
 
 [auth]
 enabled = true
-site_url = "http://localhost:4200"
-additional_redirect_urls = ["http://localhost:4200/**"]
+site_url = "https://turf-academy.netlify.app/"
+additional_redirect_urls = ["https://turf-academy.netlify.app/**"]
 
 [auth.email.template.recovery]
 subject = "Reset your Turf Cricket Academy password"
