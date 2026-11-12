@@ -8,6 +8,10 @@ export interface PrintBrand {
   readonly email: string;
   readonly currencyCode: string;
   readonly timezone: string;
+  /** Optional letterhead lines configured in Academy Settings. */
+  readonly registrationNumber?: string;
+  readonly terms?: string;
+  readonly footerNote?: string;
 }
 
 export interface PrintLineItem {
@@ -320,6 +324,61 @@ export interface PrintBatchRosterDocument {
   readonly rows: readonly PrintBatchRosterRow[];
 }
 
+export type PrintProfileKind = 'student' | 'parent' | 'coach';
+
+export interface PrintProfileField {
+  readonly label: string;
+  readonly value: string;
+}
+
+/** One grouped block of real values from the person's record. */
+export interface PrintProfileSection {
+  readonly title: string;
+  readonly fields: readonly PrintProfileField[];
+}
+
+/**
+ * A checklist row derived from the records the academy actually holds. It is a
+ * completeness view, not a legally required document list.
+ */
+export interface PrintProfileChecklistItem {
+  readonly label: string;
+  readonly recorded: boolean;
+  readonly detail?: string;
+}
+
+export interface PrintProfileDocumentRow {
+  readonly documentType: string;
+  readonly fileName: string;
+  readonly uploadedAt: string;
+  readonly uploadedBy?: string;
+}
+
+/**
+ * Printable identity and record summary for a student, parent or coach. Every
+ * section, checklist row and document row comes from the live record passed in
+ * by the details page; the template only supplies labels.
+ */
+export interface PrintProfileSheetDocument {
+  readonly kind: 'profile-sheet';
+  readonly brand: PrintBrand;
+  readonly reference: string;
+  readonly issuedAt: string;
+  readonly profileKind: PrintProfileKind;
+  readonly fullName: string;
+  readonly profileCode: string;
+  readonly subtitle: string;
+  readonly status: string;
+  readonly photoUrl: string | null;
+  readonly sections: readonly PrintProfileSection[];
+  readonly checklistTitle: string;
+  readonly checklist: readonly PrintProfileChecklistItem[];
+  readonly documents: readonly PrintProfileDocumentRow[];
+  readonly documentsNote?: string;
+}
+
+export type PrintProfileSheetInput = Omit<PrintProfileSheetDocument, 'kind' | 'brand'>;
+
 export type PrintTableAlign = 'left' | 'right' | 'center';
 
 export interface PrintTableColumn {
@@ -358,6 +417,7 @@ export type PrintDocument =
   | PrintIdCardDocument
   | PrintEnrollmentConfirmationDocument
   | PrintBatchRosterDocument
+  | PrintProfileSheetDocument
   | PrintTableDocument;
 
 /**
@@ -366,3 +426,12 @@ export type PrintDocument =
  * both actions.
  */
 export type PrintDestination = 'print' | 'pdf' | 'preview';
+
+export type PrintPaperSize = 'a4' | 'a5' | 'letter';
+export type PrintOrientation = 'portrait' | 'landscape';
+
+/** Paper and orientation applied to one printed document. */
+export interface PrintPageSetup {
+  readonly size: PrintPaperSize;
+  readonly orientation: PrintOrientation;
+}

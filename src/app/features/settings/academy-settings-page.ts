@@ -9,6 +9,7 @@ import { AcademySettingsService } from '../../core/supabase/domain-services';
 import { DialogService } from '../../shared/dialog/dialog.service';
 import { DialogType } from '../../shared/dialog/models/dialog-config.model';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { PrintBrandService } from '../../shared/print/print-brand.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SETTINGS_SECTIONS } from './settings-sections';
 import { UsersSettingsPanel } from './users-settings-panel';
@@ -30,9 +31,9 @@ export class AcademySettingsPage implements OnInit {
   ];
   protected readonly deviceTheme = signal('forest');
 
-  protected readonly sections = ['all settings', 'profile', 'operations', 'attendance', 'notifications', 'users', 'audit log', 'tools'];
+  protected readonly sections = ['all settings', 'profile', 'operations', 'attendance', 'notifications', 'print', 'users', 'audit log', 'tools'];
 
-  protected readonly activeSection = signal<'all settings' | 'profile' | 'operations' | 'attendance' | 'notifications' | 'users' | 'audit log' | 'tools'>('all settings');
+  protected readonly activeSection = signal<'all settings' | 'profile' | 'operations' | 'attendance' | 'notifications' | 'print' | 'users' | 'audit log' | 'tools'>('all settings');
   protected readonly pageInfo = computed(() => {
     const section = this.settingsDirectory.find(item => item.path === '/settings/' + this.activeSection());
     return section ?? { label: 'Academy Settings', description: 'Manage academy details, attendance rules, and communication preferences.' };
@@ -47,6 +48,7 @@ export class AcademySettingsPage implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly backup = inject(AcademyBackupService);
   private readonly whatsapp = inject(WhatsappService);
+  private readonly printBrand = inject(PrintBrandService);
   private readonly fb = inject(FormBuilder);
   private readonly dialogs = inject(DialogService);
   protected readonly testRecipient = signal('');
@@ -65,6 +67,9 @@ export class AcademySettingsPage implements OnInit {
     contactEmail: ['', Validators.email],
     contactPhone: ['', [Validators.maxLength(30)]],
     address: ['', [Validators.maxLength(500)]],
+    printRegistrationNumber: ['', [Validators.maxLength(60)]],
+    printTerms: ['', [Validators.maxLength(1200)]],
+    printFooterNote: ['', [Validators.maxLength(200)]],
     timezone: ['Asia/Kolkata', Validators.required],
     currencyCode: ['INR', [Validators.required, Validators.pattern(/^[A-Z]{3}$/)]],
     attendanceGraceMinutes: [10, [Validators.required, Validators.min(0), Validators.max(180)]],
@@ -102,6 +107,9 @@ export class AcademySettingsPage implements OnInit {
         contactEmail: v.contact_email ?? '',
         contactPhone: v.contact_phone ?? '',
         address: v.address ?? '',
+        printRegistrationNumber: v.print_registration_number ?? '',
+        printTerms: v.print_terms ?? '',
+        printFooterNote: v.print_footer_note ?? '',
         timezone: v.timezone,
         currencyCode: v.currency_code,
         attendanceGraceMinutes: v.attendance_grace_minutes,
@@ -135,6 +143,9 @@ export class AcademySettingsPage implements OnInit {
         contact_email: v.contactEmail.trim() || null,
         contact_phone: v.contactPhone.trim() || null,
         address: v.address.trim() || null,
+        print_registration_number: v.printRegistrationNumber.trim() || null,
+        print_terms: v.printTerms.trim() || null,
+        print_footer_note: v.printFooterNote.trim() || null,
         timezone: v.timezone,
         currency_code: v.currencyCode.toUpperCase(),
         attendance_grace_minutes: v.attendanceGraceMinutes,
@@ -146,6 +157,7 @@ export class AcademySettingsPage implements OnInit {
         ].filter(Boolean),
         theme_preference: v.themePreference,
       });
+      this.printBrand.invalidate();
       this.toast.success('Academy settings saved.');
     } catch (error) {
       this.toast.error(error instanceof Error ? error.message : 'Settings could not be saved.');

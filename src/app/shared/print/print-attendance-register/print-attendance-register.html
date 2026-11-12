@@ -17,6 +17,7 @@
             @if (register().brand.address) { <span>{{ register().brand.address }}</span> }
             @if (register().brand.phone) { <span>{{ register().brand.phone }}</span> }
             @if (register().brand.email) { <span>{{ register().brand.email }}</span> }
+            @if (register().brand.registrationNumber) { <span>Reg. {{ register().brand.registrationNumber }}</span> }
           </p>
         </div>
         <div class="doc-label">
@@ -117,6 +118,7 @@
         [total]="page.total"
         [label]="register().batchName + ' · ' + formatDay(register().date)"
         [note]="'Register ' + register().registerNumber"
+        [brandNote]="register().brand.footerNote ?? ''"
       />
     </section>
   }

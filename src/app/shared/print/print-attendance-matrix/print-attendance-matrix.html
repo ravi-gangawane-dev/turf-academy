@@ -17,6 +17,7 @@
             @if (matrix().brand.address) { <span>{{ matrix().brand.address }}</span> }
             @if (matrix().brand.phone) { <span>{{ matrix().brand.phone }}</span> }
             @if (matrix().brand.email) { <span>{{ matrix().brand.email }}</span> }
+            @if (matrix().brand.registrationNumber) { <span>Reg. {{ matrix().brand.registrationNumber }}</span> }
           </p>
         </div>
         <div class="doc-label">
@@ -122,6 +123,7 @@
         [total]="page.total"
         [label]="matrix().batchName + ' · ' + matrix().monthLabel"
         [note]="'Matrix ' + matrix().registerNumber"
+        [brandNote]="matrix().brand.footerNote ?? ''"
       />
     </section>
   }

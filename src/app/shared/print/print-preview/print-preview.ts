@@ -1,7 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ModalFocus } from '../../interaction-dialog/modal-focus';
 import { PrintDocumentBody } from '../print-document-body/print-document-body';
+import type { PrintOrientation, PrintPageSetup, PrintPaperSize } from '../print-document.models';
 import { PrintDocumentService } from '../print-document.service';
+import {
+  FALLBACK_PAGE_SETUP,
+  PRINT_ORIENTATIONS,
+  PRINT_PAPER_SIZES,
+  pageSetupDimensions,
+  pageSetupLabel,
+  supportsPageSetup,
+} from '../print-page-setup';
+import { PrintPageSetupService } from '../print-page-setup.service';
 
 const TITLES: Record<string, string> = {
   invoice: 'Fee invoice',
@@ -11,12 +21,10 @@ const TITLES: Record<string, string> = {
   'attendance-register': 'Daily attendance register',
   'attendance-matrix': 'Monthly attendance matrix',
   'id-card': 'ID card',
-};
-
-const PAPER_LABELS: Record<string, string> = {
-  a4: 'A4',
-  'a4-landscape': 'A4 landscape',
-  a5: 'A5',
+  'enrollment-confirmation': 'Enrollment confirmation',
+  'batch-roster': 'Batch roster',
+  'profile-sheet': 'Profile sheet',
+  table: 'Report',
 };
 
 /**
@@ -33,6 +41,7 @@ const PAPER_LABELS: Record<string, string> = {
 })
 export class PrintPreview {
   private readonly source = inject(PrintDocumentService);
+  private readonly pageSetup = inject(PrintPageSetupService);
 
   protected readonly document = this.source.preview;
   protected readonly open = this.source.previewOpen;
@@ -43,6 +52,9 @@ export class PrintPreview {
     () => this.busy() || this.preparing() || !this.document(),
   );
 
+  protected readonly sizes = PRINT_PAPER_SIZES;
+  protected readonly orientations = PRINT_ORIENTATIONS;
+
   protected readonly title = computed(() => {
     const document = this.document();
     if (document?.kind === 'id-card') {
@@ -50,13 +62,25 @@ export class PrintPreview {
     }
     return TITLES[document?.kind ?? ''] ?? 'Document';
   });
-  protected readonly paper = computed(() => {
-    const kind = this.document()?.kind;
-    if (kind === 'receipt' || kind === 'refund-receipt') return 'a5';
-    if (kind === 'attendance-matrix') return 'a4-landscape';
-    return 'a4';
+  protected readonly setup = computed<PrintPageSetup>(() => {
+    const document = this.document();
+    return document ? this.pageSetup.setupFor(document.kind) : FALLBACK_PAGE_SETUP;
   });
-  protected readonly paperLabel = computed(() => PAPER_LABELS[this.paper()] ?? 'A4');
+  protected readonly paperLabel = computed(() => pageSetupLabel(this.setup()));
+  protected readonly paperWidth = computed(() =>
+    pageSetupDimensions(this.document()?.kind ?? 'table', this.setup()).widthMm,
+  );
+  protected readonly paperMargin = computed(() =>
+    pageSetupDimensions(this.document()?.kind ?? 'table', this.setup()).marginMm,
+  );
+  protected readonly canChangePaper = computed(() => {
+    const document = this.document();
+    return Boolean(document && supportsPageSetup(document.kind));
+  });
+  protected readonly overridden = computed(() => {
+    const document = this.document();
+    return Boolean(document && this.pageSetup.hasOverride(document.kind));
+  });
 
   protected close(): void {
     if (this.busy()) return;
@@ -69,6 +93,26 @@ export class PrintPreview {
 
   protected async retry(): Promise<void> {
     await this.source.retryPreview();
+  }
+
+  protected changeSize(event: Event): void {
+    const document = this.document();
+    if (!document) return;
+    const size = (event.target as HTMLSelectElement).value as PrintPaperSize;
+    this.pageSetup.save(document.kind, { ...this.setup(), size });
+  }
+
+  protected changeOrientation(event: Event): void {
+    const document = this.document();
+    if (!document) return;
+    const orientation = (event.target as HTMLSelectElement).value as PrintOrientation;
+    this.pageSetup.save(document.kind, { ...this.setup(), orientation });
+  }
+
+  protected useDefault(): void {
+    const document = this.document();
+    if (!document) return;
+    this.pageSetup.reset(document.kind);
   }
 
   protected print(): Promise<void> {

@@ -1,3 +1,5 @@
+import type { PrintProfileKind } from './print-document.models';
+
 const CURRENCY_NAMES: Readonly<
   Record<string, { readonly major: string; readonly majorPlural: string; readonly minor: string; readonly minorPlural: string }>
 > = {
@@ -102,6 +104,17 @@ export function printMoney(amount: number, currencyCode: string): string {
   } catch {
     return `${code} ${(Number(amount) || 0).toFixed(2)}`;
   }
+}
+
+/** Printable reference for a profile sheet, derived from the real academy id. */
+export function printProfileReference(kind: PrintProfileKind, source: string): string {
+  const clean = String(source ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '')
+    .slice(0, 24);
+  const prefix = kind === 'parent' ? 'PRF-PAR' : kind === 'coach' ? 'PRF-COA' : 'PRF-STU';
+  return `${prefix}-${clean || 'UNASSIGNED'}`;
 }
 
 /** Date-only values are formatted in UTC so they never shift by a day. */

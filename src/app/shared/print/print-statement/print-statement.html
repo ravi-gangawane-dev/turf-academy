@@ -10,11 +10,12 @@
         <div class="brand-copy">
           <p class="brand-kicker">{{ statement().brand.name }}</p>
           <h1>Fee Statement</h1>
-          @if (statement().brand.address || statement().brand.phone || statement().brand.email) {
+          @if (statement().brand.address || statement().brand.phone || statement().brand.email || statement().brand.registrationNumber) {
             <p class="brand-contact">
               @if (statement().brand.address) { <span>{{ statement().brand.address }}</span> }
               @if (statement().brand.phone) { <span>{{ statement().brand.phone }}</span> }
               @if (statement().brand.email) { <span>{{ statement().brand.email }}</span> }
+              @if (statement().brand.registrationNumber) { <span>Reg. {{ statement().brand.registrationNumber }}</span> }
             </p>
           }
         </div>
@@ -129,7 +130,7 @@
           <div class="box">
             <h2>Notes</h2>
             <p>
-              {{ statement().notes || 'Please quote the statement number with any query. This statement is computer generated and valid without a physical signature.' }}
+              {{ statement().notes || statement().brand.terms || 'Please quote the statement number with any query. This statement is computer generated and valid without a physical signature.' }}
             </p>
           </div>
         </section>
@@ -140,6 +141,7 @@
         [total]="page.total"
         [label]="statement().brand.name + ' · ' + statement().statementNumber"
         [note]="page.last && statement().brand.email ? 'Questions: ' + statement().brand.email : 'Computer generated fee statement'"
+        [brandNote]="statement().brand.footerNote ?? ''"
       />
     </section>
   }

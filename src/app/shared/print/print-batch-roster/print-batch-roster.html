@@ -17,6 +17,7 @@
             @if (roster().brand.address) { <span>{{ roster().brand.address }}</span> }
             @if (roster().brand.phone) { <span>{{ roster().brand.phone }}</span> }
             @if (roster().brand.email) { <span>{{ roster().brand.email }}</span> }
+            @if (roster().brand.registrationNumber) { <span>Reg. {{ roster().brand.registrationNumber }}</span> }
           </p>
         </div>
         <div class="doc-label">
@@ -144,6 +145,7 @@
         [total]="page.total"
         [label]="roster().batchName + ' · ' + roster().batchCode"
         [note]="'Roster ' + roster().rosterNumber"
+        [brandNote]="roster().brand.footerNote ?? ''"
       />
     </section>
   }

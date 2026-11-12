@@ -13,6 +13,7 @@ export class PrintPageFooter {
   readonly total = input.required<number>();
   readonly label = input('');
   readonly note = input('');
+  readonly brandNote = input('');
 
   protected pageLabel(): string {
     return printPageLabel(this.page(), this.total());

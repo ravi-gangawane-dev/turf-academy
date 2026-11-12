@@ -6,6 +6,7 @@ import { PrintBatchRoster } from '../print-batch-roster/print-batch-roster';
 import { PrintEnrollmentConfirmation } from '../print-enrollment-confirmation/print-enrollment-confirmation';
 import { PrintIdCard } from '../print-id-card/print-id-card';
 import { PrintInvoice } from '../print-invoice/print-invoice';
+import { PrintProfileSheet } from '../print-profile-sheet/print-profile-sheet';
 import { PrintReceipt } from '../print-receipt/print-receipt';
 import { PrintRefundReceipt } from '../print-refund-receipt/print-refund-receipt';
 import { PrintStatement } from '../print-statement/print-statement';
@@ -24,6 +25,7 @@ import { PrintTable } from '../print-table/print-table';
     PrintEnrollmentConfirmation,
     PrintIdCard,
     PrintInvoice,
+    PrintProfileSheet,
     PrintReceipt,
     PrintRefundReceipt,
     PrintStatement,
@@ -71,6 +73,10 @@ export class PrintDocumentBody {
   protected readonly batchRoster = computed(() => {
     const document = this.document();
     return document.kind === 'batch-roster' ? document : null;
+  });
+  protected readonly profileSheet = computed(() => {
+    const document = this.document();
+    return document.kind === 'profile-sheet' ? document : null;
   });
   protected readonly table = computed(() => {
     const document = this.document();

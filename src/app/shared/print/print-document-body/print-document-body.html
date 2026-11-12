@@ -25,6 +25,9 @@
 @if (batchRoster(); as document) {
   <app-print-batch-roster [roster]="document" />
 }
+@if (profileSheet(); as document) {
+  <app-print-profile-sheet [sheet]="document" />
+}
 @if (table(); as document) {
   <app-print-table [table]="document" />
 }

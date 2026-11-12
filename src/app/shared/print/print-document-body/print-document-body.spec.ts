@@ -7,6 +7,7 @@ import {
   PrintEnrollmentConfirmationDocument,
   PrintIdCardDocument,
   PrintInvoiceDocument,
+  PrintProfileSheetDocument,
   PrintReceiptDocument,
 } from '../print-document.models';
 import { PrintDocumentBody } from './print-document-body';
@@ -108,6 +109,23 @@ const batchRoster: PrintBatchRosterDocument = {
   ],
 };
 
+const profileSheet: PrintProfileSheetDocument = {
+  kind: 'profile-sheet',
+  brand,
+  reference: 'PRF-STU-TCA1001',
+  issuedAt: '2026-11-12T06:00:00Z',
+  profileKind: 'student',
+  fullName: 'Aarav Sharma',
+  profileCode: 'TCA-1001',
+  subtitle: 'Morning Elite',
+  status: 'active',
+  photoUrl: null,
+  sections: [{ title: 'Personal details', fields: [{ label: 'Blood group', value: 'B+' }] }],
+  checklistTitle: 'Document checklist',
+  checklist: [{ label: 'Profile photograph', recorded: true }],
+  documents: [],
+};
+
 const matrix: PrintAttendanceMatrixDocument = {
   kind: 'attendance-matrix',
   brand,
@@ -183,6 +201,12 @@ describe('PrintDocumentBody', () => {
     expect(rosterElement.querySelector('app-print-batch-roster')).toBeTruthy();
     expect(rosterElement.querySelector('.print-sheet--roster')).toBeTruthy();
     expect(rosterElement.querySelector('app-print-enrollment-confirmation')).toBeNull();
+    TestBed.resetTestingModule();
+
+    const profileElement = await render(profileSheet);
+    expect(profileElement.querySelector('app-print-profile-sheet')).toBeTruthy();
+    expect(profileElement.querySelector('.print-sheet--profile')).toBeTruthy();
+    expect(profileElement.querySelector('app-print-batch-roster')).toBeNull();
   });
 
   it('never renders more than one document for a single input', async () => {

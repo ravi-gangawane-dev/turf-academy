@@ -2410,6 +2410,20 @@ export interface AcademySettingsRecord {
   readonly fee_due_day: number;
   readonly notification_channels: readonly string[];
   readonly theme_preference: string;
+  /** Optional letterhead and footer overrides; absent until the print migration is applied. */
+  readonly print_registration_number?: string | null;
+  readonly print_terms?: string | null;
+  readonly print_footer_note?: string | null;
+}
+
+function missingPrintColumns(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false;
+  if (error.code === 'PGRST204') return true;
+  const message = error.message ?? '';
+  return (
+    /print_(registration_number|terms|footer_note)/.test(message) &&
+    /column|schema cache/i.test(message)
+  );
 }
 
 @Injectable({ providedIn: 'root' })
@@ -2427,17 +2441,47 @@ export class AcademySettingsService extends TableService {
       academy_logo_url: _academyLogoUrl,
       academy_description: _academyDescription,
       theme_preference: _themePreference,
+      print_registration_number: registrationNumber,
+      print_terms: terms,
+      print_footer_note: footerNote,
       ...deployedSettings
     } = value;
-    const r = await this.db.client
+    const saved = await this.db.client
       .from('academy_settings')
       .update({ ...deployedSettings, updated_at: new Date().toISOString() })
       .eq('id', true)
       .select()
       .single();
-    this.fail('Save academy settings', r.error);
-    this.preferences.value.set(r.data as AcademySettingsRecord);
-    return r.data as AcademySettingsRecord;
+    this.fail('Save academy settings', saved.error);
+
+    // Print fields are additive. Save them separately so a deployment without
+    // the print migration can still store the rest of the academy settings.
+    const printSaved = await this.db.client
+      .from('academy_settings')
+      .update({
+        print_registration_number: registrationNumber ?? null,
+        print_terms: terms ?? null,
+        print_footer_note: footerNote ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', true)
+      .select()
+      .single();
+    if (printSaved.error) {
+      if (!missingPrintColumns(printSaved.error)) {
+        this.fail('Save print settings', printSaved.error);
+      }
+      if (registrationNumber || terms || footerNote) {
+        this.preferences.value.set(saved.data as AcademySettingsRecord);
+        throw new Error(
+          'Academy details were saved, but print settings could not be stored. Apply the print settings migration and save again.',
+        );
+      }
+    }
+
+    const record = (printSaved.error ? saved.data : printSaved.data) as AcademySettingsRecord;
+    this.preferences.value.set(record);
+    return record;
   }
 }
 

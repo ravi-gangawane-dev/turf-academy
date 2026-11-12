@@ -3,5 +3,8 @@
   @if (note()) {
     <span class="print-page-footer-note">{{ note() }}</span>
   }
+  @if (brandNote()) {
+    <span class="print-page-footer-brand">{{ brandNote() }}</span>
+  }
   <span class="print-page-footer-page">{{ pageLabel() }}</span>
 </footer>

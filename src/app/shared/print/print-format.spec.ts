@@ -1,4 +1,10 @@
-import { amountInWords, printMoney, printStatusLabel, printStatusTone } from './print-format';
+import {
+  amountInWords,
+  printMoney,
+  printProfileReference,
+  printStatusLabel,
+  printStatusTone,
+} from './print-format';
 
 describe('print-format', () => {
   it('spells Indian rupee amounts with lakh and crore groups', () => {
@@ -19,8 +25,14 @@ describe('print-format', () => {
     expect(printMoney(0, 'USD')).toContain('0.00');
   });
 
-  it('maps statuses to readable labels and tones', () => {
-    expect(printStatusLabel('successful')).toBe('Paid');
+  it('builds a stable profile sheet reference from the real academy code', () => {
+    expect(printProfileReference('student', 'TCA-1001')).toBe('PRF-STU-TCA1001');
+    expect(printProfileReference('parent', 'p 1')).toBe('PRF-PAR-P1');
+    expect(printProfileReference('coach', 'EMP-42')).toBe('PRF-COA-EMP42');
+    expect(printProfileReference('student', '')).toBe('PRF-STU-UNASSIGNED');
+  });
+
+  it('maps statuses to readable labels and tones', () => {    expect(printStatusLabel('successful')).toBe('Paid');
     expect(printStatusLabel('partially_paid')).toBe('Partially paid');
     expect(printStatusLabel('on_hold')).toBe('On hold');
     expect(printStatusLabel(null)).toBe('Paid');

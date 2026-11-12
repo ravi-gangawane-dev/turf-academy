@@ -7,9 +7,11 @@ import {
   PrintBatchRosterDocument,
   PrintEnrollmentConfirmationDocument,
   PrintIdCardInput,
+  PrintProfileSheetInput,
   PrintReceiptDocument,
 } from './print-document.models';
 import { PrintDocumentService, printFileName } from './print-document.service';
+import { PrintPageSetupService } from './print-page-setup.service';
 import { ToastService } from '../toast/toast.service';
 
 const brand = {
@@ -71,7 +73,13 @@ function setup() {
       { provide: ApplicationRef, useValue: { tick: vi.fn() } },
     ],
   });
-  return { service: TestBed.inject(PrintDocumentService), toast, brandService, audit };
+  return {
+    service: TestBed.inject(PrintDocumentService),
+    pageSetup: TestBed.inject(PrintPageSetupService),
+    toast,
+    brandService,
+    audit,
+  };
 }
 
 const idCard: PrintIdCardInput = {
@@ -105,6 +113,21 @@ const confirmation: Omit<PrintEnrollmentConfirmationDocument, 'kind' | 'brand'> 
   terms: [{ label: 'Enrollment status', value: 'active' }],
 };
 
+const profileSheet: PrintProfileSheetInput = {
+  reference: 'PRF-STU-TCA1001',
+  issuedAt: '2026-11-12T06:00:00Z',
+  profileKind: 'student',
+  fullName: 'Aarav Sharma',
+  profileCode: 'TCA-1001',
+  subtitle: 'Morning Elite',
+  status: 'active',
+  photoUrl: null,
+  sections: [{ title: 'Personal details', fields: [{ label: 'Blood group', value: 'B+' }] }],
+  checklistTitle: 'Document checklist',
+  checklist: [{ label: 'Profile photograph', recorded: true }],
+  documents: [],
+};
+
 const roster: Omit<PrintBatchRosterDocument, 'kind' | 'brand'> = {
   rosterNumber: 'RST-BMOR',
   issuedAt: '2026-11-03T06:30:00Z',
@@ -131,11 +154,15 @@ describe('PrintDocumentService preview', () => {
   let print: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    localStorage.removeItem('academy-print-page-setup');
+    document.getElementById('academy-print-page-setup-style')?.remove();
     print = vi.spyOn(globalThis.window, 'print').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     print.mockRestore();
+    localStorage.removeItem('academy-print-page-setup');
+    document.getElementById('academy-print-page-setup-style')?.remove();
     TestBed.resetTestingModule();
   });
 
@@ -237,6 +264,20 @@ describe('PrintDocumentService preview', () => {
     });
   });
 
+  it('prepares a profile sheet and audits its reference for print', async () => {
+    const { service, audit } = setup();
+
+    await service.printProfileSheet(profileSheet, 'print');
+
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(audit.recordInBackground).toHaveBeenCalledWith({
+      action: 'print',
+      documentKind: 'profile-sheet',
+      reference: 'PRF-STU-TCA1001',
+      format: 'print',
+    });
+  });
+
   it('prints the previewed document and clears the preview', async () => {
     const { service } = setup();
     await service.printReceipt(receipt, 'preview');
@@ -304,6 +345,21 @@ describe('PrintDocumentService preview', () => {
     });
   });
 
+  it('applies the remembered paper setup for the print run and cleans it up', async () => {
+    const { service, pageSetup } = setup();
+    pageSetup.save('receipt', { size: 'a4', orientation: 'landscape' });
+    let ruleAtPrint = '';
+    print.mockImplementation(() => {
+      ruleAtPrint =
+        globalThis.document.getElementById('academy-print-page-setup-style')?.textContent ?? '';
+    });
+
+    await service.printReceipt(receipt, 'print');
+
+    expect(ruleAtPrint).toContain('@page receipt-page { size: 297mm 210mm; margin: 8mm; }');
+    expect(globalThis.document.getElementById('academy-print-page-setup-style')).toBeNull();
+  });
+
   it('suggests a stable file name while the print dialog is open', async () => {
     const originalTitle = globalThis.document.title;
     let titleAtPrint = '';
@@ -333,6 +389,13 @@ describe('PrintDocumentService preview', () => {
         ...roster,
       }),
     ).toBe('Batch-roster-RST-BMOR');
+    expect(
+      printFileName({
+        kind: 'profile-sheet',
+        brand,
+        ...profileSheet,
+      }),
+    ).toBe('Profile-PRF-STU-TCA1001');
     expect(
       printFileName({
         kind: 'id-card',

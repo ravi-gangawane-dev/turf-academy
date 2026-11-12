@@ -16,6 +16,7 @@
           @if (confirmation().brand.address) { <span>{{ confirmation().brand.address }}</span> }
           @if (confirmation().brand.phone) { <span>{{ confirmation().brand.phone }}</span> }
           @if (confirmation().brand.email) { <span>{{ confirmation().brand.email }}</span> }
+          @if (confirmation().brand.registrationNumber) { <span>Reg. {{ confirmation().brand.registrationNumber }}</span> }
         </p>
       </div>
       <div class="doc-label">
@@ -140,6 +141,7 @@
       [total]="1"
       [label]="confirmation().studentName + ' · ' + confirmation().batchName"
       [note]="'Confirmation ' + confirmation().confirmationNumber"
+      [brandNote]="confirmation().brand.footerNote ?? ''"
     />
   </section>
 </article>

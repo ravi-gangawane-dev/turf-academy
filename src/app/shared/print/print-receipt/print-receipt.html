@@ -11,6 +11,7 @@
       <p class="brand-contact">
         @if (receipt().brand.address) { <span>{{ receipt().brand.address }}</span> }
         @if (receipt().brand.phone) { <span>{{ receipt().brand.phone }}</span> }
+        @if (receipt().brand.registrationNumber) { <span>Reg. {{ receipt().brand.registrationNumber }}</span> }
       </p>
     </div>
     <div class="doc-label">
@@ -74,5 +75,8 @@
     <div>Guardian / payer</div>
   </footer>
 
+  @if (receipt().brand.footerNote) {
+    <p class="receipt-note">{{ receipt().brand.footerNote }}</p>
+  }
   <p class="receipt-note">Computer generated receipt · retain for your records</p>
 </article>

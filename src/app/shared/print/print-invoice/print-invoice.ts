@@ -20,7 +20,7 @@ export class PrintInvoice {
   protected readonly hasPaid = computed(() => Number(this.invoice().totals.paid) > 0);
   protected readonly hasContact = computed(() => {
     const brand = this.invoice().brand;
-    return Boolean(brand.address || brand.phone || brand.email);
+    return Boolean(brand.address || brand.phone || brand.email || brand.registrationNumber);
   });
 
   protected money(value: number): string {

@@ -96,6 +96,9 @@
         }
         <button (click)="sendMessage()"><i class="pi pi-comment"></i>Send message</button>
         <button (click)="openIdCard()"><i class="pi pi-id-card"></i>ID card</button>
+        <button (click)="printProfileSheet()" [disabled]="profileLoading()">
+          <i class="pi pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Profile sheet' }}
+        </button>
         <button (click)="backToStudents()"><i class="pi pi-arrow-left"></i>Back to students</button>
       </aside>
     </section>

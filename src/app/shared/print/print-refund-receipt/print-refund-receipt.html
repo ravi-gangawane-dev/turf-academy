@@ -14,6 +14,7 @@
       <p class="brand-contact">
         @if (refund().brand.address) { <span>{{ refund().brand.address }}</span> }
         @if (refund().brand.phone) { <span>{{ refund().brand.phone }}</span> }
+        @if (refund().brand.registrationNumber) { <span>Reg. {{ refund().brand.registrationNumber }}</span> }
       </p>
     </div>
     <div class="doc-label">
@@ -94,6 +95,9 @@
     <div>Guardian / payer</div>
   </footer>
 
+  @if (refund().brand.footerNote) {
+    <p class="receipt-note">{{ refund().brand.footerNote }}</p>
+  }
   <p class="receipt-note">
     Refund issued against the original payment shown above · computer generated receipt
   </p>

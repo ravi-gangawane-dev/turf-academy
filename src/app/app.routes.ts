@@ -761,6 +761,13 @@ export const routes: Routes = [
         data: { roles: ['admin'], permission: 'settings:write', settingsSection: 'notifications' },
         loadComponent: academySettingsPage,
       },
+      {
+        path: 'settings/print',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'], permission: 'settings:write', settingsSection: 'print' },
+        title: 'Print & Documents',
+        loadComponent: academySettingsPage,
+      },
       { path: 'settings/roles', redirectTo: 'settings/users', pathMatch: 'full' },
       { path: 'settings/permissions', redirectTo: 'settings/users', pathMatch: 'full' },
       { path: 'settings/theme', redirectTo: 'settings/tools', pathMatch: 'full' },

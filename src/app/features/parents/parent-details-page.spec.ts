@@ -57,6 +57,7 @@ function setup() {
   const ledgerPage = vi.fn().mockResolvedValue({ rows: [], total: 60 });
   const page = vi.fn().mockResolvedValue({ rows: [], total: 60 });
   const printIdCard = vi.fn().mockResolvedValue(undefined);
+  const printProfileSheet = vi.fn().mockResolvedValue(undefined);
   TestBed.configureTestingModule({
     imports: [ParentDetailsPage],
     providers: [provideRouter([]),
@@ -66,10 +67,17 @@ function setup() {
       { provide: NotificationsService, useValue: { page } },
       { provide: StaffDetailsService, useValue: { activity } },
       { provide: DatabaseService, useValue: {} },
-      { provide: PrintDocumentService, useValue: { printIdCard } },
+      { provide: PrintDocumentService, useValue: { printIdCard, printProfileSheet } },
     ],
   });
-  return { fixture: TestBed.createComponent(ParentDetailsPage), activity, ledgerPage, page, printIdCard };
+  return {
+    fixture: TestBed.createComponent(ParentDetailsPage),
+    activity,
+    ledgerPage,
+    page,
+    printIdCard,
+    printProfileSheet,
+  };
 }
 
 describe('Parent details shared pagination and states', () => {
@@ -182,5 +190,45 @@ describe('Guardian card', () => {
     expect(component['idCardOpen']()).toBe(true);
     expect(component['idCardError']()).toBe('Academy settings unavailable');
     expect(component['idCardLoading']()).toBe(false);
+  });
+
+  it('prepares a parent profile sheet with linked students from the live record', async () => {
+    const { fixture, printProfileSheet } = await ready();
+    const component = fixture.componentInstance;
+    const sheet = component['profileSheet']();
+
+    expect(sheet).toMatchObject({
+      profileKind: 'parent',
+      reference: 'PRF-PAR-P1',
+      fullName: 'Ravi Patil',
+      profileCode: 'p1',
+      subtitle: 'Father',
+      checklistTitle: 'Profile checklist',
+      documents: [],
+    });
+    expect(sheet?.checklist).toContainEqual({
+      label: 'Linked student',
+      recorded: true,
+      detail: '2 linked students',
+    });
+    expect(sheet?.sections).toContainEqual(
+      expect.objectContaining({
+        title: 'Linked students',
+        fields: expect.arrayContaining([
+          {
+            label: 'Aarav Patil',
+            value: 'TCA-STU-0001 · active · Authorised for pickup · Primary guardian',
+          },
+        ]),
+      }),
+    );
+
+    await component['printProfileSheet']();
+
+    expect(printProfileSheet).toHaveBeenCalledWith(
+      expect.objectContaining({ reference: 'PRF-PAR-P1', profileKind: 'parent' }),
+      'preview',
+    );
+    expect(component['profileLoading']()).toBe(false);
   });
 });

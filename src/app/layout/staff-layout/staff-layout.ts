@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  HostListener,
   inject,
   OnInit,
   signal,
@@ -25,6 +26,7 @@ interface NavigationItem {
   readonly route?: string;
   readonly disabled?: boolean;
   readonly permission?: Permission;
+  readonly section?: string;
 }
 
 @Component({
@@ -51,131 +53,149 @@ export class StaffLayout implements OnInit {
   protected readonly globalSearch = signal('');
   private notificationChannel?: RealtimeChannel;
   protected readonly navigation: readonly NavigationItem[] = [
-    { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
-    { label: 'Students', icon: 'pi-users', route: '/students', permission: 'students:read' },
-    { label: 'Parents', icon: 'pi-heart', route: '/parents', permission: 'parents:read' },
-    { label: 'Coaches', icon: 'pi-id-card', route: '/coaches', permission: 'coaches:read' },
-    { label: 'Batches', icon: 'pi-calendar', route: '/batches', permission: 'batches:read' },
+    { label: 'Dashboard', icon: 'pi-home', route: '/dashboard', section: 'Overview' },
+    { label: 'Students', icon: 'pi-users', route: '/students', permission: 'students:read', section: 'Academy' },
+    { label: 'Parents', icon: 'pi-heart', route: '/parents', permission: 'parents:read', section: 'Academy' },
+    { label: 'Coaches', icon: 'pi-id-card', route: '/coaches', permission: 'coaches:read', section: 'Academy' },
+    { label: 'Batches', icon: 'pi-calendar', route: '/batches', permission: 'batches:read', section: 'Academy' },
     {
       label: 'Enrollment',
       icon: 'pi-user-plus',
       route: '/enrollments',
       permission: 'enrollments:write',
+      section: 'Academy',
     },
     {
       label: 'Attendance',
       icon: 'pi-verified',
       route: '/attendance',
       permission: 'attendance:read',
+      section: 'Operations',
     },
-    { label: 'Fees', icon: 'pi-wallet', route: '/fees', permission: 'fees:write' },
-    { label: 'Payments', icon: 'pi-credit-card', route: '/payments', permission: 'fees:write' },
+    { label: 'Fees', icon: 'pi-wallet', route: '/fees', permission: 'fees:write', section: 'Operations' },
+    { label: 'Payments', icon: 'pi-credit-card', route: '/payments', permission: 'fees:write', section: 'Operations' },
     {
       label: 'Notifications',
       icon: 'pi-bell',
       route: '/notifications',
       permission: 'notifications:read',
+      section: 'Management',
     },
-    { label: 'Reports', icon: 'pi-chart-bar', route: '/reports', permission: 'reports:read' },
-    { label: 'Settings', icon: 'pi-cog', route: '/settings', permission: 'settings:write' },
+    { label: 'Reports', icon: 'pi-chart-bar', route: '/reports', permission: 'reports:read', section: 'Management' },
+    { label: 'Settings', icon: 'pi-cog', route: '/settings', permission: 'settings:write', section: 'Management' },
   ];
   private readonly parentNavigation: readonly NavigationItem[] = [
-    { label: 'Dashboard', icon: 'pi-home', route: '/parent/dashboard' },
+    { label: 'Dashboard', icon: 'pi-home', route: '/parent/dashboard', section: 'Overview' },
     {
       label: 'My Children',
       icon: 'pi-users',
       route: '/parent/children',
       permission: 'children:read',
+      section: 'Academy',
     },
     {
       label: 'Attendance',
       icon: 'pi-calendar-clock',
       route: '/parent/attendance',
       permission: 'children:read',
+      section: 'Academy',
     },
     {
       label: 'Schedule',
       icon: 'pi-calendar',
       route: '/parent/schedule',
       permission: 'children:read',
+      section: 'Academy',
     },
-    { label: 'Fees', icon: 'pi-wallet', route: '/parent/fees', permission: 'children:read' },
+    { label: 'Fees', icon: 'pi-wallet', route: '/parent/fees', permission: 'children:read', section: 'Billing' },
     {
       label: 'Payments',
       icon: 'pi-credit-card',
       route: '/parent/payments',
       permission: 'children:read',
+      section: 'Billing',
     },
     {
       label: 'Receipts',
       icon: 'pi-receipt',
       route: '/parent/receipts',
       permission: 'children:read',
+      section: 'Billing',
     },
     {
       label: 'Coach',
       icon: 'pi-id-card',
       route: '/parent/coach',
       permission: 'children:read',
+      section: 'Communication',
     },
     {
       label: 'Notifications',
       icon: 'pi-bell',
       route: '/parent/notifications',
       permission: 'children:read',
+      section: 'Communication',
     },
-    { label: 'Profile', icon: 'pi-user', route: '/parent/profile', permission: 'children:read' },
+    { label: 'Profile', icon: 'pi-user', route: '/parent/profile', permission: 'children:read', section: 'Support' },
     {
       label: 'Help & Support',
       icon: 'pi-question-circle',
       route: '/parent/support',
       permission: 'children:read',
+      section: 'Support',
     },
   ];
   private readonly coachNavigation: readonly NavigationItem[] = [
-    { label: 'Dashboard', icon: 'pi-home', route: '/coach/dashboard', permission: 'coach:portal' },
+    { label: 'Dashboard', icon: 'pi-home', route: '/coach/dashboard', permission: 'coach:portal', section: 'Overview' },
     {
       label: 'My Batches',
       icon: 'pi-th-large',
       route: '/coach/batches',
       permission: 'coach:portal',
+      section: 'Training',
     },
     {
       label: 'My Students',
       icon: 'pi-users',
       route: '/coach/students',
       permission: 'coach:portal',
+      section: 'Training',
     },
     {
       label: 'Attendance',
       icon: 'pi-calendar-clock',
       route: '/coach/attendance',
       permission: 'coach:portal',
+      section: 'Training',
     },
     {
       label: 'Schedule',
       icon: 'pi-calendar',
       route: '/coach/schedule',
       permission: 'coach:portal',
+      section: 'Training',
     },
     {
       label: 'Attendance Summary',
       icon: 'pi-chart-bar',
       route: '/coach/attendance/summary',
       permission: 'coach:portal',
+      section: 'Training',
     },
     {
       label: 'Notifications',
       icon: 'pi-bell',
       route: '/coach/notifications',
       permission: 'coach:portal',
+      section: 'Communication',
     },
-    { label: 'Profile', icon: 'pi-user', route: '/coach/profile', permission: 'coach:portal' },
+    { label: 'Profile', icon: 'pi-user', route: '/coach/profile', permission: 'coach:portal', section: 'Support' },
     {
       label: 'Help & Support',
       icon: 'pi-question-circle',
       route: '/coach/support',
       permission: 'coach:portal',
+      section: 'Support',
     },
   ];
 
@@ -186,6 +206,13 @@ export class StaffLayout implements OnInit {
       : role === 'coach'
         ? this.coachNavigation
         : this.navigation;
+  }
+
+  protected isSectionHeaderVisible(item: NavigationItem): boolean {
+    if (!item.section) return false;
+    const items = this.navigationItems().filter((i) => this.auth.hasPermission(i.permission));
+    const firstItem = items.find((i) => i.section === item.section);
+    return firstItem === item;
   }
 
   protected toggleMenu(): void {
@@ -202,8 +229,28 @@ export class StaffLayout implements OnInit {
     const destination = this.auth.role() === 'coach' ? '/coach/students' : '/search';
     void this.router.navigate([destination], { queryParams: { q: query } });
   }
+
+  protected clearSearch(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.globalSearch.set('');
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  protected handleKeyboardShortcut(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      if (this.auth.role() !== 'parent') {
+        event.preventDefault();
+        const searchInput = document.querySelector<HTMLInputElement>('input[aria-label="Search academy"]');
+        searchInput?.focus();
+        searchInput?.select();
+      }
+    }
+  }
   ngOnInit(): void {
-    try{const theme=localStorage.getItem('academy-theme');if(theme&&['forest','blue','contrast'].includes(theme))document.documentElement.dataset['academyTheme']=theme;}catch{/* Default appearance remains usable without local storage. */}
+    try { const theme = localStorage.getItem('academy-theme'); if (theme && ['forest', 'blue', 'contrast'].includes(theme)) document.documentElement.dataset['academyTheme'] = theme; } catch {/* Default appearance remains usable without local storage. */ }
     void this.preferences.load().catch(() => undefined);
     void this.loadProfilePhoto();
     this.router.events

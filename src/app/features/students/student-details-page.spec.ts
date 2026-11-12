@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { StudentListService, StudentWorkspace } from './student-list.service';
 import { StudentDetailsPage } from './student-details-page';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 const workspace = {
   student: {
@@ -46,8 +47,12 @@ const workspace = {
 
 function setup(id: string | null) {
   const getStudentWorkspace = vi.fn().mockResolvedValue(workspace);
+  const getDocumentPage = vi.fn().mockResolvedValue({ rows: [], total: 0 });
   const detailPage = vi.fn().mockResolvedValue({ rows: [{ id: 't1', date: '2026-10-01' }], total: 1 });
-  const printDocuments = { printIdCard: vi.fn().mockResolvedValue(undefined) };
+  const printDocuments = {
+    printIdCard: vi.fn().mockResolvedValue(undefined),
+    printProfileSheet: vi.fn().mockResolvedValue(undefined),
+  };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([{ path: 'students', children: [] }]),
@@ -55,14 +60,22 @@ function setup(id: string | null) {
         provide: ActivatedRoute,
         useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } },
       },
-      { provide: StudentListService, useValue: { getStudentWorkspace, detailPage } },
+      { provide: StudentListService, useValue: { getStudentWorkspace, getDocumentPage, detailPage } },
       { provide: AuthService, useValue: { hasPermission: () => true } },
       { provide: PrintDocumentService, useValue: printDocuments },
+      { provide: ToastService, useValue: { error: vi.fn() } },
     ],
   });
   const fixture = TestBed.createComponent(StudentDetailsPage);
   fixture.detectChanges();
-  return { fixture, page: fixture.componentInstance, getStudentWorkspace, detailPage, printDocuments };
+  return {
+    fixture,
+    page: fixture.componentInstance,
+    getStudentWorkspace,
+    getDocumentPage,
+    detailPage,
+    printDocuments,
+  };
 }
 
 describe('StudentDetailsPage', () => {
@@ -198,5 +211,76 @@ describe('StudentDetailsPage', () => {
     expect(page['idCardOpen']()).toBe(true);
     expect(page['idCardError']()).toBe('QR generation failed');
     expect(page['idCardLoading']()).toBe(false);
+  });
+
+  it('builds a profile sheet from the live workspace and every uploaded document', async () => {
+    const { page, getDocumentPage, printDocuments } = setup('s1');
+    await page.ngOnInit();
+    page['data'].update((current) =>
+      current
+        ? {
+            ...current,
+            enrollment: {
+              id: 'e1',
+              status: 'active',
+              valid_from: '2026-06-01',
+              batch: { id: 'b1', name: 'Morning Elite', code: 'B-MOR' },
+              fee_plan: { name: 'Monthly Training' },
+            },
+          }
+        : current,
+    );
+    getDocumentPage.mockResolvedValue({
+      rows: [
+        {
+          id: 'd1',
+          document_type: 'Birth certificate',
+          file_name: 'aarav-birth.pdf',
+          created_at: '2026-11-02T09:00:00Z',
+        },
+        {
+          id: 'd2',
+          document_type: 'Birth certificate',
+          file_name: 'aarav-birth-2.pdf',
+          created_at: '2026-11-03T09:00:00Z',
+        },
+      ],
+      total: 2,
+    });
+
+    await page['printProfileSheet']();
+
+    expect(getDocumentPage).toHaveBeenCalledWith('s1', 1, 200);
+    const sheet = printDocuments.printProfileSheet.mock.calls[0]?.[0];
+    expect(sheet).toMatchObject({
+      profileKind: 'student',
+      reference: 'PRF-STU-ST1',
+      fullName: 'Aarav Sharma',
+      profileCode: 'ST-1',
+      subtitle: 'Morning Elite · B-MOR',
+      checklistTitle: 'Document checklist',
+    });
+    expect(sheet?.sections).toContainEqual(
+      expect.objectContaining({
+        title: 'Enrollment',
+        fields: expect.arrayContaining([{ label: 'Batch', value: 'Morning Elite' }]),
+      }),
+    );
+    expect(sheet?.checklist).toContainEqual(
+      expect.objectContaining({
+        label: 'Birth certificate',
+        recorded: true,
+        detail: '2 files · latest 03 Nov 2026',
+      }),
+    );
+    expect(sheet?.documents).toEqual([
+      expect.objectContaining({ fileName: 'aarav-birth.pdf' }),
+      expect.objectContaining({ fileName: 'aarav-birth-2.pdf' }),
+    ]);
+    expect(printDocuments.printProfileSheet).toHaveBeenCalledWith(
+      expect.objectContaining({ reference: 'PRF-STU-ST1' }),
+      'preview',
+    );
+    expect(page['profileLoading']()).toBe(false);
   });
 });

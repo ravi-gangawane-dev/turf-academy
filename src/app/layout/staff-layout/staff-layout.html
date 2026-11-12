@@ -2,16 +2,27 @@
   <button class="scrim" aria-label="Close navigation" (click)="toggleMenu()"></button>
   <aside class="sidebar">
     <div class="brand">
-      <img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="210" height="100" />
+      <div class="brand-crest-box">
+        <img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="210" height="100" />
+      </div>
+      <div class="brand-details">
+        <strong class="brand-name">Turf Academy</strong>
+        <span class="brand-tagline">Cricket Portal</span>
+      </div>
     </div>
     <nav aria-label="Main navigation">
       @for (item of navigationItems(); track item.label) {
       @if (auth.hasPermission(item.permission)) {
+      @if (isSectionHeaderVisible(item)) {
+      <div class="nav-section-header" role="presentation">
+        <span>{{ item.section }}</span>
+      </div>
+      }
       @if (item.route) {
       @if (item.route === '/coach/attendance') {
       <div class="nav-item-with-action">
-        <a [routerLink]="itemRoute(item)" routerLinkActive="active" (click)="menuOpen.set(false)"><i class="pi"
-            [class]="'pi ' + item.icon"></i>{{ itemLabel(item) }}</a>
+        <a [routerLink]="itemRoute(item)" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
+            [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a>
         <button type="button" class="nav-expand" aria-label="Attendance options"
           [attr.aria-expanded]="coachAttendanceMenuOpen()" (click)="toggleCoachAttendanceMenu($event)">
           <i class="pi" [class.pi-chevron-down]="!coachAttendanceMenuOpen()"
@@ -21,36 +32,42 @@
       @if (coachAttendanceMenuOpen()) {
       <div class="enrollment-subnav attendance-subnav">
         <a routerLink="/coach/attendance" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active"
-          (click)="menuOpen.set(false)">Today</a>
-        <a routerLink="/coach/attendance/check-in-out" routerLinkActive="active" (click)="menuOpen.set(false)">Check In /
+          (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Today</a>
+        <a routerLink="/coach/attendance/check-in-out" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Check In /
           Out</a>
-        <a routerLink="/coach/attendance/history" routerLinkActive="active" (click)="menuOpen.set(false)">History</a>
+        <a routerLink="/coach/attendance/history" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>History</a>
         <a routerLink="/coach/attendance/correction" routerLinkActive="active"
-          (click)="menuOpen.set(false)">Correction</a>
-        <a routerLink="/coach/attendance/summary" routerLinkActive="active" (click)="menuOpen.set(false)">Summary</a>
+          (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Correction</a>
+        <a routerLink="/coach/attendance/summary" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Summary</a>
       </div>
       }
       } @else {
       <a [routerLink]="itemRoute(item)" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' }" (click)="menuOpen.set(false)"><i class="pi"
-          [class]="'pi ' + item.icon"></i>{{ itemLabel(item) }}</a> }
+        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' }" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
+          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a> }
       } @else {
-      <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><i class="pi"
-          [class]="'pi ' + item.icon"></i>{{ item.label
-        }}<small>soon</small></span>
+      <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><span class="nav-icon-wrap"><i class="pi"
+          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ item.label
+        }}</span><small>soon</small></span>
       }
       }
       }
     </nav>
     <div class="sidebar-help">
-      <i class="pi pi-shield"></i>
-      <div>
-        <strong>Role:
-          {{
-          auth.session()?.user?.role === 'admin'
-          ? 'Administrator'
-          : (auth.session()?.user?.role | titlecase)
-          }}</strong><small>{{
+      <div class="sidebar-help-icon">
+        <i class="pi pi-shield"></i>
+      </div>
+      <div class="sidebar-help-content">
+        <div class="sidebar-help-header">
+          <span class="sidebar-status-dot"></span>
+          <strong>Role:
+            {{
+            auth.session()?.user?.role === 'admin'
+            ? 'Administrator'
+            : (auth.session()?.user?.role | titlecase)
+            }}</strong>
+        </div>
+        <small>{{
           auth.session()?.user?.role === 'admin'
           ? 'Full access to manage academy operations.'
           : 'Access follows your assigned permissions.'
@@ -65,10 +82,36 @@
         <i class="pi pi-bars"></i>
       </button>
       @if (auth.role() !== 'parent') {
-      <label class="search"><i class="pi pi-search"></i><span class="sr-only">Search</span><input
-          aria-label="Search academy" placeholder="Search students, parents, batches…" [value]="globalSearch()"
-          (input)="globalSearch.set($any($event.target).value)" (keydown.enter)="submitGlobalSearch()" /></label>
+      <div class="search-container">
+        <label class="search">
+          <i class="pi pi-search search-icon" aria-hidden="true"></i>
+          <span class="sr-only">Search</span>
+          <input
+            aria-label="Search academy"
+            placeholder="Search students, parents, batches…"
+            [value]="globalSearch()"
+            (input)="globalSearch.set($any($event.target).value)"
+            (keydown.enter)="submitGlobalSearch()"
+          />
+          @if (globalSearch().trim()) {
+          <button type="button" class="search-clear-btn" aria-label="Clear search" (click)="clearSearch($event)">
+            <i class="pi pi-times"></i>
+          </button>
+          }
+          <span class="search-shortcut" title="Press Enter or Ctrl+K to search">
+            <kbd>↵</kbd>
+          </span>
+        </label>
+      </div>
       }
+
+      <div class="topbar-center">
+        <div class="academy-status-badge">
+          <span class="status-pulse-dot"></span>
+          <span class="academy-name">Turf Cricket Academy</span>
+        </div>
+      </div>
+
       <div class="top-actions">
         @if (
         auth.hasPermission('notifications:read') ||
@@ -81,22 +124,38 @@
                 : auth.role() === 'coach'
                   ? '/coach/notifications'
                   : '/notifications'
-            " [attr.aria-label]="bellLabel()"><i class="pi pi-bell" aria-hidden="true"></i>
+            " [attr.aria-label]="bellLabel()">
+          <i class="pi pi-bell" aria-hidden="true"></i>
           @if (bellCount()) {
           <span class="count">{{ bellCount() }}</span>
           }
         </a>
         }
+
+        <div class="top-divider"></div>
+
         <div class="profile">
           <b>
             @if (profilePhoto()) {
             <img [src]="profilePhoto()" alt="Profile photo" />
             } @else {
             {{ auth.session()?.user?.name?.slice(0, 2)?.toUpperCase() }}
-            }</b><span><strong>{{ auth.session()?.user?.name }}</strong><small>{{ auth.session()?.user?.role
-              }}</small></span>
+            }</b>
+          <div class="profile-info">
+            <strong class="profile-name">{{ auth.session()?.user?.name }}</strong>
+            <small class="role-pill" [class]="'role-' + auth.session()?.user?.role">
+              {{
+              auth.session()?.user?.role === 'admin'
+              ? 'Admin'
+              : (auth.session()?.user?.role | titlecase)
+              }}
+            </small>
+          </div>
         </div>
-        <button aria-label="Sign out" title="Sign out" (click)="logout()">
+
+        <div class="top-divider"></div>
+
+        <button class="logout-button" aria-label="Sign out" title="Sign out" (click)="logout()">
           <i class="pi pi-sign-out"></i>
         </button>
       </div>

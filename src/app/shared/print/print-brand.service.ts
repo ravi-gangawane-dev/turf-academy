@@ -26,6 +26,9 @@ export class PrintBrandService {
       record = null;
     }
     const fallback = this.preferences.value();
+    const registrationNumber = clean(record?.print_registration_number);
+    const terms = clean(record?.print_terms);
+    const footerNote = clean(record?.print_footer_note);
     const brand: PrintBrand = {
       name: clean(record?.academy_name) || clean(fallback.academy_name) || 'Academy',
       code: clean(record?.academy_code) || clean(fallback.academy_code),
@@ -35,6 +38,9 @@ export class PrintBrandService {
       email: clean(record?.contact_email),
       currencyCode: clean(record?.currency_code) || clean(fallback.currency_code) || 'INR',
       timezone: clean(record?.timezone) || clean(fallback.timezone) || 'Asia/Kolkata',
+      ...(registrationNumber ? { registrationNumber } : {}),
+      ...(terms ? { terms } : {}),
+      ...(footerNote ? { footerNote } : {}),
     };
     this.cached = brand;
     return brand;

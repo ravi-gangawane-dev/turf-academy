@@ -20,6 +20,8 @@ const brand = {
   timezone: 'Asia/Kolkata',
 };
 
+const STORAGE_KEY = 'academy-print-page-setup';
+
 const receipt: PrintReceiptDocument = {
   kind: 'receipt',
   brand,
@@ -85,7 +87,12 @@ function setup(
 }
 
 describe('PrintPreview', () => {
-  afterEach(() => TestBed.resetTestingModule());
+  beforeEach(() => localStorage.removeItem(STORAGE_KEY));
+
+  afterEach(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    TestBed.resetTestingModule();
+  });
 
   it('shows the prepared document at paper size with its actions', () => {
     const { fixture } = setup();
@@ -93,7 +100,7 @@ describe('PrintPreview', () => {
     const text = element.textContent ?? '';
 
     expect(element.querySelector('.preview-panel')).toBeTruthy();
-    expect(text).toContain('Print preview · A5');
+    expect(text).toContain('Print preview · A5 portrait');
     expect(text).toContain('Payment receipt');
     expect(element.querySelector('.print-sheet--receipt')).toBeTruthy();
     expect(element.querySelector('.preview-paper--a5')).toBeTruthy();
@@ -109,7 +116,7 @@ describe('PrintPreview', () => {
     const { fixture } = setup(invoice);
     const element = fixture.nativeElement as HTMLElement;
 
-    expect(element.textContent).toContain('Print preview · A4');
+    expect(element.textContent).toContain('Print preview · A4 portrait');
     expect(element.textContent).toContain('Fee invoice');
     expect(element.querySelector('.preview-paper--a5')).toBeNull();
     expect(element.querySelector('.print-sheet--invoice')).toBeTruthy();
@@ -119,11 +126,68 @@ describe('PrintPreview', () => {
     const { fixture } = setup(idCard);
     const element = fixture.nativeElement as HTMLElement;
 
-    expect(element.textContent).toContain('Print preview · A4');
+    expect(element.textContent).toContain('Print preview · A4 portrait');
     expect(element.textContent).toContain('Coach ID card');
     expect(element.querySelector('.preview-paper')?.getAttribute('data-kind')).toBe('id-card');
     expect(element.querySelector('.print-sheet--id-card')).toBeTruthy();
     expect(element.querySelectorAll('.id-card-sheet')).toHaveLength(2);
+  });
+
+  it('changes paper size and orientation and remembers the choice', () => {
+    const { fixture } = setup();
+    const element = fixture.nativeElement as HTMLElement;
+    const [size, orientation] = [
+      ...element.querySelectorAll<HTMLSelectElement>('.preview-field select'),
+    ];
+
+    expect(size.value).toBe('a5');
+    expect(orientation.value).toBe('portrait');
+    expect(element.textContent).toContain('Remembered for Payment receipt prints');
+
+    size.value = 'a4';
+    size.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(element.textContent).toContain('Print preview · A4 portrait');
+    expect(element.querySelector('.preview-paper--a5')).toBeNull();
+
+    orientation.value = 'landscape';
+    orientation.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(element.textContent).toContain('Print preview · A4 landscape');
+    expect(element.querySelector('.preview-paper--landscape')).toBeTruthy();
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toEqual({
+      receipt: { size: 'a4', orientation: 'landscape' },
+    });
+  });
+
+  it('restores the document default from the preview', () => {
+    const { fixture } = setup();
+    const element = fixture.nativeElement as HTMLElement;
+    const size = element.querySelector<HTMLSelectElement>('.preview-field select');
+    if (!size) throw new Error('Expected a paper size selector');
+
+    size.value = 'a4';
+    size.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    const reset = [...element.querySelectorAll<HTMLButtonElement>('.preview-link')].find(
+      (button) => button.textContent?.includes('Use default'),
+    );
+    expect(reset).toBeTruthy();
+    reset?.click();
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Print preview · A5 portrait');
+    expect(element.querySelector('.preview-paper--a5')).toBeTruthy();
+    expect(element.querySelector('.preview-link')).toBeNull();
+  });
+
+  it('keeps ID cards on fixed A4 paper without a selector', () => {
+    const { fixture } = setup(idCard);
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelectorAll('.preview-field select')).toHaveLength(0);
+    expect(element.textContent).toContain('ID cards print on fixed A4 portrait paper');
   });
 
   it('prints and saves the previewed document through the shared service', async () => {

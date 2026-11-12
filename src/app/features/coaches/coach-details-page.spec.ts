@@ -14,7 +14,10 @@ function deferred() {
 function setup() {
   const first = deferred(), second = deferred();
   const attendance = vi.fn().mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
-  const printDocuments = { printIdCard: vi.fn().mockResolvedValue(undefined) };
+  const printDocuments = {
+    printIdCard: vi.fn().mockResolvedValue(undefined),
+    printProfileSheet: vi.fn().mockResolvedValue(undefined),
+  };
   TestBed.configureTestingModule({ providers: [provideRouter([]),
     { provide: CoachesService, useValue: {} },
     { provide: StaffDetailsService, useValue: { attendance } },
@@ -126,5 +129,45 @@ describe('Coach attendance request ordering', () => {
       'preview',
     );
     expect(page['idCardOpen']()).toBe(false);
+  });
+
+  it('prepares a coach profile sheet with real employment and batch details', async () => {
+    const { page, printDocuments } = setup();
+    page['coach'].set(coachRecord);
+
+    const sheet = page['profileSheet']();
+    expect(sheet).toMatchObject({
+      profileKind: 'coach',
+      reference: 'PRF-COA-EMP42',
+      fullName: 'Coach Rao',
+      profileCode: 'EMP-42',
+      subtitle: 'Batting, Fielding',
+      checklistTitle: 'Profile checklist',
+      documents: [],
+    });
+    expect(sheet?.checklist).toContainEqual({
+      label: 'Batch assignment',
+      recorded: true,
+      detail: '1 assigned batch',
+    });
+    expect(sheet?.sections).toContainEqual(
+      expect.objectContaining({
+        title: 'Assigned batches',
+        fields: [
+          {
+            label: 'Morning Elite',
+            value: 'B-MOR · U-14 · 06:30 – 08:00 · Primary coach',
+          },
+        ],
+      }),
+    );
+
+    await page['printProfileSheet']();
+
+    expect(printDocuments.printProfileSheet).toHaveBeenCalledWith(
+      expect.objectContaining({ reference: 'PRF-COA-EMP42', profileKind: 'coach' }),
+      'preview',
+    );
+    expect(page['profileLoading']()).toBe(false);
   });
 });

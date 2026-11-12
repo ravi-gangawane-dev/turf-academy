@@ -24,6 +24,12 @@ export const SETTINGS_SECTIONS = [
     "path": "/settings/notifications"
   },
   {
+    "label": "Print & Documents",
+    "icon": "pi-print",
+    "description": "Registration number, invoice terms, and printed footer text.",
+    "path": "/settings/print"
+  },
+  {
     "label": "Users & Roles",
     "icon": "pi-users",
     "description": "Invite users, manage account access, and review role permissions.",

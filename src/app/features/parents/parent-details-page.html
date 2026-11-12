@@ -37,7 +37,9 @@
         parent</button><button (click)="selectTab('compose')"><i aria-hidden="true" class="pi pi-comment"></i>Send
         message</button><button (click)="selectTab('payments')"><i aria-hidden="true" class="pi pi-wallet"></i>Payment
         history</button><button (click)="openIdCard()"><i aria-hidden="true" class="pi pi-id-card"></i>Guardian
-        card</button><button (click)="list()"><i aria-hidden="true" class="pi pi-arrow-left"></i>Back to
+        card</button><button (click)="printProfileSheet()" [disabled]="profileLoading()"><i aria-hidden="true"
+          class="pi pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Profile sheet' }}</button><button
+        (click)="list()"><i aria-hidden="true" class="pi pi-arrow-left"></i>Back to
         parents</button>
     </aside>
   </div>

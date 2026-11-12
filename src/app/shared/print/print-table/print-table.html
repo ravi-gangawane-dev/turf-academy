@@ -10,11 +10,12 @@
         <div class="brand-copy">
           <p class="brand-kicker">{{ table().brand.name }}</p>
           <h1>{{ table().title }}</h1>
-          @if (table().brand.address || table().brand.phone || table().brand.email) {
+          @if (table().brand.address || table().brand.phone || table().brand.email || table().brand.registrationNumber) {
             <p class="brand-contact">
               @if (table().brand.address) { <span>{{ table().brand.address }}</span> }
               @if (table().brand.phone) { <span>{{ table().brand.phone }}</span> }
               @if (table().brand.email) { <span>{{ table().brand.email }}</span> }
+              @if (table().brand.registrationNumber) { <span>Reg. {{ table().brand.registrationNumber }}</span> }
             </p>
           }
         </div>
@@ -61,6 +62,7 @@
         [total]="page.total"
         [label]="table().title + ' · ' + table().reference"
         [note]="table().footer ?? 'Exported from live academy records'"
+        [brandNote]="table().brand.footerNote ?? ''"
       />
     </section>
   }

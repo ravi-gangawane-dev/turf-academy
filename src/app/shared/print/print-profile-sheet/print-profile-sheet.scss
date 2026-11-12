@@ -1,0 +1,165 @@
+@use '../print-document';
+
+.print-sheet--profile {
+  page: profile-page;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 24mm);
+  font-size: 9.4pt;
+}
+
+.profile-identity {
+  display: grid;
+  grid-template-columns: 30mm minmax(0, 1fr);
+  gap: 5mm;
+  align-items: center;
+  padding: 4mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+  background: #f7fbf8;
+  break-inside: avoid;
+}
+
+.profile-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30mm;
+  height: 36mm;
+  border-radius: 2mm;
+  background: #e3f6eb;
+  color: #0b6339;
+  font-size: 16pt;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+}
+
+.profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.identity-copy h2 {
+  margin: 0;
+  font-size: 18pt;
+  line-height: 1.1;
+}
+
+.identity-copy > p {
+  margin: 1mm 0 2.5mm;
+  color: #5f7268;
+  font-size: 9pt;
+}
+
+.identity-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1mm 4mm;
+  margin: 0;
+  font-size: 8.6pt;
+}
+
+.identity-facts div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2mm;
+}
+
+.identity-facts dt {
+  color: #5f7268;
+  white-space: nowrap;
+}
+
+.identity-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4mm;
+}
+
+.profile-box {
+  break-inside: avoid;
+}
+
+.profile-fields {
+  display: grid;
+  gap: 1.2mm;
+  margin: 0;
+  font-size: 8.6pt;
+}
+
+.profile-fields div {
+  display: grid;
+  grid-template-columns: 36mm minmax(0, 1fr);
+  gap: 2mm;
+}
+
+.profile-fields dt {
+  color: #5f7268;
+}
+
+.profile-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-checklist,
+.profile-documents {
+  break-inside: avoid;
+}
+
+.profile-checklist-table td:first-child {
+  width: 52mm;
+}
+
+.profile-checklist-table strong {
+  font-size: 8.8pt;
+}
+
+.profile-documents-table td {
+  overflow-wrap: anywhere;
+}
+
+.check {
+  display: inline-block;
+  padding: 0.4mm 1.8mm;
+  border-radius: 999px;
+  background: #e3f6eb;
+  color: #0b6339;
+  font-size: 7.2pt;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.check--missing {
+  background: #fbe3e1;
+  color: #8f2f28;
+}
+
+.profile-empty {
+  margin: 0;
+  padding: 3mm 4mm;
+  border: 1px dashed #d7e1db;
+  border-radius: 2mm;
+  color: #5f7268;
+  font-size: 8.4pt;
+}
+
+.profile-note {
+  margin: 1.5mm 0 0;
+  color: #5f7268;
+  font-size: 7.2pt;
+}
+
+.profile-foot {
+  margin-top: auto;
+}

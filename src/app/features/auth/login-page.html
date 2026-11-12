@@ -1,91 +1,243 @@
 <main class="login-page">
-  <div class="academy-scene" aria-hidden="true">
-    <img class="cricketer" src="/branding/login/cricketer-reference.png" alt="" width="1024" height="1536" fetchpriority="high" />
+  <!-- Full-Width Background Scene Layers -->
+  <div class="page-bg-stage" aria-hidden="true">
+    <img class="page-bg-img" src="/branding/login-assets/training-ground-full.png" alt="Turf Cricket Academy Ground"
+      fetchpriority="high" />
+    <div class="page-vignette-overlay"></div>
+
+    <!-- Bottom Left Wave Ribbon & Cricket Ball Accent -->
+    <div class="bottom-wave-wrap">
+      <!-- <svg class="wave-svg" viewBox="0 0 700 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,240 L0,110 C180,105 320,180 620,240 Z" fill="url(#wave-grad)" />
+        <path d="M0,240 L0,150 C140,140 280,200 520,240 Z" fill="url(#wave-grad-2)" />
+        <defs>
+          <linearGradient id="wave-grad" x1="0" y1="100" x2="600" y2="240" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#05c879" stop-opacity="0.88" />
+            <stop offset="50%" stop-color="#00e599" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#00a3ff" stop-opacity="0.2" />
+          </linearGradient>
+          <linearGradient id="wave-grad-2" x1="0" y1="140" x2="500" y2="240" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#00df89" stop-opacity="0.92" />
+            <stop offset="100%" stop-color="#059669" stop-opacity="0.45" />
+          </linearGradient>
+        </defs>
+      </svg> -->
+
+      <!-- Red Leather Cricket Ball with Stitches -->
+      <!-- <svg class="cricket-ball-svg" viewBox="0 0 100 100" width="86" height="86">
+        <defs>
+          <radialGradient id="ball-grad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ff4d4d" />
+            <stop offset="45%" stop-color="#c41010" />
+            <stop offset="85%" stop-color="#7a0000" />
+            <stop offset="100%" stop-color="#450000" />
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="48" fill="url(#ball-grad)" />
+        <path d="M15,20 C35,45 65,55 85,80" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="3,2" fill="none"
+          opacity="0.85" />
+        <path d="M14,21 C34,46 64,56 84,81" stroke="#330000" stroke-width="1" fill="none" opacity="0.5" />
+      </svg> -->
+    </div>
   </div>
-  <section class="login-brand" aria-labelledby="login-brand-title">
-    <div class="brand-lockup">
-      <div class="brand-crest"><img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="1300" height="1200" /></div>
-      <div class="brand-wordmark" aria-hidden="true"><strong>TURF</strong><span>CRICKET ACADEMY</span></div>
-    </div>
-    <p class="brand-caption">DISCIPLINE <span>&bull;</span> SKILLS <span>&bull;</span> TEAMWORK <span>&bull;</span> BRIGHTER TOMORROW</p>
-    <div class="brand-copy">
-      <h1 id="login-brand-title">From Practice<br />to <span>Possibilities</span></h1>
-      <p class="brand-description">Manage students, track attendance,<br class="desktop-break" /> handle fees, and stay connected &mdash; all in one place.</p>
-      <ul class="feature-highlights" aria-label="Academy features">
-        <li><i class="pi pi-graduation-cap" aria-hidden="true"></i><strong>Students</strong><span>Track progress<br />and growth</span></li>
-        <li><i class="pi pi-calendar" aria-hidden="true"></i><strong>Attendance</strong><span>Simple<br />check-in &amp; out</span></li>
-        <li><span class="rupee-icon" aria-hidden="true">&#8377;</span><strong>Fees</strong><span>Transparent<br />and easy</span></li>
-        <li><i class="pi pi-users" aria-hidden="true"></i><strong>Parents</strong><span>Stay informed<br />always</span></li>
-      </ul>
-    </div>
-    <p class="brand-slogan"><i class="pi pi-trophy" aria-hidden="true"></i><span>Building<br />Better Cricketers<br /><strong>for a Brighter Tomorrow</strong></span></p>
-  </section>
 
-  <section class="login-card-wrap" aria-labelledby="login-title">
-    <div class="language-label"><i class="pi pi-globe" aria-hidden="true"></i><span>English</span></div>
-    <form class="login-card" [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="submitting()" novalidate>
-      <header class="card-header">
-
-        <p class="eyebrow">WELCOME BACK</p>
-        <h2 id="login-title">Login to<br /><span>Turf <em>Cricket Academy</em></span></h2>
-        <p class="card-subtitle">Enter your credentials to access your account.</p>
-      </header>
-
-      @if (sessionExpired) {
-      <p class="session-notice" role="status"><i class="pi pi-info-circle" aria-hidden="true"></i>Your session has
-        expired. Please sign in again.</p>
-      }
-      @if (error()) {
-      <p class="login-error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i>{{ error() }}</p>
-      }
-
-      <div class="login-field">
-        <label for="identity">Email Address</label>
-        <div class="field-wrap">
-          <i class="pi pi-envelope" aria-hidden="true"></i>
-          <input id="identity" type="email" inputmode="email" autocomplete="username" autocapitalize="none"
-            spellcheck="false" placeholder="Enter your email address" formControlName="identity"
-            [attr.aria-invalid]="form.controls.identity.invalid && form.controls.identity.touched"
-            [attr.aria-describedby]="form.controls.identity.touched && form.controls.identity.invalid ? 'identity-error' : null" />
+  <!-- 3-Column Balanced Composition -->
+  <div class="login-layout-frame">
+    <!-- Left column: academy identity and overview -->
+    <section class="hero-left-col" aria-label="Turf Cricket Academy Overview">
+      <div class="hero-brand">
+        <img class="hero-brand-logo" src="/branding/login-assets/official-turf-logo-white.png"
+          alt="Turf Cricket Academy" width="150" height="150" />
+        <p class="hero-slogan">Train <span aria-hidden="true">/</span> Learn <span aria-hidden="true">/</span> Compete <span aria-hidden="true">/</span> Grow</p>
+      </div>
+      <div class="hero-intro">
+        <p class="hero-eyebrow"><span aria-hidden="true"></span> THE ACADEMY EXPERIENCE</p>
+        <h2>Your game.<br /><span>Your next level.</span></h2>
+        <p>Everything behind a better innings.</p>
+      </div>
+      <div class="hero-features" role="list" aria-label="Academy features">
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 7h5M19.5 4.5v5"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Expert coaching</strong><span class="feature-desc">Build your game, session by session.</span></div>
         </div>
-        @if (form.controls.identity.touched && form.controls.identity.invalid) {
-        <small id="identity-error" class="field-error">Enter a valid email address.</small>
-        }
-      </div>
-
-      <div class="login-field">
-        <label for="password">Password</label>
-        <div class="field-wrap">
-          <i class="pi pi-lock" aria-hidden="true"></i>
-          <input id="password" [type]="showPassword() ? 'text' : 'password'" autocomplete="current-password"
-            placeholder="Enter your password" formControlName="password"
-            [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
-            [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'password-error' : null" />
-          <button class="password-toggle" type="button" (click)="togglePassword()" [attr.aria-pressed]="showPassword()"
-            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
-            <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" aria-hidden="true"></i>
-          </button>
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18m-13 5 3 3 5-5"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Attendance</strong><span class="feature-desc">Every check-in. Every training session.</span></div>
         </div>
-        @if (form.controls.password.touched && form.controls.password.invalid) {
-        <small id="password-error" class="field-error">Password must be at least 8 characters.</small>
-        }
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m1 3a5 5 0 0 1 4 5v1"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Batches & schedules</strong><span class="feature-desc">The right team. A clear training plan.</span></div>
+        </div>
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M7 16v-4m5 4V8m5 8V4M4 8l5-4 4 2 7-4"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Player development</strong><span class="feature-desc">Small improvements. Lasting progress.</span></div>
+        </div>
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5 17a4 4 0 0 1 8 0m3-8h2m-2 4h2"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Student profiles</strong><span class="feature-desc">Player details, together in one place.</span></div>
+        </div>
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Fees & payments</strong><span class="feature-desc">Clear balances. Easy-to-find receipts.</span></div>
+        </div>
+        <div class="feature-card" role="listitem">
+          <span class="feature-icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11a8 8 0 0 1-8 8H7l-4 3V11a9 9 0 0 1 18 0Z"/><path d="m8 10 4 4 4-4"/></svg></span>
+          <div class="feature-body"><strong class="feature-title">Parent connection</strong><span class="feature-desc">Stay close to your child's cricket journey.</span></div>
+        </div>
       </div>
+    </section>
 
-      <div class="login-options">
-        <label class="remember"><input type="checkbox" formControlName="rememberMe" /> Remember me</label>
-        <a class="forgot" routerLink="/auth/forgot-password">Forgot Password?</a>
-      </div>
-      <button type="submit" class="login-button" [disabled]="submitting() || form.invalid">
-        @if (submitting()) {
-        <i class="pi pi-spinner pi-spin" aria-hidden="true"></i> Signing in...
-        } @else {
-        Login <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    <!-- 2. Center Column: Smiling Hero Cricketer in Center -->
+    <div class="hero-character-col" aria-hidden="true">
+      <img class="hero-character-img" src="/branding/login/cricketer-reference.png" alt="Turf Cricket Academy Player" />
+    </div>
+
+    <!-- 3. Right Column: Floating Login Card -->
+    <section class="login-card-col" aria-labelledby="login-title">
+      <div class="top-corner-ribbon" aria-hidden="true"></div>
+
+      <form class="login-card" [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="submitting()" novalidate>
+        <!-- Logo -->
+        <div class="card-brand">
+          <img class="card-brand-logo" src="/branding/login-assets/official-turf-logo.png" alt="Turf Cricket Academy"
+            width="210" height="80" />
+        </div>
+
+        <!-- Role Badge Pill -->
+        <div class="role-badge-pill" aria-label="Supported roles">
+          <span>Admin</span>
+          <span class="role-dot" aria-hidden="true">•</span>
+          <span>Coach</span>
+          <span class="role-dot" aria-hidden="true">•</span>
+          <span>Reception</span>
+          <span class="role-dot" aria-hidden="true">•</span>
+          <span>Parent</span>
+        </div>
+
+        <!-- Headings -->
+        <header class="card-header">
+          <h1 id="login-title" class="welcome-title">Welcome Back</h1>
+          <p class="welcome-subtitle">Sign in to continue to Turf Cricket Academy.</p>
+        </header>
+
+        <!-- Status Notices -->
+        @if (sessionExpired) {
+        <p class="session-notice" role="status">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          <span>Your session has expired. Please sign in again.</span>
+        </p>
         }
-      </button>
-    </form>
+        @if (error()) {
+        <p class="login-error" role="alert">
+          <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+          <span>{{ error() }}</span>
+        </p>
+        }
 
-  </section>
+        <!-- Email Field -->
+        <div class="login-field">
+          <label for="identity" class="field-label">Email</label>
+          <div class="field-wrap"
+            [class.field-invalid]="form.controls.identity.touched && form.controls.identity.invalid">
+            <span class="field-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 6 9-6" />
+              </svg>
+            </span>
+            <input id="identity" type="email" inputmode="email" autocomplete="username" autocapitalize="none"
+              spellcheck="false" placeholder="Enter your email" formControlName="identity"
+              [attr.aria-invalid]="form.controls.identity.invalid && form.controls.identity.touched"
+              [attr.aria-describedby]="form.controls.identity.touched && form.controls.identity.invalid ? 'identity-error' : null" />
+          </div>
+          @if (form.controls.identity.touched && form.controls.identity.invalid) {
+          <small id="identity-error" class="field-error">Enter a valid email address.</small>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="login-field">
+          <label for="password" class="field-label">Password</label>
+          <div class="field-wrap"
+            [class.field-invalid]="form.controls.password.touched && form.controls.password.invalid">
+            <span class="field-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="10" width="14" height="11" rx="2" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                <path d="M12 15v2" />
+              </svg>
+            </span>
+            <input id="password" [type]="showPassword() ? 'text' : 'password'" autocomplete="current-password"
+              placeholder="Enter your password" formControlName="password"
+              [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+              [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'password-error' : null" />
+            <button class="password-toggle" type="button" (click)="togglePassword()"
+              [attr.aria-pressed]="showPassword()"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+              @if (showPassword()) {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path d="M3 3l18 18" />
+                <path d="M10.6 5.2A10.4 10.4 0 0 1 12 5c5.2 0 9.3 4.7 10 7-.3 1.1-1.4 2.8-3 4.2" />
+                <path d="M6.2 6.2C3.6 7.8 2.3 10.1 2 12c.7 2.3 4.8 7 10 7 1.8 0 3.5-.6 5-1.6" />
+                <path d="M10 10a3 3 0 0 0 4 4" />
+              </svg>
+              }
+            </button>
+          </div>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+          <small id="password-error" class="field-error">Password must be at least 8 characters.</small>
+          }
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="login-options">
+          <label class="remember">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span>Remember me</span>
+          </label>
+          <a class="forgot" routerLink="/auth/forgot-password">Forgot Password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="login-button" [disabled]="submitting() || form.invalid">
+          @if (submitting()) {
+          <i class="pi pi-spinner pi-spin" aria-hidden="true"></i> Signing in...
+          } @else {
+          <span>Login</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow"
+            aria-hidden="true">
+            <path d="M4 12h16m-7-7 7 7-7 7" />
+          </svg>
+          }
+        </button>
+
+        <!-- Account Guidance Footer -->
+        <div class="account-notice-card">
+          <div class="notice-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 2 8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+              <path d="m8 12 3 3 5-6" />
+            </svg>
+          </div>
+          <div class="notice-text">
+            <strong>Use your academy-provided account.</strong>
+            <small>Contact admin for account access.</small>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
 </main>
-
-
-

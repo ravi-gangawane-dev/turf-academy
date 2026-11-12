@@ -13,6 +13,7 @@
           @if (invoice().brand.address) { <span>{{ invoice().brand.address }}</span> }
           @if (invoice().brand.phone) { <span>{{ invoice().brand.phone }}</span> }
           @if (invoice().brand.email) { <span>{{ invoice().brand.email }}</span> }
+          @if (invoice().brand.registrationNumber) { <span>Reg. {{ invoice().brand.registrationNumber }}</span> }
         </p>
       }
     </div>
@@ -126,7 +127,7 @@
     <div class="box">
       <h2>Notes</h2>
       <p>
-        {{ invoice().notes || 'Fees cover scheduled coaching sessions for the period shown. Absences are governed by the academy attendance policy. This invoice is computer generated and valid without a physical signature.' }}
+        {{ invoice().notes || invoice().brand.terms || 'Fees cover scheduled coaching sessions for the period shown. Absences are governed by the academy attendance policy. This invoice is computer generated and valid without a physical signature.' }}
       </p>
     </div>
   </section>
@@ -135,6 +136,9 @@
     <span>{{ invoice().brand.name }} · {{ invoice().invoiceNumber }}</span>
     @if (invoice().brand.email) {
       <span>Questions: {{ invoice().brand.email }}</span>
+    }
+    @if (invoice().brand.footerNote) {
+      <span>{{ invoice().brand.footerNote }}</span>
     }
     <span>Computer generated invoice</span>
   </footer>

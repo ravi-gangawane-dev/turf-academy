@@ -5,7 +5,7 @@
     @for (section of sections; track section) {
     <button class="tab-button" [class.active]="activeSection() === section" (click)="setActiveSection(section)"
       [attr.aria-pressed]="activeSection() === section">
-      {{ section === 'users' ? 'Users & Roles' : section === 'tools' ? 'Tools & Data' : (section | titlecase) }}
+      {{ section === 'users' ? 'Users & Roles' : section === 'tools' ? 'Tools & Data' : section === 'print' ? 'Print & Documents' : (section | titlecase) }}
     </button>
     }
   </div>
@@ -217,6 +217,52 @@
           </button>
           @if (error()) {
           <small class="error-text">{{ error() }}</small>
+          }
+        </div>
+      </div>
+      }
+      @case ('print') {
+      <div class="settings-section">
+        <h2 class="section-title">Print &amp; Documents</h2>
+        <p class="settings-description">
+          These details appear on invoices, receipts, statements, registers and profile sheets.
+          Changes apply to documents prepared after you save.
+        </p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="settings-printRegistrationNumber">Registration Number</label>
+            <input id="settings-printRegistrationNumber" formControlName="printRegistrationNumber" type="text"
+              placeholder="Academy registration or licence number" class="form-control" maxlength="60" />
+            <small class="muted-text">Shown in the letterhead when set. Leave blank to omit it.</small>
+            @if (form.controls.printRegistrationNumber.errors && (form.controls.printRegistrationNumber.touched ||
+            form.controls.printRegistrationNumber.dirty)) {
+            <small class="error-text">Maximum 60 characters</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="settings-printFooterNote">Footer Note</label>
+            <input id="settings-printFooterNote" formControlName="printFooterNote" type="text"
+              placeholder="For example: Fees once paid are non-refundable" class="form-control" maxlength="200" />
+            <small class="muted-text">Printed alongside the page number on multi-page documents and under receipts.</small>
+            @if (form.controls.printFooterNote.errors && (form.controls.printFooterNote.touched ||
+            form.controls.printFooterNote.dirty)) {
+            <small class="error-text">Maximum 200 characters</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="settings-printTerms">Invoice and Statement Terms</label>
+          <textarea id="settings-printTerms" formControlName="printTerms" rows="4" class="form-control"
+            placeholder="Terms shown in the Notes section of invoices and statements"
+            maxlength="1200"></textarea>
+          <small class="muted-text">
+            Used when an invoice or statement has no record-specific notes. Leave blank to keep the standard text.
+          </small>
+          @if (form.controls.printTerms.errors && (form.controls.printTerms.touched ||
+          form.controls.printTerms.dirty)) {
+          <small class="error-text">Maximum 1200 characters</small>
           }
         </div>
       </div>

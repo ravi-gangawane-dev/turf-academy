@@ -2,6 +2,7 @@ import { ApplicationRef, inject, Injectable, signal } from '@angular/core';
 import { ToastService } from '../toast/toast.service';
 import { PrintAuditService } from './print-audit.service';
 import { PrintBrandService } from './print-brand.service';
+import { PrintPageSetupService } from './print-page-setup.service';
 import {
   PrintDestination,
   PrintDocument,
@@ -11,6 +12,7 @@ import {
   PrintEnrollmentConfirmationDocument,
   PrintIdCardInput,
   PrintInvoiceDocument,
+  PrintProfileSheetInput,
   PrintReceiptDocument,
   PrintRefundReceiptDocument,
   PrintStatementDocument,
@@ -26,6 +28,7 @@ type AttendanceRegisterInput = Omit<PrintAttendanceRegisterDocument, 'kind' | 'b
 type AttendanceMatrixInput = Omit<PrintAttendanceMatrixDocument, 'kind' | 'brand'>;
 type EnrollmentConfirmationInput = Omit<PrintEnrollmentConfirmationDocument, 'kind' | 'brand'>;
 type BatchRosterInput = Omit<PrintBatchRosterDocument, 'kind' | 'brand'>;
+type ProfileSheetInput = PrintProfileSheetInput;
 type IdCardInput = PrintIdCardInput;
 
 /** Human-readable reference used by the audit trail and print footers. */
@@ -48,6 +51,8 @@ function documentReference(document: PrintDocument): string {
       return document.confirmationNumber;
     case 'batch-roster':
       return document.rosterNumber;
+    case 'profile-sheet':
+      return document.reference;
     case 'table':
       return document.reference;
   }
@@ -63,6 +68,7 @@ const DOCUMENT_LABELS: Record<PrintDocument['kind'], string> = {
   'id-card': 'ID-card',
   'enrollment-confirmation': 'Enrollment-confirmation',
   'batch-roster': 'Batch-roster',
+  'profile-sheet': 'Profile',
   table: 'Report',
 };
 
@@ -94,6 +100,7 @@ export class PrintDocumentService {
   private readonly brand = inject(PrintBrandService);
   private readonly toast = inject(ToastService);
   private readonly audit = inject(PrintAuditService);
+  private readonly pageSetup = inject(PrintPageSetupService);
 
   readonly document = signal<PrintDocument | null>(null);
   /** Document currently shown in the on-screen preview, if any. */
@@ -179,6 +186,17 @@ export class PrintDocumentService {
     );
   }
 
+  /** Print a student, parent or coach profile sheet with its record checklist. */
+  async printProfileSheet(
+    data: ProfileSheetInput,
+    destination: PrintDestination = 'print',
+  ): Promise<void> {
+    await this.run(
+      async () => ({ ...data, kind: 'profile-sheet', brand: await this.brand.load() }),
+      destination,
+    );
+  }
+
   /** Print any exported table (reports, directories, queue) through the same pipeline. */
   async printTable(data: PrintTableInput, destination: PrintDestination = 'print'): Promise<void> {
     await this.run(
@@ -233,12 +251,14 @@ export class PrintDocumentService {
     const body = globalThis.document.body;
     const previousTitle = globalThis.document.title;
     body.classList.add('printing-document');
+    this.pageSetup.applyForPrint(document.kind);
     globalThis.document.title = printFileName(document);
     try {
       globalThis.window.print();
     } finally {
       globalThis.document.title = previousTitle;
       body.classList.remove('printing-document');
+      this.pageSetup.clearPrintSetup();
       this.document.set(null);
       this.appRef.tick();
     }

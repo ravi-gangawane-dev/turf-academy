@@ -50,6 +50,11 @@
   margin: 12mm;
 }
 
+@page profile-page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
 /* CR80 cards are positioned by the template, so the page itself has no margin. */
 @page id-card-page {
   size: A4 portrait;

@@ -14,6 +14,41 @@
       </button>
     </header>
 
+    @if (document(); as document) {
+    <div class="preview-setup">
+      @if (canChangePaper()) {
+      <label class="preview-field">
+        <span>Paper size</span>
+        <select (change)="changeSize($event)" [disabled]="busy()">
+          @for (option of sizes; track option.value) {
+          <option [value]="option.value" [selected]="option.value === setup().size">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="preview-field">
+        <span>Orientation</span>
+        <select (change)="changeOrientation($event)" [disabled]="busy()">
+          @for (option of orientations; track option.value) {
+          <option [value]="option.value" [selected]="option.value === setup().orientation">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+      @if (overridden()) {
+      <button type="button" class="preview-link" (click)="useDefault()" [disabled]="busy()">
+        Use default
+      </button>
+      }
+      <p class="preview-setup-note">
+        Remembered for {{ title() }} prints in this browser and applied to the browser print dialog.
+      </p>
+      } @else {
+      <p class="preview-setup-note">
+        ID cards print on fixed A4 portrait paper so the CR80 crop marks stay accurate.
+      </p>
+      }
+    </div>
+    }
+
     <div class="preview-stage">
       @if (error()) {
         <div class="preview-state preview-state--error" role="alert">
@@ -32,8 +67,11 @@
           <p>Loading academy branding and the latest records.</p>
         </div>
       } @else if (document(); as document) {
-        <div class="preview-paper" [class.preview-paper--a5]="paper() === 'a5'"
-          [class.preview-paper--landscape]="paper() === 'a4-landscape'" [attr.data-kind]="document.kind">
+        <div class="preview-paper" [class.preview-paper--a5]="setup().size === 'a5'"
+          [class.preview-paper--letter]="setup().size === 'letter'"
+          [class.preview-paper--landscape]="setup().orientation === 'landscape'"
+          [style.width.mm]="paperWidth()" [style.padding.mm]="paperMargin()"
+          [attr.data-kind]="document.kind">
           <app-print-document-body [document]="document" />
         </div>
       }

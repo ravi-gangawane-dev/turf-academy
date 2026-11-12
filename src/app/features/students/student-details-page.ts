@@ -21,10 +21,16 @@ import { StudentDetailRecord, StudentListService, StudentWorkspace } from './stu
 import { AuthService } from '../../core/auth/auth.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
-import { printDateOnly } from '../../shared/print/print-format';
+import { printDateOnly, printProfileReference } from '../../shared/print/print-format';
 import { idCardNumber } from '../../shared/print/id-card-qr';
-import { PrintDestination, PrintIdCardInput } from '../../shared/print/print-document.models';
+import {
+  PrintDestination,
+  PrintIdCardInput,
+  PrintProfileChecklistItem,
+  PrintProfileSheetInput,
+} from '../../shared/print/print-document.models';
 import { PrintIdCardDialog } from '../../shared/print/print-id-card-dialog/print-id-card-dialog';
+import { ToastService } from '../../shared/toast/toast.service';
 
 type DetailTab = 'overview' | 'documents' | 'attendance' | 'payments' | 'medical' | 'timeline';
 
@@ -40,6 +46,7 @@ export class StudentDetailsPage implements OnInit {
   private readonly router = inject(Router);
   private readonly students = inject(StudentListService);
   private readonly printDocuments = inject(PrintDocumentService);
+  private readonly toast = inject(ToastService);
   protected readonly auth = inject(AuthService);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
@@ -52,6 +59,7 @@ export class StudentDetailsPage implements OnInit {
   protected readonly idCardOpen = signal(false);
   protected readonly idCardLoading = signal(false);
   protected readonly idCardError = signal('');
+  protected readonly profileLoading = signal(false);
   private readonly idCardDestination = signal<PrintDestination>('preview');
 
   protected readonly attendanceSummary = computed(() => {
@@ -187,6 +195,200 @@ export class StudentDetailsPage implements OnInit {
   private batchOf(enrollment: StudentDetailRecord | null): StudentDetailRecord | null {
     const batch = enrollment?.['batch'];
     return batch && typeof batch === 'object' ? (batch as StudentDetailRecord) : null;
+  }
+  protected async printProfileSheet(): Promise<void> {
+    if (this.profileLoading()) return;
+    const workspace = this.data();
+    if (!workspace) return;
+    this.profileLoading.set(true);
+    let handedToPrinter = false;
+    try {
+      const documents = await this.students.getDocumentPage(workspace.student.id, 1, 200);
+      const sheet = this.buildProfileSheet(workspace, documents.rows, documents.total);
+      handedToPrinter = true;
+      await this.printDocuments.printProfileSheet(sheet, 'preview');
+    } catch (error) {
+      if (!handedToPrinter) {
+        this.toast.error(
+          error instanceof Error ? error.message : 'The profile sheet could not be prepared.',
+        );
+      }
+    } finally {
+      this.profileLoading.set(false);
+    }
+  }
+  private buildProfileSheet(
+    workspace: StudentWorkspace,
+    documents: readonly StudentDetailRecord[],
+    documentTotal: number,
+  ): PrintProfileSheetInput {
+    const student = workspace.student;
+    const enrollment = workspace.enrollment;
+    const batch = this.batchOf(enrollment);
+    const batchName = this.text(batch, 'name');
+    const batchCode = this.text(batch, 'code');
+    const summary = this.attendanceSummary();
+    const medical = workspace.medical;
+    const address =
+      [student.address, student.city, student.state, student.pinCode]
+        .filter(Boolean)
+        .join(', ') || 'Not recorded';
+    const guardian =
+      [
+        student.parentName,
+        student.parentRelation ? `(${student.parentRelation})` : '',
+        student.parentPhone ? `· ${student.parentPhone}` : '',
+      ]
+        .filter(Boolean)
+        .join(' ') || 'Not recorded';
+
+    const groups = new Map<string, { count: number; latest: string }>();
+    for (const row of documents) {
+      const type = this.text(row, 'document_type') || 'Document';
+      const created = this.text(row, 'created_at');
+      const entry = groups.get(type) ?? { count: 0, latest: '' };
+      entry.count += 1;
+      if (created > entry.latest) entry.latest = created;
+      groups.set(type, entry);
+    }
+
+    const checklist: PrintProfileChecklistItem[] = [
+      {
+        label: 'Profile photograph',
+        recorded: Boolean(student.photoUrl),
+        detail: student.photoUrl ? 'Photo on file' : 'No photo uploaded',
+      },
+      {
+        label: 'Date of birth record',
+        recorded: Boolean(student.dateOfBirth),
+        detail: student.dateOfBirth ? printDateOnly(student.dateOfBirth) : 'Not recorded',
+      },
+      {
+        label: 'Guardian contact',
+        recorded: Boolean(student.parentName && student.parentPhone),
+        detail: guardian,
+      },
+      {
+        label: 'Medical record',
+        recorded: Boolean(medical),
+        detail: medical ? 'Medical details recorded' : 'No medical record',
+      },
+      {
+        label: 'Enrollment record',
+        recorded: Boolean(enrollment),
+        detail: enrollment
+          ? `${this.text(enrollment, 'status') || 'active'} · ${batchName || 'No batch'}`
+          : 'No enrollment recorded',
+      },
+      {
+        label: 'Uploaded documents',
+        recorded: documentTotal > 0,
+        detail: documentTotal
+          ? `${documentTotal} file${documentTotal === 1 ? '' : 's'} on file`
+          : 'No documents uploaded',
+      },
+      ...[...groups.entries()].map(([label, entry]) => ({
+        label,
+        recorded: true,
+        detail: `${entry.count} file${entry.count === 1 ? '' : 's'} · latest ${printDateOnly(entry.latest)}`,
+      })),
+    ];
+
+    const sections = [
+      {
+        title: 'Personal details',
+        fields: [
+          { label: 'Date of birth', value: printDateOnly(student.dateOfBirth) },
+          { label: 'Gender', value: student.gender || 'Not recorded' },
+          { label: 'Blood group', value: student.bloodGroup || 'Not recorded' },
+          { label: 'Nationality', value: student.nationality || 'Not recorded' },
+          { label: 'Aadhaar / ID number', value: student.aadhaar || 'Not recorded' },
+          { label: 'Joined on', value: printDateOnly(student.joinedOn) },
+        ],
+      },
+      {
+        title: 'Contact',
+        fields: [
+          { label: 'Phone', value: student.phone || 'Not recorded' },
+          { label: 'Email', value: student.email || 'Not recorded' },
+          { label: 'Address', value: address },
+          { label: 'Skill level', value: student.skillLevel || 'Not recorded' },
+        ],
+      },
+      {
+        title: 'Guardian',
+        fields: [
+          { label: 'Name', value: student.parentName || 'Not recorded' },
+          { label: 'Relationship', value: student.parentRelation || 'Not recorded' },
+          { label: 'Phone', value: student.parentPhone || 'Not recorded' },
+          { label: 'Email', value: student.parentEmail || 'Not recorded' },
+        ],
+      },
+      {
+        title: 'Enrollment',
+        fields: [
+          { label: 'Batch', value: batchName || 'Not assigned' },
+          { label: 'Batch code', value: batchCode || 'Not recorded' },
+          { label: 'Program / plan', value: this.related(enrollment, 'fee_plan', 'name') || 'Not recorded' },
+          { label: 'Status', value: this.text(enrollment, 'status') || 'Not recorded' },
+          { label: 'Valid from', value: printDateOnly(this.text(enrollment, 'valid_from')) },
+        ],
+      },
+      {
+        title: 'Attendance',
+        fields: [
+          { label: 'Sessions recorded', value: String(summary.total) },
+          { label: 'Present', value: String(summary.present) },
+          { label: 'Late', value: String(summary.late) },
+          { label: 'Absent', value: String(summary.absent) },
+          { label: 'Attendance rate', value: `${summary.rate}%` },
+        ],
+      },
+    ];
+
+    if (medical) {
+      sections.push({
+        title: 'Medical',
+        fields: [
+          { label: 'Blood group', value: this.text(medical, 'blood_group') || 'Not recorded' },
+          { label: 'Allergies', value: this.text(medical, 'allergies') || 'Not recorded' },
+          { label: 'Conditions', value: this.text(medical, 'conditions') || 'Not recorded' },
+          { label: 'Medications', value: this.text(medical, 'medications') || 'Not recorded' },
+          {
+            label: 'Emergency notes',
+            value: this.text(medical, 'emergency_notes') || 'Not recorded',
+          },
+          { label: 'Doctor', value: this.text(medical, 'doctor_name') || 'Not recorded' },
+          { label: 'Doctor phone', value: this.text(medical, 'doctor_phone') || 'Not recorded' },
+        ],
+      });
+    }
+
+    return {
+      reference: printProfileReference('student', student.studentCode || student.id),
+      issuedAt: new Date().toISOString(),
+      profileKind: 'student',
+      fullName: student.fullName,
+      profileCode: student.studentCode || student.id,
+      subtitle:
+        [batchName || student.skillLevel, batchCode].filter(Boolean).join(' · ') ||
+        'No batch assigned',
+      status: student.status,
+      photoUrl: student.photoUrl,
+      sections,
+      checklistTitle: 'Document checklist',
+      checklist,
+      documents: documents.map((row) => ({
+        documentType: this.text(row, 'document_type') || 'Document',
+        fileName: this.text(row, 'file_name') || 'Unnamed file',
+        uploadedAt: this.text(row, 'created_at'),
+        uploadedBy: this.related(row, 'uploader', 'full_name') || undefined,
+      })),
+      documentsNote:
+        documentTotal > documents.length
+          ? `Showing the ${documents.length} most recent of ${documentTotal} uploaded files.`
+          : undefined,
+    };
   }
   protected setTab(tab: DetailTab): void {
     ++this.tableRequest;this.activeTab.set(tab);this.columns.values.set({});this.tableSort.set('');this.tableDirection.set('desc');
