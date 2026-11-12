@@ -610,10 +610,24 @@
   }
 
   .report-print-document {
-    display: contents !important;
+    display: block !important;
     color: #17251e;
     font-family: Arial, sans-serif;
     font-size: 10pt;
+  }
+
+  .print-page {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: calc(297mm - 28mm);
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-page--last {
+    break-after: auto;
+    page-break-after: auto;
   }
 
   .report-print-document>* {
@@ -621,7 +635,6 @@
   }
 
   .print-letterhead {
-    order: 1;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -672,7 +685,6 @@
   }
 
   .print-report-details {
-    order: 2;
     display: flex;
     gap: 24px;
     margin: 18px 0;
@@ -697,7 +709,6 @@
   }
 
   .print-summary {
-    order: 3;
     margin: 20px 0;
   }
 
@@ -737,7 +748,6 @@
   }
 
   .print-report-chart {
-    order: 4;
     margin: 18px 0;
     break-inside: avoid;
     page-break-inside: avoid;
@@ -811,7 +821,7 @@
   }
 
   .print-records {
-    order: 5;
+    display: block;
   }
 
   .print-footer {

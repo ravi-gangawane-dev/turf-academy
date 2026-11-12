@@ -243,6 +243,25 @@ export class CoachPortalService {
     return { rows: (result.data ?? []) as unknown as readonly CoachAttendanceRecord[], total: result.count ?? 0 };
   }
 
+  /** Every filtered attendance record, for exports that must span all pages. */
+  async attendanceHistoryAll(
+    batchIds: readonly string[], batchId: string, studentId: string, status: string,
+  ): Promise<readonly CoachAttendanceRecord[]> {
+    if (!batchIds.length) return [];
+    const client = this.supabase.requireClient();
+    const rows = await readAllPages('Load coach attendance report', (offset, limit) => {
+      let query = client.from('attendance_records')
+        .select('*,student:students(id,student_code,full_name,photo_url),batch:batches(id,name)', { count: 'exact' })
+        .in('batch_id', batchId ? [batchId] : [...batchIds]);
+      if (studentId) query = query.eq('student_id', studentId);
+      if (status) query = query.eq('status', status);
+      return query.order('attendance_date', { ascending: false })
+        .order('check_in_at', { ascending: false }).order('id')
+        .range(offset, offset + limit - 1);
+    });
+    return rows as unknown as readonly CoachAttendanceRecord[];
+  }
+
   // Coach attendance records through the same hardened RPCs reception uses
   // (202610230004 / 202610230006): the server derives the business date in the
   // academy timezone, classifies late arrivals, enforces idempotency keys and

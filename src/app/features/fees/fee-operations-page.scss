@@ -8,6 +8,27 @@
   color: var(--app-text, #14221b);
   min-width: 0;
 }
+.adjustment-type-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem;
+  color: var(--app-muted, #65736d);
+  font-size: .85rem;
+}
+.adjustment-type-filter a {
+  border: 1px solid var(--app-border, #d8e1db);
+  border-radius: 999px;
+  padding: .4rem .75rem;
+  background: #fff;
+  color: #33503f;
+  text-decoration: none;
+}
+.adjustment-type-filter a.active, .adjustment-type-filter a:hover {
+  border-color: #267d46;
+  background: #e8f6ed;
+  color: #176536;
+}
 .fee-list-card {
   min-width: 0;
   overflow: hidden;

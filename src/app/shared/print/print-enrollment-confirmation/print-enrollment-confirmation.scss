@@ -1,0 +1,93 @@
+@use '../print-document';
+
+.print-sheet--enrollment {
+  page: enrollment-page;
+  display: block;
+  font-size: 9.4pt;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 24mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.enrollment-transfer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2mm 3mm;
+  padding: 3mm 4mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+  background: #f1f7f3;
+}
+
+.enrollment-transfer > span {
+  color: #5f7268;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.enrollment-transfer strong {
+  font-size: 10.5pt;
+}
+
+.enrollment-transfer small {
+  flex-basis: 100%;
+  color: #42564a;
+  font-size: 8pt;
+}
+
+.enrollment-terms th,
+.enrollment-terms td {
+  padding: 2.2mm 2.5mm;
+  border-bottom: 1px solid #d7e1db;
+  text-align: left;
+  vertical-align: top;
+}
+
+.enrollment-terms th {
+  width: 46mm;
+  color: #5f7268;
+  font-weight: 500;
+}
+
+.enrollment-facts .box strong {
+  font-size: 9.6pt;
+}
+
+.enrollment-reason {
+  padding: 3mm 4mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+}
+
+.enrollment-reason h2 {
+  margin: 0 0 1.5mm;
+  color: #5f7268;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.enrollment-reason p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.enrollment-declaration {
+  margin-top: 2mm;
+  text-align: left;
+}

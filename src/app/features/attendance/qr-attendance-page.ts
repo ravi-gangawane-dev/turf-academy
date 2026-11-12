@@ -171,11 +171,10 @@ export class QrAttendancePage implements OnDestroy, OnInit {
   protected readonly identity = signal<QrIdentity | null>(null);
   protected readonly error = signal('');
   protected readonly message = signal('');
+  // Check-in results toast once; camera and scanner errors stay inline next to the viewport.
   private readonly toastFeedback = effect(() => {
-    const error = this.error();
     const message = this.message();
-    if (error) this.toast.show(error, 'error');
-    else if (message) this.toast.show(message, 'success');
+    if (message) this.toast.success(message);
   });
   protected async startCamera(): Promise<void> {
     if (this.cameraStarting() || this.cameraActive() || this.busy()) return;
@@ -361,7 +360,7 @@ export class QrAttendancePage implements OnDestroy, OnInit {
       this.selectedOut.set([]);
       this.identity.set(null);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Attendance could not be updated.');
+      this.toast.error(error instanceof Error ? error.message : 'Attendance could not be updated.');
     } finally {
       this.resolving.set(false);
       this.openWhatsAppDialog();

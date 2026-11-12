@@ -1,0 +1,113 @@
+@use '../print-document';
+
+.print-sheet--roster {
+  page: roster-page;
+  display: block;
+  font-size: 9pt;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 24mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.roster-medical-note {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  margin: 0;
+  padding: 2.5mm 3mm;
+  border: 1px solid #cfe0d5;
+  border-radius: 2mm;
+  background: #f1f7f3;
+  color: #0f6b3f;
+  font-size: 8pt;
+}
+
+.roster-medical-note--restricted {
+  border-color: #e3ded1;
+  background: #faf7ef;
+  color: #6b5a2c;
+}
+
+.roster-table {
+  font-size: 8.2pt;
+}
+
+.roster-table th,
+.roster-table td {
+  padding: 1.8mm 2mm;
+}
+
+.roster-table strong {
+  display: block;
+  font-size: 8.8pt;
+}
+
+.roster-table small {
+  display: block;
+  color: #5f7268;
+  font-size: 7.4pt;
+}
+
+.roster-guardian + .roster-guardian {
+  margin-top: 1.2mm;
+  padding-top: 1.2mm;
+  border-top: 1px dashed #d7e1db;
+}
+
+.roster-guardian span {
+  color: #5f7268;
+  font-weight: 400;
+}
+
+.roster-guardian em {
+  margin-left: 1.5mm;
+  padding: 0.2mm 1.2mm;
+  border-radius: 999px;
+  background: #e3f6eb;
+  color: #0b6339;
+  font-size: 6.5pt;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.roster-pickup {
+  color: #0b6339;
+  font-size: 7.4pt;
+}
+
+.roster-pickup + .roster-pickup {
+  margin-top: 1mm;
+}
+
+.roster-pickup--no {
+  color: #8f2f28;
+}
+
+.roster-medical {
+  max-width: 42mm;
+  color: #42564a;
+  font-size: 7.6pt;
+  overflow-wrap: anywhere;
+}
+
+.roster-missing {
+  color: #8f2f28;
+  font-size: 7.6pt;
+}
+
+.roster-signoff {
+  padding-top: 8mm;
+}

@@ -1,0 +1,154 @@
+@use '../print-document';
+
+.print-sheet--attendance {
+  page: attendance-page;
+  display: block;
+  font-size: 9.2pt;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 24mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.print-sheet--attendance .register-meta .box strong {
+  overflow-wrap: anywhere;
+}
+
+.print-sheet--attendance .doc-tag {
+  padding: 0.6mm 2mm;
+  border-radius: 999px;
+  background: #f1f7f3;
+  color: #0f6b3f;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.register-counts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2mm;
+}
+
+.register-counts article {
+  padding: 2.5mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+  text-align: center;
+}
+
+.register-counts span {
+  display: block;
+  color: #5f7268;
+  font-size: 7pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.register-counts strong {
+  display: block;
+  margin-top: 0.6mm;
+  color: #15231c;
+  font-size: 13pt;
+  font-variant-numeric: tabular-nums;
+}
+
+.register-coaches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1mm 3mm;
+  margin: 0;
+  padding: 2.5mm 3mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+  background: #f8fbf9;
+  font-size: 8.6pt;
+}
+
+.register-coaches span {
+  color: #5f7268;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 7pt;
+}
+
+.register-table {
+  font-size: 8.6pt;
+}
+
+.register-table thead {
+  display: table-header-group;
+}
+
+.register-table th,
+.register-table td {
+  padding: 1.8mm 2mm;
+}
+
+.register-table .index {
+  width: 8mm;
+  color: #5f7268;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.register-table .empty {
+  padding: 8mm 2mm;
+  color: #5f7268;
+  text-align: center;
+}
+
+.attendance-status {
+  display: inline-block;
+  padding: 0.8mm 2.2mm;
+  border-radius: 999px;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.attendance-status--present {
+  color: #0b6339;
+  background: #e3f6eb;
+}
+
+.attendance-status--late {
+  color: #7a520a;
+  background: #fdf0cf;
+}
+
+.attendance-status--absent {
+  color: #8f2f28;
+  background: #fbe3e1;
+}
+
+.attendance-status--out {
+  color: #1a4f7a;
+  background: #e2eefb;
+}
+
+.attendance-status--unmarked {
+  color: #5f7268;
+  background: #edf1ef;
+}
+
+.register-signoff {
+  padding-top: 14mm;
+}
+
+@media print {
+  .print-sheet--attendance {
+    box-shadow: none;
+  }
+}

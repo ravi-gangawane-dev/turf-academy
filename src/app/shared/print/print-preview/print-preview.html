@@ -1,0 +1,56 @@
+@if (open()) {
+<div class="preview-backdrop" role="presentation" (click)="onBackdrop($event)">
+  <section class="preview-panel" appModalFocus [modalBusy]="busy()" (modalDismiss)="close()"
+    aria-labelledby="print-preview-title">
+    <header class="preview-head">
+      <div>
+        <p class="preview-kicker">Print preview · {{ paperLabel() }}</p>
+        <h2 id="print-preview-title">{{ title() }}</h2>
+        <p class="preview-hint">Check the document, then print it or save it as a PDF.</p>
+      </div>
+      <button type="button" class="preview-close" (click)="close()" [disabled]="busy()"
+        aria-label="Close preview" title="Close">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="preview-stage">
+      @if (error()) {
+        <div class="preview-state preview-state--error" role="alert">
+          <i class="pi pi-exclamation-triangle preview-state-icon" aria-hidden="true"></i>
+          <h3>Document could not be prepared</h3>
+          <p>{{ error() }}</p>
+          <button type="button" class="primary" (click)="retry()" [disabled]="preparing()">
+            @if (preparing()) { <span class="spinner" aria-hidden="true"></span> }
+            Try again
+          </button>
+        </div>
+      } @else if (preparing() || !document()) {
+        <div class="preview-state" aria-live="polite">
+          <span class="spinner spinner--dark" aria-hidden="true"></span>
+          <h3>Preparing document…</h3>
+          <p>Loading academy branding and the latest records.</p>
+        </div>
+      } @else if (document(); as document) {
+        <div class="preview-paper" [class.preview-paper--a5]="paper() === 'a5'"
+          [class.preview-paper--landscape]="paper() === 'a4-landscape'" [attr.data-kind]="document.kind">
+          <app-print-document-body [document]="document" />
+        </div>
+      }
+    </div>
+
+    <footer class="preview-actions">
+      <button type="button" (click)="close()" [disabled]="busy()">Close</button>
+      <button type="button" class="secondary" (click)="download()" [disabled]="actionsDisabled()">
+        <i class="pi pi-file-pdf" aria-hidden="true"></i> Download PDF
+      </button>
+      <button type="button" class="primary" (click)="print()" [disabled]="actionsDisabled()">
+        @if (busy()) {
+        <span class="spinner" aria-hidden="true"></span>
+        }
+        <i class="pi pi-print" aria-hidden="true"></i> Print
+      </button>
+    </footer>
+  </section>
+</div>
+}

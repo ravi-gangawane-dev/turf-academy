@@ -1,6 +1,6 @@
 <div class="app-list-page attendance-section attendance-dashboard">
-  @if (message() || error()) {
-  <div class="attendance-notice" [class.error]="error()">{{ error() || message() }}</div>
+  @if (error()) {
+  <div class="attendance-notice error">{{ error() }}</div>
   }
   <app-page-hero title="Attendance Dashboard" subtitle="Monitor today's attendance across all academy batches."
     [breadcrumbs]="[
@@ -9,9 +9,6 @@
     ]"></app-page-hero>
   <app-attendance-view-navigation />
 
-  @if (store.loading()) {
-  <app-async-state title="Loading attendance..." />
-  }
   @if (store.apiError()) {
   <app-async-state kind="error" title="Attendance could not be loaded" [message]="store.apiError()" actionLabel="Retry"
     (action)="store.loadAttendanceWorkspace()" />

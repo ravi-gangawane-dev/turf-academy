@@ -1947,11 +1947,44 @@ th {
   flex: 1;
 }
 .coach-profile-hero {
-  min-height: 168px;
+  position: relative;
+  min-height: 0;
+  padding: 122px 22px 20px;
   display: grid;
-  grid-template-columns: 140px minmax(0, 1fr) 390px;
-  align-items: center;
-  gap: 20px;
+  grid-template-columns: 132px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'photo identity action'
+    'metrics metrics metrics';
+  align-items: end;
+  gap: 18px 22px;
+  overflow: hidden;
+}
+/* Cricket-scene cover banner behind the avatar, mirroring the profile reference. */
+.coach-profile-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 122px;
+  background:
+    linear-gradient(112deg, rgba(3, 40, 23, 0.84), rgba(7, 92, 51, 0.4) 58%, rgba(233, 248, 238, 0.12)),
+    url('/branding/login/academy-stadium.webp') center 42% / cover no-repeat;
+}
+.coach-photo-block {
+  grid-area: photo;
+  position: relative;
+  width: 128px;
+  align-self: start;
+  margin-top: -86px;
+}
+.coach-profile-identity {
+  grid-area: identity;
+}
+.coach-profile-hero .profile-edit-action {
+  grid-area: action;
+  align-self: end;
+}
+.coach-profile-hero .coach-profile-metrics {
+  grid-area: metrics;
 }
 .coach-profile-photo {
   width: 128px;
@@ -1959,11 +1992,34 @@ th {
   display: grid;
   place-items: center;
   overflow: hidden;
+  border: 5px solid #fff;
   border-radius: 50%;
   color: #176e45;
   background: #dff2e7;
   font-size: 30px;
   font-weight: 800;
+  box-shadow: 0 12px 26px rgba(9, 48, 29, 0.22);
+}
+.photo-edit {
+  position: absolute;
+  right: -2px;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: #0a8a49;
+  cursor: pointer;
+}
+.photo-edit:hover {
+  background: #087442;
+}
+.photo-edit:focus-visible {
+  outline: 2px solid #0a8a49;
+  outline-offset: 2px;
 }
 .coach-profile-photo img {
   width: 100%;
@@ -2006,9 +2062,16 @@ th {
   color: #42574c;
 }
 .coach-profile-metrics {
-  height: 120px;
+  min-height: 96px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  align-self: stretch;
+  border: 1px solid #e4ece7;
+  border-radius: 12px;
+  background: #fbfdfb;
+}
+.coach-profile-metrics > div:first-child {
+  border-left: 0;
 }
 .coach-profile-metrics > div {
   display: grid;
@@ -2037,22 +2100,37 @@ th {
   color: #65766d;
 }
 .coach-profile-tabs {
-  padding: 0 10px;
+  padding: 8px;
   display: flex;
+  gap: 6px;
   overflow-x: auto;
+  border-radius: 12px;
+  background: #f3faf6;
 }
 .coach-profile-tabs button {
-  min-height: 48px;
-  padding: 0 22px;
-  border: 0;
-  border-bottom: 3px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #45624f;
   background: none;
+  font-weight: 700;
   white-space: nowrap;
 }
+.coach-profile-tabs button i {
+  font-size: 14px;
+}
+.coach-profile-tabs button:hover {
+  background: #e7f6ed;
+}
 .coach-profile-tabs button.active {
-  border-bottom-color: #078544;
-  color: #078544;
-  font-weight: 800;
+  border-color: #0a8a49;
+  color: #fff;
+  background: #0a8a49;
+  box-shadow: 0 6px 14px rgba(10, 138, 73, 0.24);
 }
 .coach-profile-grid {
   display: grid;
@@ -2064,6 +2142,49 @@ th {
 .coach-profile-side {
   display: grid;
   gap: 14px;
+}
+.profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.profile-field {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border: 1px solid #e4ece7;
+  border-radius: 10px;
+  background: #fbfdfb;
+}
+.profile-field-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 10px;
+  color: #0a8a49;
+  background: #e7f6ed;
+  font-size: 17px;
+}
+.profile-field-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.profile-field-copy small {
+  color: #6b7d74;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.profile-field-copy strong {
+  color: #17223c;
+  font-size: 15px;
+  overflow-wrap: anywhere;
 }
 .profile-personal,
 .coaching-information,
@@ -2417,9 +2538,22 @@ th {
   }
   .coach-profile-hero {
     grid-template-columns: 120px 1fr;
+    grid-template-areas:
+      'photo identity'
+      'action action'
+      'metrics metrics';
+  }
+  .coach-profile-hero .profile-edit-action {
+    justify-self: start;
+  }
+  .coach-photo-block {
+    margin-top: -74px;
   }
   .coach-profile-metrics {
     grid-column: 1 / -1;
+  }
+  .profile-fields {
+    grid-template-columns: 1fr;
   }
   .coach-profile-grid {
     grid-template-columns: 1fr;
@@ -2594,7 +2728,20 @@ th {
   }
   .coach-profile-hero {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'photo'
+      'identity'
+      'action'
+      'metrics';
+    padding-top: 122px;
     text-align: center;
+  }
+  .coach-profile-hero .profile-edit-action {
+    justify-self: center;
+  }
+  .coach-photo-block {
+    margin: -70px auto 0;
+    justify-self: center;
   }
   .coach-profile-photo {
     margin: auto;

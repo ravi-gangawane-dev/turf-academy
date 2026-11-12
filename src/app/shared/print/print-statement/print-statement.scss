@@ -1,0 +1,91 @@
+@use '../print-document';
+
+.print-sheet--statement {
+  page: statement-page;
+  display: block;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 24mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.statement-summary .kv {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.statement-summary .kv .strong {
+  color: #0f6b3f;
+  font-weight: 700;
+}
+
+.statement-table {
+  font-size: 8.4pt;
+}
+
+.statement-table thead {
+  display: table-header-group;
+}
+
+.statement-table th,
+.statement-table td {
+  padding: 1.5mm 2mm;
+}
+
+.statement-table .nowrap {
+  white-space: nowrap;
+}
+
+.statement-table .line--payment td {
+  color: #14532d;
+}
+
+.statement-table .line--refund td {
+  color: #8a3a12;
+}
+
+.statement-table .empty {
+  padding: 6mm 2mm;
+  color: #5f7268;
+  text-align: center;
+}
+
+.ageing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.2pt;
+}
+
+.ageing-table th,
+.ageing-table td {
+  padding: 2mm;
+  border: 1px solid #d7e1db;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ageing-table th {
+  background: #f1f7f3;
+  color: #315341;
+  font-weight: 600;
+}
+
+.ageing-table th:first-child,
+.ageing-table td:first-child {
+  text-align: left;
+}
+
+@media print {
+  .print-sheet--statement {
+    box-shadow: none;
+  }
+}

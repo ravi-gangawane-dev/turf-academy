@@ -39,10 +39,10 @@ export class ManualCheckInPage implements OnInit {
   protected readonly query = signal('');
   protected readonly selectedId = signal('');
   protected readonly message = signal('');
+  // Attendance results are announced once; the inline error state is reserved for load failures.
   private readonly toastFeedback = effect(() => {
     const message = this.message();
-    if (this.error()) this.toast.show(this.error(), 'error');
-    else if (message) this.toast.show(message, 'success');
+    if (message) this.toast.success(message);
   });
   protected readonly rows = computed(() => {
     const q = this.query().toLowerCase();
@@ -91,7 +91,7 @@ export class ManualCheckInPage implements OnInit {
     this.message.set('');
     this.whatsappData.set(null);
     if (this.isCheckout && !row.attendance?.checkInAt) {
-      this.error.set('Student must be checked in before checking out.');
+      this.toast.warning('Student must be checked in before checking out.');
       return;
     }
     this.saving.set(true);
@@ -103,13 +103,13 @@ export class ManualCheckInPage implements OnInit {
       try {
         this.whatsappData.set(await this.store.attendanceWhatsApp(row.studentId, row.batchId, this.isCheckout ? 'check_out' : 'check_in'));
       } catch (error) {
-        this.error.set('Attendance saved. ' + (error instanceof Error ? error.message : 'WhatsApp preparation failed.'));
+        this.toast.warning('Attendance saved. ' + (error instanceof Error ? error.message : 'WhatsApp preparation failed.'));
         console.error('Attendance WhatsApp preparation failed', error);
       }
 
       this.message.set(row.studentName + (this.isCheckout ? ' checked out successfully.' : ' checked in successfully.'));
     } catch (e) {
-      this.error.set(e instanceof Error ? e.message : 'Attendance could not be saved.');
+      this.toast.error(e instanceof Error ? e.message : 'Attendance could not be saved.');
     } finally {
       this.saving.set(false);
     }

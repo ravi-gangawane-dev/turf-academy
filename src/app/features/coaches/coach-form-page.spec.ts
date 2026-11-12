@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { CoachDetailRecord, CoachesService } from '../../core/supabase/domain-services';
+import { ToastService } from '../../shared/toast/toast.service';
 import { CoachFormPage } from './coach-form-page';
 
 const coach: CoachDetailRecord = {
@@ -89,9 +90,10 @@ describe('CoachFormPage', () => {
 
   it('reports a load failure without crashing the form', async () => {
     const { page, getById } = setup('c1');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error').mockImplementation(() => undefined);
     getById.mockRejectedValue(new Error('Coach could not be loaded.'));
     await page.ngOnInit();
-    expect(page['message']()).toBe('Coach could not be loaded.');
+    expect(toast).toHaveBeenCalledWith('Coach could not be loaded.');
     expect(page['loading']()).toBe(false);
   });
 
@@ -100,7 +102,7 @@ describe('CoachFormPage', () => {
     await page.ngOnInit();
     await page['save']();
     expect(create).not.toHaveBeenCalled();
-    expect(page['message']()).toBe('Complete all required fields correctly.');
+    expect(page['form'].controls.firstName.touched).toBe(true);
   });
 
   it('creates the coach with the trimmed payload and navigates to it', async () => {
@@ -145,11 +147,12 @@ describe('CoachFormPage', () => {
 
   it('surfaces a save failure to the user', async () => {
     const { page, create } = setup(null);
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error').mockImplementation(() => undefined);
     create.mockRejectedValue(new Error('Coach could not be saved.'));
     await page.ngOnInit();
     page['form'].patchValue(validForm);
     await page['save']();
-    expect(page['message']()).toBe('Coach could not be saved.');
+    expect(toast).toHaveBeenCalledWith('Coach could not be saved.');
     expect(page['loading']()).toBe(false);
   });
 });

@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { NotificationsService } from '../../core/supabase/domain-services';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 import { ParentPortalService } from './parent-portal.service';
 import { ParentPortalData } from './parent-portal.models';
 import { ParentPortalPage } from './parent-portal-page';
@@ -80,16 +83,44 @@ function setup(view = 'children') {
   const unsubscribe = vi.fn().mockResolvedValue(undefined);
   const markRead = vi.fn().mockResolvedValue(undefined);
   const markAllRead = vi.fn().mockResolvedValue(undefined);
+  const payment = vi.fn().mockResolvedValue(null);
+  const printReceipt = vi.fn().mockResolvedValue(undefined);
+  const queryParamMap = of(convertToParamMap({}));
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      { provide: ActivatedRoute, useValue: { snapshot: { data: { view } } } },
-      { provide: ParentPortalService, useValue: { load, selectChild, subscribe, unsubscribe } },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: { data: { view }, queryParamMap: convertToParamMap({}) },
+          queryParamMap,
+        },
+      },
+      { provide: ParentPortalService, useValue: { load, selectChild, subscribe, unsubscribe, payment } },
       { provide: NotificationsService, useValue: { markRead, markAllRead } },
+      {
+        provide: AcademyPreferencesService,
+        useValue: {
+          logoUrl: () => '/branding/turf-cricket-academy-logo.png',
+          value: () => ({ academy_name: 'Turf Cricket Academy' }),
+        },
+      },
+      { provide: PrintDocumentService, useValue: { printReceipt } },
     ],
   });
   const fixture = TestBed.createComponent(ParentPortalPage);
-  return { fixture, page: fixture.componentInstance, load, selectChild, subscribe, unsubscribe, markRead, markAllRead };
+  return {
+    fixture,
+    page: fixture.componentInstance,
+    load,
+    selectChild,
+    subscribe,
+    unsubscribe,
+    markRead,
+    markAllRead,
+    payment,
+    printReceipt,
+  };
 }
 
 describe('ParentPortalPage', () => {
@@ -217,5 +248,89 @@ describe('ParentPortalPage', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     page['childProfile']('s1');
     expect(navigate).toHaveBeenCalledWith(['/parent/children', 's1']);
+  });
+
+  it('loads exactly the receipt addressed by the payment query for the selected child', async () => {
+    const receipt = {
+      id: 'pay-1',
+      student_id: 's1',
+      amount: 1250.5,
+      payment_mode: 'upi',
+      paid_at: '2026-10-05T09:15:00Z',
+      status: 'successful',
+      receipt: { receipt_number: 'RCP-42' },
+      monthly_charge: { charge_month: '2026-10-01' },
+    };
+    const { page, payment } = setup('receipt');
+    payment.mockResolvedValue(receipt);
+    await page.ngOnInit();
+
+    await page['loadReceipt']('pay-1');
+
+    expect(payment).toHaveBeenCalledWith('pay-1', 's1');
+    expect(page['selectedReceipt']()).toBe(receipt);
+    expect(page['receiptLoading']()).toBe(false);
+    expect(page['receiptError']()).toBe('');
+  });
+
+  it('reports a missing receipt instead of reusing another payment row', async () => {
+    const { page, payment } = setup('receipt');
+    payment.mockResolvedValue(null);
+    await page.ngOnInit();
+
+    await page['loadReceipt']('missing');
+
+    expect(payment).toHaveBeenCalledWith('missing', 's1');
+    expect(page['selectedReceipt']()).toBeNull();
+    expect(page['receiptError']()).toBe('');
+  });
+
+  it('clears the receipt selection when no payment query is present', async () => {
+    const { page, payment } = setup('receipt');
+    await page.ngOnInit();
+
+    await page['loadReceipt'](null);
+
+    expect(payment).not.toHaveBeenCalled();
+    expect(page['selectedReceipt']()).toBeNull();
+  });
+
+  it('prints only the selected receipt through the shared print pipeline', async () => {
+    const receipt = {
+      id: 'pay-1',
+      amount: 1250.5,
+      payment_mode: 'upi',
+      paid_at: '2026-10-05T09:15:00Z',
+      status: 'successful',
+      provider_reference: 'UPI-7788',
+      receipt: { receipt_number: 'RCP-42' },
+      monthly_charge: { charge_month: '2026-10-01' },
+    };
+    const { page, payment, printReceipt } = setup('receipt');
+    payment.mockResolvedValue(receipt);
+    await page.ngOnInit();
+    await page['loadReceipt']('pay-1');
+
+    await page['printReceipt']('print');
+
+    expect(printReceipt).toHaveBeenCalledOnce();
+    expect(printReceipt).toHaveBeenCalledWith(
+      expect.objectContaining({
+        receiptNumber: 'RCP-42',
+        amount: 1250.5,
+        guardianName: 'Ravi Sharma',
+        reference: 'UPI-7788',
+      }),
+      'print',
+    );
+  });
+
+  it('does not print when no receipt is selected', async () => {
+    const { page, printReceipt } = setup('receipt');
+    await page.ngOnInit();
+
+    await page['printReceipt']('print');
+
+    expect(printReceipt).not.toHaveBeenCalled();
   });
 });

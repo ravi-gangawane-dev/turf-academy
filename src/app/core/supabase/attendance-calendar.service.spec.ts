@@ -119,8 +119,7 @@ describe('Attendance calendar dates and complete summaries', () => {
     );
   });
 
-  it('keeps grouping in mock mode without touching the server', async () => {
-    const rpc = vi.fn();
+  it('keeps grouping in mock mode without touching the server', async () => {    const rpc = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         { provide: DatabaseService, useValue: { client: { rpc }, unwrap } },
@@ -188,5 +187,54 @@ describe('Attendance calendar dates and complete summaries', () => {
     expect(week.startDate).toBe('2026-10-01');
     expect(week.endDate).toBe('2026-10-03');
     expect(week.weekStats.total).toBe(3);
+  });
+
+  it('loads every matching record for exports beyond the first server page', async () => {
+    const rows = Array.from({ length: 600 }, (_, index) => ({
+      id: `r${index}`,
+      attendance_date: '2026-10-01',
+      status: 'late',
+    }));
+    const range = vi.fn();
+    const filters: string[] = [];
+    const builder = {
+      select: vi.fn(() => builder),
+      gte: vi.fn(() => builder),
+      lte: vi.fn(() => builder),
+      eq: vi.fn(() => builder),
+      order: vi.fn(() => builder),
+      range: (from: number, to: number) => {
+        range(from, to);
+        return Promise.resolve({
+          data: rows.slice(from, to + 1),
+          error: null,
+          count: rows.length,
+        });
+      },
+    };
+    const from = vi.fn((table: string) => {
+      filters.push(table);
+      return builder;
+    });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DatabaseService, useValue: { client: { from } } },
+        { provide: API_CONFIG, useValue: { useMockApi: false } },
+        { provide: AcademyStore, useValue: {} },
+      ],
+    });
+    const service = TestBed.inject(AttendanceCalendarService);
+    const records = await service.getAllRecords(2026, 10, 'b1', 's1', 'late', {
+      from: '2026-10-01',
+      to: '2026-10-31',
+    });
+    expect(records).toHaveLength(600);
+    expect(from).toHaveBeenCalledTimes(2);
+    expect(filters.every((table) => table === 'attendance_records')).toBe(true);
+    expect(range).toHaveBeenNthCalledWith(1, 0, 499);
+    expect(range).toHaveBeenNthCalledWith(2, 500, 999);
+    expect(builder.eq).toHaveBeenCalledWith('batch_id', 'b1');
+    expect(builder.eq).toHaveBeenCalledWith('student_id', 's1');
+    expect(builder.eq).toHaveBeenCalledWith('status', 'late');
   });
 });

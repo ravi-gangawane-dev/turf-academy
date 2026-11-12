@@ -93,6 +93,23 @@ button {
 .photo {
   display: flex;
   flex-direction: column;
+  min-height: 340px;
+}
+aside.photo-only {
+  grid-template-rows: auto;
+  align-content: start;
+}
+.photo-message {
+  margin: 12px 0 0;
+  line-height: 1.5;
+}
+.save-photo {
+  margin-top: 12px;
+  min-height: 44px;
+}
+.upload:focus-within {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 3px;
 }
 .personal {
   min-height: 0;
@@ -103,7 +120,7 @@ button {
 .upload {
   position: relative;
   overflow: hidden;
-  min-height: 150px;
+  min-height: 280px;
   flex: 1;
   place-content: center;
   justify-items: center;

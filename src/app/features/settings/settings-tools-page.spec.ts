@@ -1,7 +1,23 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { DatabaseService } from '../../core/supabase/database.service';
+import { RoleCatalogService } from '../../core/auth/role-catalog.service';
+import { FALLBACK_ROLE_CATALOG } from '../../core/auth/permissions';
 import { SettingsToolsPage } from './settings-tools-page';
+
+function roleCatalogStub() {
+  return {
+    roles: signal(FALLBACK_ROLE_CATALOG.roles).asReadonly(),
+    permissions: signal(FALLBACK_ROLE_CATALOG.permissions).asReadonly(),
+    matrix: signal(FALLBACK_ROLE_CATALOG.matrix).asReadonly(),
+    source: signal<'fallback' | 'backend'>('fallback').asReadonly(),
+    loading: signal(false).asReadonly(),
+    error: signal('').asReadonly(),
+    load: vi.fn().mockResolvedValue(FALLBACK_ROLE_CATALOG),
+  };
+}
 
 function exportPage(
   read: () => Promise<{ data: object[] | null; error: { message: string } | null }>,
@@ -19,6 +35,7 @@ function exportPage(
       provideRouter([]),
       { provide: ActivatedRoute, useValue: { snapshot: { data: { settingsTool: 'backup' } } } },
       { provide: DatabaseService, useValue: { client } },
+      { provide: RoleCatalogService, useValue: roleCatalogStub() },
     ],
   });
   // Spec files share one jsdom global in this worker, so start from a clean call
@@ -43,6 +60,7 @@ describe('Settings tools', () => {
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { data: { settingsTool: 'theme' } } } },
         { provide: DatabaseService, useValue: {} },
+        { provide: RoleCatalogService, useValue: roleCatalogStub() },
       ],
     });
     const page = TestBed.createComponent(SettingsToolsPage).componentInstance;
@@ -89,6 +107,7 @@ describe('Settings tools', () => {
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { data: { settingsTool: 'backup' } } } },
         { provide: DatabaseService, useValue: { client } },
+      { provide: RoleCatalogService, useValue: roleCatalogStub() },
       ],
     });
     const download = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:export');
@@ -96,9 +115,10 @@ describe('Settings tools', () => {
     vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     const page = TestBed.createComponent(SettingsToolsPage).componentInstance;
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'success').mockImplementation(() => undefined);
     await page['exportData']();
     expect(page['error']()).toBe('');
-    expect(page['message']()).toBe('Academy records exported.');
+    expect(toast).toHaveBeenCalledWith('Academy records exported.');
     expect(offsets).toContain(500);
     expect(orders['coach_specializations']).toEqual(['coach_id', 'specialization']);
     expect(orders['batch_days']).toEqual(['batch_id', 'day_of_week']);
@@ -122,17 +142,23 @@ describe('Settings tools', () => {
     const { page, download } = exportPage(async () =>
       fail ? { data: null, error: { message: 'Connection lost' } } : { data: [], error: null },
     );
+    const toastService = TestBed.inject(ToastService);
+    const success = vi.spyOn(toastService, 'success').mockImplementation(() => undefined);
+    const failure = vi.spyOn(toastService, 'error').mockImplementation(() => undefined);
     await page['exportData']();
     fail = true;
     await page['exportData']();
-    expect(page['error']()).toContain('export could not be completed');
-    expect(page['message']()).toBe('');
+    expect(failure).toHaveBeenCalledWith(
+      expect.stringContaining('export could not be completed'),
+    );
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('Academy records exported.');
     expect(page['busy']()).toBe(false);
     expect(page['progress']()).toBe('');
     expect(download).toHaveBeenCalledTimes(1);
     fail = false;
     await page['exportData']();
-    expect(page['error']()).toBe('');
+    expect(success).toHaveBeenCalledTimes(2);
     expect(download).toHaveBeenCalledTimes(2);
   });
   it('prevents overlapping exports while a request is pending', async () => {

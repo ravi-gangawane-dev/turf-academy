@@ -1,0 +1,128 @@
+<article
+  class="print-sheet print-sheet--attendance-matrix"
+  [attr.aria-label]="'Monthly attendance matrix ' + matrix().batchName + ' ' + matrix().monthLabel"
+>
+  @for (page of pages(); track page.index) {
+    <section class="print-page" [class.print-page--last]="page.last">
+      <header class="letterhead">
+        <img
+          class="brand-logo"
+          [src]="matrix().brand.logoUrl"
+          [alt]="matrix().brand.name + ' logo'"
+        />
+        <div class="brand-copy">
+          <p class="brand-kicker">{{ matrix().brand.name }}</p>
+          <h1>Monthly Attendance Matrix</h1>
+          <p class="brand-contact">
+            @if (matrix().brand.address) { <span>{{ matrix().brand.address }}</span> }
+            @if (matrix().brand.phone) { <span>{{ matrix().brand.phone }}</span> }
+            @if (matrix().brand.email) { <span>{{ matrix().brand.email }}</span> }
+          </p>
+        </div>
+        <div class="doc-label">
+          <strong>{{ matrix().registerNumber }}</strong>
+          <span>{{ matrix().monthLabel }}</span>
+          <span class="doc-tag">Monthly matrix</span>
+        </div>
+      </header>
+
+      <section class="doc-grid matrix-meta">
+        <div class="box">
+          <h2>Batch</h2>
+          <strong>{{ matrix().batchName }}</strong>
+          <small>
+            {{ matrix().batchCode || 'No batch code' }}
+            @if (matrix().batchTime) { · {{ matrix().batchTime }} }
+          </small>
+        </div>
+        <div class="box">
+          <h2>Schedule</h2>
+          <strong>{{ matrix().schedule }}</strong>
+          <small>
+            @if (matrix().coaches.length) {
+              Coach{{ matrix().coaches.length > 1 ? 'es' : '' }}: {{ matrix().coaches.join(' · ') }}
+            } @else {
+              No coach assigned
+            }
+          </small>
+        </div>
+      </section>
+
+      <p class="matrix-legend" aria-label="Matrix legend">
+        <span><b class="matrix-key matrix-key--present">P</b> Present</span>
+        <span><b class="matrix-key matrix-key--late">L</b> Late</span>
+        <span><b class="matrix-key matrix-key--absent">A</b> Absent</span>
+        <span><b class="matrix-key matrix-key--out">CO</b> Checked out</span>
+        <span><b class="matrix-key matrix-key--unmarked">·</b> Not recorded</span>
+        <span><b class="matrix-key matrix-key--off">–</b> No session</span>
+        <span class="matrix-legend-note">Attendance % uses recorded sessions only.</span>
+      </p>
+
+      <div class="matrix-scroll">
+        <table class="doc-table matrix-table">
+          <thead>
+            <tr>
+              <th class="index">#</th>
+              <th class="student-col">Student</th>
+              @for (day of matrix().days; track day.date) {
+                <th class="day-col" [class.day-col--off]="!day.scheduled" [title]="day.date">
+                  <span>{{ day.day }}</span>
+                  <small>{{ day.weekday }}</small>
+                </th>
+              }
+              <th class="num total-col" title="Present">P</th>
+              <th class="num total-col" title="Late">L</th>
+              <th class="num total-col" title="Absent">A</th>
+              <th class="num total-col percentage-col" title="Attendance percentage">%</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of page.rows; track $index; let index = $index) {
+              <tr>
+                <td class="index">{{ page.offset + index + 1 }}</td>
+                <td class="student-cell">
+                  <strong>{{ row.studentName }}</strong>
+                  <small>{{ row.studentCode || '—' }}</small>
+                </td>
+                @for (cell of row.cells; track $index; let dayIndex = $index) {
+                  <td
+                    class="matrix-cell"
+                    [class]="'matrix-cell matrix-cell--' + cellTone(cell)"
+                    [title]="dayTitle(dayIndex, cell)"
+                  >
+                    {{ cellLabel(cell) }}
+                  </td>
+                }
+                <td class="num total-col">{{ row.present }}</td>
+                <td class="num total-col">{{ row.late }}</td>
+                <td class="num total-col">{{ row.absent }}</td>
+                <td class="num total-col percentage-col">{{ percentageLabel(row.percentage) }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td class="empty" [attr.colspan]="matrix().days.length + 6">
+                  No active enrollments were found for this batch in the selected month.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (page.last) {
+        <p class="matrix-footnote">
+          Generated {{ matrix().issuedAt | date: 'dd MMM yyyy, HH:mm' : matrix().brand.timezone }} ·
+          P/L/A/CO come from live attendance records; blank sessions and students outside their
+          enrolment dates are excluded from the percentage.
+        </p>
+      }
+
+      <app-print-page-footer
+        [page]="page.index"
+        [total]="page.total"
+        [label]="matrix().batchName + ' · ' + matrix().monthLabel"
+        [note]="'Matrix ' + matrix().registerNumber"
+      />
+    </section>
+  }
+</article>

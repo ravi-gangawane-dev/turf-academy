@@ -1,0 +1,210 @@
+@use '../print-document';
+
+.print-sheet--attendance-matrix {
+  page: attendance-matrix-page;
+  display: block;
+  font-size: 8.4pt;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
+  min-height: calc(210mm - 20mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.print-sheet--attendance-matrix .matrix-meta .box {
+  padding: 2.5mm 3mm;
+}
+
+.print-sheet--attendance-matrix .doc-tag {
+  padding: 0.6mm 2mm;
+  border-radius: 999px;
+  background: #f1f7f3;
+  color: #0f6b3f;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1mm 4mm;
+  margin: 0;
+  padding: 1.8mm 3mm;
+  border: 1px solid #d7e1db;
+  border-radius: 2mm;
+  background: #f8fbf9;
+  font-size: 7.4pt;
+}
+
+.matrix-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.4mm;
+  white-space: nowrap;
+}
+
+.matrix-legend .matrix-legend-note {
+  margin-left: auto;
+  color: #5f7268;
+  font-style: italic;
+}
+
+.matrix-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 5mm;
+  height: 4.4mm;
+  border-radius: 1mm;
+  font-size: 6.6pt;
+  font-weight: 800;
+}
+
+.matrix-key--present,
+.matrix-cell--present {
+  color: #0b6339;
+  background: #e3f6eb;
+}
+
+.matrix-key--late,
+.matrix-cell--late {
+  color: #7a520a;
+  background: #fdf0cf;
+}
+
+.matrix-key--absent,
+.matrix-cell--absent {
+  color: #8f2f28;
+  background: #fbe3e1;
+}
+
+.matrix-key--out,
+.matrix-cell--out {
+  color: #1a4f7a;
+  background: #e2eefb;
+}
+
+.matrix-key--unmarked,
+.matrix-cell--unmarked {
+  color: #6a7a70;
+  background: #edf1ef;
+}
+
+.matrix-key--off,
+.matrix-cell--off {
+  color: #9aa8a0;
+  background: #f7f9f8;
+}
+
+.matrix-scroll {
+  overflow: visible;
+}
+
+.matrix-table {
+  table-layout: fixed;
+  width: 100%;
+  font-size: 6.4pt;
+}
+
+.matrix-table th,
+.matrix-table td {
+  padding: 0.9mm 0.5mm;
+  border: 1px solid #dfe7e2;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.matrix-table thead th {
+  background: #f1f7f3;
+  font-size: 5.8pt;
+  letter-spacing: 0;
+}
+
+.matrix-table .index {
+  width: 5mm;
+  color: #5f7268;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-table .student-col,
+.matrix-table .student-cell {
+  width: 40mm;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.matrix-table .student-cell strong {
+  display: block;
+  font-size: 7.2pt;
+}
+
+.matrix-table .student-cell small {
+  display: block;
+  color: #5f7268;
+  font-size: 6pt;
+}
+
+.matrix-table .day-col {
+  width: auto;
+}
+
+.matrix-table .day-col span,
+.matrix-table .day-col small {
+  display: block;
+  line-height: 1.15;
+}
+
+.matrix-table .day-col small {
+  color: #7d8b82;
+  font-size: 5.2pt;
+  font-weight: 500;
+}
+
+.matrix-table .day-col--off {
+  color: #9aa8a0;
+  background: #f7f9f8;
+}
+
+.matrix-table .matrix-cell {
+  font-size: 6.2pt;
+  font-weight: 800;
+}
+
+.matrix-table .total-col {
+  width: 6.5mm;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-table .percentage-col {
+  width: 11mm;
+}
+
+.matrix-table .empty {
+  padding: 8mm 2mm;
+  color: #5f7268;
+  text-align: center;
+}
+
+.matrix-footnote {
+  margin: 0;
+  color: #5f7268;
+  font-size: 6.8pt;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media print {
+  .print-sheet--attendance-matrix {
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,24 @@
+@use '../print-document';
+
+.print-sheet--refund {
+  page: refund-page;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(210mm - 16mm);
+  font-size: 9.5pt;
+}
+
+.print-sheet--refund .receipt-details th {
+  width: 31mm;
+}
+
+.print-sheet--refund .receipt-signatures {
+  padding-top: 10mm;
+}
+
+@media print {
+  .print-sheet--refund {
+    box-shadow: none;
+  }
+}

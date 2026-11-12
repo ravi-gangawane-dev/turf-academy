@@ -1,0 +1,123 @@
+<article
+  class="print-sheet print-sheet--attendance"
+  [attr.aria-label]="'Attendance register ' + register().batchName + ' ' + register().date"
+>
+  @for (page of pages(); track page.index) {
+    <section class="print-page" [class.print-page--last]="page.last">
+      <header class="letterhead">
+        <img
+          class="brand-logo"
+          [src]="register().brand.logoUrl"
+          [alt]="register().brand.name + ' logo'"
+        />
+        <div class="brand-copy">
+          <p class="brand-kicker">{{ register().brand.name }}</p>
+          <h1>Daily Attendance Register</h1>
+          <p class="brand-contact">
+            @if (register().brand.address) { <span>{{ register().brand.address }}</span> }
+            @if (register().brand.phone) { <span>{{ register().brand.phone }}</span> }
+            @if (register().brand.email) { <span>{{ register().brand.email }}</span> }
+          </p>
+        </div>
+        <div class="doc-label">
+          <strong>{{ register().registerNumber }}</strong>
+          <span>{{ formatDay(register().date) }}</span>
+          <span class="doc-tag">Batch register</span>
+        </div>
+      </header>
+
+      @if (page.index === 1) {
+        <section class="doc-grid register-meta">
+          <div class="box">
+            <h2>Batch</h2>
+            <strong>{{ register().batchName }}</strong>
+            <small>
+              {{ register().batchCode || 'No batch code' }}
+              @if (register().batchTime) { · {{ register().batchTime }} }
+            </small>
+          </div>
+          <div class="box">
+            <h2>Session</h2>
+            <strong>{{ formatLongDay(register().date) }}</strong>
+            <small>
+              Generated {{ register().issuedAt | date: 'dd MMM yyyy, HH:mm' : register().brand.timezone }}
+            </small>
+          </div>
+        </section>
+
+        <section class="register-counts" aria-label="Attendance totals">
+          <article><span>Expected</span><strong>{{ register().counts.expected }}</strong></article>
+          <article><span>Present</span><strong>{{ register().counts.present }}</strong></article>
+          <article><span>Late</span><strong>{{ register().counts.late }}</strong></article>
+          <article><span>Absent</span><strong>{{ register().counts.absent }}</strong></article>
+          <article><span>Checked out</span><strong>{{ register().counts.checkedOut }}</strong></article>
+          <article><span>Not recorded</span><strong>{{ register().counts.notRecorded }}</strong></article>
+        </section>
+
+        @if (register().coaches.length) {
+          <p class="register-coaches">
+            <span>Coach{{ register().coaches.length > 1 ? 'es' : '' }}</span>
+            <strong>{{ register().coaches.join(' · ') }}</strong>
+          </p>
+        }
+      }
+
+      <table class="doc-table register-table">
+        <thead>
+          <tr>
+            <th class="index">#</th>
+            <th>Student</th>
+            <th>Student code</th>
+            <th>Status</th>
+            <th>Check in</th>
+            <th>Check out</th>
+            @if (register().showRemarks) { <th>Remarks</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of page.rows; track $index; let index = $index) {
+            <tr>
+              <td class="index">{{ page.offset + index + 1 }}</td>
+              <td><strong>{{ row.studentName }}</strong></td>
+              <td>{{ row.studentCode || '—' }}</td>
+              <td>
+                <span class="attendance-status" [class]="'attendance-status attendance-status--' + statusTone(row.status)">
+                  {{ statusLabel(row.status) }}
+                </span>
+              </td>
+              <td>{{ row.checkInAt ? (row.checkInAt | date: 'shortTime' : register().brand.timezone) : '—' }}</td>
+              <td>{{ row.checkOutAt ? (row.checkOutAt | date: 'shortTime' : register().brand.timezone) : '—' }}</td>
+              @if (register().showRemarks) { <td>{{ row.remarks || '—' }}</td> }
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty" [attr.colspan]="register().showRemarks ? 7 : 6">
+                No active enrollments were found for this batch on the selected date.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (page.last) {
+        <footer class="receipt-signatures register-signoff">
+          <div>Coach signature</div>
+          <div>Academy representative</div>
+          <div>Date</div>
+        </footer>
+
+        <p class="receipt-note">
+          Generated from live enrolment and attendance records · unrecorded students remain on the
+          register until marked
+        </p>
+      }
+
+      <app-print-page-footer
+        [page]="page.index"
+        [total]="page.total"
+        [label]="register().batchName + ' · ' + formatDay(register().date)"
+        [note]="'Register ' + register().registerNumber"
+      />
+    </section>
+  }
+</article>

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DatabaseService } from './database.service';
 import { AttendanceHistoryRecord } from './domain-services';
+import { readAllPages } from './read-all-pages';
 import { API_CONFIG } from '../config/api.config';
 import { AcademyStore } from '../state/academy.store';
 import { attendanceTimestamp } from './attendance-timestamp';
@@ -276,5 +277,30 @@ export class AttendanceCalendarService {
       result,
     ) as unknown as AttendanceCalendarListResult['records'];
     return { records, total: result.count ?? 0, page, pageSize };
+  }
+
+  /** Every record matching the filters, for exports that must span all pages. */
+  async getAllRecords(
+    year: number,
+    month: number,
+    batchId?: string,
+    studentId?: string,
+    status?: string,
+    dateRange?: AttendanceDateRange,
+  ): Promise<AttendanceCalendarListResult['records']> {
+    const from = dateRange?.from ?? calendarDate(year, month, 1);
+    const to = dateRange?.to ?? calendarDate(year, month, new Date(year, month, 0).getDate());
+    if (from > to) return [];
+    if (this.mock) return this.mockRows(from, to, batchId, studentId, status);
+    return readAllPages('Load attendance export', (offset, limit) =>
+      this.query(
+        from,
+        to,
+        'id,attendance_date,check_in_at,check_out_at,status,remarks,source,student:students(id,student_code,full_name,photo_url),batch:batches(id,code,name)',
+        batchId,
+        studentId,
+        status,
+      ).range(offset, offset + limit - 1),
+    ) as unknown as AttendanceCalendarListResult['records'];
   }
 }

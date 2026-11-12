@@ -1,13 +1,11 @@
 <div class="parent-dashboard">
-  @if (loading()) {
-    <app-async-state title="Loading your family dashboard…" />
-  } @else if (error()) {
+  @if (error()) {
     <app-async-state kind="error" title="Dashboard unavailable" [message]="error()" actionLabel="Retry" (action)="retry()" />
   } @else if (parent(); as item) {
-    <app-page-hero [title]="item.full_name" eyebrow="Welcome back," subtitle="Stay connected. Support their journey." [breadcrumbs]="[{label:'Dashboard'}]"><div hero-actions>@if (children().length) {
+    <app-page-hero [title]="item.full_name" eyebrow="Welcome back," subtitle="Stay connected. Support their journey." [breadcrumbs]="[{label:'Dashboard', icon:'pi-home'}]"><div hero-actions>@if (children().length) {
         <label class="child-switcher"
           ><span class="mini-avatar">
-            @if (selectedChild()?.workspace?.student?.photoUrl) {
+            @if (selectedChild().workspace.student.photoUrl) {
               <img [src]="selectedChild()!.workspace.student.photoUrl" alt="" />
             } @else {
               {{ initials(selectedChild()!.workspace.student.fullName) }}

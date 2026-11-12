@@ -60,7 +60,7 @@ describe('Manual notification activity', () => {
     await flush();
     const click = (label: string) => {
       const button = [...fixture.nativeElement.querySelectorAll('button')].find(
-        (button: HTMLButtonElement) => button.textContent?.trim() === label,
+        (button: HTMLButtonElement) => (button.getAttribute('aria-label') || button.textContent?.trim()) === label,
       );
       expect(button, label).toBeTruthy();
       button.click();
@@ -94,7 +94,7 @@ describe('Manual notification activity', () => {
     dialogs.close('confirm');
     await flush();
     expect(fixture.nativeElement.textContent).toContain('Delivery unknown');
-    expect(fixture.nativeElement.textContent).not.toContain('Send queued message');
+    expect(fixture.nativeElement.querySelector('button[aria-label="Send queued message"]')).toBeNull();
     click('Confirm sent');
     dialogs.close('confirm');
     await flush();
@@ -120,13 +120,13 @@ describe('Manual notification activity', () => {
 
   it('restores requested activity and records cancellation without asserting delivery', async () => {
     const { click, dialogs, flush, fixture, manualWhatsApp } = await setup('launch_requested');
-    expect(fixture.nativeElement.textContent).toContain('Reopen WhatsApp');
+    expect(fixture.nativeElement.querySelector('button[aria-label="Reopen WhatsApp"]')).toBeTruthy();
     click('Cancel activity');
     dialogs.close('confirm');
     await flush();
     expect(manualWhatsApp).toHaveBeenCalledWith('notice', 'cancel');
     expect(fixture.nativeElement.textContent).toContain('Manual: cancelled');
-    expect(fixture.nativeElement.textContent).not.toContain('Reopen WhatsApp');
-    expect(fixture.nativeElement.textContent).not.toContain('Send queued message');
+    expect(fixture.nativeElement.querySelector('button[aria-label="Reopen WhatsApp"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('button[aria-label="Send queued message"]')).toBeNull();
   });
 });

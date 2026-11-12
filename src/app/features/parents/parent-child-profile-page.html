@@ -1,10 +1,8 @@
 <div class="child-page">
-  @if (loading()) {
-    <app-async-state title="Loading child profile..." />
-  } @else if (error()) {
+  @if (error()) {
     <app-async-state kind="error" title="Unable to load child profile" [message]="error()" actionLabel="Retry" (action)="load()" />
   } @else if (data(); as workspace) {
-    <app-page-hero title="Child Profile" subtitle="View complete information about your child." [breadcrumbs]="[{label:'Dashboard',route:'/parent/dashboard'},{label:'My Children',route:'/parent/children'},{label:workspace.student.fullName}]" actionLabel="Contact Academy" actionIcon="pi-comment" (action)="message()" />
+    <app-page-hero title="Child Profile" subtitle="View complete information about your child." [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/parent/dashboard'},{label:'My Children',route:'/parent/children'},{label:workspace.student.fullName}]" actionLabel="Contact Academy" actionIcon="pi-comment" (action)="message()" />
     <section class="profile-summary">
       <div class="photo">
         @if (workspace.student.photoUrl) {
@@ -181,7 +179,6 @@
     }
     @if (tab() === 'attendance') {
       <section class="panel tab-panel">
-        <h2>Attendance history</h2>
         <app-table-tools title="Attendance history" [table]="exportTable1"></app-table-tools>
 <table #exportTable1 class="academy-table">
           <thead>
@@ -225,7 +222,6 @@
     }
     @if (tab() === 'fees') {
       <section class="panel tab-panel">
-        <h2>Payment history</h2>
         <app-table-tools title="Payment history" [table]="exportTable2"></app-table-tools>
 <table #exportTable2 class="academy-table">
           <thead>

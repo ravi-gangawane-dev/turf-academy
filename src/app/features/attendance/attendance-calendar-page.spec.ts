@@ -94,4 +94,64 @@ describe('Attendance calendar controls', () => {
       undefined,
     );
   });
+
+  it('loads every matching record for export instead of only the visible page', async () => {
+    const calendar = {
+      getMonthStats: vi.fn(),
+      getAllRecords: vi.fn().mockResolvedValue([
+        {
+          id: 'a',
+          attendance_date: '2026-10-10',
+          check_in_at: null,
+          check_out_at: null,
+          status: 'late',
+          remarks: null,
+          source: 'manual',
+          student: { id: 's', student_code: 'S1', full_name: 'Asha', photo_url: null },
+          batch: { id: 'b', name: 'U16' },
+        },
+      ]),
+    };
+    TestBed.configureTestingModule({
+      imports: [AttendanceCalendarPage],
+      providers: [
+        provideRouter([]),
+        { provide: AttendanceCalendarService, useValue: calendar },
+        { provide: AcademyFacade, useValue: { students: signal([]), batches: signal([]) } },
+        { provide: StudentsService, useValue: {} },
+        { provide: BatchesService, useValue: {} },
+        { provide: API_CONFIG, useValue: { useMockApi: true } },
+      ],
+    });
+    const component = TestBed.createComponent(AttendanceCalendarPage).componentInstance;
+    component['selectedDate'].set('2026-10');
+    component['selectedBatch'].set('b1');
+    component['selectedStudent'].set('s1');
+    component['selectedStatus'].set('late');
+    component['selectedRange'].set({ from: '2026-10-01', to: '2026-10-15' });
+
+    const rows = await component['exportAttendanceRows']();
+
+    expect(calendar.getAllRecords).toHaveBeenCalledWith(
+      2026,
+      10,
+      'b1',
+      's1',
+      'late',
+      { from: '2026-10-01', to: '2026-10-15' },
+    );
+    expect(rows).toEqual([
+      {
+        date: '2026-10-10',
+        student: 'Asha',
+        studentCode: 'S1',
+        batch: 'U16',
+        checkIn: '',
+        checkOut: '',
+        status: 'late',
+        source: 'manual',
+        remarks: '',
+      },
+    ]);
+  });
 });

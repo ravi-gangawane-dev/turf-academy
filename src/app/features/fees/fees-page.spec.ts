@@ -5,6 +5,9 @@ import {
   FeesService,
   PaymentsService,
 } from '../../core/supabase/domain-services';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { ToastService } from '../../shared/toast/toast.service';
 import { FeesPage } from './fees-page';
 
 async function setupWrites() {
@@ -13,6 +16,7 @@ async function setupWrites() {
     chargeSummary: vi.fn().mockResolvedValue({ students: 0, total: 0, pending: 0, overdue: 0 }),
     batchOptions: vi.fn().mockResolvedValue([]),
     createCharge: vi.fn().mockResolvedValue({ id: 'charge' }),
+    statement: vi.fn(),
   };
   const payments = {
     record: vi.fn().mockResolvedValue({ receipt: { receipt_number: 'RCP-123' } }),
@@ -29,6 +33,10 @@ async function setupWrites() {
         ],
       }),
   };
+  const printDocuments = {
+    printInvoice: vi.fn().mockResolvedValue(undefined),
+    printStatement: vi.fn().mockResolvedValue(undefined),
+  };
   TestBed.configureTestingModule({
     imports: [FeesPage],
     providers: [
@@ -36,14 +44,19 @@ async function setupWrites() {
       { provide: FeesService, useValue: fees },
       { provide: PaymentsService, useValue: payments },
       { provide: EnrollmentsService, useValue: enrollments },
+      { provide: PrintDocumentService, useValue: printDocuments },
     ],
   });
   const fixture = TestBed.createComponent(FeesPage);
-  return { component: fixture.componentInstance, fixture, fees, payments, enrollments };
+  const toast = vi.spyOn(TestBed.inject(ToastService), 'error').mockImplementation(() => undefined);
+  return { component: fixture.componentInstance, fixture, fees, payments, enrollments, printDocuments, toast };
 }
 
 describe('Monthly charge writes', () => {
-  afterEach(() => TestBed.resetTestingModule());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    TestBed.resetTestingModule();
+  });
   for (const kind of ['payment', 'charge']) {
     it(`focuses the ${kind} dialog and dismisses it with Escape only when idle`, async () => {
       const { component, fixture } = await setupWrites();
@@ -68,7 +81,7 @@ describe('Monthly charge writes', () => {
     });
   }
   it('awaits payment, prevents duplicate clicks and retries with the same reference', async () => {
-    const { component, fees, payments } = await setupWrites();
+    const { component, fees, payments, toast } = await setupWrites();
     component['selectCharge']('c1', 123456);
     let reject!: (error: Error) => void;
     payments.record.mockImplementationOnce(
@@ -85,7 +98,7 @@ describe('Monthly charge writes', () => {
     const reference = payments.record.mock.calls[0]![3];
     reject(new Error('Connection lost'));
     await pending;
-    expect(component['error']()).toBe('Connection lost');
+    expect(toast).toHaveBeenCalledWith('Connection lost');
     expect(component['selectedChargeId']()).toBe('c1');
     await component['submitPayment']();
     expect(payments.record).toHaveBeenLastCalledWith('c1', 1234.56, 'upi', reference);
@@ -94,7 +107,7 @@ describe('Monthly charge writes', () => {
     expect(fees.chargeSummary).toHaveBeenCalledTimes(1);
   });
   it('loads actual enrollments and preserves a rejected charge for correction', async () => {
-    const { component, fees } = await setupWrites();
+    const { component, fees, toast } = await setupWrites();
     await component['openChargeDialog']();
     component['enrollmentChanged']('e1');
     expect(component['chargeForm'].controls.amountRupees.value).toBe(1234.56);
@@ -107,7 +120,7 @@ describe('Monthly charge writes', () => {
     await component['addCharge']();
     expect(component['chargeDialogOpen']()).toBe(true);
     expect(component['message']()).toBe('');
-    expect(component['error']()).toBe('Duplicate charge');
+    expect(toast).toHaveBeenCalledWith('Duplicate charge');
     expect(fees.chargePage).not.toHaveBeenCalled();
     await component['addCharge']();
     expect(fees.createCharge).toHaveBeenLastCalledWith('e1', '2026-09', '2026-09-25', 1234.56);
@@ -135,6 +148,116 @@ describe('Monthly charge writes', () => {
     component['selectCharge']('c1', 0);
     await component['submitPayment']();
     expect(payments.record).not.toHaveBeenCalled();
+  });
+  it('starts the fee statement at the financial year and prints the real ledger payload', async () => {
+    const { component, fixture, fees, printDocuments } = await setupWrites();
+    const preferences = TestBed.inject(AcademyPreferencesService);
+    vi.spyOn(preferences, 'today').mockReturnValue('2026-11-02');
+    fees.statement.mockResolvedValue({
+      statementNumber: 'FES-TCA1-20260401-20261102',
+      fromDate: '2026-04-01',
+      toDate: '2026-11-02',
+      studentName: 'Asha',
+      studentCode: 'TCA-1',
+      batchName: 'Morning',
+      openingBalance: 0,
+      closingBalance: 250,
+      totalCharges: 250,
+      totalPayments: 0,
+      totalRefunds: 0,
+      lines: [
+        {
+          date: '2026-04-05',
+          type: 'charge',
+          description: 'Monthly fee — April 2026 · Morning',
+          reference: 'INV-C1',
+          debit: 250,
+          credit: 0,
+          balance: 250,
+        },
+      ],
+      ageing: [{ label: 'Not due', amount: 250 }],
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component['openStatementDialog']({
+      id: 'c1',
+      studentId: 's1',
+      enrollmentId: 'e1',
+      studentName: 'Asha',
+      batchId: 'b1',
+      batchName: 'Morning',
+      planName: 'Monthly',
+      period: '2026-04',
+      amountPaise: 25000,
+      paidPaise: 0,
+      balancePaise: 25000,
+      dueDate: '2026-04-05',
+      status: 'Pending',
+    });
+    fixture.detectChanges();
+    expect(component['statementDialogOpen']()).toBe(true);
+    expect(component['statementForm'].getRawValue()).toEqual({
+      fromDate: '2026-04-01',
+      toDate: '2026-11-02',
+    });
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).not.toBeNull();
+
+    await component['printStatement']('print');
+
+    expect(fees.statement).toHaveBeenCalledWith('s1', '2026-04-01', '2026-11-02', 'Asia/Kolkata');
+    expect(printDocuments.printStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statementNumber: 'FES-TCA1-20260401-20261102',
+        studentName: 'Asha',
+        closingBalance: 250,
+        lines: [expect.objectContaining({ reference: 'INV-C1' })],
+      }),
+      'print',
+    );
+    expect(component['statementDialogOpen']()).toBe(false);
+  });
+  it('blocks a reversed statement period and sends Download PDF through the same document', async () => {
+    const { component, fees, printDocuments } = await setupWrites();
+    component['statementStudent'].set({
+      id: 'c1',
+      studentId: 's1',
+      enrollmentId: 'e1',
+      studentName: 'Asha',
+      batchId: 'b1',
+      batchName: 'Morning',
+      planName: 'Monthly',
+      period: '2026-04',
+      amountPaise: 25000,
+      paidPaise: 0,
+      balancePaise: 25000,
+      dueDate: '2026-04-05',
+      status: 'Pending',
+    });
+    component['statementForm'].setValue({ fromDate: '2026-05-01', toDate: '2026-04-01' });
+    await component['printStatement']('print');
+    expect(fees.statement).not.toHaveBeenCalled();
+
+    component['statementForm'].setValue({ fromDate: '2026-04-01', toDate: '2026-11-02' });
+    fees.statement.mockResolvedValue({
+      statementNumber: 'FES-TCA1-20260401-20261102',
+      fromDate: '2026-04-01',
+      toDate: '2026-11-02',
+      studentName: 'Asha',
+      studentCode: 'TCA-1',
+      openingBalance: 0,
+      closingBalance: 0,
+      totalCharges: 0,
+      totalPayments: 0,
+      totalRefunds: 0,
+      lines: [],
+      ageing: [],
+    });
+    await component['printStatement']('pdf');
+    expect(printDocuments.printStatement).toHaveBeenCalledWith(
+      expect.objectContaining({ statementNumber: 'FES-TCA1-20260401-20261102' }),
+      'pdf',
+    );
   });
 });
 
@@ -173,7 +296,7 @@ describe('Monthly charge totals', () => {
       Array.from(
         fixture.nativeElement.querySelectorAll('.metrics strong') as NodeListOf<HTMLElement>,
       ).map((element) => element.textContent?.trim());
-    const expectedAmounts = ['17', '₹12,500.00', '₹3,500.00', '₹1,500.00'];
+    const expectedAmounts = ['17', '₹12,500.00', '₹3,500.00', '₹1,500.00', '₹0.00', '₹0.00', '₹0.00'];
     expect(amounts()).toEqual(expectedAmounts);
 
     const status: HTMLInputElement = fixture.nativeElement.querySelector(

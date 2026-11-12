@@ -14,8 +14,12 @@ import {
   signal,
 } from '@angular/core';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationsService } from '../../core/supabase/domain-services';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { PrintDestination } from '../../shared/print/print-document.models';
 import { StudentFormRecord } from '../students/student-list.service';
 import { ParentPortalData, ParentPortalService } from './parent-portal.service';
 import { ParentPortalRecord } from './parent-portal.models';
@@ -50,12 +54,18 @@ export class ParentPortalPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   protected readonly portal = inject(ParentPortalService);
+  protected readonly preferences = inject(AcademyPreferencesService);
+  private readonly printDocuments = inject(PrintDocumentService);
   private readonly notifications = inject(NotificationsService);
   private channels: readonly RealtimeChannel[] = [];
+  private receiptQuery?: Subscription;
   private reloadTimer?: ReturnType<typeof setTimeout>;
   protected readonly data = signal<ParentPortalData | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
+  protected readonly selectedReceipt = signal<ParentPortalRecord | null>(null);
+  protected readonly receiptLoading = signal(false);
+  protected readonly receiptError = signal('');
   protected readonly month = signal(new Date());
   protected readonly attendancePage = signal(1);
   protected readonly attendancePageSize = signal(DEFAULT_PAGE_SIZE);
@@ -178,8 +188,14 @@ export class ParentPortalPage implements OnInit, OnDestroy {
   });
   async ngOnInit() {
     await this.load();
+    if (this.view === 'receipt') {
+      this.receiptQuery = this.route.queryParamMap.subscribe((params) => {
+        void this.loadReceipt(params.get('payment'));
+      });
+    }
   }
   ngOnDestroy(): void {
+    this.receiptQuery?.unsubscribe();
     if (this.reloadTimer) clearTimeout(this.reloadTimer);
     void this.portal.unsubscribe(this.channels);
   }
@@ -221,6 +237,9 @@ export class ParentPortalPage implements OnInit, OnDestroy {
     this.portal.selectChild((e.target as HTMLSelectElement).value);
     this.resetPages();
     await this.load();
+    if (this.view === 'receipt') {
+      await this.loadReceipt(this.route.snapshot.queryParamMap.get('payment'));
+    }
   }
   protected async filterAttendance(event: Event): Promise<void> {
     this.attendanceStatus.set((event.target as HTMLSelectElement).value);
@@ -392,9 +411,25 @@ export class ParentPortalPage implements OnInit, OnDestroy {
     relation: 'batch' | 'coach' | 'monthly_charge' | 'fee_plan',
     key: keyof ParentPortalRecord,
   ) {
-    const v = row?.[relation];
-    const record = Array.isArray(v) ? v[0] : v;
+    const record = this.record(row, relation);
     return record ? String(record[key] ?? '') : '';
+  }
+  private record(
+    row: ParentPortalRecord | null,
+    relation: 'batch' | 'coach' | 'monthly_charge' | 'fee_plan',
+  ): ParentPortalRecord | null {
+    const value = row?.[relation];
+    const record = Array.isArray(value) ? value[0] : value;
+    return record ?? null;
+  }
+  private chargeMonth(charge: ParentPortalRecord | null): string | undefined {
+    const month = String(charge?.['charge_month'] ?? '').slice(0, 7);
+    if (!month) return undefined;
+    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString('en-GB', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
   }
   protected duration(row: ParentPortalRecord) {
     if (!row['check_in_at'] || !row['check_out_at']) return '—';
@@ -413,11 +448,61 @@ export class ParentPortalPage implements OnInit, OnDestroy {
       .slice(0, 2)
       .toUpperCase();
   }
-  protected open(url: unknown) {
-    if (url) window.open(String(url), '_blank', 'noopener');
+  /** Every receipt is addressed by its own payment so rows never share a document. */
+  protected openReceipt(paymentId: unknown): void {
+    const id = String(paymentId ?? '').trim();
+    if (!id) return;
+    void this.router.navigate(['/parent/receipts'], { queryParams: { payment: id } });
   }
-  protected printReceipt(): void {
-    window.print();
+  protected async loadReceipt(paymentId: string | null | undefined): Promise<void> {
+    this.receiptError.set('');
+    if (!paymentId) {
+      this.selectedReceipt.set(null);
+      return;
+    }
+    const studentId = this.data()?.selected?.workspace.student.id ?? '';
+    if (!studentId) {
+      this.selectedReceipt.set(null);
+      this.receiptError.set('Select a child to view this receipt.');
+      return;
+    }
+    this.receiptLoading.set(true);
+    try {
+      this.selectedReceipt.set(await this.portal.payment(paymentId, studentId));
+    } catch (e) {
+      this.selectedReceipt.set(null);
+      this.receiptError.set(e instanceof Error ? e.message : 'Receipt could not be loaded.');
+    } finally {
+      this.receiptLoading.set(false);
+    }
+  }
+  protected async printReceipt(destination: PrintDestination = 'print'): Promise<void> {
+    const payment = this.selectedReceipt();
+    const child = this.data()?.selected;
+    const receiptNumber = payment ? this.receipt(payment, 'receipt_number') : null;
+    if (!payment || !child || !receiptNumber) return;
+    this.receiptError.set('');
+    try {
+      const charge = this.record(payment, 'monthly_charge');
+      await this.printDocuments.printReceipt(
+        {
+          receiptNumber: String(receiptNumber),
+          studentName: child.workspace.student.fullName,
+          studentCode: child.workspace.student.studentCode,
+          guardianName: String(this.data()?.parent['full_name'] ?? ''),
+          amount: Number(payment['amount'] ?? 0),
+          paymentMode: String(payment['payment_mode'] ?? '').replaceAll('_', ' '),
+          paidAt: String(payment['paid_at'] ?? ''),
+          reference: String(payment['provider_reference'] || payment['client_reference'] || ''),
+          status: String(payment['status'] ?? ''),
+          period: this.chargeMonth(charge),
+          batchName: this.related(child.workspace.enrollment, 'batch', 'name'),
+        },
+        destination,
+      );
+    } catch (e) {
+      this.receiptError.set(e instanceof Error ? e.message : 'Receipt could not be prepared.');
+    }
   }
   protected value(row: ParentPortalRecord, key: keyof ParentPortalRecord): unknown {
     return row[key];
@@ -425,7 +510,7 @@ export class ParentPortalPage implements OnInit, OnDestroy {
   protected money(value: unknown): number {
     return Number(value ?? 0);
   }
-  protected receipt(row: ParentPortalRecord, key: 'receipt_number' | 'url'): unknown {
+  protected receipt(row: ParentPortalRecord, key: 'receipt_number'): unknown {
     const receipt = row['receipt'];
     return receipt && typeof receipt === 'object'
       ? Array.isArray(receipt)

@@ -5,7 +5,7 @@ import { AsyncState } from '../../shared/async-state/async-state';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { DataRequestError } from '../../core/supabase/data-error';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ParentDetailRecord, ParentsService, PaymentsService, PaymentHistoryRecord, NotificationsService } from '../../core/supabase/domain-services';
 import { DatePipe } from '@angular/common';
@@ -14,12 +14,17 @@ import { RouterLink } from '@angular/router';
 import { ActivityEvent, StaffDetailsService } from '../../core/supabase/staff-details.service';
 import { DatabaseService } from '../../core/supabase/database.service';
 import { MutationAttempt } from '../../core/supabase/mutation-attempt';
+import { idCardNumber } from '../../shared/print/id-card-qr';
+import { PrintDestination, PrintIdCardInput } from '../../shared/print/print-document.models';
+import { PrintIdCardDialog } from '../../shared/print/print-id-card-dialog/print-id-card-dialog';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 interface ParentNotice { id:string;subject:string;body:string;channel:string;status:string;created_at:string; }
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-parent-details-page',
-  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, DatePipe, ReactiveFormsModule, RouterLink],
+  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, DatePipe, ReactiveFormsModule, RouterLink, PrintIdCardDialog],
   templateUrl: './parent-details-page.html',
   styleUrl: './parent-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,11 +50,69 @@ export class ParentDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly parents = inject(ParentsService);
+  private readonly toast = inject(ToastService);
   protected readonly parent = signal<ParentDetailRecord | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
-  protected readonly success = signal(history.state?.success ?? '');
+  protected readonly idCardOpen = signal(false);
+  protected readonly idCardLoading = signal(false);
+  protected readonly idCardError = signal('');
+  private readonly idCardDestination = signal<PrintDestination>('preview');
+  private readonly printDocuments = inject(PrintDocumentService);
   private id = '';
+
+  /**
+   * Guardian card content comes entirely from the live parent record: contact
+   * details, linked children and each child's pickup authorisation. The
+   * revocation note is policy text shown on the card, not stored data.
+   */
+  protected readonly idCard = computed<PrintIdCardInput | null>(() => {
+    const parent = this.parent();
+    if (!parent) return null;
+    const children = parent.student_parents ?? [];
+    const childList =
+      children
+        .map((link) =>
+          link.student.student_code
+            ? `${link.student.full_name} (${link.student.student_code})`
+            : link.student.full_name,
+        )
+        .join(', ') || 'No linked students';
+    const pickup =
+      children
+        .map(
+          (link) =>
+            `${link.student.full_name}: ${link.can_pick_up ? 'authorised' : 'not authorised'}`,
+        )
+        .join('; ') || 'No pickup authorisations recorded';
+    return {
+      issuedAt: new Date().toISOString(),
+      cardNumber: idCardNumber('parent', parent.id),
+      holderType: 'parent',
+      holderId: parent.id,
+      fullName: parent.full_name,
+      holderCode: parent.id,
+      subtitle: parent.relation || 'Guardian',
+      photoUrl: parent.photo_url,
+      details: [
+        { label: 'Relation', value: parent.relation || 'Guardian' },
+        { label: 'Phone', value: parent.phone || 'Not provided' },
+        { label: 'WhatsApp', value: parent.whatsapp || parent.phone || 'Not provided' },
+        { label: 'Email', value: parent.email || 'Not provided' },
+        { label: 'Children', value: childList },
+        { label: 'Pickup', value: pickup },
+        {
+          label: 'Revocation',
+          value: 'Report a lost card to the academy; access is revoked from Parent Details.',
+        },
+      ],
+      validityNote: 'Valid while linked to an active student · revoke if lost',
+    };
+  });
+
+  constructor() {
+    if (history.state?.success) this.toast.success(String(history.state.success));
+  }
 
   async ngOnInit(): Promise<void> {
     this.loading.set(true);
@@ -99,7 +162,7 @@ export class ParentDetailsPage implements OnInit {
       const result=await this.db.client.rpc('queue_parent_message',{p_parent_id:this.id,p_channel:value.channel,p_subject:value.subject.trim(),p_body:value.body.trim(),p_reference:this.messageAttempt.key({parent:this.id,...value})});
       if(result.error)throw new DataRequestError('Load academy data', result.error);
       this.messageAttempt.complete();this.compose.reset({channel:'in_app',subject:'',body:''});
-      this.success.set(value.channel==='in_app'?'Notification saved for this parent.':'Message queued for delivery.');await this.selectTab('notifications');
+      this.toast.success(value.channel==='in_app'?'Notification saved for this parent.':'Message queued for delivery.');await this.selectTab('notifications');
     }catch(e){this.error.set(e instanceof Error?e.message:'Message could not be queued.');}finally{this.sending.set(false);}
   }
   protected initials(name: string): string {
@@ -112,6 +175,37 @@ export class ParentDetailsPage implements OnInit {
   }
   protected edit(): void {
     void this.router.navigate(['/parents', this.id, 'edit']);
+  }
+  protected openIdCard(): void {
+    if (!this.parent()) return;
+    this.idCardError.set('');
+    this.idCardDestination.set('preview');
+    this.idCardOpen.set(true);
+  }
+  protected closeIdCard(): void {
+    if (this.idCardLoading()) return;
+    this.idCardOpen.set(false);
+  }
+  protected retryIdCard(): void {
+    void this.printIdCard(this.idCardDestination());
+  }
+  protected async printIdCard(destination: PrintDestination): Promise<void> {
+    if (this.idCardLoading()) return;
+    const card = this.idCard();
+    if (!card) return;
+    this.idCardDestination.set(destination);
+    this.idCardLoading.set(true);
+    this.idCardError.set('');
+    try {
+      await this.printDocuments.printIdCard(card, destination);
+      this.idCardOpen.set(false);
+    } catch (error) {
+      this.idCardError.set(
+        error instanceof Error ? error.message : 'The guardian card could not be prepared.',
+      );
+    } finally {
+      this.idCardLoading.set(false);
+    }
   }
   protected openStudent(id: string): void {
     void this.router.navigate(['/students', id]);

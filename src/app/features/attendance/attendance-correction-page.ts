@@ -43,11 +43,10 @@ export class AttendanceCorrectionPage implements OnInit {
   protected readonly submittingId = signal('');
   protected readonly message = signal('');
   protected readonly error = signal('');
+  // Resolved corrections toast once; load failures and reason validation stay inline.
   private readonly toastFeedback = effect(() => {
-    const error = this.error();
     const message = this.message();
-    if (error) this.toast.show(error, 'error');
-    else if (message) this.toast.show(message, 'success');
+    if (message) this.toast.success(message);
   });
   protected reviewReason = '';
   private requestSequence = 0;
@@ -115,7 +114,7 @@ export class AttendanceCorrectionPage implements OnInit {
       this.message.set(`Correction ${approve ? 'approved' : 'rejected'} successfully.`);
       await this.load();
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Correction could not be resolved.');
+      this.toast.error(error instanceof Error ? error.message : 'Correction could not be resolved.');
     } finally {
       this.submittingId.set('');
     }

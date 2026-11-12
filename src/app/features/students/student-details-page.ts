@@ -20,12 +20,17 @@ import { PageHero } from '../../shared/page-hero/page-hero';
 import { StudentDetailRecord, StudentListService, StudentWorkspace } from './student-list.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { printDateOnly } from '../../shared/print/print-format';
+import { idCardNumber } from '../../shared/print/id-card-qr';
+import { PrintDestination, PrintIdCardInput } from '../../shared/print/print-document.models';
+import { PrintIdCardDialog } from '../../shared/print/print-id-card-dialog/print-id-card-dialog';
 
 type DetailTab = 'overview' | 'documents' | 'attendance' | 'payments' | 'medical' | 'timeline';
 
 @Component({
   selector: 'app-student-details-page',
-  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, PageHero, DataTable, SummaryMetricCard],
+  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, PageHero, DataTable, SummaryMetricCard, PrintIdCardDialog],
   templateUrl: './student-details-page.html',
   styleUrl: './student-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +39,7 @@ export class StudentDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly students = inject(StudentListService);
+  private readonly printDocuments = inject(PrintDocumentService);
   protected readonly auth = inject(AuthService);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
@@ -43,6 +49,10 @@ export class StudentDetailsPage implements OnInit {
   protected readonly paymentPage = signal(1);
   protected readonly documentPage = signal(1);
   protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  protected readonly idCardOpen = signal(false);
+  protected readonly idCardLoading = signal(false);
+  protected readonly idCardError = signal('');
+  private readonly idCardDestination = signal<PrintDestination>('preview');
 
   protected readonly attendanceSummary = computed(() => {
     const summary = this.data()?.attendanceSummary ?? { total: 0, present: 0, late: 0, absent: 0 };
@@ -111,6 +121,72 @@ export class StudentDetailsPage implements OnInit {
   protected sendMessage(): void {
     const phone = this.data()?.student.parentPhone ?? this.data()?.student.phone;
     if (phone) window.open(`https://wa.me/91${phone}`, '_blank', 'noopener');
+  }
+  protected readonly idCard = computed<PrintIdCardInput | null>(() => {
+    const workspace = this.data();
+    if (!workspace) return null;
+    const student = workspace.student;
+    const batch = this.batchOf(workspace.enrollment);
+    const batchName = this.text(batch, 'name');
+    const batchCode = this.text(batch, 'code');
+    const guardian =
+      [student.parentName, student.parentRelation ? `(${student.parentRelation})` : '']
+        .filter(Boolean)
+        .join(' ') || '—';
+    return {
+      issuedAt: new Date().toISOString(),
+      cardNumber: idCardNumber('student', student.studentCode || student.id),
+      holderType: 'student',
+      holderId: student.id,
+      fullName: student.fullName,
+      holderCode: student.studentCode || student.id,
+      subtitle: [batchName, batchCode].filter(Boolean).join(' · ') || 'No active batch',
+      photoUrl: student.photoUrl,
+      details: [
+        { label: 'Date of birth', value: printDateOnly(student.dateOfBirth) },
+        { label: 'Blood group', value: student.bloodGroup || '—' },
+        { label: 'Guardian', value: guardian },
+        { label: 'Guardian phone', value: student.parentPhone || '—' },
+        { label: 'Batch', value: batchName || 'Not assigned' },
+        { label: 'Joined', value: printDateOnly(student.joinedOn) },
+      ],
+      validityNote: 'Valid while actively enrolled',
+    };
+  });
+  protected openIdCard(): void {
+    if (!this.data()) return;
+    this.idCardError.set('');
+    this.idCardDestination.set('preview');
+    this.idCardOpen.set(true);
+  }
+  protected closeIdCard(): void {
+    if (this.idCardLoading()) return;
+    this.idCardOpen.set(false);
+  }
+  protected retryIdCard(): void {
+    void this.printIdCard(this.idCardDestination());
+  }
+  protected async printIdCard(destination: PrintDestination): Promise<void> {
+    if (this.idCardLoading()) return;
+    const card = this.idCard();
+    if (!card) return;
+    this.idCardDestination.set(destination);
+    this.idCardLoading.set(true);
+    this.idCardError.set('');
+    try {
+      await this.printDocuments.printIdCard(card, destination);
+      this.idCardOpen.set(false);
+    } catch (error) {
+      this.idCardError.set(
+        error instanceof Error ? error.message : 'The ID card could not be prepared.',
+      );
+    } finally {
+      this.idCardLoading.set(false);
+    }
+  }
+  private batchOf(enrollment: StudentDetailRecord | null): StudentDetailRecord | null {
+    const batch = enrollment?.['batch'];
+    return batch && typeof batch === 'object' ? (batch as StudentDetailRecord) : null;
   }
   protected setTab(tab: DetailTab): void {
     ++this.tableRequest;this.activeTab.set(tab);this.columns.values.set({});this.tableSort.set('');this.tableDirection.set('desc');

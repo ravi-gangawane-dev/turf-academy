@@ -1,12 +1,3 @@
-import { PaymentViewNavigation } from './payment-view-navigation';
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { AsyncState } from '../../shared/async-state/async-state';
-import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
-import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -16,22 +7,33 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import {
   ChargeBalanceRecord,
   FeesService,
   PaymentHistoryRecord,
   PaymentsService,
+  RefundReceiptRecord,
 } from '../../core/supabase/domain-services';
-import { DataTable } from '../../shared/data-table/data-table';
-import { StorageService } from '../../core/supabase/storage.service';
-import { createReceiptPdf } from './receipt-pdf';
 import { MutationAttempt } from '../../core/supabase/mutation-attempt';
-import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { PaymentRecordDialog, PaymentRecordDialogValue } from '../../shared/payment-record-dialog/payment-record-dialog';
+import { PrintDestination } from '../../shared/print/print-document.models';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
-import { FormsModule } from '@angular/forms';
+import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { ToastService } from '../../shared/toast/toast.service';
 
 type PaymentStatus = 'pending' | 'successful' | 'failed' | 'refunded' | 'partially_refunded';
 interface PaymentRow {
@@ -43,6 +45,7 @@ interface PaymentRow {
   readonly mode: string;
   readonly status: PaymentStatus;
   readonly paidAt: string;
+  readonly reference: string;
   readonly receiptId: string;
   readonly receiptNumber: string;
   readonly receiptPath: string;
@@ -58,23 +61,28 @@ interface ChargeOption {
 
 @Component({
   selector: 'app-payments-page',
-  imports: [PaymentViewNavigation, TableTools, PageHero, AsyncState, StatusBadge, ModalFocus, AcademyMoneyPipe, DatePipe, TitleCasePipe, ReactiveFormsModule, FormsModule, RouterLink, DataTable, SummaryMetricCard, ColumnFilter, SortableHeader],
+  imports: [TableTools, PageHero, AsyncState, StatusBadge, ModalFocus, AcademyMoneyPipe, DatePipe, TitleCasePipe, ReactiveFormsModule, FormsModule, RouterLink, DataTable, SummaryMetricCard, ColumnFilter, SortableHeader, PaymentRecordDialog],
   templateUrl: './payments-page.html',
   styleUrl: './payments-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentsPage implements OnInit {
-  protected readonly columns=createColumnFilters(()=>{this.page.set(1);void this.reload();});
+  protected readonly columns = createColumnFilters(() => { this.page.set(1); void this.reload(); });
   protected readonly preferences = inject(AcademyPreferencesService);
+  private readonly toast = inject(ToastService);
   private readonly paymentAttempt = new MutationAttempt();
   private readonly refundAttempt = new MutationAttempt();
   private loadId = 0;
+  private viewReady = false;
+  private refundReceiptRequest = 0;
   private readonly paymentsApi = inject(PaymentsService);
   private readonly feesApi = inject(FeesService);
-  private readonly storage = inject(StorageService);
+  private readonly printDocuments = inject(PrintDocumentService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
-  protected readonly view = String(this.route.snapshot.data['paymentView'] ?? 'list');
+  protected view = String(this.route.snapshot.data['paymentView'] ?? 'list');
   protected readonly rows = signal<readonly PaymentRow[]>([]);
   protected readonly total = signal(0);
   protected readonly charges = signal<readonly ChargeOption[]>([]);
@@ -89,9 +97,17 @@ export class PaymentsPage implements OnInit {
   protected readonly sortBy = signal<'date' | 'student' | 'amount' | 'status' | 'mode' | 'receipt'>('date');
   protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
   protected readonly refundPayment = signal<PaymentRow | null>(null);
+  protected readonly refundReceiptPayment = signal<PaymentRow | null>(null);
+  protected readonly refundReceipts = signal<readonly RefundReceiptRecord[]>([]);
+  protected readonly refundReceiptLoading = signal(false);
+  protected readonly refundReceiptError = signal('');
+  protected readonly refundReceiptRows = computed(() => [...this.refundReceipts()].reverse());
+  protected readonly recordDialogOpen = signal(false);
   protected readonly filteredRows = computed(() => this.rows());
   protected readonly pageRows = computed(() => this.rows());
   protected readonly metrics = signal({ total: 0, transactions: 0, receipts: 0, refunded: 0 });
+  protected readonly canRefund = computed(() => this.auth.role() === 'admin');
+  protected readonly paymentDialogCharges = computed(() => this.charges().map((charge) => ({ ...charge, balanceMinor: charge.balancePaise })));
   protected readonly form = this.fb.nonNullable.group({
     chargeId: ['', Validators.required],
     amountRupees: [0, [Validators.required, Validators.min(0.01)]],
@@ -104,7 +120,28 @@ export class PaymentsPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
+    this.applyQueryView(this.route.snapshot.queryParamMap);
+    this.route.queryParamMap.subscribe((params) => this.applyQueryView(params));
     await this.reload();
+    this.viewReady = true;
+  }
+  private applyQueryView(params: ParamMap): void {
+    if (this.route.snapshot.data['paymentView'] === 'refunds') return;
+    const previousView = this.view;
+    const routeView = String(this.route.snapshot.data['paymentView'] ?? 'list');
+    this.view = params.get('record') === '1'
+      ? 'new'
+      : params.get('settlement') === 'partial'
+        ? 'partial'
+        : params.get('settlement') === 'full'
+          ? 'full'
+          : params.get('receipt') === '1'
+            ? 'receipts'
+            : params.get('history') === '1'
+              ? 'history'
+              : routeView;
+    this.search.set(params.get('search') ?? '');
+    if (this.viewReady && previousView !== this.view) void this.reload();
   }
   protected chargeChanged(id: string): void {
     const charge = this.charges().find((row) => row.id === id);
@@ -124,16 +161,35 @@ export class PaymentsPage implements OnInit {
         this.paymentAttempt.key(value),
         value.providerReference.trim() || undefined,
       );
-      this.message.set('Payment recorded and receipt generated.');
+      this.toast.success('Payment recorded and receipt generated.');
       this.paymentAttempt.complete();
       this.form.reset({ chargeId: '', amountRupees: 0, mode: 'upi', providerReference: '' });
       await this.reload();
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Payment could not be recorded.');
+      this.toast.error(error instanceof Error ? error.message : 'Payment could not be recorded.');
     } finally {
       this.saving.set(false);
     }
   }
+  protected async submitDialog(value: PaymentRecordDialogValue): Promise<void> {
+    if (this.saving()) return;
+    this.saving.set(true);
+    this.error.set('');
+    try {
+      await this.paymentsApi.record(value.chargeId, value.amount, value.mode, this.paymentAttempt.key(value), value.providerReference || undefined);
+      this.paymentAttempt.complete();
+      this.toast.success('Payment recorded and receipt generated.');
+      this.recordDialogOpen.set(false);
+      if (this.view === 'new') {
+        this.view = 'list';
+        await this.router.navigate(['/payments']);
+      }
+      await this.reload();
+    } catch (error) {
+      this.toast.error(error instanceof Error ? error.message : 'Payment could not be recorded.');
+    } finally { this.saving.set(false); }
+  }
+  protected openRecordDialog(): void { this.recordDialogOpen.set(true); }
   protected changePage(page: number): void {
     this.page.set(page);
     void this.reload();
@@ -181,39 +237,89 @@ export class PaymentsPage implements OnInit {
     this.page.set(1);
     void this.reload();
   }
-  protected async printReceipt(row: PaymentRow): Promise<void> {
-    if (!row.receiptId || !row.receiptNumber) return;
+  protected async printReceipt(row: PaymentRow, destination: PrintDestination = 'print'): Promise<void> {
+    if (!row.receiptNumber) return;
     this.error.set('');
     try {
-      let path = row.receiptPath;
-      if (!path) {
-        const blob = createReceiptPdf({
-          currencyCode: this.preferences.currency(),
-          academyName: this.preferences.value().academy_name,
-          timezone: this.preferences.value().timezone,
+      await this.printDocuments.printReceipt(
+        {
           receiptNumber: row.receiptNumber,
           studentName: row.studentName,
           studentCode: row.studentCode,
-          amountPaise: row.amountPaise,
-          paymentMode: row.mode,
+          amount: row.amountPaise / 100,
+          paymentMode: row.mode.replaceAll('_', ' '),
           paidAt: row.paidAt,
-        });
-        const file = new File([blob], `${row.receiptNumber}.pdf`, { type: 'application/pdf' });
-        path = await this.storage.upload('receipts', row.studentId, file);
-        try {
-          await this.paymentsApi.saveReceiptPath(row.receiptId, path);
-        } catch (error) {
-          await this.storage.remove('receipts', path).catch(() => undefined);
-          throw error;
-        }
-        await this.reload();
-      }
-      const url = await this.storage.signedUrl('receipts', path, 120);
-      window.open(url, '_blank', 'noopener,noreferrer');
+          reference: row.reference,
+          status: row.status,
+        },
+        destination,
+      );
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Receipt could not be generated.');
+      this.toast.error(error instanceof Error ? error.message : 'Receipt could not be prepared.');
     }
   }
+  protected async openRefundReceipt(row: PaymentRow): Promise<void> {
+    if (!row.receiptNumber) return;
+    const request = ++this.refundReceiptRequest;
+    this.refundReceiptPayment.set(row);
+    this.refundReceipts.set([]);
+    this.refundReceiptError.set('');
+    this.refundReceiptLoading.set(true);
+    try {
+      const records = await this.paymentsApi.refundReceipts(row.id);
+      if (request !== this.refundReceiptRequest) return;
+      this.refundReceipts.set(records);
+      if (!records.length) this.refundReceiptError.set('No refunds are recorded for this payment.');
+    } catch (error) {
+      if (request !== this.refundReceiptRequest) return;
+      this.refundReceiptError.set(
+        error instanceof Error ? error.message : 'Refund receipts could not be loaded.',
+      );
+    } finally {
+      if (request === this.refundReceiptRequest) this.refundReceiptLoading.set(false);
+    }
+  }
+
+  protected closeRefundReceipt(): void {
+    this.refundReceiptRequest += 1;
+    this.refundReceiptPayment.set(null);
+    this.refundReceipts.set([]);
+    this.refundReceiptLoading.set(false);
+    this.refundReceiptError.set('');
+  }
+
+  protected async printRefundReceipt(
+    record: RefundReceiptRecord,
+    destination: PrintDestination = 'print',
+  ): Promise<void> {
+    this.refundReceiptError.set('');
+    try {
+      await this.printDocuments.printRefundReceipt(
+        {
+          refundReceiptNumber: record.refundReceiptNumber,
+          originalReceiptNumber: record.originalReceiptNumber,
+          studentName: record.studentName,
+          studentCode: record.studentCode,
+          refundAmount: record.refundAmount,
+          originalAmount: record.originalAmount,
+          paymentMode: record.paymentMode,
+          refundedAt: record.refundedAt,
+          paidAt: record.paidAt,
+          reason: record.reason,
+          reference: record.reference || undefined,
+          approvedBy: record.approvedBy,
+          batchName: record.batchName,
+          period: record.period,
+        },
+        destination,
+      );
+    } catch (error) {
+      this.refundReceiptError.set(
+        error instanceof Error ? error.message : 'Refund receipt could not be prepared.',
+      );
+    }
+  }
+
   protected openRefund(row: PaymentRow): void {
     if (row.status === 'refunded') return;
     this.refundPayment.set(row);
@@ -239,10 +345,10 @@ export class PaymentsPage implements OnInit {
       );
       this.refundAttempt.complete();
       this.refundPayment.set(null);
-      this.message.set('Refund recorded and charge balance recalculated.');
+      this.toast.success('Refund recorded and charge balance recalculated.');
       await this.reload();
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Refund could not be recorded.');
+      this.toast.error(error instanceof Error ? error.message : 'Refund could not be recorded.');
     } finally {
       this.saving.set(false);
     }
@@ -253,7 +359,7 @@ export class PaymentsPage implements OnInit {
     this.error.set('');
     try {
       const [paymentPage, charges] = await Promise.all([
-        this.paymentsApi.ledgerPage(this.view, this.page(), this.pageSize(), this.route.snapshot.queryParamMap.get('student') ? [this.route.snapshot.queryParamMap.get('student')!] : undefined, { columns:this.columns.params(),search: this.search(), status: this.statusFilter(), sortBy: this.sortBy(), sortDirection: this.sortDirection() }),
+        this.paymentsApi.ledgerPage(this.view, this.page(), this.pageSize(), this.route.snapshot.queryParamMap.get('student') ? [this.route.snapshot.queryParamMap.get('student')!] : undefined, { columns: this.columns.params(), search: this.search(), status: this.statusFilter(), sortBy: this.sortBy(), sortDirection: this.sortDirection() }),
         this.feesApi.charges(),
       ]);
       if (loadId !== this.loadId) return;
@@ -272,6 +378,7 @@ export class PaymentsPage implements OnInit {
             mode: row.payment_mode,
             status: row.status as PaymentStatus,
             paidAt: row.paid_at,
+            reference: row.provider_reference ?? row.client_reference ?? '',
             receiptId: receipt?.id ?? '',
             receiptNumber: receipt?.receipt_number ?? '',
             receiptPath: receipt?.storage_path ?? '',

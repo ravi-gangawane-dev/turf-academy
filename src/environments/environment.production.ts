@@ -7,7 +7,7 @@ export const environment = {
   supabaseUrl: 'https://ttuigbkaluozglzgepsh.supabase.co',
   supabaseAnonKey: 'sb_publishable_rWM0j3-x9zSCcGKeo_ImXw_lxNKPyyR',
   // Set endpoint to a collector that accepts the ErrorReportPayload JSON; empty = no send.
-  monitoring: { enabled: true, endpoint: 'https://example.com/monitoring', release: '0.1.0' },
+  monitoring: { enabled: true, endpoint: '/.netlify/functions/client-errors', release: '0.1.0' },
   academySupport: {
     phone: '+919876543210',
     displayPhone: '+91 98765 43210',

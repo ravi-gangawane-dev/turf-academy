@@ -1,0 +1,33 @@
+.print-page-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2mm 6mm;
+  margin-top: auto;
+  padding-top: 3mm;
+  border-top: 1px solid #d7e1db;
+  color: #5f7268;
+  font-size: 7.4pt;
+}
+
+.print-page-footer-label {
+  font-weight: 600;
+}
+
+.print-page-footer-note {
+  flex: 1 1 auto;
+}
+
+.print-page-footer-page {
+  margin-left: auto;
+  color: #15231c;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media print {
+  .print-page-footer {
+    break-inside: avoid;
+  }
+}

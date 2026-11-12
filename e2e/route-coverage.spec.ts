@@ -13,8 +13,8 @@ test('new academy module routes are protected and render', async ({ page }) => {
   await login(page);
   const routes = [
     '/fees/discounts', '/fees/late-fees', '/fees/pending', '/fees/summary',
-    '/payments', '/payments/new', '/payments/partial', '/payments/full',
-    '/payments/receipts', '/payments/refunds', '/payments/history',
+    '/payments', '/payments?record=1', '/payments?settlement=partial', '/payments?settlement=full',
+    '/payments?receipt=1', '/payments/refunds', '/payments',
     '/notifications/whatsapp', '/notifications/templates',
     '/notifications/failed', '/notifications/delivery-status',
     '/reports/coach', '/reports/batch', '/settings', '/settings/users',
@@ -22,10 +22,21 @@ test('new academy module routes are protected and render', async ({ page }) => {
     '/settings/theme', '/settings/audit-logs', '/settings/backup',
     '/design/foundations/tokens', '/design/components/buttons', '/handoff/specifications',
   ];
+  const destinations: Record<string, string> = {
+    '/fees/pending': '/fees?status=pending',
+    '/fees/summary': '/fees?summary=1',
+    '/notifications/whatsapp': '/notifications?channel=whatsapp',
+    '/notifications/failed': '/notifications?status=failed',
+    '/notifications/delivery-status': '/notifications',
+    '/settings/roles': '/settings/users',
+    '/settings/permissions': '/settings/users',
+    '/settings/theme': '/settings/tools',
+    '/settings/backup': '/settings/tools',
+  };
   for (const route of routes) {
     await test.step(route, async () => {
       await page.goto(route);
-      await expect(page).toHaveURL(route);
+      await expect(page).toHaveURL(destinations[route] ?? route);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     });
   }

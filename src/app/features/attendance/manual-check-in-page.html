@@ -1,7 +1,4 @@
 <div class="app-list-page attendance-section manual-page" [class.checkout-page]="isCheckout">
-  @if (message()) {
-    <div class="manual-notice" role="status">{{ message() }}</div>
-  }
   @if (store.loading()) {
     <app-async-state title="Loading attendance..." />
   }

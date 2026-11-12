@@ -1,15 +1,30 @@
-@import 'tailwindcss';
 @import './app/shared/filter-bar/list-layout.css';
 @import './app/features/attendance/attendance-layout.css';
-@import 'primeicons/primeicons.css';
-@import './ui-foundations.css';
 @import './app/shared/data-table/table-theme.css';
+@import './app/shared/print/print-document.css';
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
 @import './ui-base.css';
 @import './ui-foundations.css';
-html[data-academy-theme='blue'] { --app-primary:#1769b2;--app-primary-dark:#104e86;--app-primary-soft:#eaf3ff;--app-sidebar:#102542;--app-bg:#f1f5fb; }
-html[data-academy-theme='contrast'] { --app-primary:#005329;--app-primary-dark:#003d1e;--app-primary-soft:#e0f2e8;--app-text:#06130c;--app-muted:#344c3c;--app-border:#52695a;--app-bg:#edf1ee;--app-focus:0 0 0 3px #005329; }
+
+html[data-academy-theme='blue'] {
+  --app-primary: #1769b2;
+  --app-primary-dark: #104e86;
+  --app-primary-soft: #eaf3ff;
+  --app-sidebar: #102542;
+  --app-bg: #f1f5fb;
+}
+
+html[data-academy-theme='contrast'] {
+  --app-primary: #005329;
+  --app-primary-dark: #003d1e;
+  --app-primary-soft: #e0f2e8;
+  --app-text: #06130c;
+  --app-muted: #344c3c;
+  --app-border: #52695a;
+  --app-bg: #edf1ee;
+  --app-focus: 0 0 0 3px #005329;
+}
 
 :root {
   --app-primary: #16864b;
@@ -53,6 +68,36 @@ html[data-academy-theme='contrast'] { --app-primary:#005329;--app-primary-dark:#
   --app-success-text: #176039;
   --app-danger-bg: #fff3f2;
   --app-danger-border: #f3c7c3;
+  --app-violet: #8b27ef;
+  --app-teal: #0d9488;
+  --act-eye: #2878bc;
+  --act-user: #5a4fc4;
+  --act-pencil: #e07b00;
+  --act-user-edit: #a94c05;
+  --act-wallet: #16864b;
+  --act-send: #0f9edb;
+  --act-whatsapp: #23b26d;
+  --act-check: #2f9e44;
+  --act-check-circle: #57a974;
+  --act-user-plus: #d237ab;
+  --act-trash: #c2413b;
+  --act-times: #8c2f2a;
+  --act-user-minus: #d05662;
+  --act-power-off: #64748b;
+  --act-replay: #9a3412;
+  --act-folder: #475b83;
+  --act-print: #8b27ef;
+  --act-file: #5b21b6;
+  --act-file-pdf: #db2777;
+  --act-download: #0e7490;
+  --act-id-card: #635bff;
+  --act-copy: #0d9488;
+  --act-history: #5e81ac;
+  --act-sync: #d4a017;
+  --act-refresh: #d4a017;
+  --act-undo: #d97757;
+  --act-arrow-right-arrow-left: #7048e8;
+  --act-pause-circle: #8b8f98;
   --app-line-height: 1.5;
   color-scheme: light;
   font-family:
@@ -68,6 +113,7 @@ html[data-academy-theme='contrast'] { --app-primary:#005329;--app-primary-dark:#
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   margin: 0;
@@ -75,15 +121,18 @@ body {
   background: var(--app-bg);
   color: var(--app-text);
 }
+
 button,
 input,
 select,
 textarea {
   font: inherit;
 }
+
 button {
   cursor: pointer;
 }
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -101,6 +150,7 @@ button {
   max-width: var(--app-content-width);
   margin-inline: auto;
 }
+
 .feature-header {
   display: flex;
   align-items: flex-end;
@@ -108,22 +158,26 @@ button {
   gap: 20px;
   margin-bottom: 24px;
 }
+
 .feature-header h1 {
   margin: 0 0 6px;
   font-size: clamp(24px, 3vw, 31px);
   letter-spacing: -0.03em;
 }
+
 .feature-header p {
   margin: 0;
   color: var(--app-muted);
   font-size: 13px;
 }
+
 .app-card {
   border: 1px solid var(--app-border);
   border-radius: 15px;
   background: #fff;
   box-shadow: 0 2px 10px rgba(21, 51, 36, 0.025);
 }
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -131,13 +185,16 @@ button {
   padding: 16px 18px;
   border-bottom: 1px solid var(--app-border);
 }
+
 .toolbar .search-field {
   flex: 1;
   max-width: 380px;
 }
+
 .search-field {
   position: relative;
 }
+
 .search-field i {
   position: absolute;
   left: 13px;
@@ -145,10 +202,12 @@ button {
   transform: translateY(-50%);
   color: var(--app-muted);
 }
+
 .search-field input {
   width: 100%;
   padding-left: 37px;
 }
+
 .app-input,
 .app-select,
 .search-field input {
@@ -160,12 +219,14 @@ button {
   background: #fff;
   color: var(--app-text);
 }
+
 .app-input:focus,
 .app-select:focus,
 .search-field input:focus {
   border-color: var(--app-primary);
   box-shadow: 0 0 0 3px rgba(22, 134, 75, 0.1);
 }
+
 .app-button {
   display: inline-flex;
   align-items: center;
@@ -180,27 +241,476 @@ button {
   font-weight: 700;
   font-size: 12px;
 }
+
 .app-button:hover {
   background: var(--app-primary-dark);
 }
+
 .app-button.secondary {
   border-color: #d7dfdb;
   color: #294137;
   background: #fff;
 }
+
 .app-button.small {
   min-height: 34px;
   padding: 0 11px;
   font-size: 12px;
 }
+
 .app-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Reusable row-action buttons: one recipe so identical buttons look the same in every table.
+   Doubled .app-button class names outrank page-local descendant rules like `.foo td button`.
+   Action tints color the icon by intent: view=info, edit=warning, record/send=primary, destructive=danger. */
+.app-button.app-button.icon {
+  position: relative;
+  min-height: 34px;
+  width: 34px;
+  padding: 0;
+  gap: 0;
+  border-color: var(--app-control-border);
+  color: var(--app-muted);
+  background: #fff;
+  font-size: 15px;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.app-button.app-button.icon:hover {
+  border-color: var(--app-muted);
+  color: var(--app-text);
+  background: var(--app-surface-muted);
+}
+
+.app-button.app-button.icon:focus-visible {
+  box-shadow: var(--app-focus);
+}
+
+/* Per-action colors: every icon renders in its own distinct color (ghost buttons exempt). */
+
+.app-button.app-button.icon:not(.ghost):has(.pi-eye) {
+  border-color: var(--act-eye);
+  color: #fff;
+  background: var(--act-eye);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-eye):hover {
+  border-color: color-mix(in srgb, var(--act-eye) 82%, #000);
+  background: color-mix(in srgb, var(--act-eye) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-user) {
+  border-color: var(--act-user);
+  color: #fff;
+  background: var(--act-user);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-user):hover {
+  border-color: color-mix(in srgb, var(--act-user) 82%, #000);
+  background: color-mix(in srgb, var(--act-user) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-pencil) {
+  border-color: var(--act-pencil);
+  color: #fff;
+  background: var(--act-pencil);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-pencil):hover {
+  border-color: color-mix(in srgb, var(--act-pencil) 82%, #000);
+  background: color-mix(in srgb, var(--act-pencil) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-user-edit) {
+  border-color: var(--act-user-edit);
+  color: #fff;
+  background: var(--act-user-edit);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-user-edit):hover {
+  border-color: color-mix(in srgb, var(--act-user-edit) 82%, #000);
+  background: color-mix(in srgb, var(--act-user-edit) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-wallet) {
+  border-color: var(--act-wallet);
+  color: #fff;
+  background: var(--act-wallet);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-wallet):hover {
+  border-color: color-mix(in srgb, var(--act-wallet) 82%, #000);
+  background: color-mix(in srgb, var(--act-wallet) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-send) {
+  border-color: var(--act-send);
+  color: #fff;
+  background: var(--act-send);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-send):hover {
+  border-color: color-mix(in srgb, var(--act-send) 82%, #000);
+  background: color-mix(in srgb, var(--act-send) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-whatsapp) {
+  border-color: var(--act-whatsapp);
+  color: #fff;
+  background: var(--act-whatsapp);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-whatsapp):hover {
+  border-color: color-mix(in srgb, var(--act-whatsapp) 82%, #000);
+  background: color-mix(in srgb, var(--act-whatsapp) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-check) {
+  border-color: var(--act-check);
+  color: #fff;
+  background: var(--act-check);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-check):hover {
+  border-color: color-mix(in srgb, var(--act-check) 82%, #000);
+  background: color-mix(in srgb, var(--act-check) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-check-circle) {
+  border-color: var(--act-check-circle);
+  color: #fff;
+  background: var(--act-check-circle);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-check-circle):hover {
+  border-color: color-mix(in srgb, var(--act-check-circle) 82%, #000);
+  background: color-mix(in srgb, var(--act-check-circle) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-user-plus) {
+  border-color: var(--act-user-plus);
+  color: #fff;
+  background: var(--act-user-plus);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-user-plus):hover {
+  border-color: color-mix(in srgb, var(--act-user-plus) 82%, #000);
+  background: color-mix(in srgb, var(--act-user-plus) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-trash) {
+  border-color: var(--act-trash);
+  color: #fff;
+  background: var(--act-trash);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-trash):hover {
+  border-color: color-mix(in srgb, var(--act-trash) 82%, #000);
+  background: color-mix(in srgb, var(--act-trash) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-times) {
+  border-color: var(--act-times);
+  color: #fff;
+  background: var(--act-times);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-times):hover {
+  border-color: color-mix(in srgb, var(--act-times) 82%, #000);
+  background: color-mix(in srgb, var(--act-times) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-user-minus) {
+  border-color: var(--act-user-minus);
+  color: #fff;
+  background: var(--act-user-minus);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-user-minus):hover {
+  border-color: color-mix(in srgb, var(--act-user-minus) 82%, #000);
+  background: color-mix(in srgb, var(--act-user-minus) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-power-off) {
+  border-color: var(--act-power-off);
+  color: #fff;
+  background: var(--act-power-off);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-power-off):hover {
+  border-color: color-mix(in srgb, var(--act-power-off) 82%, #000);
+  background: color-mix(in srgb, var(--act-power-off) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-replay) {
+  border-color: var(--act-replay);
+  color: #fff;
+  background: var(--act-replay);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-replay):hover {
+  border-color: color-mix(in srgb, var(--act-replay) 82%, #000);
+  background: color-mix(in srgb, var(--act-replay) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-folder) {
+  border-color: var(--act-folder);
+  color: #fff;
+  background: var(--act-folder);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-folder):hover {
+  border-color: color-mix(in srgb, var(--act-folder) 82%, #000);
+  background: color-mix(in srgb, var(--act-folder) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-print) {
+  border-color: var(--act-print);
+  color: #fff;
+  background: var(--act-print);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-print):hover {
+  border-color: color-mix(in srgb, var(--act-print) 82%, #000);
+  background: color-mix(in srgb, var(--act-print) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-file) {
+  border-color: var(--act-file);
+  color: #fff;
+  background: var(--act-file);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-file):hover {
+  border-color: color-mix(in srgb, var(--act-file) 82%, #000);
+  background: color-mix(in srgb, var(--act-file) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-file-pdf) {
+  border-color: var(--act-file-pdf);
+  color: #fff;
+  background: var(--act-file-pdf);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-file-pdf):hover {
+  border-color: color-mix(in srgb, var(--act-file-pdf) 82%, #000);
+  background: color-mix(in srgb, var(--act-file-pdf) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-download) {
+  border-color: var(--act-download);
+  color: #fff;
+  background: var(--act-download);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-download):hover {
+  border-color: color-mix(in srgb, var(--act-download) 82%, #000);
+  background: color-mix(in srgb, var(--act-download) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-id-card) {
+  border-color: var(--act-id-card);
+  color: #fff;
+  background: var(--act-id-card);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-id-card):hover {
+  border-color: color-mix(in srgb, var(--act-id-card) 82%, #000);
+  background: color-mix(in srgb, var(--act-id-card) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-copy) {
+  border-color: var(--act-copy);
+  color: #fff;
+  background: var(--act-copy);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-copy):hover {
+  border-color: color-mix(in srgb, var(--act-copy) 82%, #000);
+  background: color-mix(in srgb, var(--act-copy) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-history) {
+  border-color: var(--act-history);
+  color: #fff;
+  background: var(--act-history);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-history):hover {
+  border-color: color-mix(in srgb, var(--act-history) 82%, #000);
+  background: color-mix(in srgb, var(--act-history) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-sync) {
+  border-color: var(--act-sync);
+  color: #fff;
+  background: var(--act-sync);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-sync):hover {
+  border-color: color-mix(in srgb, var(--act-sync) 82%, #000);
+  background: color-mix(in srgb, var(--act-sync) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-refresh) {
+  border-color: var(--act-refresh);
+  color: #fff;
+  background: var(--act-refresh);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-refresh):hover {
+  border-color: color-mix(in srgb, var(--act-refresh) 82%, #000);
+  background: color-mix(in srgb, var(--act-refresh) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-undo) {
+  border-color: var(--act-undo);
+  color: #fff;
+  background: var(--act-undo);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-undo):hover {
+  border-color: color-mix(in srgb, var(--act-undo) 82%, #000);
+  background: color-mix(in srgb, var(--act-undo) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-arrow-right-arrow-left) {
+  border-color: var(--act-arrow-right-arrow-left);
+  color: #fff;
+  background: var(--act-arrow-right-arrow-left);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-arrow-right-arrow-left):hover {
+  border-color: color-mix(in srgb, var(--act-arrow-right-arrow-left) 82%, #000);
+  background: color-mix(in srgb, var(--act-arrow-right-arrow-left) 82%, #000);
+}
+
+.app-button.app-button.icon:not(.ghost):has(.pi-pause-circle) {
+  border-color: var(--act-pause-circle);
+  color: #fff;
+  background: var(--act-pause-circle);
+}
+.app-button.app-button.icon:not(.ghost):has(.pi-pause-circle):hover {
+  border-color: color-mix(in srgb, var(--act-pause-circle) 82%, #000);
+  background: color-mix(in srgb, var(--act-pause-circle) 82%, #000);
+}
+
+.app-button.app-button.icon.danger {
+  border-color: var(--app-danger);
+  color: #fff;
+  background: var(--app-danger);
+}
+.app-button.app-button.icon.danger:hover {
+  border-color: color-mix(in srgb, var(--app-danger) 82%, #000);
+  background: color-mix(in srgb, var(--app-danger) 82%, #000);
+}
+/* Filter chips (removable filters, tag-like toggles) */
+.app-button.app-button.chip {
+  min-height: 30px;
+  padding: 0 10px;
+  gap: 6px;
+  border-color: var(--app-control-border);
+  color: var(--app-text);
+  background: var(--app-surface-muted);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.app-button.app-button.chip:hover {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+}
+
+.app-button.app-button.chip i {
+  font-size: 12px;
+}
+
+/* Ghost / close icon buttons (dialogs, toasts, toggles): no border until hover */
+.app-button.app-button.icon.ghost {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-button.app-button.icon.ghost:hover {
+  border-color: var(--app-control-border);
+  background: #fff;
+  color: var(--app-text);
+}
+
+/* Selected / pressed state for segmented toggles (Today / Week / Month, tabs) */
+.app-button.app-button.active,
+.app-button.app-button.small.active {
+  border-color: var(--app-primary);
+  color: var(--app-primary-dark);
+  background: var(--app-primary-soft);
+  font-weight: 700;
+}
+
+.app-button.app-button.danger {
+  border-color: var(--app-danger-border);
+  color: var(--app-danger);
+  background: #fff;
+}
+
+.app-button.app-button.danger:hover {
+  border-color: var(--app-danger);
+  color: var(--app-danger);
+  background: var(--app-danger-bg);
+}
+
+/* Small text actions that carry an action icon inherit the icon's family color */
+.app-button.app-button.small.secondary:has(.pi-check),
+.app-button.app-button.small.secondary:has(.pi-check-circle) {
+  border-color: color-mix(in srgb, var(--app-primary) 35%, #fff);
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+}
+
+.app-button.app-button.small.secondary:has(.pi-check):hover:not(:disabled),
+.app-button.app-button.small.secondary:has(.pi-check-circle):hover:not(:disabled) {
+  border-color: var(--app-primary);
+  color: #fff;
+  background: var(--app-primary);
+}
+
+.app-button.app-button.small.secondary:has(.pi-sync) {
+  border-color: color-mix(in srgb, var(--app-teal) 35%, #fff);
+  color: var(--app-teal);
+  background: color-mix(in srgb, var(--app-teal) 7%, #fff);
+}
+
+.app-button.app-button.small.secondary:has(.pi-sync):hover:not(:disabled) {
+  border-color: var(--app-teal);
+  color: #fff;
+  background: var(--app-teal);
+}
+
+/* Table row actions stay on one line */
+.row-actions.row-actions,
+.event-row-actions.event-row-actions,
+.actions.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.row-actions>button,
+.event-row-actions>button,
+.actions>button {
+  flex: none;
+}
+
+.app-button.app-button.icon .action-tooltip {
+  position: absolute;
+  z-index: 5;
+  inset-block-end: calc(100% + 8px);
+  inset-inline-start: 50%;
+  width: max-content;
+  max-width: 160px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: #fff;
+  background: #24332b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 3px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.app-button.app-button.icon:hover .action-tooltip,
+.app-button.app-button.icon:focus-visible .action-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
 }
+
 .data-table th {
   padding: 12px 18px;
   color: var(--app-muted);
@@ -210,16 +720,19 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 .data-table td {
   padding: 15px 18px;
   border-top: 1px solid #edf1ef;
   font-size: 12px;
 }
+
 .data-table small {
   display: block;
   margin-top: 3px;
   color: var(--app-muted);
 }
+
 .table-wrap {
   overflow-x: auto;
   /* Positioning context so absolutely-positioned cell content (e.g. sr-only
@@ -227,6 +740,7 @@ button {
      document scroll area and widening the page on mobile. */
   position: relative;
 }
+
 .status-pill {
   display: inline-flex;
   padding: 4px 8px;
@@ -237,40 +751,49 @@ button {
   font-weight: 800;
   text-transform: uppercase;
 }
+
 .status-pill.pending {
   color: #a66011;
   background: #fff1d7;
 }
+
 .status-pill.danger {
   color: #bd3c38;
   background: #fee9e8;
 }
+
 .status-pill.info {
   color: #2878bc;
   background: #e5f2fd;
 }
+
 .form-panel {
   margin-bottom: 18px;
   padding: 20px;
 }
+
 .form-panel h2 {
   margin: 0 0 17px;
   font-size: 16px;
 }
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
 }
+
 .form-field {
   display: grid;
   gap: 6px;
 }
+
 .form-field label {
   font-size: 12px;
   font-weight: 800;
   color: #52635a;
 }
+
 .form-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -278,10 +801,12 @@ button {
   gap: 9px;
   padding-top: 5px;
 }
+
 .field-error {
   color: #c2413b;
   font-size: 12px;
 }
+
 .notice {
   margin-bottom: 16px;
   padding: 12px 14px;
@@ -291,34 +816,61 @@ button {
   background: #effbf3;
   font-size: 12px;
 }
+
 .notice.error {
   border-color: #fecaca;
   color: #b4231c;
   background: #fff5f5;
 }
+
 .empty-state {
   padding: 50px 20px;
   color: var(--app-muted);
   text-align: center;
 }
+
 .empty-state i {
   display: block;
   margin-bottom: 10px;
   font-size: 26px;
 }
+
 /* Projected PageHero controls retain their page bindings and fit the shared header. */
-app-page-hero [hero-actions], app-page-hero [hero-details] {
+app-page-hero [hero-actions],
+app-page-hero [hero-details] {
   min-width: 0;
   max-width: 100%;
 }
-app-page-hero [hero-actions] input, app-page-hero [hero-actions] select {
+
+app-page-hero [hero-actions] input,
+app-page-hero [hero-actions] select {
   box-sizing: border-box;
   max-width: 100%;
 }
 
 /* Shared column-control layout for record lists. */
-.column-filters th { padding-top: 8px; padding-bottom: 12px; vertical-align: top; }
-.column-list-table { width: 100%; border-collapse: collapse; }
-.column-list-table th, .column-list-table td { padding: 14px; text-align: left; border-bottom: 1px solid var(--app-border); }
-.column-list-table thead { background: var(--app-bg); }
-.column-list-table td small { display: block; }
+.column-filters th {
+  padding-top: 8px;
+  padding-bottom: 12px;
+  vertical-align: top;
+}
+
+.column-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.column-list-table th,
+.column-list-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.column-list-table thead {
+  background: var(--app-bg);
+}
+
+.column-list-table td small {
+  display: block;
+}

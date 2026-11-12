@@ -79,9 +79,9 @@ describe('NotificationsPage',()=>{
     await new Promise(resolve => setTimeout(resolve, 0));
     configured.detectChanges();
     const retries = [...configured.nativeElement.querySelectorAll('button')].filter(
-      (button: HTMLButtonElement) => button.textContent?.trim() === 'Retry failed message');
+      (button: HTMLButtonElement) => button.getAttribute('aria-label') === 'Retry failed message');
     expect(retries).toHaveLength(1);
-    expect(configured.nativeElement.textContent).not.toContain('Send queued message');
+    expect(configured.nativeElement.querySelector('button[aria-label="Send queued message"]')).toBeNull();
     const confirm = vi.spyOn(TestBed.inject(DialogService), 'confirm').mockResolvedValue(false);
     vi.mocked(api.deliveryAction).mockClear();
     retries[0].click();

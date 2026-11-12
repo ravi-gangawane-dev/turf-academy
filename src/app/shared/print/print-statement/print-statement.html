@@ -1,0 +1,146 @@
+<article class="print-sheet print-sheet--statement" [attr.aria-label]="'Fee statement ' + statement().statementNumber">
+  @for (page of pages(); track page.index) {
+    <section class="print-page" [class.print-page--last]="page.last">
+      <header class="letterhead">
+        <img
+          class="brand-logo"
+          [src]="statement().brand.logoUrl"
+          [alt]="statement().brand.name + ' logo'"
+        />
+        <div class="brand-copy">
+          <p class="brand-kicker">{{ statement().brand.name }}</p>
+          <h1>Fee Statement</h1>
+          @if (statement().brand.address || statement().brand.phone || statement().brand.email) {
+            <p class="brand-contact">
+              @if (statement().brand.address) { <span>{{ statement().brand.address }}</span> }
+              @if (statement().brand.phone) { <span>{{ statement().brand.phone }}</span> }
+              @if (statement().brand.email) { <span>{{ statement().brand.email }}</span> }
+            </p>
+          }
+        </div>
+        <div class="doc-label">
+          <strong>{{ statement().statementNumber }}</strong>
+          <span>Issued {{ statement().issuedAt | date: 'dd MMM yyyy' : statement().brand.timezone }}</span>
+          <span>
+            {{ statement().fromDate | date: 'dd MMM yyyy' : statement().brand.timezone }} –
+            {{ statement().toDate | date: 'dd MMM yyyy' : statement().brand.timezone }}
+          </span>
+        </div>
+      </header>
+
+      @if (page.index === 1) {
+        <section class="doc-grid">
+          <div class="box">
+            <h2>Student</h2>
+            <strong>{{ statement().studentName }}</strong>
+            @if (statement().studentCode) { <small>{{ statement().studentCode }}</small> }
+            @if (statement().batchName) { <small>Batch: {{ statement().batchName }}</small> }
+          </div>
+          <div class="box statement-summary">
+            <h2>Account summary</h2>
+            <dl class="kv">
+              <dt>Opening balance</dt>
+              <dd>{{ money(statement().openingBalance) }}</dd>
+              <dt>Charges</dt>
+              <dd>{{ money(statement().totalCharges) }}</dd>
+              <dt>Payments</dt>
+              <dd>−{{ money(statement().totalPayments) }}</dd>
+              <dt>Refunds</dt>
+              <dd>{{ money(statement().totalRefunds) }}</dd>
+              <dt class="strong">Closing balance</dt>
+              <dd class="strong">{{ money(statement().closingBalance) }}</dd>
+            </dl>
+          </div>
+        </section>
+      }
+
+      <section>
+        <div class="sec-head">
+          <h2>Ledger</h2>
+          <span>{{ statement().lines.length }} entr{{ statement().lines.length === 1 ? 'y' : 'ies' }}</span>
+        </div>
+        <table class="doc-table statement-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Reference</th>
+              <th class="num">Debit</th>
+              <th class="num">Credit</th>
+              <th class="num">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (page.rows.length === 0) {
+              <tr>
+                <td colspan="6" class="empty">No fee activity in this period.</td>
+              </tr>
+            } @else {
+              @for (line of page.rows; track $index) {
+                <tr [class]="'line line--' + line.type">
+                  <td class="nowrap">{{ line.date | date: 'dd MMM yyyy' : statement().brand.timezone }}</td>
+                  <td>{{ line.description }}</td>
+                  <td>{{ line.reference || '—' }}</td>
+                  <td class="num">{{ line.debit ? money(line.debit) : '—' }}</td>
+                  <td class="num">{{ line.credit ? money(line.credit) : '—' }}</td>
+                  <td class="num">{{ money(line.balance) }}</td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </section>
+
+      @if (page.last) {
+        @if (hasAgeing()) {
+          <section>
+            <div class="sec-head">
+              <h2>Outstanding ageing</h2>
+              <span>As at {{ statement().issuedAt | date: 'dd MMM yyyy' : statement().brand.timezone }}</span>
+            </div>
+            <table class="ageing-table">
+              <thead>
+                <tr>
+                  @for (bucket of statement().ageing; track bucket.label) {
+                    <th>{{ bucket.label }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  @for (bucket of statement().ageing; track bucket.label) {
+                    <td>{{ money(bucket.amount) }}</td>
+                  }
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        }
+
+        <section class="doc-notes">
+          <div class="box">
+            <h2>How this statement is built</h2>
+            <ul>
+              <li>Charges use the fee due date; payments use the recorded payment date; refunds use the refund date.</li>
+              <li>Opening balance includes all account activity before {{ statement().fromDate | date: 'dd MMM yyyy' : statement().brand.timezone }}.</li>
+              <li>Outstanding ageing uses the current balance of each open monthly charge.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h2>Notes</h2>
+            <p>
+              {{ statement().notes || 'Please quote the statement number with any query. This statement is computer generated and valid without a physical signature.' }}
+            </p>
+          </div>
+        </section>
+      }
+
+      <app-print-page-footer
+        [page]="page.index"
+        [total]="page.total"
+        [label]="statement().brand.name + ' · ' + statement().statementNumber"
+        [note]="page.last && statement().brand.email ? 'Questions: ' + statement().brand.email : 'Computer generated fee statement'"
+      />
+    </section>
+  }
+</article>

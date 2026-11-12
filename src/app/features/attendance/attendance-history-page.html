@@ -11,22 +11,15 @@
       <p role="alert">{{ optionsError() }}</p>
       }
 
-      @if (loading()) {
-      <div class="loading-message">
-        <i class="pi pi-spin pi-spinner"></i>
-        Loading attendance records...
-      </div>
-      }
-
-      @if (!loading() && !error()) {
+      @if (!error()) {
       <section class="records">
-        <div class="table-wrap">
+        <div class="table-wrap" [attr.aria-busy]="loading()">
           <app-table-tools title="Attendance history" [table]="exportTable1" [total]="total()">
             <div class="table-filters" role="group" aria-label="Attendance filters">
               <div class="filter-main">
                 <label class="search-field">
                   <span>Search students</span>
-                  <input type="search" placeholder="Search by student name&#8230;" [value]="search()"
+                  <input type="search" placeholder="Search by name or student code&#8230;" [value]="search()"
                     (input)="onSearchChange($event)" />
                 </label>
 
@@ -41,6 +34,14 @@
                 </label>
 
                 <div class="filter-actions">
+                  <button type="button" class="daily-register" (click)="openRegister()">
+                    <i class="pi pi-clipboard" aria-hidden="true"></i>
+                    Daily register
+                  </button>
+                  <button type="button" class="monthly-matrix" (click)="openMatrix()">
+                    <i class="pi pi-table" aria-hidden="true"></i>
+                    Monthly matrix
+                  </button>
                   <button type="button" class="more-filters" (click)="toggleMoreFilters()"
                     [attr.aria-expanded]="showMoreFilters()" aria-controls="attendance-advanced-filters">
                     <i class="pi pi-sliders-h" aria-hidden="true"></i>
@@ -49,8 +50,25 @@
                     <span class="filter-count">{{ advancedFilterCount() }}</span>
                     }
                   </button>
+                  @if (hasActiveFilters()) {
                   <button type="button" class="clear-filters" (click)="resetFilters()">Clear all filters</button>
+                  }
                 </div>
+              </div>
+
+              <div class="filter-meta">
+                <ul class="filter-chips" aria-label="Applied filters">
+                  @for (filter of activeFilters(); track filter.key) {
+                  <li>
+                    <button type="button" class="filter-chip" (click)="removeFilter(filter.key)"
+                      [attr.aria-label]="'Remove filter: ' + filter.label">
+                      <span>{{ filter.label }}</span>
+                      <i class="pi pi-times" aria-hidden="true"></i>
+                    </button>
+                  </li>
+                  }
+                </ul>
+                <p class="result-summary" role="status" aria-live="polite">{{ resultSummary() }}</p>
               </div>
 
               <div id="attendance-advanced-filters" class="filter-advanced" [hidden]="!showMoreFilters()">
@@ -86,15 +104,19 @@
                 </label>
 
                 <div class="range-presets" role="group" aria-label="Quick date ranges">
-                  <button type="button" (click)="setRange(0)">Today</button>
-                  <button type="button" (click)="setRange(7)">7 Days</button>
-                  <button type="button" (click)="setRange(30)">30 Days</button>
+                  <span class="range-label">Quick range</span>
+                  <button type="button" [class.active]="activeRange() === 0"
+                    [attr.aria-pressed]="activeRange() === 0" (click)="setRange(0)">Today</button>
+                  <button type="button" [class.active]="activeRange() === 7"
+                    [attr.aria-pressed]="activeRange() === 7" (click)="setRange(7)">7 days</button>
+                  <button type="button" [class.active]="activeRange() === 30"
+                    [attr.aria-pressed]="activeRange() === 30" (click)="setRange(30)">30 days</button>
                 </div>
               </div>
             </div>
           </app-table-tools>
 
-          <table #exportTable1 class="academy-table" [hidden]="!records().length">
+          <table #exportTable1 class="academy-table" [hidden]="!records().length && !loading()">
             <thead>
               <tr>
                 @for (col of columns; track col) {
@@ -104,13 +126,23 @@
               </tr>
             </thead>
             <tbody>
+              @if (loading() && !records().length) {
+              @for (row of loadingRows; track row) {
+              <tr class="skeleton-row" aria-hidden="true">
+                @for (col of columns; track col) {
+                <td><span></span></td>
+                }
+                <td><span></span></td>
+              </tr>
+              }
+              } @else {
               @for (row of visibleRecords(); track row['id']) {
               <tr>
                 <td>{{ row['attendance_date'] }}</td>
                 <td>
                   <b>{{ row.student?.full_name || '—' }}</b>
                   @if (row.student?.student_code) {
-                  <small>{{ row.student?.student_code }}</small>
+                  <small>{{ row.student.student_code }}</small>
                   }
                 </td>
                 <td>{{ row.student?.student_code || '—' }}</td>
@@ -127,7 +159,7 @@
                 <td>{{ row['source'] || '—' }}</td>
                 <td>{{ row['remarks'] || '—' }}</td>
                 <td>
-                  <button type="button" class="row-action"
+                  <button type="button" class="app-button icon"
                     [attr.aria-label]="'Correct attendance for ' + (row.student?.full_name || 'student') + ' on ' + row['attendance_date']"
                     title="Make correction" (click)="startCorrection(row)">
                     <i class="pi pi-pencil" aria-hidden="true"></i>
@@ -135,10 +167,11 @@
                 </td>
               </tr>
               }
+              }
             </tbody>
           </table>
 
-          @if (!records().length) {
+          @if (!loading() && !records().length) {
           <app-async-state kind="empty" title="No attendance records match these filters." />
           }
         </div>
@@ -237,3 +270,121 @@
     </aside>
   </div>
 </div>
+@if (registerDialogOpen()) {
+<div class="register-dialog-backdrop">
+  <section class="register-dialog" appModalFocus [modalBusy]="registerLoading()"
+    (modalDismiss)="closeRegister()" aria-labelledby="register-dialog-title">
+    <header>
+      <div>
+        <h2 id="register-dialog-title">Daily attendance register</h2>
+        <p>Print the batch roster for one day, including students who have not been marked.</p>
+      </div>
+      <button type="button" (click)="closeRegister()" aria-label="Close register dialog" title="Close">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="register-fields">
+      <label>
+        <span>Batch <em>*</em></span>
+        <select [value]="registerBatchId()" (change)="onRegisterBatchChange($event)">
+          <option value="">Select batch</option>
+          @for (batch of allBatches(); track batch.id) {
+          <option [value]="batch.id">{{ batch.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Date <em>*</em></span>
+        <input type="date" [value]="registerDate()" (change)="onRegisterDateChange($event)" />
+      </label>
+    </div>
+
+    @if (canIncludeRemarks()) {
+    <label class="register-checkbox">
+      <input type="checkbox" [checked]="registerIncludeRemarks()" (change)="onRegisterRemarksChange($event)" />
+      Include attendance remarks
+    </label>
+    } @else {
+    <p class="register-hint">Remarks require attendance correction permission and are omitted from this register.</p>
+    }
+
+    @if (registerError()) {
+    <p class="register-error" role="alert">{{ registerError() }}</p>
+    }
+
+    <footer>
+      <button type="button" (click)="closeRegister()" [disabled]="registerLoading()">Cancel</button>
+      <button type="button" class="secondary" [disabled]="registerLoading()" (click)="printRegister('preview')">
+        <i class="pi pi-eye" aria-hidden="true"></i> Preview
+      </button>
+      <button type="button" class="secondary" [disabled]="registerLoading()" (click)="printRegister('pdf')">
+        <i class="pi pi-file-pdf" aria-hidden="true"></i> Download PDF
+      </button>
+      <button type="button" class="primary" [disabled]="registerLoading()" (click)="printRegister('print')">
+        @if (registerLoading()) {
+        <span class="spinner" aria-hidden="true"></span>
+        }
+        <i class="pi pi-print" aria-hidden="true"></i> Print register
+      </button>
+    </footer>
+  </section>
+</div>
+}
+@if (matrixDialogOpen()) {
+<div class="register-dialog-backdrop">
+  <section class="register-dialog matrix-dialog" appModalFocus [modalBusy]="matrixLoading()"
+    (modalDismiss)="closeMatrix()" aria-labelledby="matrix-dialog-title">
+    <header>
+      <div>
+        <h2 id="matrix-dialog-title">Monthly attendance matrix</h2>
+        <p>Print one batch's month at a glance, with a column for every day and a percentage per student.</p>
+      </div>
+      <button type="button" (click)="closeMatrix()" aria-label="Close matrix dialog" title="Close">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="register-fields">
+      <label>
+        <span>Batch <em>*</em></span>
+        <select [value]="matrixBatchId()" (change)="onMatrixBatchChange($event)">
+          <option value="">Select batch</option>
+          @for (batch of allBatches(); track batch.id) {
+          <option [value]="batch.id">{{ batch.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>Month <em>*</em></span>
+        <input type="month" [value]="matrixMonth()" (change)="onMatrixMonthChange($event)" />
+      </label>
+    </div>
+
+    <p class="register-hint">
+      Non-session days and days before a student enrolled are left blank and excluded from the
+      percentage. Unmarked sessions stay visible as not recorded.
+    </p>
+
+    @if (matrixError()) {
+    <p class="register-error" role="alert">{{ matrixError() }}</p>
+    }
+
+    <footer>
+      <button type="button" (click)="closeMatrix()" [disabled]="matrixLoading()">Cancel</button>
+      <button type="button" class="secondary" [disabled]="matrixLoading()" (click)="printMatrix('preview')">
+        <i class="pi pi-eye" aria-hidden="true"></i> Preview
+      </button>
+      <button type="button" class="secondary" [disabled]="matrixLoading()" (click)="printMatrix('pdf')">
+        <i class="pi pi-file-pdf" aria-hidden="true"></i> Download PDF
+      </button>
+      <button type="button" class="primary" [disabled]="matrixLoading()" (click)="printMatrix('print')">
+        @if (matrixLoading()) {
+        <span class="spinner" aria-hidden="true"></span>
+        }
+        <i class="pi pi-print" aria-hidden="true"></i> Print matrix
+      </button>
+    </footer>
+  </section>
+</div>
+}

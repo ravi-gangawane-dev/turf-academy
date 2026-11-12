@@ -1,6 +1,6 @@
 <div class="app-list-page templates-page">
   <app-page-hero title="Notification Templates" subtitle="Create and control approved outbound messages." [breadcrumbs]="[
-      { label: 'Dashboard', route: '/dashboard' },
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
       { label: 'Notification Templates' },
     ]" actionLabel="New template" (action)="open()"></app-page-hero>
   <app-notification-section-nav [showTemplates]="true" />
@@ -8,9 +8,7 @@
   <div class="notice error" role="alert">{{ error() }} <button type="button" (click)="reload()"
       [disabled]="loading()">Try again</button></div>
   }
-  @if (message()) {
-  <div class="notice" role="status">{{ message() }}</div>
-  }
+  
   <section class="card table-wrap">
 
     <app-table-tools title="Notification templates" [table]="exportTable1" [total]="total()"></app-table-tools>
@@ -57,12 +55,12 @@
           <td><app-status-badge [status]="row.status" /></td>
           <td>
             <div class="actions" role="group" aria-label="Actions for {{ row.name }}">
-              <button type="button" class="edit-button" (click)="open(row)" aria-label="Edit {{ row.name }}"
+              <button type="button" class="app-button icon" (click)="open(row)" aria-label="Edit {{ row.name }}"
                 title="Edit template">
                 <i class="pi pi-pencil" aria-hidden="true"></i>
               </button>
-              <button type="button" (click)="toggle(row)" class="disable-button"
-                [class.disable-action]="row.status === 'active'" [class.activate-action]="row.status !== 'active'"
+              <button type="button" (click)="toggle(row)" class="app-button icon"
+                [class.danger]="row.status === 'active'"
                 [attr.title]="row.status === 'active' ? 'Disable' : 'Activate'"
                 [attr.aria-label]="row.status === 'active' ? 'Disable' : 'Activate'">
                 <i class="pi pi-power-off" aria-hidden="true"></i>

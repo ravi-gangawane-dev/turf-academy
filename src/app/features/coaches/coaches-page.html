@@ -1,9 +1,5 @@
 <div class="app-list-page coaches-page">
-  @if (message()) {
-  <div class="coach-notice">
-    <span>{{ message() }}</span><button (click)="message.set('')"><i class="pi pi-times"></i></button>
-  </div>
-  }
+  
   @if (error()) {
   <app-async-state kind="error" title="Could not load coaches" [message]="error()" />
   }
@@ -95,8 +91,8 @@
             </td>
             <td>
               <span class="row-actions">
-                <button (click)="openCoachDetails(coach)"><i class="pi pi-eye"></i></button><button
-                  (click)="edit(coach)"><i class="pi pi-pencil"></i></button><button (click)="deleteCoach(coach)"><i
+                <button class="app-button icon" (click)="openCoachDetails(coach)"><i class="pi pi-eye"></i></button><button
+                  class="app-button icon" (click)="edit(coach)"><i class="pi pi-pencil"></i></button><button class="app-button icon danger" (click)="deleteCoach(coach)"><i
                     class="pi pi-trash"></i></button>
               </span>
 

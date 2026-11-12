@@ -25,7 +25,13 @@ import { API_CONFIG } from '../../core/config/api.config';
 import { readAllPages } from '../../core/supabase/read-all-pages';
 import { Pagination } from '../../shared/pagination/pagination';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { buildAttendanceCalendarCsv } from './attendance-calendar-export';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
+import {
+  buildRecordExportRows,
+  buildSummaryExportRows,
+  calendarRecordColumns,
+  calendarSummaryColumns,
+} from './attendance-calendar-export';
 
 type ViewMode = 'month' | 'week' | 'list';
 @Component({
@@ -120,6 +126,38 @@ export class AttendanceCalendarPage implements OnInit {
   protected readonly isCurrentMonth = computed(
     () => this.selectedDate() === this.monthValue(new Date()),
   );
+  protected readonly summaryExportColumns: readonly ExportColumn[] = calendarSummaryColumns;
+  protected readonly recordExportColumns: readonly ExportColumn[] = calendarRecordColumns;
+  protected readonly exportSubtitle = computed(() =>
+    [
+      `${this.monthName()} ${this.currentYear()}`,
+      this.viewMode() === 'week' ? `Week ${this.selectedWeek()}` : '',
+      this.allBatches().find((row) => row.id === this.selectedBatch())?.name ?? 'All batches',
+      this.allStudents().find((row) => row.id === this.selectedStudent())?.name ?? 'All students',
+      this.selectedStatus() || 'All statuses',
+      this.selectedRange() ? `${this.selectedRange()!.from} to ${this.selectedRange()!.to}` : '',
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  );
+  protected readonly monthSummaryRows = computed(() =>
+    buildSummaryExportRows(this.calendarData()?.monthStats),
+  );
+  protected readonly weekSummaryRows = computed(() =>
+    buildSummaryExportRows(this.weekData()?.weekStats),
+  );
+  /** Reads every matching record, not just the visible list page. */
+  protected readonly exportAttendanceRows = async (): Promise<readonly ExportRow[]> => {
+    const records = await this.calendar.getAllRecords(
+      this.currentYear(),
+      this.currentMonth(),
+      this.selectedBatch() || undefined,
+      this.selectedStudent() || undefined,
+      this.selectedStatus() || undefined,
+      this.selectedRange() ?? undefined,
+    );
+    return buildRecordExportRows(records);
+  };
 
   constructor() {
     effect(() => {
@@ -374,29 +412,6 @@ export class AttendanceCalendarPage implements OnInit {
   protected onPageSizeChange(size: number): void {
     this.listPageSize.set(size);
     this.listPage.set(1);
-  }
-  protected export(): void {
-    if (this.loading() || this.error()) return;
-    const week = this.weekData();
-    const csv = buildAttendanceCalendarCsv({
-      view: this.viewMode(),
-      monthLabel: `${this.monthName()} ${this.currentYear()}`,
-      batchLabel:
-        this.allBatches().find((row) => row.id === this.selectedBatch())?.name ?? 'All batches',
-      studentLabel:
-        this.allStudents().find((row) => row.id === this.selectedStudent())?.name ?? 'All students',
-      statusLabel: this.selectedStatus() || 'All statuses',
-      dateRange: week ? `${week.startDate} to ${week.endDate}` : undefined,
-      stats: this.viewMode() === 'week' ? week?.weekStats : this.calendarData()?.monthStats,
-      list: this.listData() ?? undefined,
-    });
-    if (!csv) return;
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `attendance-calendar-${this.selectedDate()}-${this.viewMode()}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
   }
   private monthValue(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;

@@ -1,17 +1,17 @@
-import { UsersSettingsPanel } from './users-settings-panel';
-import { SETTINGS_SECTIONS } from './settings-sections';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AcademySettingsService } from '../../core/supabase/domain-services';
-import { DatabaseService } from '../../core/supabase/database.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 import { WhatsappService } from '../../core/services/whatsapp.service';
+import { AcademyBackupService } from '../../core/supabase/academy-backup.service';
+import { AcademySettingsService } from '../../core/supabase/domain-services';
 import { DialogService } from '../../shared/dialog/dialog.service';
 import { DialogType } from '../../shared/dialog/models/dialog-config.model';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { AuthService } from '../../core/auth/auth.service';
-import { downloadDocument } from '../payments/document-pdf';
+import { ToastService } from '../../shared/toast/toast.service';
+import { SETTINGS_SECTIONS } from './settings-sections';
+import { UsersSettingsPanel } from './users-settings-panel';
 
 @Component({
   selector: 'app-academy-settings-page',
@@ -44,7 +44,8 @@ export class AcademySettingsPage implements OnInit {
       : [{ label: 'Academy Settings', route: '/settings' }, { label: this.pageInfo().label }]),
   ]);
   private readonly api = inject(AcademySettingsService);
-  private readonly db = inject(DatabaseService);
+  private readonly toast = inject(ToastService);
+  private readonly backup = inject(AcademyBackupService);
   private readonly whatsapp = inject(WhatsappService);
   private readonly fb = inject(FormBuilder);
   private readonly dialogs = inject(DialogService);
@@ -124,7 +125,6 @@ export class AcademySettingsPage implements OnInit {
     }
     this.saving.set(true);
     this.error.set('');
-    this.message.set('');
     try {
       const v = this.form.getRawValue();
       await this.api.save({
@@ -146,9 +146,9 @@ export class AcademySettingsPage implements OnInit {
         ].filter(Boolean),
         theme_preference: v.themePreference,
       });
-      this.message.set('Academy settings saved.');
+      this.toast.success('Academy settings saved.');
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Settings could not be saved.');
+      this.toast.error(error instanceof Error ? error.message : 'Settings could not be saved.');
     } finally {
       this.saving.set(false);
     }
@@ -158,56 +158,13 @@ export class AcademySettingsPage implements OnInit {
     if (this.busy()) return;
     this.busy.set(true);
     this.error.set('');
-    this.message.set('');
     try {
-      const records: Record<string, unknown[]> = {};
-      const tables = ['academy_settings', 'profiles', 'students', 'parents', 'student_parents', 'coaches', 'coach_specializations', 'fee_plans', 'batches', 'batch_days', 'batch_coaches', 'batch_waitlist', 'enrollments', 'enrollment_history', 'attendance_records', 'attendance_corrections', 'monthly_charges', 'payments', 'payment_refunds', 'receipts', 'discounts', 'student_discounts', 'late_fee_rules', 'notifications', 'notification_templates', 'student_documents', 'student_medical_records', 'vaccinations'];
-      for (const table of tables) {
-        this.progress.set('Exporting ' + table.replaceAll('_', ' ') + '…');
-        const rows: unknown[] = [];
-        for (let offset = 0; ; offset += 500) {
-          const columns =
-            table === 'profiles'
-              ? 'id,full_name,email,phone,role,status,is_active,created_at'
-              : table === 'notifications'
-                ? 'id,student_id,parent_id,channel,template_key,recipient,subject,body,status,scheduled_at,sent_at,created_at'
-                : '*';
-          let query = this.db.client
-            .from(table)
-            .select(columns)
-            .range(offset, offset + 499);
-          if (table === 'coach_specializations')
-            query = query.order('coach_id').order('specialization');
-          else if (table === 'batch_days') query = query.order('batch_id').order('day_of_week');
-          else if (table === 'batch_coaches') query = query.order('batch_id').order('coach_id');
-          else if (table === 'student_parents')
-            query = query.order('student_id').order('parent_id');
-          else query = query.order('id');
-          const result = await query;
-          if (result.error)
-            throw new Error('The export could not be completed. Please try again.');
-          if (!result.data) throw new Error('Could not export ' + table + ': no data returned.');
-          rows.push(...result.data);
-          if (result.data.length < 500) break;
-        }
-        records[table] = rows;
-      }
-      downloadDocument(
-        new Blob(
-          [
-            JSON.stringify(
-              { format: 'turf-academy-records-v1', exportedAt: new Date().toISOString(), records },
-              null,
-              2,
-            ),
-          ],
-          { type: 'application/json' },
-        ),
-        'academy-records-' + new Date().toISOString().slice(0, 10) + '.json',
+      await this.backup.download((table) =>
+        this.progress.set('Exporting ' + table.replaceAll('_', ' ') + '…'),
       );
-      this.message.set('Academy records exported.');
+      this.toast.success('Academy records exported.');
     } catch (e) {
-      this.error.set(e instanceof Error ? e.message : 'Export failed.');
+      this.toast.error(e instanceof Error ? e.message : 'Export failed.');
     } finally {
       this.busy.set(false);
       this.progress.set('');
@@ -220,9 +177,9 @@ export class AcademySettingsPage implements OnInit {
     document.documentElement.dataset['academyTheme'] = theme;
     try {
       localStorage.setItem('academy-theme', theme);
-      this.message.set('Appearance saved for this device.');
+      this.toast.success('Appearance saved for this device.');
     } catch {
-      this.message.set('Appearance applied for this session.');
+      this.toast.success('Appearance applied for this session.');
     }
   }
 
@@ -238,11 +195,10 @@ export class AcademySettingsPage implements OnInit {
   protected async openTestWhatsAppMessage(): Promise<void> {
     const role = this.auth.role();
     if (role !== 'admin') {
-      this.error.set('Only admin users can send test messages.');
+      this.toast.error('Only admin users can send test messages.');
       return;
     }
     this.error.set('');
-    this.message.set('');
     try {
       const academyName = this.form.controls.academyName.value || 'Turf Cricket Academy';
       if (!this.testRecipient().trim()) throw new Error('Enter a recipient number for the WhatsApp test.');
@@ -264,16 +220,16 @@ export class AcademySettingsPage implements OnInit {
               try {
                 if (this.auth.role() !== 'admin') throw new Error('Only admin users can open test messages.');
                 window.open(url, '_blank', 'noopener,noreferrer');
-                this.message.set('WhatsApp opening requested. Press Send in WhatsApp. Delivery is unconfirmed.');
+                this.toast.info('WhatsApp opening requested. Press Send in WhatsApp. Delivery is unconfirmed.');
               } catch (error) {
-                this.error.set(error instanceof Error ? error.message : 'Failed to open WhatsApp.');
+                this.toast.error(error instanceof Error ? error.message : 'Failed to open WhatsApp.');
               }
             },
           },
         ],
       });
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Failed to open WhatsApp.');
+      this.toast.error(error instanceof Error ? error.message : 'Failed to open WhatsApp.');
     }
   }
 }

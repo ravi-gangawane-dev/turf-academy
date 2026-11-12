@@ -23,7 +23,12 @@ function setup(reportScope = '') {
     { batch_id: 'batch-a', valid_from: '2026-09-01', status: 'active', student: { full_name: 'Morning student' } },
     { batch_id: 'batch-b', valid_from: '2026-09-01', status: 'active', student: { full_name: 'Evening student' } },
   ]) };
-  const preferences = { load: vi.fn().mockResolvedValue(undefined), money: (amount: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'USD' }).format(amount) };
+  const preferences = {
+    load: vi.fn().mockResolvedValue(undefined),
+    value: () => ({ academy_name: 'Turf Cricket Academy' }),
+    logoUrl: () => '/branding/turf-cricket-academy-logo.png',
+    money: (amount: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'USD' }).format(amount),
+  };
   TestBed.configureTestingModule({ imports: [ReportsPage], providers: [
     provideRouter([]), { provide: ReportsService, useValue: reports },
     { provide: ActivatedRoute, useValue: { snapshot: { data: { reportScope } } } },

@@ -1,0 +1,484 @@
+{
+  "baseURL": "http://127.0.0.1:4200",
+  "capturedAt": "2026-11-04T07:35:34.466Z",
+  "screens": [
+    {
+      "route": "auth/login",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/login",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/login",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/login",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/login",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/login",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/login",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/login",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/login",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/login",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/forgot-password",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/forgot-password",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/forgot-password",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/forgot-password",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/forgot-password",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/forgot-password",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/forgot-password",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/forgot-password",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/forgot-password",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/forgot-password",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/reset-password",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/reset-password",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/reset-password",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/reset-password",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/reset-password",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/reset-password",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/reset-password",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/reset-password",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/reset-password",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/reset-password",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/set-password",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/set-password",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/set-password",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/set-password",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/set-password",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/set-password",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/set-password",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/set-password",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/set-password",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/set-password",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/otp",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/otp",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/otp",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/otp",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/otp",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/otp",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/otp",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/otp",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/otp",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/otp",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/session-expired",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/session-expired",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/session-expired",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/session-expired",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/session-expired",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/session-expired",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/session-expired",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/session-expired",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/session-expired",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/session-expired",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/password-updated",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/auth/password-updated",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/password-updated",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/auth/password-updated",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/password-updated",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/auth/password-updated",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/password-updated",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/auth/password-updated",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "auth/password-updated",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/auth/password-updated",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    },
+    {
+      "route": "unauthorized",
+      "width": 320,
+      "url": "http://127.0.0.1:4200/unauthorized",
+      "dimensions": {
+        "viewport": 320,
+        "content": 320
+      },
+      "violations": []
+    },
+    {
+      "route": "unauthorized",
+      "width": 375,
+      "url": "http://127.0.0.1:4200/unauthorized",
+      "dimensions": {
+        "viewport": 375,
+        "content": 375
+      },
+      "violations": []
+    },
+    {
+      "route": "unauthorized",
+      "width": 768,
+      "url": "http://127.0.0.1:4200/unauthorized",
+      "dimensions": {
+        "viewport": 768,
+        "content": 768
+      },
+      "violations": []
+    },
+    {
+      "route": "unauthorized",
+      "width": 1024,
+      "url": "http://127.0.0.1:4200/unauthorized",
+      "dimensions": {
+        "viewport": 1024,
+        "content": 1024
+      },
+      "violations": []
+    },
+    {
+      "route": "unauthorized",
+      "width": 1440,
+      "url": "http://127.0.0.1:4200/unauthorized",
+      "dimensions": {
+        "viewport": 1440,
+        "content": 1440
+      },
+      "violations": []
+    }
+  ],
+  "redirects": [
+    {
+      "route": "dashboard",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fdashboard",
+      "loginRedirect": true
+    },
+    {
+      "route": "students",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fstudents",
+      "loginRedirect": true
+    },
+    {
+      "route": "parents",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fparents",
+      "loginRedirect": true
+    },
+    {
+      "route": "coaches",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fcoaches",
+      "loginRedirect": true
+    },
+    {
+      "route": "batches",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fbatches",
+      "loginRedirect": true
+    },
+    {
+      "route": "enrollments",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fenrollments",
+      "loginRedirect": true
+    },
+    {
+      "route": "attendance",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fattendance",
+      "loginRedirect": true
+    },
+    {
+      "route": "fees",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Ffees",
+      "loginRedirect": true
+    },
+    {
+      "route": "payments",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fpayments",
+      "loginRedirect": true
+    },
+    {
+      "route": "notifications",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fnotifications",
+      "loginRedirect": true
+    },
+    {
+      "route": "reports",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Freports",
+      "loginRedirect": true
+    },
+    {
+      "route": "settings",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fsettings",
+      "loginRedirect": true
+    },
+    {
+      "route": "settings/dialog-playground",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fsettings%2Fdialog-playground",
+      "loginRedirect": true
+    },
+    {
+      "route": "coach",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fdashboard",
+      "loginRedirect": true
+    },
+    {
+      "route": "parent",
+      "url": "http://127.0.0.1:4200/auth/login?returnUrl=%2Fdashboard",
+      "loginRedirect": true
+    }
+  ],
+  "pageErrors": []
+}

@@ -38,11 +38,10 @@ export class AttendancePage implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly message = signal<string | null>(null);
   protected readonly whatsappData = signal<AttendanceWhatsApp | null>(null);
+  // Attendance changes toast once; the inline notice is reserved for load failures.
   private readonly toastFeedback = effect(() => {
-    const err = this.error();
     const msg = this.message();
-    if (err) this.toast.show(err, 'error');
-    else if (msg) this.toast.show(msg, 'success');
+    if (msg) this.toast.success(msg);
   });
   protected readonly metrics = computed(() => {
     const total = this.store.activeEnrollmentRows().length;
@@ -155,7 +154,7 @@ export class AttendancePage implements OnInit {
       await action();
       this.message.set(message);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Attendance could not be updated.');
+      this.toast.error(error instanceof Error ? error.message : 'Attendance could not be updated.');
     }
   }
 

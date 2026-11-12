@@ -62,18 +62,12 @@
   @if (error()) {
     <p class="error" role="alert">{{ error() }}</p>
   }
-  @if (message()) {
-    <p class="success" role="status">{{ message() }}</p>
-  }
   <section class="metrics" aria-label="Batch summary">
     <app-summary-metric-card label="Batches" [value]="metrics().batches" icon="pi-calendar" hint="All registered batches" />
     <app-summary-metric-card label="Active enrollments" [value]="metrics().active" icon="pi-users" hint="Currently enrolled students" tone="blue" />
     <app-summary-metric-card label="Active batch capacity" [value]="metrics().capacity" icon="pi-chart-bar" hint="Total available places" tone="purple" />
     <app-summary-metric-card label="Waiting students" [value]="metrics().waiting" icon="pi-clock" hint="Awaiting a place" tone="orange" />
   </section>
-  @if (loading()) {
-    <app-async-state title="Loading batches…" />
-  }
   @if (editing() !== null) {
     <section class="card">
       <h2>{{ editing() ? 'Edit batch' : 'New batch' }}</h2>
@@ -235,6 +229,15 @@
             <tr class="column-filters"><th><label><input type="search" aria-label="Filter student" placeholder="Filter student" [(ngModel)]="columnFilters.student" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter batch" placeholder="Filter batch" [(ngModel)]="columnFilters.batch" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter status" placeholder="Filter status" [(ngModel)]="columnFilters.columnStatus" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="date" aria-label="Filter start date" placeholder="Filter start date" [(ngModel)]="columnFilters.start" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><button type="button" (click)="resetColumnFilters()" aria-label="Reset column filters">Reset</button></th></tr>
           </thead>
           <tbody>
+            @if (loading()) {
+              @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+                <tr class="skeleton-row" aria-hidden="true">
+                  @for (column of [1, 2, 3, 4, 5]; track column) {
+                    <td><span></span></td>
+                  }
+                </tr>
+              }
+            } @else {
             @for (e of pageAllocations(); track e.id) {
               <tr>
                 <td>{{ studentName(e.student_id) }}</td>
@@ -245,7 +248,7 @@
                   <div class="row-actions">
                     <button
                       type="button"
-                      class="icon-action danger"
+                      class="app-button icon danger"
                       title="Remove allocation"
                       [attr.aria-label]="'Remove allocation for ' + studentName(e.student_id)"
                       [disabled]="saving()"
@@ -259,11 +262,12 @@
             } @empty {
               <tr>
                 <td colspan="5">
-                  @if (!loading() && !error()) {
+                  @if (!error()) {
                     <app-async-state kind="empty" title="No matching allocations." />
                   }
                 </td>
               </tr>
+            }
             }
           </tbody>
         </table>
@@ -296,6 +300,15 @@
             <tr class="column-filters"><th></th><th><label><input type="search" aria-label="Filter batch" placeholder="Filter batch" [(ngModel)]="columnFilters.batch" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter schedule" placeholder="Filter schedule" [(ngModel)]="columnFilters.schedule" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter coach" placeholder="Filter coach" [(ngModel)]="columnFilters.coach" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="number" aria-label="Filter capacity" placeholder="Filter capacity" [(ngModel)]="columnFilters.capacity" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="search" aria-label="Filter status" placeholder="Filter status" [(ngModel)]="columnFilters.columnStatus" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><label><input type="number" aria-label="Filter monthly fee" placeholder="Filter fee" [(ngModel)]="columnFilters.fee" (ngModelChange)="scheduleColumnFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label></th><th><button type="button" (click)="resetColumnFilters()" aria-label="Reset column filters">Reset</button></th></tr>
           </thead>
           <tbody>
+            @if (loading()) {
+              @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+                <tr class="skeleton-row" aria-hidden="true">
+                  @for (column of [1, 2, 3, 4, 5, 6, 7, 8]; track column) {
+                    <td><span></span></td>
+                  }
+                </tr>
+              }
+            } @else {
             @for (b of pageRows(); track b.id; let index = $index) {
               <tr>
                 <td class="row-number">{{ (page() - 1) * pageSize() + index + 1 }}</td>
@@ -340,7 +353,7 @@
                             type="button"
                             [disabled]="saving()"
                             (click)="unassign(b.id, c.coach_id)"
-                            class="unassign-action"
+                            class="app-button icon"
                             title="Unassign coach"
                             [attr.aria-label]="
                               'Unassign ' + coachName(c.coach_id) + ' from ' + b.name
@@ -366,7 +379,17 @@
                   <div class="row-actions">
                     <button
                       type="button"
-                      class="icon-action"
+                      class="app-button icon"
+                      (click)="openRoster(b)"
+                      [disabled]="saving()"
+                      [attr.aria-label]="'Print roster for ' + b.name"
+                      title="Print roster"
+                    >
+                      <i class="pi pi-print" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="app-button icon"
                       (click)="edit(b)"
                       [disabled]="saving()"
                       [attr.aria-label]="'Edit ' + b.name"
@@ -377,7 +400,7 @@
                     @if (auth.role() === 'admin') {
                       <button
                         type="button"
-                        class="icon-action danger"
+                        class="app-button icon danger"
                         (click)="remove(b)"
                         [disabled]="saving()"
                         [attr.aria-label]="'Delete ' + b.name"
@@ -392,11 +415,12 @@
             } @empty {
               <tr>
                 <td colspan="8">
-                  @if (!loading() && !error()) {
+                  @if (!error()) {
                     <app-async-state kind="empty" title="No matching batches." />
                   }
                 </td>
               </tr>
+            }
             }
           </tbody>
         </table></div
@@ -437,14 +461,14 @@
                 <td>
                   <div class="row-actions">
                     <button
-                      class="compact-action"
+                      class="app-button small secondary"
                       type="button"
                       [disabled]="saving()"
                       (click)="waitAction(w.batch_id, w.student_id, 'promote')"
                     >
                       Enroll today</button
                     ><button
-                      class="compact-action danger"
+                      class="app-button small danger"
                       type="button"
                       [disabled]="saving()"
                       (click)="waitAction(w.batch_id, w.student_id, 'remove')"
@@ -472,5 +496,63 @@
       </div>
         <app-pagination [total]="waitingTotal()" [page]="waitingPage()" [pageSize]="waitingPageSize()" itemLabel="waiting students" (pageChange)="changeWaitingPage($event)" (pageSizeChange)="changeWaitingSize($event)" />
     </section>
+  }
+  @if (rosterOpen()) {
+    <div class="roster-dialog-backdrop">
+      <section class="roster-dialog" appModalFocus [modalBusy]="rosterLoading()"
+        (modalDismiss)="closeRoster()" aria-labelledby="roster-dialog-title">
+        <header>
+          <div>
+            <p class="roster-kicker">Batch roster</p>
+            <h2 id="roster-dialog-title">{{ rosterBatch()?.name }} · {{ rosterBatch()?.code }}</h2>
+          </div>
+          <button type="button" (click)="closeRoster()" [disabled]="rosterLoading()"
+            aria-label="Close roster dialog" title="Close">
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="roster-options">
+          <p>
+            Prints every active enrollment with guardian contacts, pickup authorisation and the
+            batch schedule. Student codes and dates come from live records.
+          </p>
+          <label class="roster-medical-toggle">
+            <input type="checkbox" [checked]="rosterIncludeMedical()" (change)="onRosterMedicalChange($event)"
+              [disabled]="!canPrintMedical() || rosterLoading()" />
+            <span>Include medical notes</span>
+          </label>
+          @if (!canPrintMedical()) {
+            <small class="roster-restricted">Your role cannot read student medical records, so this copy never includes them.</small>
+          } @else {
+            <small class="roster-hint">Medical notes are sensitive; share this roster only with authorised staff.</small>
+          }
+        </div>
+
+        @if (rosterError()) {
+          <div class="roster-error" role="alert">
+            <p>{{ rosterError() }}</p>
+          </div>
+        }
+
+        <footer>
+          <button type="button" [disabled]="rosterLoading()" (click)="closeRoster()">Cancel</button>
+          <button type="button" [disabled]="rosterLoading()" (click)="printRoster('preview')">
+            <i class="pi pi-eye" aria-hidden="true"></i>
+            {{ rosterLoading() ? 'Preparing…' : 'Preview' }}
+          </button>
+          <button type="button" [disabled]="rosterLoading()" (click)="printRoster('pdf')">
+            <i class="pi pi-file-pdf" aria-hidden="true"></i>
+            {{ rosterLoading() ? 'Preparing…' : 'Download PDF' }}
+          </button>
+          <button type="button" class="primary" [disabled]="rosterLoading()" (click)="printRoster('print')">
+            @if (rosterLoading()) {
+              <span class="spinner" aria-hidden="true"></span>
+            }
+            <i class="pi pi-print" aria-hidden="true"></i> Print roster
+          </button>
+        </footer>
+      </section>
+    </div>
   }
 </div>

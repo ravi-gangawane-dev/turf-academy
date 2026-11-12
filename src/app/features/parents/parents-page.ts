@@ -1,8 +1,3 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
-import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { AsyncState } from '../../shared/async-state/async-state';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,13 +9,19 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Parent } from '../../core/models/academy.model';
-import { DataTable } from '../../shared/data-table/data-table';
-import { PageHero } from '../../shared/page-hero/page-hero';
 import { ParentsService } from '../../core/supabase/domain-services';
-import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { ToastService } from '../../shared/toast/toast.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
+import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-parents-page',
@@ -31,7 +32,7 @@ import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 })
 export class ParentsPage implements OnInit {
   private requestSequence = 0;
-  protected readonly columns=createColumnFilters(()=>this.applyDirectoryFilters(),()=>{++this.requestSequence;this.page.set(1);});
+  protected readonly columns = createColumnFilters(() => this.applyDirectoryFilters(), () => { ++this.requestSequence; this.page.set(1); });
   private readonly router = inject(Router);
   private readonly parentsApi = inject(ParentsService);
   private readonly toast = inject(ToastService);
@@ -43,14 +44,12 @@ export class ParentsPage implements OnInit {
     })[]
   >([]);
   protected readonly loadingParents = signal(true);
-  protected readonly exporting = signal(false);
   protected readonly message = signal('');
   protected readonly error = signal('');
+  // Load failures keep their inline state; only transient successes toast.
   private readonly toastFeedback = effect(() => {
-    const error = this.error();
     const message = this.message();
-    if (error) this.toast.show(error, 'error');
-    else if (message) this.toast.show(message, 'success');
+    if (message) this.toast.success(message);
   });
   protected readonly query = signal('');
   protected readonly relationFilter = signal('all');
@@ -111,36 +110,34 @@ export class ParentsPage implements OnInit {
   protected refresh(): void {
     void this.loadParents().then(() => this.message.set('Parent records refreshed.'));
   }
-  protected async exportParents(): Promise<void> {
-    if (this.exporting()) return;
-    this.exporting.set(true);
-    this.error.set('');
-    const filters = {columns:this.columns.params(),
+  protected readonly exportColumns: readonly ExportColumn[] = [
+    { key: 'name', label: 'Parent name' },
+    { key: 'relation', label: 'Relation' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'email', label: 'Email' },
+    { key: 'children', label: 'Children' },
+    { key: 'status', label: 'Status' },
+    { key: 'joinedOn', label: 'Joined on' },
+  ];
+  protected readonly exportReference = 'Parent directory';
+  /** Reads the full filtered directory, not just the rendered page. */
+  protected readonly exportParents = async (): Promise<readonly ExportRow[]> => {
+    const rows = await this.parentsApi.directoryExport({
+      columns: this.columns.params(),
       search: this.query(),
       relation: this.relationFilter(),
       status: this.statusFilter(),
-    };
-    try {
-      const rows = await this.parentsApi.directoryExport(filters);
-      this.downloadCsv('parents.csv', [
-        ['Name', 'Relation', 'Phone', 'Email', 'Children', 'Status'],
-        ...rows.map((row) => [
-          row.full_name,
-          row.relation,
-          row.phone,
-          row.email ?? '',
-          row.student_parents
-            .flatMap((link) => (link.student ? [link.student.full_name] : []))
-            .join('; '),
-          row.status,
-        ]),
-      ]);
-    } catch {
-      this.error.set('Parent export could not be completed. Please try again.');
-    } finally {
-      this.exporting.set(false);
-    }
-  }
+    });
+    return rows.map((row) => ({
+      name: row.full_name,
+      relation: row.relation ?? 'Guardian',
+      phone: row.phone,
+      email: row.email ?? '—',
+      children: row.student_parents.flatMap((link) => (link.student ? [link.student.full_name] : [])).length,
+      status: row.status,
+      joinedOn: row.created_at?.slice(0, 10) || '—',
+    }));
+  };
   protected changePage(value: number): void {
     this.page.set(Math.min(this.pageCount(), Math.max(1, value)));
     void this.loadParents(false);
@@ -205,7 +202,8 @@ export class ParentsPage implements OnInit {
     this.error.set('');
     try {
       const [directory, counts] = await Promise.all([
-        this.parentsApi.directoryPage(this.page(), this.pageSize(), {columns:this.columns.params(),
+        this.parentsApi.directoryPage(this.page(), this.pageSize(), {
+          columns: this.columns.params(),
           search: this.query(),
           relation: this.relationFilter(),
           status: this.statusFilter(),
@@ -256,17 +254,5 @@ export class ParentsPage implements OnInit {
     } finally {
       if (request === this.requestSequence) this.loadingParents.set(false);
     }
-  }
-  private downloadCsv(filename: string, rows: readonly (readonly unknown[])[]): void {
-    const csv = rows
-      .map((line) => line.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
-      .join('\n');
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(url);
-    this.message.set('Download created successfully.');
   }
 }

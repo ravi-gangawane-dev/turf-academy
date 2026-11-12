@@ -1,0 +1,82 @@
+@media screen {
+  app-print-document-host {
+    display: none !important;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 14mm;
+}
+
+/* Named page sizes keep every document on the paper the academy expects. */
+@page invoice-page {
+  size: A4 portrait;
+  margin: 14mm;
+}
+
+@page receipt-page {
+  size: A5 portrait;
+  margin: 8mm;
+}
+
+@page statement-page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@page refund-page {
+  size: A5 portrait;
+  margin: 8mm;
+}
+
+@page attendance-page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@page attendance-matrix-page {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+@page enrollment-page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@page roster-page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+/* CR80 cards are positioned by the template, so the page itself has no margin. */
+@page id-card-page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Exported directories and reports, paginated explicitly for visible footers. */
+@page report-page {
+  size: A4 portrait;
+  margin: 14mm;
+}
+
+@media print {
+  body.printing-document {
+    background: #fff !important;
+  }
+
+  /* Only the active print document is printed, never the surrounding application. */
+  body.printing-document app-root > :not(app-print-document-host) {
+    display: none !important;
+  }
+
+  body.printing-document app-print-document-host {
+    display: block !important;
+  }
+
+  body.printing-document app-print-document-host * {
+    visibility: visible !important;
+  }
+}

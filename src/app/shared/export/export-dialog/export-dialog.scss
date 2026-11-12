@@ -1,0 +1,225 @@
+:host { display: contents; }
+
+.export-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(7 25 47 / 54%);
+}
+
+.export-dialog {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+}
+
+.export-dialog > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8e5;
+}
+
+.export-dialog h2 {
+  margin: 2px 0 0;
+  font-size: 20px;
+}
+
+.export-kicker {
+  margin: 0;
+  color: #0f6b3f;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.export-subtitle {
+  margin: 6px 0 0;
+  color: #5f6f66;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.export-close {
+  padding: 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: #5f6f66;
+  cursor: pointer;
+}
+
+.export-close:hover {
+  background: #f1f5f3;
+}
+
+.export-group {
+  margin: 0;
+  padding: 16px 22px;
+  border: 0;
+  border-bottom: 1px solid #eef2f0;
+}
+
+.export-group legend {
+  padding: 0;
+  color: #15231c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.export-options {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #dce5e0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.export-option--active {
+  border-color: #0f6b3f;
+  background: #f2f9f5;
+  box-shadow: inset 0 0 0 1px #0f6b3f;
+}
+
+.export-option input {
+  margin: 0;
+  accent-color: #0f6b3f;
+}
+
+.export-option span {
+  display: grid;
+  gap: 2px;
+  flex: 1 1 auto;
+}
+
+.export-option strong {
+  font-size: 13.5px;
+}
+
+.export-option small {
+  color: #5f6f66;
+  font-size: 11.5px;
+}
+
+.export-option b {
+  min-width: 34px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e7f1eb;
+  color: #0f6b3f;
+  font-size: 11.5px;
+  text-align: center;
+}
+
+.export-formats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.export-formats button {
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid #dce5e0;
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.export-formats button strong {
+  font-size: 13px;
+}
+
+.export-formats button small {
+  color: #5f6f66;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.export-formats button.export-format--active {
+  border-color: #0f6b3f;
+  background: #f2f9f5;
+  box-shadow: inset 0 0 0 1px #0f6b3f;
+}
+
+.export-error {
+  margin: 0;
+  padding: 12px 22px;
+  color: #9b1c1c;
+  font-size: 12.5px;
+}
+
+.export-dialog > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 22px;
+}
+
+.export-dialog > footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d3ddd8;
+  border-radius: 8px;
+  background: #fff;
+  color: #15231c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-dialog > footer button.primary {
+  border-color: #0f6b3f;
+  background: #0f6b3f;
+  color: #fff;
+}
+
+.export-dialog > footer button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgb(255 255 255 / 45%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: export-spin 0.8s linear infinite;
+}
+
+@keyframes export-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .export-formats {
+    grid-template-columns: 1fr;
+  }
+}

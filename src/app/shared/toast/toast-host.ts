@@ -1,2 +1,37 @@
-import { ChangeDetectionStrategy,Component,inject } from '@angular/core';import{ToastService}from'./toast.service';
-@Component({selector:'app-toast-host',template:'<div class="toasts" aria-live="polite">@for(item of toast.messages();track item.id){<article [class]="item.kind"><i class="pi" [class.pi-check-circle]="item.kind===\'success\'" [class.pi-exclamation-circle]="item.kind===\'error\'"></i><span>{{item.text}}</span><button aria-label="Dismiss" (click)="toast.dismiss(item.id)"><i class="pi pi-times"></i></button></article>}</div>',styles:['.toasts{position:fixed;right:1rem;top:1rem;z-index:1200;display:grid;gap:.6rem;width:min(380px,calc(100vw - 2rem))}article{display:flex;align-items:center;gap:.6rem;background:#fff;border-left:4px solid #3d78a8;border-radius:9px;box-shadow:0 8px 30px #0003;padding:.8rem}.success{border-color:#277d47}.error{border-color:#c33}.warning{border-color:#d49720}span{flex:1}button{border:0;background:transparent}'],changeDetection:ChangeDetectionStrategy.OnPush})export class ToastHost{protected readonly toast=inject(ToastService);}
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ToastService } from './toast.service';
+
+/**
+ * Rendered once in the application shell so every route can raise toasts.
+ * The stack sits in the top-right corner and never traps focus or blocks the
+ * page: toasts are announced politely and can be dismissed or paused on hover.
+ */
+@Component({
+  selector: 'app-toast-host',
+  templateUrl: './toast-host.html',
+  styleUrl: './toast-host.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ToastHost {
+  protected readonly toast = inject(ToastService);
+
+  protected handleToastEvent(event: Event, action: 'pause' | 'resume' | 'dismiss'): void {
+    // Resolve the currently rendered message, including when the list replaces
+    // an earlier toast before its event handler runs.
+    const id = (event.currentTarget as HTMLElement).closest<HTMLElement>('[data-toast-id]')?.dataset['toastId'];
+    if (id) this.toast[action](id);
+  }
+
+  protected icon(kind: string): string {
+    switch (kind) {
+      case 'success':
+        return 'pi-check-circle';
+      case 'error':
+        return 'pi-exclamation-circle';
+      case 'warning':
+        return 'pi-exclamation-triangle';
+      default:
+        return 'pi-info-circle';
+    }
+  }
+}

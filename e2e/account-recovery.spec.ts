@@ -21,9 +21,9 @@ test('operator-assisted recovery: reset, sign-in, old password and code rejectio
     expect(!created.error && !!created.data.user).toBe(true);
     userId = created.data.user!.id;
     await page.goto('/auth/login');
-    await page.getByLabel('Email', { exact: true }).fill(email);
+    await page.getByLabel('Email Address', { exact: true }).fill(email);
     await page.getByLabel('Password', { exact: true }).fill('Incorrect!Password9');
-    await page.locator('button.login-button').click();
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page).toHaveURL(/\/auth\/login$/);
     const generated = await admin.auth.admin.generateLink({ type: 'recovery', email });
@@ -51,9 +51,9 @@ test('operator-assisted recovery: reset, sign-in, old password and code rejectio
     const replay = await client().auth.verifyOtp({ email, token: code, type: 'recovery' });
     expect(!!replay.error && !replay.data.session).toBe(true);
     await page.goto('/auth/login');
-    await page.getByLabel('Email', { exact: true }).fill(email);
+    await page.getByLabel('Email Address', { exact: true }).fill(email);
     await page.getByLabel('Password', { exact: true }).fill(newPassword);
-    await page.locator('button.login-button').click();
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
     await expect(page).toHaveURL(/\/parent\//);
     console.log('PASS: recovery UI, password reset, logout, new-password UI login, old-password rejection, code replay rejection.');
   } finally {

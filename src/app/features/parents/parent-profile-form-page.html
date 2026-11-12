@@ -1,5 +1,5 @@
 <div class="profile-form-page">
-  <app-page-hero title="Complete Your Profile" subtitle="Add the missing information to keep your family account complete." [breadcrumbs]="[{label: 'Dashboard', route: '/parent/dashboard'}, {label: 'Complete Your Profile'}]" ><div hero-actions><button type="button" (click)="cancel()"><i class="pi pi-arrow-left"></i>Parent Profile</button></div></app-page-hero>
+  <app-page-hero title="Complete Your Profile" subtitle="Add the missing information to keep your family account complete." [breadcrumbs]="[{label: 'Dashboard', icon: 'pi-home', route: '/parent/dashboard'}, {label: 'Complete Your Profile'}]" ><div hero-actions><button type="button" (click)="cancel()"><i class="pi pi-arrow-left"></i>Parent Profile</button></div></app-page-hero>
   @if (loading()) {
     <section class="state"><i class="pi pi-spin pi-spinner"></i>Loading profile...</section>
   } @else {

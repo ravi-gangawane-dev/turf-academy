@@ -1,0 +1,141 @@
+<section class="app-list-page audit-log-page">
+  <app-page-hero title="Audit log" subtitle="Recorded changes and the account that made each change." [breadcrumbs]="[
+        { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
+        { label: 'Academy Settings', icon: 'pi-cog', route: '/settings' },
+        { label: 'Audit log' },
+      ]" />
+  <nav class="settings-tabs" aria-label="Settings sections">
+    <a routerLink="/settings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">All Settings</a>
+    <a routerLink="/settings/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Profile</a>
+    <a routerLink="/settings/operations" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Operations</a>
+    <a routerLink="/settings/attendance" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Attendance</a>
+    <a routerLink="/settings/notifications" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Notifications</a>
+    <a routerLink="/settings/users" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Users &amp; Roles</a>
+    <a routerLink="/settings/audit-logs" class="active" aria-current="page">Audit Log</a>
+    <a routerLink="/settings/tools" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      ariaCurrentWhenActive="page">Tools &amp; Data</a>
+  </nav>
+  @if (error()) {
+  <app-async-state kind="error" title="Audit log request failed" [message]="error()" actionLabel="Retry"
+    (action)="load(page())" />
+  }
+  @if (loading()) {
+  <app-async-state title="Loading audit log…" />
+  }
+  <section class="app-card audit-results" aria-label="Audit events">
+    <div class="table-wrap">
+      <app-table-tools title="Audit log" [table]="exportTable1" [total]="total()">
+        <button type="button" (click)="resetFilters()">Reset filters</button>
+      </app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th scope="col" [attr.aria-sort]="
+                  sortBy === 'occurred_at'
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                ">
+              <app-sortable-header sortKey="occurred_at" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="sortColumn('occurred_at')">Date</app-sortable-header>
+            </th>
+            <th scope="col" [attr.aria-sort]="
+                  sortBy === 'action'
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                ">
+              <app-sortable-header sortKey="action" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="sortColumn('action')">Action</app-sortable-header>
+            </th>
+            <th scope="col" [attr.aria-sort]="
+                  sortBy === 'table_name'
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                ">
+              <app-sortable-header sortKey="table_name" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="sortColumn('table_name')">Table</app-sortable-header>
+            </th>
+            <th scope="col" [attr.aria-sort]="
+                  sortBy === 'record_id'
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                ">
+              <app-sortable-header sortKey="record_id" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="sortColumn('record_id')">Record</app-sortable-header>
+            </th>
+            <th scope="col" [attr.aria-sort]="
+                  sortBy === 'actor_id'
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                ">
+              <app-sortable-header sortKey="actor_id" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="sortColumn('actor_id')">Account</app-sortable-header>
+            </th>
+          </tr>
+          <tr class="column-filters">
+            <th>
+              <label><input type="date" aria-label="Filter by date" placeholder="Filter date" [(ngModel)]="filters.date"
+                  (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter" aria-hidden="true"></i></label>
+            </th>
+            <th>
+              <label><input type="search" aria-label="Filter by action" placeholder="Filter action"
+                  [(ngModel)]="filters.action" (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter"
+                  aria-hidden="true"></i></label>
+            </th>
+            <th>
+              <label><input type="search" aria-label="Filter by table" placeholder="Filter table"
+                  [(ngModel)]="filters.table" (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter"
+                  aria-hidden="true"></i></label>
+            </th>
+            <th>
+              <label><input type="search" aria-label="Filter by record" placeholder="Filter record"
+                  [(ngModel)]="filters.record" (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter"
+                  aria-hidden="true"></i></label>
+            </th>
+            <th>
+              <label><input type="search" aria-label="Filter by account" placeholder="Filter account"
+                  [(ngModel)]="filters.account" (ngModelChange)="scheduleFilters()" /><i class="pi pi-filter"
+                  aria-hidden="true"></i></label>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id) {
+          <tr>
+            <td>{{ row.occurred_at | date: 'medium' }}</td>
+            <td>{{ row.action }}</td>
+            <td>{{ row.table_name }}</td>
+            <td>{{ row.record_id }}</td>
+            <td>{{ row.actor_id || 'System' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5">
+              @if (!loading() && !error()) {
+              <app-async-state kind="empty" title="No matching audit events." />
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="events"
+      (pageChange)="load($event)" (pageSizeChange)="setPageSize($event)" />
+  </section>
+</section>

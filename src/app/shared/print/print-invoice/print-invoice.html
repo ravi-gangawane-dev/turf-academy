@@ -1,0 +1,141 @@
+<article class="print-sheet print-sheet--invoice" [attr.aria-label]="'Fee invoice ' + invoice().invoiceNumber">
+  <header class="letterhead">
+    <img
+      class="brand-logo"
+      [src]="invoice().brand.logoUrl"
+      [alt]="invoice().brand.name + ' logo'"
+    />
+    <div class="brand-copy">
+      <p class="brand-kicker">{{ invoice().brand.name }}</p>
+      <h1>Fee Invoice</h1>
+      @if (hasContact()) {
+        <p class="brand-contact">
+          @if (invoice().brand.address) { <span>{{ invoice().brand.address }}</span> }
+          @if (invoice().brand.phone) { <span>{{ invoice().brand.phone }}</span> }
+          @if (invoice().brand.email) { <span>{{ invoice().brand.email }}</span> }
+        </p>
+      }
+    </div>
+    <div class="doc-label">
+      <strong>{{ invoice().invoiceNumber }}</strong>
+      <span>Issued {{ invoice().issuedAt | date: 'dd MMM yyyy' : invoice().brand.timezone }}</span>
+      <span>Due {{ invoice().dueDate | date: 'dd MMM yyyy' : invoice().brand.timezone }}</span>
+      <span class="status" [class]="'status status--' + statusTone()">{{ statusLabel() }}</span>
+    </div>
+  </header>
+
+  <section class="doc-grid">
+    <div class="box">
+      <h2>Billed to</h2>
+      <strong>{{ invoice().studentName }}</strong>
+      @if (invoice().studentCode) { <small>{{ invoice().studentCode }}</small> }
+      @if (invoice().batchName) { <small>Batch: {{ invoice().batchName }}</small> }
+    </div>
+    <div class="box">
+      <h2>Invoice details</h2>
+      <dl class="kv">
+        <dt>Invoice no.</dt>
+        <dd>{{ invoice().invoiceNumber }}</dd>
+        <dt>Fee period</dt>
+        <dd>{{ invoice().period }}</dd>
+        @if (invoice().enrollmentReference) {
+          <dt>Enrollment</dt>
+          <dd>{{ invoice().enrollmentReference }}</dd>
+        }
+        <dt>Currency</dt>
+        <dd>{{ invoice().brand.currencyCode }}</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Charges</h2>
+      <span>{{ invoice().items.length }} line{{ invoice().items.length === 1 ? '' : 's' }}</span>
+    </div>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Reference</th>
+          <th class="num">Qty</th>
+          <th class="num">Rate</th>
+          <th class="num">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of invoice().items; track $index) {
+          <tr>
+            <td>{{ item.description }}</td>
+            <td>{{ item.reference || '—' }}</td>
+            <td class="num">{{ item.quantity ?? 1 }}</td>
+            <td class="num">{{ money(item.rate ?? item.amount) }}</td>
+            <td class="num">{{ money(item.amount) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="totals">
+    <table>
+      <tbody>
+        <tr>
+          <td>Subtotal</td>
+          <td>{{ money(invoice().totals.subtotal) }}</td>
+        </tr>
+        @if (hasDiscount()) {
+          <tr>
+            <td>Discounts applied</td>
+            <td>−{{ money(invoice().totals.discount) }}</td>
+          </tr>
+        }
+        @if (hasLateFee()) {
+          <tr>
+            <td>Late fee</td>
+            <td>{{ money(invoice().totals.lateFee) }}</td>
+          </tr>
+        }
+        <tr>
+          <td>Invoice total</td>
+          <td>{{ money(invoice().totals.total) }}</td>
+        </tr>
+        @if (hasPaid()) {
+          <tr>
+            <td>Amount paid</td>
+            <td>−{{ money(invoice().totals.paid) }}</td>
+          </tr>
+        }
+        <tr class="grand">
+          <td>Balance due</td>
+          <td>{{ money(invoice().totals.balance) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="doc-notes">
+    <div class="box">
+      <h2>Payment instructions</h2>
+      <ul>
+        <li>Pay at the academy reception or by UPI to the academy collection account.</li>
+        <li>Quote invoice number <strong>{{ invoice().invoiceNumber }}</strong> with every payment.</li>
+        <li>Fees are recorded against this student’s enrollment and appear in the parent portal.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h2>Notes</h2>
+      <p>
+        {{ invoice().notes || 'Fees cover scheduled coaching sessions for the period shown. Absences are governed by the academy attendance policy. This invoice is computer generated and valid without a physical signature.' }}
+      </p>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <span>{{ invoice().brand.name }} · {{ invoice().invoiceNumber }}</span>
+    @if (invoice().brand.email) {
+      <span>Questions: {{ invoice().brand.email }}</span>
+    }
+    <span>Computer generated invoice</span>
+  </footer>
+</article>

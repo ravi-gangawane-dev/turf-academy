@@ -218,9 +218,6 @@
           @if (error()) {
           <small class="error-text">{{ error() }}</small>
           }
-          @if (message()) {
-          <small class="success-text">{{ message() }}</small>
-          }
         </div>
       </div>
       }
@@ -289,8 +286,3 @@
 </div>
 }
 
-@if (message()) {
-<div class="success-state" role="status">
-  <p>{{ message() }}</p>
-</div>
-}

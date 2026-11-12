@@ -1,13 +1,3 @@
-import { FeeViewNavigation } from './fee-view-navigation';
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { AsyncState } from '../../shared/async-state/async-state';
-import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
-import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
-import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,17 +7,36 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PaymentMode } from '../../core/models/academy.model';
-import { DataTable } from '../../shared/data-table/data-table';
-import { AcademySettingsService, EnrollmentsService, FeesService, PaymentsService } from '../../core/supabase/domain-services';
-import { createDocumentPdf, downloadDocument } from '../payments/document-pdf';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
-import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { ToastService } from '../../shared/toast/toast.service';
+import { EnrollmentsService, FeesService, FeeStatementRecord, PaymentsService } from '../../core/supabase/domain-services';
+import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { createColumnFilters } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { FeeChargeTable, FeeChargeTableRow } from '../../shared/fee-charge-table/fee-charge-table';
+import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { PaymentRecordDialog, PaymentRecordDialogValue } from '../../shared/payment-record-dialog/payment-record-dialog';
+import {
+  PrintDestination,
+  PrintInvoiceDocument,
+  PrintStatementDocument,
+} from '../../shared/print/print-document.models';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
-import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { ToastService } from '../../shared/toast/toast.service';
+import { FeeViewNavigation } from './fee-view-navigation';
+
+function statementPeriodValidator(control: AbstractControl): ValidationErrors | null {
+  const from = String(control.get('fromDate')?.value ?? '');
+  const to = String(control.get('toDate')?.value ?? '');
+  return from && to && from > to ? { period: true } : null;
+}
 
 interface ChargeListRow {
   readonly id: string;
@@ -39,6 +48,8 @@ interface ChargeListRow {
   readonly planName: string;
   readonly period: string;
   readonly amountPaise: number;
+  readonly discountPaise?: number;
+  readonly lateFeePaise?: number;
   readonly paidPaise: number;
   readonly balancePaise: number;
   readonly dueDate: string;
@@ -47,43 +58,192 @@ interface ChargeListRow {
 
 @Component({
   selector: 'app-fees-page',
-  imports: [FeeViewNavigation, TableTools, ColumnFilter, PageHero, AsyncState,
+  imports: [FeeViewNavigation, PageHero, AsyncState,
     ModalFocus,
     AcademyMoneyPipe,
-    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
     DataTable,
-    StatusBadge,
     SummaryMetricCard,
-    SortableHeader,
+    PaymentRecordDialog,
+    FeeChargeTable,
   ],
   templateUrl: './fees-page.html',
   styleUrl: './fees-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeesPage implements OnInit {
-  protected readonly columns=createColumnFilters(()=>this.resetPage());
+  protected readonly columns = createColumnFilters(() => this.resetPage());
+  protected readonly sharedChargeRows = computed<readonly FeeChargeTableRow[]>(() => this.pagedRows().map(row => ({
+    id: row.id, studentId: row.studentId, studentName: row.studentName, batchName: row.batchName,
+    enrollmentId: row.enrollmentId,
+    planName: row.planName, period: row.period, amountPaise: row.amountPaise, discountPaise: row.discountPaise ?? 0,
+    lateFeePaise: row.lateFeePaise ?? 0, paidPaise: row.paidPaise, balancePaise: row.balancePaise,
+    dueDate: row.dueDate, status: row.status,
+  })));
   protected readonly preferences = inject(AcademyPreferencesService);
-  private readonly settings = inject(AcademySettingsService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly printDocuments = inject(PrintDocumentService);
   protected readonly invoiceLoading = signal('');
-  protected async downloadInvoice(id:string):Promise<void>{
-    if(this.invoiceLoading())return;this.invoiceLoading.set(id);this.error.set('');
-    try{
-      const [invoice,academy]=await Promise.all([this.feesApi.invoice(id),this.settings.get()]);
-      if(!invoice)throw new Error('Invoice not found.');
-      const student=Array.isArray(invoice.student)?invoice.student[0]:invoice.student;
-      const money=(n:unknown)=>new Intl.NumberFormat('en-IN',{style:'currency',currency:academy.currency_code}).format(Number(n));
-      const reference='INV-'+String(invoice.id).toUpperCase();
-      const pdf=await createDocumentPdf([academy.academy_name,'Monthly fee invoice',reference,
-        'Student: '+(student?.full_name??''),'Student code: '+(student?.student_code??''),
-        'Period: '+String(invoice.charge_month).slice(0,7),'Due date: '+invoice.due_date,
-        'Base fee: '+money(invoice.base_amount),'Discount: '+money(invoice.discount_amount),'Late fee: '+money(invoice.late_fee_amount),
-        'Total: '+money(invoice.final_amount),'Amount paid: '+money(invoice.paid_amount),'Balance due: '+money(invoice.balance_amount),
-        'Status: '+invoice.status,academy.contact_email??'',academy.contact_phone??'',academy.address??'']);
-      downloadDocument(pdf,reference+'.pdf');
-    }catch(e){this.error.set(e instanceof Error?e.message:'Invoice could not be downloaded.');}finally{this.invoiceLoading.set('');}
+  protected printInvoice(id: string): Promise<void> {
+    return this.renderInvoice(id, 'print');
+  }
+  protected downloadInvoice(id: string): Promise<void> {
+    return this.renderInvoice(id, 'pdf');
+  }
+  private async renderInvoice(id: string, destination: 'print' | 'pdf'): Promise<void> {
+    if (this.invoiceLoading()) return;
+    this.invoiceLoading.set(id);
+    this.error.set('');
+    try {
+      const invoice = await this.feesApi.invoice(id);
+      if (!invoice) throw new Error('Invoice not found.');
+      await this.printDocuments.printInvoice(this.invoiceDocument(invoice), destination);
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'Invoice could not be prepared.');
+    } finally {
+      this.invoiceLoading.set('');
+    }
+  }
+  private invoiceDocument(invoice: Record<string, unknown>): Omit<PrintInvoiceDocument, 'kind' | 'brand'> {
+    const student = this.first(invoice['student']);
+    const enrollment = this.first(invoice['enrollment']);
+    const batch = this.first(enrollment?.['batch']);
+    const base = Number(invoice['base_amount'] ?? 0);
+    const discount = Number(invoice['discount_amount'] ?? 0);
+    const lateFee = Number(invoice['late_fee_amount'] ?? 0);
+    const reference = 'INV-' + String(invoice['id']).toUpperCase();
+    const enrollmentReference = String(invoice['enrollment_id'] ?? '');
+    const period = this.periodLabel(invoice['charge_month']);
+    const batchName = String(batch?.['name'] ?? '');
+    return {
+      invoiceNumber: reference,
+      issuedAt: new Date().toISOString(),
+      dueDate: String(invoice['due_date'] ?? ''),
+      studentName: String(student?.['full_name'] ?? 'Student'),
+      studentCode: String(student?.['student_code'] ?? ''),
+      batchName,
+      enrollmentReference,
+      period,
+      status: String(invoice['status'] ?? ''),
+      items: [
+        {
+          description: `Monthly coaching fee${batchName ? ` — ${batchName}` : ''}`,
+          reference: enrollmentReference,
+          quantity: 1,
+          rate: base,
+          amount: base,
+        },
+        ...(lateFee > 0
+          ? [{
+            description: 'Late payment fee',
+            reference: period,
+            quantity: 1,
+            rate: lateFee,
+            amount: lateFee,
+          }]
+          : []),
+      ],
+      totals: {
+        subtotal: base,
+        discount,
+        lateFee,
+        total: Number(invoice['final_amount'] ?? 0),
+        paid: Number(invoice['paid_amount'] ?? 0),
+        balance: Number(invoice['balance_amount'] ?? 0),
+      },
+    };
+  }
+  private first(value: unknown): Record<string, unknown> | null {
+    if (Array.isArray(value)) return (value[0] as Record<string, unknown>) ?? null;
+    return value && typeof value === 'object' ? (value as Record<string, unknown>) : null;
+  }
+  private periodLabel(value: unknown): string {
+    const month = String(value ?? '').slice(0, 7);
+    if (!month) return '—';
+    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString('en-GB', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+  }
+  protected openStatementDialog(row: ChargeListRow): void {
+    this.error.set('');
+    this.statementStudent.set(row);
+    this.statementForm.reset({
+      fromDate: this.financialYearStart(),
+      toDate: this.preferences.today(),
+    });
+    this.statementDialogOpen.set(true);
+  }
+
+  protected openStatementFromTable(row: FeeChargeTableRow): void {
+    const source = this.pagedRows().find(item => item.id === row.id);
+    if (source) this.openStatementDialog(source);
+  }
+
+  protected openStudentFromTable(row: FeeChargeTableRow): void {
+    this.router.navigate(['/students', row.studentId]);
+  }
+
+  protected printInvoiceFromTable(row: FeeChargeTableRow): void {
+    void this.printInvoice(row.id);
+  }
+  protected async printStatement(destination: PrintDestination): Promise<void> {
+    if (this.statementLoading()) return;
+    if (this.statementForm.invalid) {
+      this.statementForm.markAllAsTouched();
+      return;
+    }
+    const student = this.statementStudent();
+    if (!student) return;
+    const { fromDate, toDate } = this.statementForm.getRawValue();
+    this.statementLoading.set(true);
+    this.error.set('');
+    try {
+      const statement = await this.feesApi.statement(
+        student.studentId,
+        fromDate,
+        toDate,
+        this.preferences.value().timezone,
+      );
+      this.statementDialogOpen.set(false);
+      await this.printDocuments.printStatement(this.statementDocument(statement), destination);
+    } catch (error) {
+      this.error.set(
+        error instanceof Error ? error.message : 'Fee statement could not be prepared.',
+      );
+    } finally {
+      this.statementLoading.set(false);
+    }
+  }
+  private statementDocument(
+    statement: FeeStatementRecord,
+  ): Omit<PrintStatementDocument, 'kind' | 'brand'> {
+    return {
+      statementNumber: statement.statementNumber,
+      issuedAt: new Date().toISOString(),
+      fromDate: statement.fromDate,
+      toDate: statement.toDate,
+      studentName: statement.studentName,
+      studentCode: statement.studentCode,
+      batchName: statement.batchName,
+      openingBalance: statement.openingBalance,
+      closingBalance: statement.closingBalance,
+      totalCharges: statement.totalCharges,
+      totalPayments: statement.totalPayments,
+      totalRefunds: statement.totalRefunds,
+      lines: statement.lines,
+      ageing: statement.ageing,
+    };
+  }
+  private financialYearStart(): string {
+    const today = this.preferences.today();
+    const year = Number(today.slice(0, 4));
+    const month = Number(today.slice(5, 7));
+    return `${month >= 4 ? year : year - 1}-04-01`;
   }
   private readonly paymentsApi = inject(PaymentsService);
   private readonly enrollmentsApi = inject(EnrollmentsService);
@@ -98,10 +258,19 @@ export class FeesPage implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly dialogs = inject(InteractionDialogService);
   protected readonly selectedChargeId = signal('');
+  protected readonly statementStudent = signal<ChargeListRow | null>(null);
+  protected readonly statementDialogOpen = signal(false);
+  protected readonly statementLoading = signal(false);
   protected readonly chargeDialogOpen = signal(false);
   protected readonly query = signal('');
   protected readonly batchFilter = signal('all');
   protected readonly statusFilter = signal('all');
+  protected setStatusFilter(value: string): void {
+    if (!['all', 'pending', 'partial', 'paid', 'overdue', 'waived'].includes(value)) return;
+    this.statusFilter.set(value);
+    this.page.set(1);
+    void this.loadCharges(false);
+  }
   protected readonly sortBy = signal<string>('dueDate');
   protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
   protected readonly page = signal(1);
@@ -112,7 +281,8 @@ export class FeesPage implements OnInit {
   >([]);
   protected readonly error = signal('');
   protected readonly message = signal('');
-  private readonly toastFeedback = effect(() => { const error = this.error(); const message = this.message(); if (error) this.toast.show(error, 'error'); else if (message) this.toast.show(message, 'success'); });
+  // Action results are announced once, in the corner; load and validation errors stay inline.
+  private readonly toastFeedback = effect(() => { const message = this.message(); if (message) this.toast.success(message); });
   protected readonly submitting = signal(false);
   protected readonly paymentForm = this.fb.nonNullable.group({
     amountRupees: [0, [Validators.required, Validators.min(0.01)]],
@@ -127,14 +297,24 @@ export class FeesPage implements OnInit {
     dueDate: [new Date().toISOString().slice(0, 10), Validators.required],
     amountRupees: [0, [Validators.required, Validators.min(0.01)]],
   });
+  protected readonly statementForm = this.fb.nonNullable.group(
+    {
+      fromDate: [this.preferences.today(), Validators.required],
+      toDate: [this.preferences.today(), Validators.required],
+    },
+    { validators: statementPeriodValidator },
+  );
 
   protected readonly rows = signal<readonly ChargeListRow[]>([]);
   protected readonly filteredRows = computed(() => this.rows());
+  protected readonly paymentDialogCharges = computed(() => this.rows().filter((row) => row.balancePaise > 0).map((row) => ({
+    id: row.id ?? '', studentName: row.studentName, period: row.period, balanceMinor: row.balancePaise,
+  })));
   protected readonly pagedRows = computed(() => this.rows());
   protected readonly pageCount = computed(() =>
     Math.max(1, Math.ceil(this.total() / this.pageSize())),
   );
-  protected readonly metrics = signal({ students: 0, total: 0, pending: 0, overdue: 0 });
+  protected readonly metrics = signal({ students: 0, total: 0, discount: 0, late: 0, paid: 0, pending: 0, overdue: 0 });
   protected changeSortBy(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     if (['dueDate', 'student', 'period', 'amount', 'balance', 'status'].includes(value)) {
@@ -155,6 +335,13 @@ export class FeesPage implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.route.queryParamMap.subscribe((params) => {
+      const status = params.get('status');
+      if (status && ['all', 'pending', 'partial', 'paid', 'overdue', 'waived'].includes(status)) {
+        this.statusFilter.set(status);
+      }
+      if (this.loading()) void this.loadCharges(true);
+    });
     await this.loadCharges(true);
   }
 
@@ -198,18 +385,32 @@ export class FeesPage implements OnInit {
       this.message.set('Payment recorded successfully.');
       await this.loadCharges(true);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Payment could not be recorded.');
+      this.toast.error(error instanceof Error ? error.message : 'Payment could not be recorded.');
     } finally {
       this.submitting.set(false);
     }
+  }
+  protected async submitSharedPayment(value: PaymentRecordDialogValue): Promise<void> {
+    if (this.submitting()) return;
+    this.submitting.set(true); this.error.set(''); this.message.set('');
+    try {
+      const reference = crypto.randomUUID();
+      const result = await this.paymentsApi.record(value.chargeId, value.amount, value.mode, reference, value.providerReference || undefined);
+      this.receiptNumber.set(result?.receipt?.receipt_number ?? '');
+      this.selectedChargeId.set('');
+      this.message.set('Payment recorded successfully.');
+      await this.loadCharges(true);
+    } catch (error) {
+      this.toast.error(error instanceof Error ? error.message : 'Payment could not be recorded.');
+    } finally { this.submitting.set(false); }
   }
   protected async openChargeDialog(): Promise<void> {
     this.error.set('');
     this.message.set('');
     this.chargeForm.reset({
       enrollmentId: '',
-      period: this.preferences.today().slice(0,7),
-      dueDate: this.preferences.today().slice(0,7)+'-'+String(this.preferences.value().fee_due_day).padStart(2,'0'),
+      period: this.preferences.today().slice(0, 7),
+      dueDate: this.preferences.today().slice(0, 7) + '-' + String(this.preferences.value().fee_due_day).padStart(2, '0'),
       amountRupees: 0,
     });
     this.chargeDialogOpen.set(true);
@@ -229,7 +430,7 @@ export class FeesPage implements OnInit {
     if (enrollment)
       this.chargeForm.controls.amountRupees.setValue(enrollment.monthlyFee);
   }
-  protected chargePeriodChanged():void{const month=this.chargeForm.controls.period.value;if(/^\d{4}-\d{2}$/.test(month))this.chargeForm.controls.dueDate.setValue(month+'-'+String(this.preferences.value().fee_due_day).padStart(2,'0'));}
+  protected chargePeriodChanged(): void { const month = this.chargeForm.controls.period.value; if (/^\d{4}-\d{2}$/.test(month)) this.chargeForm.controls.dueDate.setValue(month + '-' + String(this.preferences.value().fee_due_day).padStart(2, '0')); }
   protected async addCharge(): Promise<void> {
     if (this.submitting() || this.optionsLoading()) return;
     if (this.chargeForm.invalid) {
@@ -250,7 +451,7 @@ export class FeesPage implements OnInit {
       this.page.set(1);
       await this.loadCharges(true);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Monthly charge could not be added.');
+      this.toast.error(error instanceof Error ? error.message : 'Monthly charge could not be added.');
     } finally { this.submitting.set(false); }
   }
   protected changePage(value: number): void {
@@ -274,7 +475,8 @@ export class FeesPage implements OnInit {
     this.error.set('');
     try {
       const [result, summary, batches] = await Promise.all([
-        this.feesApi.chargePage(this.page(), this.pageSize(), {columns:this.columns.params(),
+        this.feesApi.chargePage(this.page(), this.pageSize(), {
+          columns: this.columns.params(),
           search: this.query(),
           batchId: this.batchFilter(),
           status: this.statusFilter(),
@@ -290,6 +492,9 @@ export class FeesPage implements OnInit {
         this.metrics.set({
           students: summary.students,
           total: summary.total * 100,
+          discount: 0,
+          late: 0,
+          paid: 0,
           pending: summary.pending * 100,
           overdue: summary.overdue * 100,
         });
@@ -306,12 +511,20 @@ export class FeesPage implements OnInit {
           planName: row.plan_name ?? 'Not assigned',
           period: row.charge_month,
           amountPaise: Number(row.final_amount) * 100,
+          discountPaise: Number(row.discount_amount) * 100,
+          lateFeePaise: Number(row.late_fee_amount) * 100,
           paidPaise: Number(row.paid_amount) * 100,
           balancePaise: Number(row.balance_amount) * 100,
           dueDate: row.due_date,
           status: this.displayStatus(row.status),
         })),
       );
+      const reconciliation = result.rows.reduce((acc, row) => ({
+        discount: acc.discount + Number(row.discount_amount ?? 0),
+        late: acc.late + Number(row.late_fee_amount ?? 0),
+        paid: acc.paid + Number(row.paid_amount ?? 0),
+      }), { discount: 0, late: 0, paid: 0 });
+      this.metrics.update(current => ({ ...current, discount: reconciliation.discount * 100, late: reconciliation.late * 100, paid: reconciliation.paid * 100 }));
     } catch (error) {
       if (request !== this.loadId) return;
       this.rows.set([]);

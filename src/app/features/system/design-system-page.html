@@ -1,0 +1,194 @@
+<main class="app-list-page library-page">
+
+  <app-page-hero [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/dashboard'},{label:'Design System'}]"
+    title="Design System" subtitle="Reusable foundations and interface patterns used by the academy portal." />
+  <!-- <app-settings-navigation /> -->
+  <section>
+    <h2>Available foundations</h2>
+    <div class="grid">
+      <article>
+        <i class="pi pi-palette"></i>
+        <h3>Colors and typography</h3>
+        <p>Brand colors, type hierarchy, spacing and responsive layout tokens.</p>
+      </article>
+      <article>
+        <i class="pi pi-th-large"></i>
+        <h3>Components</h3>
+        <p>Cards, tables, dialogs, badges, filters, pagination and feedback patterns.</p>
+      </article>
+      <article>
+        <i class="pi pi-check-circle"></i>
+        <h3>Accessibility</h3>
+        <p>Keyboard interaction, focus treatment, semantic markup and contrast guidance.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="btn-lab">
+    <h2>Buttons — the complete reference</h2>
+    <p class="lab-note">Every action button must use one of these shared recipes so it renders the same everywhere. Icon
+      color is driven by the icon inside the button; destructive actions additionally carry the <code>danger</code>
+      class.</p>
+
+    <div class="recipe">
+      <div class="family">
+        <h3>Icon actions — <code>app-button icon</code></h3>
+        <p class="family-hint">34px square. Each family renders in its own solid color (see below); ghost buttons are
+          exempt.</p>
+        <div class="row-actions">
+          <button class="app-button icon" title="View details"><i class="pi pi-eye"></i></button>
+          <button class="app-button icon" title="View profile"><i class="pi pi-user"></i></button>
+          <button class="app-button icon" title="Edit"><i class="pi pi-pencil"></i></button>
+          <button class="app-button icon" title="Record payment"><i class="pi pi-wallet"></i></button>
+          <button class="app-button icon" title="Send"><i class="pi pi-send"></i></button>
+          <button class="app-button icon" title="WhatsApp"><i class="pi pi-whatsapp"></i></button>
+          <button class="app-button icon" title="Approve"><i class="pi pi-check"></i></button>
+          <button class="app-button icon" title="Invite"><i class="pi pi-user-plus"></i></button>
+          <button class="app-button icon danger" title="Delete"><i class="pi pi-trash"></i></button>
+          <button class="app-button icon" title="Cancel"><i class="pi pi-times"></i></button>
+          <button class="app-button icon" title="Unassign"><i class="pi pi-user-minus"></i></button>
+          <button class="app-button icon" title="Disable"><i class="pi pi-power-off"></i></button>
+          <button class="app-button icon" title="Refund"><i class="pi pi-replay"></i></button>
+          <button class="app-button icon" title="Archive"><i class="pi pi-folder"></i></button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Color families</h3>
+        <ul class="families">
+          <li><span class="swatch blue"></span> View / details — <code>pi-eye</code>, <code>pi-user</code></li>
+          <li><span class="swatch amber"></span> Edit — <code>pi-pencil</code>, <code>pi-user-edit</code></li>
+          <li><span class="swatch green"></span> Confirm / pay / send — <code>pi-wallet</code>, <code>pi-send</code>,
+            <code>pi-whatsapp</code>, <code>pi-check</code>, <code>pi-check-circle</code>, <code>pi-user-plus</code>
+          </li>
+          <li><span class="swatch red"></span> Destructive — <code>pi-trash</code>, <code>pi-times</code>,
+            <code>pi-user-minus</code>, <code>pi-power-off</code>, <code>pi-replay</code>, <code>pi-folder</code>, or
+            class <code>danger</code>
+          </li>
+          <li><span class="swatch violet"></span> Documents / exports — <code>pi-print</code>, <code>pi-file</code>,
+            <code>pi-file-pdf</code>, <code>pi-download</code>, <code>pi-id-card</code>
+          </li>
+          <li><span class="swatch teal"></span> Copy / history / sync — <code>pi-copy</code>, <code>pi-history</code>,
+            <code>pi-sync</code>, <code>pi-undo</code>, <code>pi-arrow-right-arrow-left</code>
+          </li>
+          <li><span class="swatch gray"></span> Neutral — everything else</li>
+        </ul>
+      </div>
+
+      <div class="family">
+        <h3>Document &amp; data actions</h3>
+        <div class="row-actions">
+          <button class="app-button icon" title="Print"><i class="pi pi-print"></i></button>
+          <button class="app-button icon" title="Invoice"><i class="pi pi-file"></i></button>
+          <button class="app-button icon" title="Download PDF"><i class="pi pi-file-pdf"></i></button>
+          <button class="app-button icon" title="Export"><i class="pi pi-download"></i></button>
+          <button class="app-button icon" title="ID card"><i class="pi pi-id-card"></i></button>
+        </div>
+        <div class="row-actions" style="margin-top:12px">
+          <button class="app-button icon" title="Copy"><i class="pi pi-copy"></i></button>
+          <button class="app-button icon" title="History"><i class="pi pi-history"></i></button>
+          <button class="app-button icon" title="Sync / retry"><i class="pi pi-sync"></i></button>
+          <button class="app-button icon" title="Undo / refund receipt"><i class="pi pi-undo"></i></button>
+          <button class="app-button icon" title="Transfer"><i class="pi pi-arrow-right-arrow-left"></i></button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Text buttons</h3>
+        <div class="row-actions">
+          <button class="app-button">Primary action</button>
+          <button class="app-button secondary">Secondary action</button>
+          <button class="app-button small secondary">Small</button>
+          <button class="app-button small danger">Revoke</button>
+          <button class="app-button small secondary">Approve<i class="pi pi-check"></i></button>
+          <button class="app-button small secondary"><i class="pi pi-sync"></i>Retry</button>
+          <button class="app-button" disabled>Disabled</button>
+          <button class="app-button small danger" disabled>Disabled danger</button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Table row container — one line, always</h3>
+        <p class="family-hint">Wrap the row buttons in <code>&lt;div class="row-actions"&gt;</code>. It applies inline
+          flex, 6px gap and no wrapping automatically.</p>
+        <div class="row-actions lab-row">
+          <button class="app-button icon" title="View"><i class="pi pi-eye"></i></button>
+          <button class="app-button icon" title="Edit"><i class="pi pi-pencil"></i></button>
+          <button class="app-button icon" title="Print"><i class="pi pi-print"></i></button>
+          <button class="app-button icon" title="Record payment"><i class="pi pi-wallet"></i></button>
+          <button class="app-button icon" title="Copy"><i class="pi pi-copy"></i></button>
+          <button class="app-button icon" title="Delete"><i class="pi pi-trash"></i></button>
+          <button class="app-button icon danger" title="Delete"><i class="pi pi-trash"></i></button>
+          <button class="app-button small secondary">Small</button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Complete variant &amp; size matrix</h3>
+        <p class="family-hint">Default height 42px (<code>app-button</code>), compact 34px
+          (<code>app-button small</code>), tiny pill 30px (<code>app-button chip</code>) and square icon
+          (<code>app-button icon</code>).</p>
+        <div class="row-actions">
+          <button class="app-button">Primary 42</button>
+          <button class="app-button small">Primary 34</button>
+          <button class="app-button secondary">Secondary 42</button>
+          <button class="app-button small secondary">Secondary 34</button>
+          <button class="app-button danger">Danger 42</button>
+          <button class="app-button small danger">Danger 34</button>
+          <button class="app-button chip">Chip 30<i class="pi pi-times"></i></button>
+          <button class="app-button icon" title="Icon neutral"><i class="pi pi-eye"></i></button>
+          <button class="app-button icon ghost" title="Ghost / close"><i class="pi pi-times"></i></button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Filter chips &amp; ghost icons</h3>
+        <p class="family-hint">Chips (<code>app-button chip</code>) for removable filters/tags; ghost
+          (<code>app-button icon ghost</code>) for dialog/toast closes and passive toggles.</p>
+        <div class="row-actions">
+          <button class="app-button chip">Batch: Morning<i class="pi pi-times"></i></button>
+          <button class="app-button chip">Status: Active<i class="pi pi-times"></i></button>
+          <button class="app-button chip">+ Add filter</button>
+          <button class="app-button icon ghost" title="Close dialog"><i class="pi pi-times"></i></button>
+          <button class="app-button icon ghost" title="Show password"><i class="pi pi-eye"></i></button>
+          <button class="app-button icon ghost" title="Rail toggle"><i class="pi pi-bars"></i></button>
+        </div>
+      </div>
+
+
+
+
+      <div class="family">
+        <h3>Toggles, segmented controls &amp; passive states</h3>
+        <p class="family-hint">Period pickers, tabs and segments use <code>app-button small secondary</code> with
+          <code>active</code> for the selected option. Pagination arrows use icon buttons.
+        </p>
+        <div class="row-actions">
+          <button class="app-button small secondary active">Today</button>
+          <button class="app-button small secondary">Week</button>
+          <button class="app-button small secondary">Month</button>
+          <button class="app-button small secondary">7 days</button>
+          <button class="app-button small secondary">30 days</button>
+        </div>
+        <div class="row-actions" style="margin-top:12px">
+          <button class="app-button icon" aria-label="Previous page" title="Previous"><i
+              class="pi pi-chevron-left"></i></button>
+          <button class="app-button small active">1</button>
+          <button class="app-button small secondary">2</button>
+          <button class="app-button icon" aria-label="Next page" title="Next"><i
+              class="pi pi-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <div class="family">
+        <h3>Tooltip pattern (academy events)</h3>
+        <p class="family-hint">Icon button plus hidden <code>.action-tooltip</code> span; shown on hover/focus.</p>
+        <div class="row-actions">
+          <button class="app-button icon" title="Edit">
+            <i class="pi pi-pencil" aria-hidden="true"></i><span class="action-tooltip" role="tooltip">Edit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

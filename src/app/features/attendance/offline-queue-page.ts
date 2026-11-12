@@ -9,6 +9,7 @@ import { AcademyFacade } from '../../core/state/academy.facade';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader, TableSortDirection } from '../../shared/sortable-header/sortable-header';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 
 interface QueueRow {
   readonly id: string;
@@ -81,6 +82,25 @@ export class OfflineQueuePage {
   protected readonly pagedRows = computed(() => this.rows().slice((this.page() - 1) * this.pageSize(), this.page() * this.pageSize()));
   protected readonly failed = computed(() => this.store.attendanceOutbox.operations().filter((item) => item.status === 'failed' || item.status === 'conflict').length);
   protected readonly pending = computed(() => this.store.attendanceOutbox.operations().filter((item) => item.status === 'pending' || item.status === 'syncing').length);
+  protected readonly exportColumns: readonly ExportColumn[] = [
+    { key: 'student', label: 'Student' },
+    { key: 'type', label: 'Type' },
+    { key: 'date', label: 'Date' },
+    { key: 'time', label: 'Time' },
+    { key: 'status', label: 'Status' },
+    { key: 'reason', label: 'Reason' },
+  ];
+  protected readonly exportReference = 'Offline attendance queue';
+  protected get exportRows(): readonly ExportRow[] {
+    return this.rows().map((row) => ({
+      student: `${row.studentName} (${row.studentCode})`,
+      type: row.type,
+      date: row.date,
+      time: row.time,
+      status: row.status,
+      reason: row.failureReason || '—',
+    }));
+  }
 
   protected setQuery(event: Event): void { this.query.set((event.target as HTMLInputElement).value); this.page.set(1); }
   protected setSort(value: string): void {
@@ -96,9 +116,8 @@ export class OfflineQueuePage {
   protected setPageSize(size: number): void { this.pageSize.set(size); this.page.set(1); }
   protected initials(name: string): string { return name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); }
   protected formatDate(value: string | null): string { return value ? new Date(value).toLocaleString('en-IN') : 'Not yet'; }
-  protected async sync(): Promise<void> { this.message.set('Syncing queued attendance records…'); await this.store.attendanceOutbox.retry(); this.localTime.set(new Date()); this.message.set(this.store.attendanceOutbox.operations().length ? 'Some records still need attention.' : 'All queued attendance records are synchronized.'); }
+  protected async sync(): Promise<void> { await this.store.attendanceOutbox.retry(); this.localTime.set(new Date()); this.message.set(this.store.attendanceOutbox.operations().length ? 'Some records still need attention.' : 'All queued attendance records are synchronized.'); }
   protected async retry(id: string): Promise<void> { await this.store.attendanceOutbox.retry(id); }
   protected async discard(id: string): Promise<void> { await this.store.attendanceOutbox.discard(id); }
   protected async clear(): Promise<void> { await this.store.attendanceOutbox.clear(); this.page.set(1); this.message.set('Offline queue cleared.'); }
-  protected export(): void { const csv = ['Student,Student ID,Type,Date,Time,Status,Failure reason', ...this.rows().map((row) => [row.studentName, row.studentCode, row.type, row.date, row.time, row.status, row.failureReason].map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))].join('\r\n'); const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = 'offline-attendance-queue.csv'; link.click(); URL.revokeObjectURL(url); }
 }

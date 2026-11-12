@@ -26,18 +26,34 @@ describe('PageHero reuse', () => {
     const fixture = TestBed.createComponent(PageHero);
     fixture.componentRef.setInput('title', 'Student details');
     fixture.componentRef.setInput('breadcrumbs', [
-      { label: 'Dashboard', route: '/dashboard' }, { label: 'Students' }, { label: 'Student details' },
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Students' }, { label: 'Student details' },
     ]);
     fixture.detectChanges();
     const selected = vi.fn();
     fixture.componentInstance.breadcrumbSelected.subscribe(selected);
-    expect(fixture.nativeElement.querySelector('nav a').getAttribute('href')).toBe('/dashboard');
+    const home = fixture.nativeElement.querySelector('nav a');
+    expect(home.getAttribute('href')).toBe('/dashboard');
+    expect(home.querySelector('i.pi.pi-home')).not.toBeNull();
+    expect(home.textContent.trim()).toBe('Dashboard');
     const current: HTMLElement = fixture.nativeElement.querySelector('[aria-current="page"]');
     expect(current.tagName).toBe('SPAN');
     current.click();
     expect(selected).not.toHaveBeenCalled();
     fixture.nativeElement.querySelector('nav button').click();
     expect(selected).toHaveBeenCalledWith('Students');
+  });
+
+  it('renders a home icon on the current crumb when one is supplied', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(PageHero);
+    fixture.componentRef.setInput('title', 'Dashboard');
+    fixture.componentRef.setInput('breadcrumbs', [{ label: 'Dashboard', icon: 'pi-home' }]);
+    fixture.detectChanges();
+    const current: HTMLElement = fixture.nativeElement.querySelector('[aria-current="page"]');
+    expect(current.tagName).toBe('SPAN');
+    expect(current.querySelector('i.pi.pi-home')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('nav a')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.separator').length).toBe(0);
   });
 
   it('disables actions while busy and uses supplied branding', () => {

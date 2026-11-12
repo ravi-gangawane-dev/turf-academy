@@ -18,6 +18,12 @@ begin
  if (select status from public.enrollments where id=eid)<>'active' then raise exception 'promotion not enrolled'; end if;
  if exists(select 1 from public.batch_waitlist where batch_id=b and status='waiting') then raise exception 'promoted student still waiting'; end if;
  begin
+  perform public.create_enrollment(s,b,fp,current_date);
+  raise exception 'duplicate active enrollment accepted';
+ exception when unique_violation then null; end;
+ perform public.set_batch_coach(b,c,'primary');
+ if (select count(*) from public.batch_coaches where batch_id=b and is_primary)<>1 then raise exception 'multiple primary coaches'; end if;
+ begin
   perform public.save_batch_workspace(payload||jsonb_build_object('id',b,'name','Must roll back'),array[9],'[]'::jsonb);
   raise exception 'invalid day accepted';
  exception when check_violation then null;

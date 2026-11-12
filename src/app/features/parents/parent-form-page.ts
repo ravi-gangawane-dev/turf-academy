@@ -3,12 +3,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ParentsService, StudentsService } from '../../core/supabase/domain-services';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { ToastService } from '../../shared/toast/toast.service';
+import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 
 interface StudentOption { readonly id: string; readonly full_name: string; readonly student_code: string; }
 
 @Component({
   selector: 'app-parent-form-page',
-  imports: [ReactiveFormsModule, PageHero],
+  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload],
   templateUrl: './parent-form-page.html',
   styleUrl: './parent-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,10 +21,12 @@ export class ParentFormPage implements OnInit {
   private readonly router = inject(Router);
   private readonly parents = inject(ParentsService);
   private readonly studentsApi = inject(StudentsService);
+  private readonly toast = inject(ToastService);
   protected readonly editing = signal(false);
   protected readonly loading = signal(false);
   protected readonly message = signal('');
   protected readonly photoUrl = signal<string | null>(null);
+  protected readonly photoSelected = signal(false);
   protected readonly students = signal<readonly StudentOption[]>([]);
   private parentId = '';
   private photo: File | null = null;
@@ -75,18 +79,18 @@ export class ParentFormPage implements OnInit {
       });
       this.photoUrl.set(parent.photo_url);
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Parent could not be loaded.');
+      this.toast.error(error instanceof Error ? error.message : 'Parent could not be loaded.');
     } finally { this.loading.set(false); }
   }
 
-  protected async save(): Promise<void> {
+  protected readonly savePhotoAction = () => this.save();
+  protected async save(): Promise<boolean> {
     if (this.form.invalid || this.loading()) {
       this.form.markAllAsTouched();
-      this.message.set('Complete all required fields correctly.');
-      return;
+      this.toast.error('Complete all required fields correctly.');
+      return false;
     }
     this.loading.set(true);
-    this.message.set('');
     try {
       const value = this.form.getRawValue();
     const existingParent = this.editing() ? await this.parents.getById(this.parentId) : null;
@@ -110,16 +114,19 @@ export class ParentFormPage implements OnInit {
       await this.router.navigate(['/parents', saved.id], {
         state: { success: this.editing() ? 'Parent updated successfully.' : 'Parent created successfully.' },
       });
+      return true;
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Parent could not be saved.');
+      this.toast.error(error instanceof Error ? error.message : 'Parent could not be saved.');
+      return false;
     } finally { this.loading.set(false); }
   }
 
-  protected selectPhoto(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  protected selectPhoto(event: Event | File): void {
+    const file = event instanceof File ? event : (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { this.message.set('Parent photo must be 2MB or smaller.'); return; }
+    if (file.size > 2 * 1024 * 1024) { return; }
     this.photo = file;
+    this.photoSelected.set(true);
     const reader = new FileReader();
     reader.onload = () => this.photoUrl.set(String(reader.result));
     reader.readAsDataURL(file);

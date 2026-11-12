@@ -27,20 +27,26 @@ for (const width of [1440, 390]) {
 
 test('fallback export downloads the displayed data and ignores action columns', async ({ page }) => {
   await login(page);
-  // The permissions matrix is deterministic in mock mode; directory APIs require Supabase.
+  // Role permissions now live inside the Users settings screen.
   await page.goto('/settings/permissions');
-  const toolbar = page.locator('app-table-tools');
-  await expect(toolbar.getByRole('button', { name: 'Export page' })).toBeEnabled();
+  const toolbar = page.locator('.role-permissions app-table-tools');
+  await expect(toolbar.getByRole('button', { name: 'Export records' })).toBeEnabled();
   await expect(toolbar.locator('.table-tools-count')).toHaveText('4');
-  await page.locator('table').evaluate((table: HTMLTableElement) => {
+  await page.locator('.role-permissions table').evaluate((table: HTMLTableElement) => {
     const actions = document.createElement('th');
     actions.textContent = 'Actions';
     table.tHead!.rows[0].append(actions);
-    for (const row of Array.from(table.tBodies[0].rows)) row.insertCell().textContent = 'Edit';
+    for (const row of Array.from(table.tBodies[0].rows)) {
+      const button = document.createElement('button');
+      button.textContent = 'Edit';
+      row.insertCell().append(button);
+    }
     table.tBodies[0].rows[0].cells[0].textContent = '=SUM(1,2)';
   });
+  await toolbar.getByRole('button', { name: 'Export records' }).click();
+  await page.getByRole('radio', { name: /Current page/ }).check();
   const downloadPromise = page.waitForEvent('download');
-  await toolbar.getByRole('button', { name: 'Export page' }).click();
+  await page.getByRole('button', { name: 'Download CSV', exact: true }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('role-permissions-page.csv');
   const stream = await download.createReadStream();

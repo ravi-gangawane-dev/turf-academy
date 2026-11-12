@@ -5,6 +5,30 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ParentsService } from '../../core/supabase/domain-services';
 
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
+const FIELD_LABELS: Record<string, string> = {
+  firstName: 'first name',
+  lastName: 'last name',
+  relation: 'relationship',
+  phone: 'phone number (10 digits)',
+  whatsapp: 'WhatsApp number (10 digits)',
+  email: 'email address',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  pinCode: 'PIN code (6 digits)',
+};
+
+/** Keeps stored numbers that carry a country code (+91 / leading 0) editable in a 10-digit field. */
+export function nationalPhone(value: string | null | undefined): string {
+  const digits = String(value ?? '').replace(/\D/g, '');
+  if (digits.length <= 10) return digits;
+  if (digits.length === 11 && digits.startsWith('0')) return digits.slice(1);
+  if (digits.length === 12 && digits.startsWith('91')) return digits.slice(2);
+  return digits.slice(-10);
+}
+
 @Component({
   selector: 'app-parent-profile-form-page',
   imports: [PageHero, ReactiveFormsModule],
@@ -50,8 +74,8 @@ export class ParentProfileFormPage implements OnInit {
         firstName,
         lastName: lastName.join(' '),
         relation: parent.relation ?? 'Guardian',
-        phone: parent.phone ?? '',
-        whatsapp: parent.whatsapp ?? parent.phone ?? '',
+        phone: nationalPhone(parent.phone),
+        whatsapp: nationalPhone(parent.whatsapp ?? parent.phone),
         email: parent.email ?? '',
         occupation: parent.occupation ?? '',
         address: address.formatted ?? address.address ?? '',
@@ -67,12 +91,19 @@ export class ParentProfileFormPage implements OnInit {
     }
   }
   protected choosePhoto(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
+    if (!PHOTO_TYPES.includes(file.type)) {
+      this.error.set('Profile photo must be a JPG, PNG or WebP image.');
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
       this.error.set('Profile photo must be 2 MB or smaller.');
       return;
     }
+    this.error.set('');
     this.photo = file;
     const reader = new FileReader();
     reader.onload = () => this.photoUrl.set(String(reader.result));
@@ -81,7 +112,14 @@ export class ParentProfileFormPage implements OnInit {
   protected async save() {
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
-      this.error.set('Complete all required fields correctly.');
+      const invalid = Object.entries(FIELD_LABELS)
+        .filter(([control]) => this.form.get(control)?.invalid)
+        .map(([, label]) => label);
+      this.error.set(
+        invalid.length
+          ? `Complete these required fields: ${invalid.join(', ')}.`
+          : 'Complete all required fields correctly.',
+      );
       return;
     }
     this.saving.set(true);

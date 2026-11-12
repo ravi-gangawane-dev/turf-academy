@@ -33,7 +33,7 @@
       </button>
     </div>
   }
-  @if (error() || message()) {
+  @if (error()) {
     <div
       class="workspace-notice manual-notice"
       [class.error]="error()"
@@ -45,7 +45,7 @@
         [class.pi-check-circle]="!error()"
         aria-hidden="true"
       ></i
-      ><span>{{ error() || message() }}</span>
+      ><span>{{ error() }}</span>
     </div>
   }
   @if (whatsappUpdates().length) {
@@ -297,7 +297,7 @@
                 ><small>Checked in</small
                 >{{ displayTime(row.attendance?.checkInAt) | date: 'h:mm a' }}
                 @if (row.attendance?.syncState) {
-                  <small>Sync {{ row.attendance?.syncState }}</small>
+                  <small>Sync {{ row.attendance.syncState }}</small>
                 }
               </span></label
             >

@@ -2,7 +2,9 @@ import { TableTools } from '../../shared/data-table/table-tools';
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
+  computed,
   inject,
   signal,
   effect,
@@ -12,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AcademyFacade } from '../../core/state/academy.facade';
 import {
+  AttendanceMatrixRecord,
+  AttendanceRegisterRecord,
   AttendanceService,
   AttendanceHistoryRecord,
   BatchesService,
@@ -20,8 +24,16 @@ import {
 import { API_CONFIG } from '../../core/config/api.config';
 import { readAllPages } from '../../core/supabase/read-all-pages';
 import { attendanceTimestamp } from '../../core/supabase/attendance-timestamp';
+import { AuthService } from '../../core/auth/auth.service';
 import { AsyncState } from '../../shared/async-state/async-state';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
 import { Pagination } from '../../shared/pagination/pagination';
+import {
+  PrintAttendanceMatrixDocument,
+  PrintAttendanceRegisterDocument,
+  PrintDestination,
+} from '../../shared/print/print-document.models';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 import { ToastService } from '../../shared/toast/toast.service';
 
 interface CorrectionDraft {
@@ -35,31 +47,44 @@ interface CorrectionDraft {
   reason: string;
 }
 
+interface ActiveFilter {
+  key: 'search' | 'status' | 'student' | 'batch' | 'dates';
+  label: string;
+}
+
 @Component({
   selector: 'app-attendance-history-page',
   standalone: true,
-  imports: [TableTools, FormsModule, DatePipe, Pagination, AsyncState],
+  imports: [TableTools, FormsModule, DatePipe, Pagination, AsyncState, ModalFocus],
   templateUrl: './attendance-history-page.html',
   styleUrl: './attendance-history-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AttendanceHistoryPage implements OnInit {
+export class AttendanceHistoryPage implements OnInit, OnDestroy {
   protected readonly store = inject(AcademyFacade);
   private readonly attendance = inject(AttendanceService);
   private readonly studentsApi = inject(StudentsService);
   private readonly batchesApi = inject(BatchesService);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
+  private readonly printDocuments = inject(PrintDocumentService);
   private readonly mock = inject(API_CONFIG).useMockApi;
   private request = 0;
   private lookupRequest = 0;
+  private registerRequest = 0;
+  private matrixRequest = 0;
+  private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly studentId = signal('');
   protected readonly batchId = signal('');
   protected readonly status = signal('all');
   protected readonly search = signal('');
+  private readonly debouncedSearch = signal('');
   protected readonly showMoreFilters = signal(false);
   protected readonly from = signal(this.daysAgo(30));
   protected readonly to = signal(this.today());
+  protected readonly loadingRows = [1, 2, 3, 4, 5];
+
   protected advancedFilterCount(): number {
     return (
       Number(!!this.studentId()) +
@@ -68,6 +93,49 @@ export class AttendanceHistoryPage implements OnInit {
       Number(this.to() !== this.today())
     );
   }
+
+  protected readonly activeRange = computed<number | null>(() => {
+    const from = this.from();
+    const to = this.to();
+    const today = this.today();
+    if (to !== today) return null;
+    if (from === today) return 0;
+    if (from === this.daysAgo(7)) return 7;
+    if (from === this.daysAgo(30)) return 30;
+    return null;
+  });
+
+  protected readonly activeFilters = computed<readonly ActiveFilter[]>(() => {
+    const filters: ActiveFilter[] = [];
+    const search = this.search().trim();
+    if (search) filters.push({ key: 'search', label: `Search: “${search}”` });
+    if (this.status() !== 'all') {
+      filters.push({ key: 'status', label: `Status: ${this.statusLabel(this.status())}` });
+    }
+    if (this.studentId()) {
+      filters.push({ key: 'student', label: `Student: ${this.studentName(this.studentId())}` });
+    }
+    if (this.batchId()) {
+      filters.push({ key: 'batch', label: `Batch: ${this.batchName(this.batchId())}` });
+    }
+    if (!this.isDefaultRange()) {
+      filters.push({ key: 'dates', label: this.rangeLabel() });
+    }
+    return filters;
+  });
+
+  protected readonly hasActiveFilters = computed(() => this.activeFilters().length > 0);
+
+  protected readonly resultSummary = computed(() => {
+    const range = this.rangeLabel();
+    if (this.loading()) return `Updating records… · ${range}`;
+    const total = this.total();
+    if (!total) return `No records · ${range}`;
+    const start = (this.page() - 1) * this.pageSize() + 1;
+    const end = Math.min(this.page() * this.pageSize(), total);
+    return `Showing ${start}–${end} of ${total} · ${range}`;
+  });
+
   protected toggleMoreFilters(): void {
     this.showMoreFilters.update((show) => !show);
   }
@@ -79,6 +147,22 @@ export class AttendanceHistoryPage implements OnInit {
 
   protected readonly records = signal<readonly AttendanceHistoryRecord[]>([]);
   protected readonly total = signal(0);
+
+  protected readonly registerDialogOpen = signal(false);
+  protected readonly registerBatchId = signal('');
+  protected readonly registerDate = signal('');
+  protected readonly registerIncludeRemarks = signal(false);
+  protected readonly registerLoading = signal(false);
+  protected readonly registerError = signal('');
+  protected readonly canIncludeRemarks = computed(() =>
+    this.auth.hasPermission('attendance:write'),
+  );
+
+  protected readonly matrixDialogOpen = signal(false);
+  protected readonly matrixBatchId = signal('');
+  protected readonly matrixMonth = signal(new Date().toISOString().slice(0, 7));
+  protected readonly matrixLoading = signal(false);
+  protected readonly matrixError = signal('');
 
   protected readonly allStudents = signal<readonly { id: string; name: string }[]>([]);
   protected readonly allBatches = signal<readonly { id: string; name: string }[]>([]);
@@ -130,12 +214,16 @@ export class AttendanceHistoryPage implements OnInit {
       this.studentId();
       this.batchId();
       this.status();
-      this.search();
+      this.debouncedSearch();
       this.from();
       this.to();
       this.pageSize();
       untracked(() => void this.loadAttendanceHistory());
     });
+  }
+
+  ngOnDestroy(): void {
+    this.clearSearchTimer();
   }
 
   async ngOnInit(): Promise<void> {
@@ -172,7 +260,7 @@ export class AttendanceHistoryPage implements OnInit {
         studentId: this.studentId() || undefined,
         status: this.status() === 'all' ? undefined : this.status(),
         ...(this.batchId() ? { batchId: this.batchId() } : {}),
-        ...(this.search().trim() ? { search: this.search().trim() } : {}),
+        ...(this.debouncedSearch() ? { search: this.debouncedSearch() } : {}),
       };
       const result = this.mock
         ? this.mockHistory(this.from(), this.to(), filters)
@@ -214,17 +302,27 @@ export class AttendanceHistoryPage implements OnInit {
   }
 
   protected onSearchChange(event: Event): void {
-    this.search.set((event.target as HTMLInputElement).value);
-    this.page.set(1);
+    const value = (event.target as HTMLInputElement).value;
+    this.search.set(value);
+    this.clearSearchTimer();
+    this.searchTimer = setTimeout(() => {
+      this.searchTimer = undefined;
+      this.debouncedSearch.set(value.trim());
+      this.page.set(1);
+    }, 300);
   }
 
   protected onFromChange(event: Event): void {
-    this.from.set((event.target as HTMLInputElement).value || this.daysAgo(30));
+    const from = (event.target as HTMLInputElement).value || this.daysAgo(30);
+    this.from.set(from);
+    if (from > this.to()) this.to.set(from);
     this.page.set(1);
   }
 
   protected onToChange(event: Event): void {
-    this.to.set((event.target as HTMLInputElement).value || this.today());
+    const to = (event.target as HTMLInputElement).value || this.today();
+    this.to.set(to);
+    if (to < this.from()) this.from.set(to);
     this.page.set(1);
   }
 
@@ -234,11 +332,37 @@ export class AttendanceHistoryPage implements OnInit {
     this.page.set(1);
   }
 
+  protected removeFilter(key: ActiveFilter['key']): void {
+    switch (key) {
+      case 'search':
+        this.clearSearchTimer();
+        this.search.set('');
+        this.debouncedSearch.set('');
+        break;
+      case 'status':
+        this.status.set('all');
+        break;
+      case 'student':
+        this.studentId.set('');
+        break;
+      case 'batch':
+        this.batchId.set('');
+        break;
+      case 'dates':
+        this.from.set(this.daysAgo(30));
+        this.to.set(this.today());
+        break;
+    }
+    this.page.set(1);
+  }
+
   protected resetFilters(): void {
+    this.clearSearchTimer();
     this.studentId.set('');
     this.batchId.set('');
     this.status.set('all');
     this.search.set('');
+    this.debouncedSearch.set('');
     this.from.set(this.daysAgo(30));
     this.to.set(this.today());
     this.page.set(1);
@@ -252,6 +376,170 @@ export class AttendanceHistoryPage implements OnInit {
   protected onPageSizeChange(size: number): void {
     this.pageSize.set(size);
     this.page.set(1);
+  }
+
+  protected openRegister(): void {
+    this.registerError.set('');
+    this.registerBatchId.set(this.batchId() || this.allBatches()[0]?.id || '');
+    this.registerDate.set(this.to() || this.today());
+    this.registerIncludeRemarks.set(this.canIncludeRemarks());
+    this.registerDialogOpen.set(true);
+  }
+
+  protected closeRegister(): void {
+    this.registerRequest += 1;
+    this.registerDialogOpen.set(false);
+    this.registerLoading.set(false);
+    this.registerError.set('');
+  }
+
+  protected onRegisterBatchChange(event: Event): void {
+    this.registerBatchId.set((event.target as HTMLSelectElement).value);
+  }
+
+  protected onRegisterDateChange(event: Event): void {
+    this.registerDate.set((event.target as HTMLInputElement).value);
+  }
+
+  protected onRegisterRemarksChange(event: Event): void {
+    this.registerIncludeRemarks.set((event.target as HTMLInputElement).checked);
+  }
+
+  protected async printRegister(destination: PrintDestination = 'print'): Promise<void> {
+    if (this.registerLoading()) return;
+    const batchId = this.registerBatchId();
+    const date = this.registerDate();
+    this.registerError.set('');
+    if (!batchId) {
+      this.registerError.set('Choose a batch to print the register.');
+      return;
+    }
+    if (!date) {
+      this.registerError.set('Choose the register date.');
+      return;
+    }
+
+    const request = ++this.registerRequest;
+    const includeRemarks = this.canIncludeRemarks() && this.registerIncludeRemarks();
+    this.registerLoading.set(true);
+    try {
+      const register = await this.attendance.register(batchId, date, { includeRemarks });
+      if (request !== this.registerRequest) return;
+      this.registerDialogOpen.set(false);
+      await this.printDocuments.printAttendanceRegister(
+        this.registerDocument(register, includeRemarks),
+        destination,
+      );
+    } catch (error) {
+      if (request !== this.registerRequest) return;
+      this.registerError.set(
+        error instanceof Error ? error.message : 'The attendance register could not be prepared.',
+      );
+    } finally {
+      if (request === this.registerRequest) this.registerLoading.set(false);
+    }
+  }
+
+  private registerDocument(
+    register: AttendanceRegisterRecord,
+    showRemarks: boolean,
+  ): Omit<PrintAttendanceRegisterDocument, 'kind' | 'brand'> {
+    const code =
+      (register.batchCode || register.batchId).replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 14) ||
+      'BATCH';
+    return {
+      registerNumber: `ATR-${code}-${register.date.replace(/\D/g, '')}`,
+      issuedAt: new Date().toISOString(),
+      date: register.date,
+      batchName: register.batchName,
+      batchCode: register.batchCode,
+      batchTime: register.batchTime || undefined,
+      coaches: register.coaches,
+      rows: register.rows.map((row) => ({
+        studentCode: row.studentCode,
+        studentName: row.studentName,
+        status: row.status,
+        checkInAt: row.checkInAt,
+        checkOutAt: row.checkOutAt,
+        remarks: row.remarks,
+      })),
+      counts: register.counts,
+      showRemarks,
+    };
+  }
+
+  protected openMatrix(): void {
+    this.matrixError.set('');
+    this.matrixBatchId.set(this.batchId() || this.allBatches()[0]?.id || '');
+    this.matrixMonth.set(this.currentMonth());
+    this.matrixDialogOpen.set(true);
+  }
+
+  protected closeMatrix(): void {
+    this.matrixRequest += 1;
+    this.matrixDialogOpen.set(false);
+    this.matrixLoading.set(false);
+    this.matrixError.set('');
+  }
+
+  protected onMatrixBatchChange(event: Event): void {
+    this.matrixBatchId.set((event.target as HTMLSelectElement).value);
+  }
+
+  protected onMatrixMonthChange(event: Event): void {
+    this.matrixMonth.set((event.target as HTMLInputElement).value);
+  }
+
+  protected async printMatrix(destination: PrintDestination = 'print'): Promise<void> {
+    if (this.matrixLoading()) return;
+    const batchId = this.matrixBatchId();
+    const month = this.matrixMonth();
+    this.matrixError.set('');
+    if (!batchId) {
+      this.matrixError.set('Choose a batch to print the matrix.');
+      return;
+    }
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      this.matrixError.set('Choose the month to print the matrix.');
+      return;
+    }
+
+    const request = ++this.matrixRequest;
+    this.matrixLoading.set(true);
+    try {
+      const matrix = await this.attendance.matrix(batchId, month);
+      if (request !== this.matrixRequest) return;
+      this.matrixDialogOpen.set(false);
+      await this.printDocuments.printAttendanceMatrix(this.matrixDocument(matrix), destination);
+    } catch (error) {
+      if (request !== this.matrixRequest) return;
+      this.matrixError.set(
+        error instanceof Error ? error.message : 'The attendance matrix could not be prepared.',
+      );
+    } finally {
+      if (request === this.matrixRequest) this.matrixLoading.set(false);
+    }
+  }
+
+  private matrixDocument(
+    matrix: AttendanceMatrixRecord,
+  ): Omit<PrintAttendanceMatrixDocument, 'kind' | 'brand'> {
+    const code =
+      (matrix.batchCode || matrix.batchId).replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 14) ||
+      'BATCH';
+    return {
+      registerNumber: `ATM-${code}-${matrix.month.replace(/\D/g, '')}`,
+      issuedAt: new Date().toISOString(),
+      month: matrix.month,
+      monthLabel: matrix.monthLabel,
+      batchName: matrix.batchName,
+      batchCode: matrix.batchCode,
+      batchTime: matrix.batchTime || undefined,
+      schedule: matrix.schedule,
+      coaches: matrix.coaches,
+      days: matrix.days,
+      rows: matrix.rows,
+    };
   }
 
   /** Load a table row into the correction form. */
@@ -353,6 +641,45 @@ export class AttendanceHistoryPage implements OnInit {
       .replace(/\b\w/g, (character) => character.toUpperCase());
   }
 
+  private studentName(id: string): string {
+    return this.allStudents().find((student) => student.id === id)?.name ?? 'Selected student';
+  }
+
+  private batchName(id: string): string {
+    return this.allBatches().find((batch) => batch.id === id)?.name ?? 'Selected batch';
+  }
+
+  private isDefaultRange(): boolean {
+    return this.from() === this.daysAgo(30) && this.to() === this.today();
+  }
+
+  private rangeLabel(): string {
+    const from = this.from();
+    const to = this.to();
+    const today = this.today();
+    if (from === today && to === today) return 'Today';
+    if (to === today && from === this.daysAgo(7)) return 'Last 7 days';
+    if (to === today && from === this.daysAgo(30)) return 'Last 30 days';
+    return `${this.formatDate(from)} – ${this.formatDate(to)}`;
+  }
+
+  private formatDate(value: string): string {
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString(undefined, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  private clearSearchTimer(): void {
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = undefined;
+    }
+  }
+
   private async loadCorrectionRecord(): Promise<void> {
     const { studentId, date } = this.draft();
     this.lookupRequest++;
@@ -429,6 +756,10 @@ export class AttendanceHistoryPage implements OnInit {
     return new Date().toISOString().split('T')[0];
   }
 
+  private currentMonth(): string {
+    return this.today().slice(0, 7);
+  }
+
   private daysAgo(days: number): string {
     const date = new Date();
     date.setDate(date.getDate() - days);
@@ -469,7 +800,9 @@ export class AttendanceHistoryPage implements OnInit {
           (!filters.batchId || row.batch?.id === filters.batchId) &&
           (!filters.status || row.status === filters.status) &&
           (!filters.search ||
-            (row.student?.full_name ?? '').toLowerCase().includes(filters.search.toLowerCase())),
+            [row.student?.full_name, row.student?.student_code].some((value) =>
+              (value ?? '').toLowerCase().includes(filters.search!.toLowerCase()),
+            )),
       )
       .sort((a, b) => b.attendance_date.localeCompare(a.attendance_date) || a.id.localeCompare(b.id));
     const start = (this.page() - 1) * this.pageSize();

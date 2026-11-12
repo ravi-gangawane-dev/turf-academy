@@ -10,7 +10,7 @@ export async function signIn(role: TestRole) {
   );
   const result = await client.auth.signInWithPassword({
     email: process.env[`E2E_${role.toUpperCase()}_EMAIL`] ?? `${role}@turf.local`,
-    password: process.env['E2E_PASSWORD'] ?? 'academy123',
+    password: process.env[`E2E_${role.toUpperCase()}_PASSWORD`] ?? process.env['E2E_PASSWORD'] ?? 'academy123',
   });
   expect(result.error, `Valid ${role} test account is required`).toBeNull();
   return { client, user: result.data.user! };
@@ -32,7 +32,8 @@ interface AcademyFixture {
 }
 
 export const test = base.extend<{ academy: AcademyFixture }>({
-  academy: async (_fixtures, use) => {
+  academy: async ({ browserName }, use) => {
+    void browserName;
     const adminAuth = await signIn('admin');
     const coachAuth = await signIn('coach');
     const admin = adminAuth.client, coach = coachAuth.client;

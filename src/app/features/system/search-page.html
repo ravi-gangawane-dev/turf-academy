@@ -1,0 +1,13 @@
+<section class="search-page"><app-page-hero
+        [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/dashboard'},{label:'Academy search'}]"
+        title="Academy search" subtitle="Find students, parents, coaches and batches." />
+    <p>Results for “{{query()}}” · Up to 20 matches per category</p>
+    @if(loading()){<p role="status">Searching…</p>}@if(error()){<p role="alert">{{error()}}</p>}
+    @for(kind of kinds;track kind){<section>
+        <h2>{{kind}}</h2>@for(row of results();track row.kind+row.id){@if(row.kind===kind){<a
+            [routerLink]="row.kind==='batches'?['/batches']:['/'+row.kind,row.id]"
+            [queryParams]="row.kind==='batches'?{batch:row.id}:{}"><strong>{{row.label}}</strong><span>{{row.detail}}</span></a>}}
+    </section>}
+    @if(!loading()&&!results().length){<p>{{query().length<2?'Enter at least two characters in the search box.':'No
+            matching records.'}}</p>}
+</section>

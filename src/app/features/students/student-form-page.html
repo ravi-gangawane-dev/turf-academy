@@ -13,6 +13,7 @@
     [breadcrumbs]="[
       {
         label: 'Dashboard',
+        icon: 'pi-home',
         route: parentChildEdit() ? '/parent/dashboard' : '/dashboard',
       },
       {
@@ -24,9 +25,7 @@
       },
     ]"
   />
-  @if (message()) {
-    <div class="notice" role="alert">{{ message() }}</div>
-  }
+  
   <form [formGroup]="form" (ngSubmit)="save()">
     <main>
       <section class="card personal">
@@ -118,7 +117,7 @@
       }
       <footer>
         <button type="button" (click)="cancel()">Cancel</button
-        ><button class="primary" [disabled]="loading()">
+        ><button class="primary" [disabled]="loading() || photoSaving()">
           <i aria-hidden="true" class="pi pi-check"></i
           >{{
             loading()
@@ -132,7 +131,7 @@
         </button>
       </footer>
     </main>
-    <aside>
+    <aside [class.photo-only]="parentChildEdit()">
       <section class="card photo">
         <h2><i aria-hidden="true" class="pi pi-image"></i>Student photo</h2>
         <label class="upload" [class.has-photo]="photoUrl()">
@@ -143,8 +142,17 @@
           }
           <strong>{{ photoUrl() ? 'Change student photo' : 'Upload student photo' }}</strong
           ><small>JPG, PNG up to 2MB</small><b>Choose file</b
-          ><input type="file" accept="image/png,image/jpeg" (change)="selectPhoto($event)"
+          ><input type="file" accept="image/png,image/jpeg" [disabled]="loading() || photoSaving()" (change)="selectPhoto($event)"
         /></label>
+        @if (photoMessage()) {
+          <p class="photo-message" role="status">{{ photoMessage() }}</p>
+        }
+        @if (editing() && photoPending()) {
+          <button class="primary save-photo" type="button" [disabled]="loading() || photoSaving()" (click)="savePhoto()">
+            <i class="pi" [class.pi-upload]="!photoSaving()" [class.pi-spinner]="photoSaving()" [class.pi-spin]="photoSaving()" aria-hidden="true"></i>
+            {{ photoSaving() ? 'Uploading...' : 'Save photo' }}
+          </button>
+        }
       </section>
       @if (!parentChildEdit()) {
         <section class="card guardian">

@@ -2,12 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthUtilityPage } from './auth-utility-page';
+import { ToastService } from '../../shared/toast/toast.service';
 
 function setup(kind: string, recoveryError: string | null = null) {
-  const auth = { resetPassword: vi.fn().mockResolvedValue(undefined), verifyOtp: vi.fn().mockResolvedValue(undefined), changePassword: vi.fn().mockResolvedValue(undefined), logout: vi.fn().mockResolvedValue(undefined), friendlyError: AuthService.prototype.friendlyError };
+  const toastMock = {
+    show: vi.fn(),
+    error: vi.fn(),
+    success: vi.fn(),
+  };
+  const auth = { resetPassword: vi.fn().mockResolvedValue(undefined), verifyOtp: vi.fn().mockResolvedValue(undefined), changePassword: vi.fn().mockResolvedValue(undefined), logout: vi.fn().mockResolvedValue(undefined), friendlyError: AuthService.prototype.friendlyError, profile: () => null };
   TestBed.configureTestingModule({ providers: [provideRouter([]),
     { provide: ActivatedRoute, useValue: { snapshot: { data: { kind }, queryParamMap: { get: () => recoveryError } } } },
     { provide: AuthService, useValue: auth },
+    { provide: ToastService, useValue: toastMock },
   ] });
   const fixture = TestBed.createComponent(AuthUtilityPage);
   const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
@@ -28,7 +35,7 @@ describe('Account recovery screens', () => {
     const { page, auth } = setup('password');
     page['form'].patchValue({ password: 'NewPass123!', confirmPassword: 'Other123!' });
     await page['submit']();
-    expect(page['error']()).toContain('do not match');
+    expect(page['error']()).toBe('Passwords do not match.');
     page['form'].patchValue({ password: 'short', confirmPassword: 'short' });
     await page['submit']();
     expect(auth.changePassword).not.toHaveBeenCalled();
@@ -39,7 +46,8 @@ describe('Account recovery screens', () => {
     const pending = page['submit']();
     await page['submit'](); await pending;
     expect(auth.resetPassword).toHaveBeenCalledOnce();
-    expect(page['message']()).toContain('If an account exists');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'success');
+    expect(toast).toHaveBeenCalledWith('If an account exists for that email, a secure reset link has been sent.');
   });
   it('requires a numeric recovery code and explains rejected recovery codes', async () => {
     const { page, auth } = setup('otp');
@@ -49,7 +57,8 @@ describe('Account recovery screens', () => {
     auth.verifyOtp.mockRejectedValue({ message: 'Token has expired or is invalid' });
     page['form'].patchValue({ code: '123456' });
     await page['submit']();
-    expect(page['error']()).toContain('Request a new reset link');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('This recovery link or code is invalid or has expired. Request a new reset link.');
   });
   it.each(['123456', '12345678', '1234567890'])('accepts supported recovery code length: %s', (code) => {
     const { page } = setup('otp');
@@ -72,7 +81,8 @@ describe('Account recovery screens', () => {
     auth.changePassword.mockRejectedValue({ message: 'Auth session missing!' });
     page['form'].patchValue({ password: 'NewPass123!', confirmPassword: 'NewPass123!' });
     await page['submit']();
-    expect(page['error']()).toContain('expired');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('This recovery link or code is invalid or has expired. Request a new reset link.');
     expect(navigate).not.toHaveBeenCalled();
     expect(auth.logout).not.toHaveBeenCalled();
   });

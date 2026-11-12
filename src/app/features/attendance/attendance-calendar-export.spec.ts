@@ -1,17 +1,92 @@
-import { buildAttendanceCalendarCsv } from './attendance-calendar-export';
+import { tableCsv } from '../../shared/export/export-file';
+import {
+  buildRecordExportRows,
+  buildSummaryExportRows,
+  calendarRecordColumns,
+  calendarSummaryColumns,
+} from './attendance-calendar-export';
 
-describe('buildAttendanceCalendarCsv', () => {
+describe('attendance calendar export rows', () => {
   const stats = { present: 8, absent: 1, late: 1, checked_out: 0, total: 10 };
-  it('exports month summary and active filters', () => {
-    const csv = buildAttendanceCalendarCsv({ view: 'month', monthLabel: 'September 2026', batchLabel: 'U16', studentLabel: 'All students', statusLabel: 'present', stats });
-    expect(csv).toContain('"Batch","U16"'); expect(csv).toContain('"Present","8","80%"');
+
+  it('builds month and week status totals with percentages', () => {
+    const rows = buildSummaryExportRows(stats);
+    expect(rows).toContainEqual({ status: 'Present', count: 8, percentage: '80%' });
+    expect(rows).toContainEqual({ status: 'Total', count: 10, percentage: '100%' });
   });
-  it('exports the selected week range', () => {
-    const csv = buildAttendanceCalendarCsv({ view: 'week', monthLabel: 'September 2026', batchLabel: 'All batches', studentLabel: 'All students', statusLabel: 'All statuses', dateRange: '2026-09-06 to 2026-09-12', stats });
-    expect(csv).toContain('"Date range","2026-09-06 to 2026-09-12"');
+
+  it('returns no summary rows when the selected period has no stats', () => {
+    expect(buildSummaryExportRows()).toEqual([]);
   });
-  it('exports list records without fallback values', () => {
-    const csv = buildAttendanceCalendarCsv({ view: 'list', monthLabel: 'September 2026', batchLabel: 'U16', studentLabel: 'Asha', statusLabel: 'late', list: { total: 1, page: 1, pageSize: 50, records: [{ id: 'a', attendance_date: '2026-09-10', check_in_at: null, check_out_at: null, status: 'late', remarks: null, source: 'manual', student: { id: 's', student_code: 'S1', full_name: 'Asha', photo_url: null }, batch: { id: 'b', name: 'U16' } }] } });
-    expect(csv).toContain('"2026-09-10","Asha","S1","U16","","","late"');
+
+  it('keeps record values empty instead of substituting placeholders', () => {
+    const rows = buildRecordExportRows([
+      {
+        id: 'a',
+        attendance_date: '2026-09-10',
+        check_in_at: null,
+        check_out_at: null,
+        status: 'late',
+        remarks: null,
+        source: 'manual',
+        student: { id: 's', student_code: 'S1', full_name: 'Asha', photo_url: null },
+        batch: { id: 'b', name: 'U16' },
+      },
+    ]);
+    expect(rows[0]).toEqual({
+      date: '2026-09-10',
+      student: 'Asha',
+      studentCode: 'S1',
+      batch: 'U16',
+      checkIn: '',
+      checkOut: '',
+      status: 'late',
+      source: 'manual',
+      remarks: '',
+    });
+  });
+
+  it('escapes spreadsheet formulas through the shared CSV path', () => {
+    const rows = buildRecordExportRows([
+      {
+        id: 'a',
+        attendance_date: '2026-09-10',
+        check_in_at: null,
+        check_out_at: null,
+        status: 'present',
+        remarks: '=HYPERLINK("http://evil")',
+        source: 'manual',
+        student: { id: 's', student_code: 'S1', full_name: '+Asha', photo_url: null },
+        batch: { id: 'b', name: 'U16' },
+      },
+    ]);
+    const csv = tableCsv(calendarRecordColumns, rows);
+    expect(csv).toContain('"\'+Asha"');
+    expect(csv).toContain('"\'=HYPERLINK(""http://evil"")"');
+  });
+
+  it('uses the shared CSV builder for summary headers', () => {
+    expect(tableCsv(calendarSummaryColumns, buildSummaryExportRows(stats)).split('\r\n')[0]).toBe(
+      '"Status","Count","Percentage"',
+    );
+  });
+
+  it('keeps the summary and record column labels in sync with the exported keys', () => {
+    expect(calendarSummaryColumns.map((column) => column.key)).toEqual([
+      'status',
+      'count',
+      'percentage',
+    ]);
+    expect(calendarRecordColumns.map((column) => column.label)).toEqual([
+      'Date',
+      'Student',
+      'Student code',
+      'Batch',
+      'Check in',
+      'Check out',
+      'Status',
+      'Source',
+      'Remarks',
+    ]);
   });
 });

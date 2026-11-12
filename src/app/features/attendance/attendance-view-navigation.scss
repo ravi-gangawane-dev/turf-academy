@@ -1,10 +1,11 @@
-:host { display: block; }
+:host {
+  display: block;
+}
 
 .attendance-view-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
 
   a {
     display: inline-flex;
@@ -21,12 +22,26 @@
     font-weight: 600;
     text-decoration: none;
 
-    &:hover { background: #edf6ef; border-color: #87b493; }
-    &.active { background: #08743c; border-color: #08743c; color: #fff; }
-    &:focus-visible { outline: 2px solid #08743c; outline-offset: 3px; }
+    &:hover {
+      background: #edf6ef;
+      border-color: #87b493;
+    }
+
+    &.active {
+      background: #08743c;
+      border-color: #08743c;
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #08743c;
+      outline-offset: 3px;
+    }
   }
 }
 
 @media (max-width: 650px) {
-  .attendance-view-actions a { flex: 1 1 160px; }
+  .attendance-view-actions a {
+    flex: 1 1 160px;
+  }
 }

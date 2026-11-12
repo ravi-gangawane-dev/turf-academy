@@ -2,7 +2,7 @@ import { TableTools } from '../../shared/data-table/table-tools';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { AsyncState } from '../../shared/async-state/async-state';
-import { DatePipe } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -25,6 +25,7 @@ import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 
 @Component({
   selector: 'app-students-page',
@@ -59,7 +60,8 @@ export class StudentsPage implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   protected readonly message = signal('');
-  private readonly toastFeedback = effect(() => { const error = this.error(); const message = this.message(); if (error) this.toast.show(error, 'error'); else if (message) this.toast.show(message, 'success'); });
+  // Only transient successes are announced here; load failures stay inline in the table.
+  private readonly toastFeedback = effect(() => { const message = this.message(); if (message) this.toast.success(message); });
   protected readonly deletingId = signal('');
   protected readonly searchText = signal('');
   protected readonly batch = signal('');
@@ -179,48 +181,56 @@ export class StudentsPage implements OnInit {
       await this.students.deleteStudent(row.id);
       if (this.rows().length === 1 && this.page() > 1) this.page.update((value) => value - 1);
       await Promise.all([this.load(), this.loadMetrics()]);
-      this.message.set('Student deleted successfully.');
+      this.toast.success('Student deleted successfully.');
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Student could not be deleted.');
+      this.toast.error(error instanceof Error ? error.message : 'Student could not be deleted.');
     } finally {
       this.deletingId.set('');
     }
   }
-  protected exportStudents(): void {
-    const headers = [
-      'Student ID',
-      'Student',
-      'Batch',
-      'Coach',
-      'Date of birth',
-      'Phone',
-      'Status',
-      'Guardian',
-      'Join date',
-    ];
-    const lines = [
-      headers,
-      ...this.rows().map((row) => [
-        row.studentCode,
-        row.fullName,
-        row.batchName ?? '',
-        row.coachName ?? '',
-        row.dateOfBirth,
-        row.phone ?? '',
-        row.status,
-        row.parentName ?? '',
-        row.joinDate,
-      ]),
-    ];
-    const csv = lines
-      .map((line) => line.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
-      .join('\n');
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'students.csv';
-    link.click();
-    URL.revokeObjectURL(url);
+  protected readonly exportColumns: readonly ExportColumn[] = [
+    { key: 'student', label: 'Student' },
+    { key: 'batch', label: 'Batch / Program' },
+    { key: 'coach', label: 'Coach' },
+    { key: 'dateOfBirth', label: 'Date of birth' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'status', label: 'Status' },
+    { key: 'guardian', label: 'Parent / Guardian' },
+    { key: 'joinDate', label: 'Join date' },
+  ];
+  protected readonly exportReference = 'Student directory';
+  /** Reads every filtered student in pages so the export is not limited to the screen. */
+  protected readonly exportStudents = async (): Promise<readonly ExportRow[]> => {
+    const pageSize = 500;
+    const rows: ExportRow[] = [];
+    for (let page = 1; ; page++) {
+      const result = await this.students.getStudents({
+        columns: this.columns.params(),
+        search: this.searchText(),
+        batchId: this.batch(),
+        programId: this.program(),
+        coachId: this.coach(),
+        status: this.status(),
+        page,
+        pageSize,
+        sortBy: this.sortBy(),
+        sortDirection: this.sortDirection(),
+      });
+      rows.push(...result.rows.map((row) => this.exportRow(row)));
+      if (!result.rows.length || rows.length >= result.total) return rows;
+    }
+  };
+  private exportRow(row: StudentListItem): ExportRow {
+    return {
+      student: `${row.fullName} (${row.studentCode})`,
+      batch: row.batchName || 'Not assigned',
+      coach: row.coachName || 'Not assigned',
+      dateOfBirth: formatDate(row.dateOfBirth, 'dd MMM yyyy', 'en-US'),
+      phone: row.phone || '—',
+      status: row.status,
+      guardian: row.parentName || 'Not linked',
+      joinDate: formatDate(row.joinDate, 'dd MMM yyyy', 'en-US'),
+    };
   }
   private async load(): Promise<void> {
     const request = ++this.requestSequence;

@@ -1,0 +1,145 @@
+<article
+  class="print-sheet print-sheet--enrollment"
+  [attr.aria-label]="title() + ' for ' + confirmation().studentName"
+>
+  <section class="print-page print-page--last">
+    <header class="letterhead">
+      <img
+        class="brand-logo"
+        [src]="confirmation().brand.logoUrl"
+        [alt]="confirmation().brand.name + ' logo'"
+      />
+      <div class="brand-copy">
+        <p class="brand-kicker">{{ confirmation().brand.name }}</p>
+        <h1>{{ title() }}</h1>
+        <p class="brand-contact">
+          @if (confirmation().brand.address) { <span>{{ confirmation().brand.address }}</span> }
+          @if (confirmation().brand.phone) { <span>{{ confirmation().brand.phone }}</span> }
+          @if (confirmation().brand.email) { <span>{{ confirmation().brand.email }}</span> }
+        </p>
+      </div>
+      <div class="doc-label">
+        <strong>{{ confirmation().confirmationNumber }}</strong>
+        <span>Effective {{ formatDay(confirmation().effectiveOn) }}</span>
+        <span class="doc-tag">{{ tag() }}</span>
+      </div>
+    </header>
+
+    <section class="doc-grid">
+      <div class="box">
+        <h2>Student</h2>
+        <strong>{{ confirmation().studentName }}</strong>
+        <small>
+          {{ confirmation().studentCode || 'No student code' }}
+          @if (confirmation().studentDateOfBirth) {
+            · Born {{ formatDay(confirmation().studentDateOfBirth) }}
+          }
+        </small>
+        @if (confirmation().guardianName) {
+          <small>
+            Guardian: {{ confirmation().guardianName }}
+            @if (confirmation().guardianRelation) { ({{ confirmation().guardianRelation }}) }
+            @if (confirmation().guardianPhone) { · {{ confirmation().guardianPhone }} }
+          </small>
+        }
+      </div>
+      <div class="box">
+        <h2>Batch</h2>
+        <strong>{{ confirmation().batchName }}</strong>
+        <small>
+          {{ confirmation().batchCode || 'No batch code' }}
+          @if (confirmation().batchTime) { · {{ confirmation().batchTime }} }
+        </small>
+        <small>{{ confirmation().batchSchedule }}</small>
+      </div>
+    </section>
+
+    @if (confirmation().action === 'transferred' && confirmation().previousBatchName) {
+      <section class="enrollment-transfer">
+        <span>Transfer</span>
+        <strong>{{ confirmation().previousBatchName }}</strong>
+        <span aria-hidden="true">→</span>
+        <strong>{{ confirmation().batchName }}</strong>
+        @if (confirmation().previousBatchCode) {
+          <small>From {{ confirmation().previousBatchCode }} to {{ confirmation().batchCode }}</small>
+        }
+      </section>
+    }
+
+    <section class="sec-head">
+      <h2>Enrollment terms</h2>
+      <span>Recorded on {{ confirmation().issuedAt | date: 'dd MMM yyyy, HH:mm' : confirmation().brand.timezone }}</span>
+    </section>
+
+    <table class="doc-table enrollment-terms">
+      <tbody>
+        @for (term of confirmation().terms; track term.label) {
+          <tr>
+            <th scope="row">{{ term.label }}</th>
+            <td>{{ term.value }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <th scope="row">Enrollment</th>
+            <td>No additional terms were recorded.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <section class="doc-grid enrollment-facts">
+      <div class="box">
+        <h2>Plan and fee</h2>
+        <strong>{{ confirmation().planName }}</strong>
+        <small>Monthly fee {{ money(confirmation().monthlyFee) }}</small>
+        @if (confirmation().registrationFee) {
+          <small>Registration fee {{ money(confirmation().registrationFee!) }}</small>
+        }
+        @if (confirmation().durationMonths) {
+          <small>Plan duration {{ confirmation().durationMonths }} month{{ confirmation().durationMonths === 1 ? '' : 's' }}</small>
+        }
+      </div>
+      <div class="box">
+        <h2>Validity</h2>
+        <strong>{{ formatDay(confirmation().validFrom) }} → {{ confirmation().validTill ? formatDay(confirmation().validTill) : 'No end date' }}</strong>
+        <small>Status {{ confirmation().status }}</small>
+        @if (confirmation().batchCoaches.length) {
+          <small>Coaches {{ confirmation().batchCoaches.join(' · ') }}</small>
+        }
+      </div>
+    </section>
+
+    @if (confirmation().reason) {
+      <section class="enrollment-reason">
+        <h2>Reason</h2>
+        <p>{{ confirmation().reason }}</p>
+      </section>
+    }
+
+    @if (confirmation().notes) {
+      <section class="enrollment-reason">
+        <h2>Notes</h2>
+        <p>{{ confirmation().notes }}</p>
+      </section>
+    }
+
+    <p class="receipt-note enrollment-declaration">
+      This confirmation reflects the enrollment, batch, plan and fee records held by
+      {{ confirmation().brand.name }} on the issue date. Contact the academy if any detail is
+      incorrect.
+    </p>
+
+    <footer class="receipt-signatures">
+      <div>Student / guardian signature</div>
+      <div>Academy representative</div>
+      <div>Date</div>
+    </footer>
+
+    <app-print-page-footer
+      [page]="1"
+      [total]="1"
+      [label]="confirmation().studentName + ' · ' + confirmation().batchName"
+      [note]="'Confirmation ' + confirmation().confirmationNumber"
+    />
+  </section>
+</article>

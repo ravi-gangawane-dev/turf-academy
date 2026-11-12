@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-auth-utility-page',
@@ -15,6 +16,7 @@ export class AuthUtilityPage {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
   protected readonly title = String(this.route.snapshot.data['title'] ?? 'Account recovery');
   protected readonly description = String(
     this.route.snapshot.data['description'] ?? 'Verify your academy account to continue.',
@@ -25,6 +27,20 @@ export class AuthUtilityPage {
   protected readonly message = signal('');
   protected readonly error = signal('');
   protected readonly submitting = signal(false);
+  /** Reason supplied by session revalidation; drives a specific expired-session message. */
+  protected readonly sessionEndReason = String(
+    this.route.snapshot.queryParamMap.get('reason') ?? '',
+  );
+  protected readonly expiredMessage =
+    this.sessionEndReason === 'inactive'
+      ? 'Your account has been disabled. Contact the academy administrator to restore access.'
+      : this.sessionEndReason === 'suspended'
+        ? 'Your account has been suspended. Contact the academy administrator.'
+        : this.sessionEndReason === 'removed'
+          ? 'Your account is no longer available. Contact the academy administrator.'
+          : 'Your session has expired. For your security, please sign in again.';
+  /** Read-only identity of the authenticated account being activated or reset. */
+  protected readonly accountEmail = computed(() => this.auth.profile()?.email ?? '');
   protected readonly showPassword = signal(false);
   protected readonly attempted = signal(false);
   protected readonly form = this.fb.nonNullable.group({
@@ -51,6 +67,8 @@ export class AuthUtilityPage {
     const recoveryError =
       this.route.snapshot.queryParamMap.get('error') ||
       new URLSearchParams(location.hash.slice(1)).get('error');
+    // A link that failed before the page loaded must stay on screen next to a
+    // recovery action, so it belongs in the inline alert rather than a toast.
     if (recoveryError)
       this.error.set('This recovery link is invalid or has expired. Request a new reset link.');
   }
@@ -61,7 +79,7 @@ export class AuthUtilityPage {
     this.form.controls.identity.setValue(this.form.controls.identity.value.trim());
     this.form.controls.code.setValue(this.form.controls.code.value.trim());
     this.error.set('');
-    this.message.set('');
+
     if (this.kind === 'password' && this.form.value.password !== this.form.value.confirmPassword) {
       this.error.set('Passwords do not match.');
       return;
@@ -74,10 +92,10 @@ export class AuthUtilityPage {
     try {
       if (this.kind === 'email') {
         await this.auth.resetPassword(this.form.getRawValue().identity);
-        this.message.set('If an account exists for that email, a secure reset link has been sent.');
+        this.toast.success('If an account exists for that email, a secure reset link has been sent.');
       } else if (this.kind === 'otp') {
         await this.auth.verifyOtp(this.form.getRawValue().identity, this.form.getRawValue().code);
-        this.message.set('Verification successful. You can now choose a new password.');
+        this.toast.success('Verification successful. You can now choose a new password.');
         setTimeout(() => void this.router.navigateByUrl('/auth/reset-password'), 800);
       } else if (this.kind === 'password') {
         await this.auth.changePassword(this.form.getRawValue().password);
@@ -85,7 +103,7 @@ export class AuthUtilityPage {
         await this.router.navigateByUrl('/auth/password-updated');
       }
     } catch (error) {
-      this.error.set(this.auth.friendlyError(error));
+      this.toast.error(this.auth.friendlyError(error));
     } finally {
       this.submitting.set(false);
     }

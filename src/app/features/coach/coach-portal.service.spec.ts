@@ -70,6 +70,31 @@ describe('Complete coach dashboard and schedule reads', () => {
     await expect(api.loadSessions(['a'])).rejects.toThrow('Some records could not be loaded');
   });
 
+  it('includes every matching attendance record for exports, across server page caps', async () => {
+    const { api, requests } = setup(2401);
+    const rows = await api.attendanceHistoryAll(['assigned-a'], 'batch-1', 'student-9', 'late');
+    expect(rows).toHaveLength(2401);
+    expect(requests).toHaveLength(18);
+    for (const request of requests) {
+      expect(request.searchParams.get('batch_id')).toBe('in.(batch-1)');
+      expect(request.searchParams.get('student_id')).toBe('eq.student-9');
+      expect(request.searchParams.get('status')).toBe('eq.late');
+      expect(request.searchParams.get('order')).toBe('attendance_date.desc,check_in_at.desc,id.asc');
+      expect(request.searchParams.get('limit')).toBe('500');
+    }
+  });
+
+  it('rejects a failed export page instead of downloading a partial attendance report', async () => {
+    const { api } = setup(600, true);
+    await expect(api.attendanceHistoryAll(['a'], '', '', '')).rejects.toThrow();
+  });
+
+  it('makes no export queries when the coach has no assigned batches', async () => {
+    const { api, fetch } = setup(1);
+    expect(await api.attendanceHistoryAll([], '', '', '')).toEqual([]);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it('makes no queries when the coach has no assigned batches', async () => {
     const { api, fetch } = setup(1);
     expect(await api.loadDashboardAttendance([])).toEqual([]);

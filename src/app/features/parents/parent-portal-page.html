@@ -1,12 +1,10 @@
 <div class="portal-page">
-  @if (loading()) {
-  <app-async-state title="Loading parent portal…" />
-  } @else if (error()) {
+  @if (error()) {
   <app-async-state kind="error" title="Unable to load this page" [message]="error()" actionLabel="Retry"
     (action)="load()" />
   } @else if (data(); as vm) {
   <app-page-hero [title]="viewTitle()" subtitle="Manage your family account and student activity."
-    [breadcrumbs]="[{label:'Dashboard',route:'/parent/dashboard'},{label:viewTitle()}]">
+    [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/parent/dashboard'},{label:viewTitle()}]">
     <div hero-actions>@if (vm.children.length && view !== 'children' && view !== 'profile' && view !== 'support') {
       <label>Viewing child<select [value]="vm.selected?.workspace?.student?.id" (change)="changeChild($event)">
           @for (child of vm.children; track child.workspace.student.id) {
@@ -77,9 +75,8 @@
     <app-summary-metric-card label="Attendance" [value]="attendance().rate + '%'" icon="pi-chart-line" tone="blue" />
   </section>
   <section class="card">
-    <header>
-      <h2>Attendance history</h2>
-      <div class="table-actions">
+    <app-table-tools title="Attendance history" [table]="exportTable1" [total]="vm.attendancePage.total">
+      <div class="table-actions attendance-filters">
         <label class="compact-filter">Search<input type="search" placeholder="Status or remarks"
             [value]="attendanceSearch()" (input)="searchAttendance($event)" /></label>
         <label class="compact-filter">From<input type="date" (change)="filterAttendanceDate('from', $event)" /></label>
@@ -93,9 +90,7 @@
         </select>
         <button (click)="go('/parent/attendance/calendar')">Calendar view</button>
       </div>
-    </header>
-    <app-table-tools title="Attendance history" [table]="exportTable1"
-      [total]="vm.attendancePage.total"></app-table-tools>
+    </app-table-tools>
     <table #exportTable1 class="academy-table">
       <caption class="sr-only">
         Attendance history for the selected child
@@ -244,7 +239,6 @@
       icon="pi-wallet" tone="blue" />
   </section>
   <section class="card">
-    <h2>Pending fees</h2>
     <app-table-tools title="Pending fees" [table]="exportTable2"></app-table-tools>
     <table #exportTable2 class="academy-table">
       <caption class="sr-only">
@@ -289,19 +283,19 @@
   }
   @case ('payments') {
   <section class="card">
-    <header>
-      <h2>Payment history</h2>
-      <label class="compact-filter">Search<input type="search" placeholder="Mode or transaction ID"
-          [value]="paymentSearch()" (input)="searchPayments($event)" /></label>
-      <select aria-label="Filter payment status" (change)="filterPayments($event)">
-        <option value="">All statuses</option>
-        <option value="successful">Successful</option>
-        <option value="pending">Pending</option>
-        <option value="failed">Failed</option>
-        <option value="refunded">Refunded</option>
-      </select>
-    </header>
-    <app-table-tools title="Payment history" [table]="exportTable3" [total]="vm.paymentPage.total"></app-table-tools>
+    <app-table-tools title="Payment history" [table]="exportTable3" [total]="vm.paymentPage.total">
+      <div class="table-actions attendance-filters">
+        <label class="compact-filter">Search<input type="search" placeholder="Mode or transaction ID"
+            [value]="paymentSearch()" (input)="searchPayments($event)" /></label>
+        <select aria-label="Filter payment status" (change)="filterPayments($event)">
+          <option value="">All statuses</option>
+          <option value="successful">Successful</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+          <option value="refunded">Refunded</option>
+        </select>
+      </div>
+    </app-table-tools>
     <table #exportTable3 class="academy-table">
       <caption class="sr-only">
         Payment history for the selected child
@@ -334,7 +328,7 @@
           </td>
           <td>
             @if (receipt(p, 'receipt_number')) {
-            <button (click)="open(receipt(p, 'url'))">
+            <button (click)="openReceipt(p['id'])">
               {{ receipt(p, 'receipt_number') || 'View' }}
             </button>
             } @else {
@@ -355,9 +349,13 @@
   }
   @case ('receipt') {
   <section class="receipt card">
-    <img class="receipt-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" />
+    <img class="receipt-logo" [src]="preferences.logoUrl()" [alt]="preferences.value().academy_name + ' logo'" />
     <h2>Payment Receipt</h2>
-    @if (vm.paymentPage.rows[0]; as payment) {
+    @if (receiptError()) {
+    <app-async-state kind="error" title="Receipt unavailable" [message]="receiptError()" />
+    } @else if (receiptLoading()) {
+    <app-async-state kind="loading" title="Loading receipt" message="Fetching this payment receipt." />
+    } @else if (selectedReceipt(); as payment) {
     <dl>
       <dt>Receipt no.</dt>
       <dd>{{ receipt(payment, 'receipt_number') || 'Pending issue' }}</dd>
@@ -395,15 +393,22 @@
       <dd><app-status-badge [status]="$any(payment['status'])" /></dd>
     </dl>
     <div class="receipt-actions">
-      @if (receipt(payment, 'url')) {
-      <button (click)="open(receipt(payment, 'url'))">
-        <i class="pi pi-eye"></i> View / Download
+      <button [disabled]="!receipt(payment, 'receipt_number')" (click)="printReceipt('preview')">
+        <i class="pi pi-eye"></i> Preview
       </button>
-      }
-      <button (click)="printReceipt()"><i class="pi pi-print"></i> Print</button>
+      <button [disabled]="!receipt(payment, 'receipt_number')" (click)="printReceipt('print')">
+        <i class="pi pi-print"></i> Print
+      </button>
+      <button [disabled]="!receipt(payment, 'receipt_number')" (click)="printReceipt('pdf')">
+        <i class="pi pi-file-pdf"></i> Download PDF
+      </button>
     </div>
     } @else {
-    <p>No receipt is available.</p>
+    <app-async-state kind="empty" title="No receipt selected"
+      message="Open a payment from Payment History to view its receipt." />
+    <div class="receipt-actions">
+      <button (click)="go('/parent/payments')"><i class="pi pi-list"></i> Payment history</button>
+    </div>
     }
   </section>
   }
@@ -508,6 +513,7 @@
   }
   @case ('profile') {
   <section class="profile-grid">
+    @if (profileCompletion().percentage < 100) {
     <article class="card profile-progress">
       <header>
         <div>
@@ -542,17 +548,12 @@
           }
         </ul>
       </div>
-      } @else {
-      <div class="all-complete">
-        <i class="pi pi-check-circle"></i>Your parent profile is complete.
-      </div>
       }
       <button class="complete-profile-action" (click)="go('/parent/profile/edit')">
-        <i class="pi pi-pencil"></i>{{
-        profileCompletion().percentage === 100 ? 'Update profile' : 'Complete profile'
-        }}
+        <i class="pi pi-pencil"></i>Complete profile
       </button>
     </article>
+    }
     <article class="card profile">
       <header class="profile-identity">
         <div class="photo">

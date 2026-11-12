@@ -167,33 +167,11 @@
   font-size: 12px;
 }
 
-.icon-button {
-  width: 30px;
-  height: 30px;
-  border: 0;
-  color: #63756b;
-  background: transparent;
-}
-
 .row-actions {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-}
-
-.row-actions .icon-button {
-  width: 30px;
-  height: 30px;
-}
-
-.row-actions .danger-action {
-  color: #c83d36;
-}
-
-.row-actions .danger-action:hover:not(:disabled) {
-  background: #fff0ee;
-  border-color: #f2c8c4;
 }
 
 .table-footer {
@@ -6460,6 +6438,7 @@
   min-width: 1200px;
   table-layout: auto;
 }
+
 .students-page .student-table.reference-table th,
 .students-page .student-table.reference-table td {
   display: table-cell;

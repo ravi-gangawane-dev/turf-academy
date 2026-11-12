@@ -1,0 +1,68 @@
+@use '../print-document';
+
+.print-sheet--table {
+  page: report-page;
+  display: block;
+}
+
+.print-page {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  min-height: calc(297mm - 28mm);
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-page--last {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.table-subtitle {
+  margin: 0;
+  color: #5f7268;
+  font-size: 8.6pt;
+}
+
+.export-table {
+  font-size: 8.4pt;
+}
+
+.export-table thead {
+  display: table-header-group;
+}
+
+.export-table th,
+.export-table td {
+  padding: 1.6mm 2mm;
+  overflow-wrap: anywhere;
+}
+
+.export-table .align-right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.export-table .align-center {
+  text-align: center;
+}
+
+.export-table .index {
+  width: 8mm;
+  color: #5f7268;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.export-table .empty {
+  padding: 8mm 2mm;
+  color: #5f7268;
+  text-align: center;
+}
+
+@media print {
+  .print-sheet--table {
+    box-shadow: none;
+  }
+}

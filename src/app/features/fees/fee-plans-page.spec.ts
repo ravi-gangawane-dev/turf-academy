@@ -6,7 +6,7 @@ import { FeesService } from '../../core/supabase/domain-services';
 import { FeePlansPage } from './fee-plans-page';
 
 describe('Fee plan dialog', () => {
-  afterEach(() => TestBed.resetTestingModule());
+  afterEach(() => { TestBed.resetTestingModule(); vi.restoreAllMocks(); });
 
   it('uses configured currency and restores focus after Escape, but stays open while saving', async () => {
     TestBed.configureTestingModule({
@@ -16,6 +16,8 @@ describe('Fee plan dialog', () => {
         { provide: AcademyPreferencesService, useValue: { currency: signal('USD'), load: async () => {} } },
       ],
     });
+    // jsdom has no layout; give visible controls a rectangle for the focus trap.
+    vi.spyOn(HTMLElement.prototype, 'getClientRects').mockReturnValue([{}] as unknown as DOMRectList);
     const fixture = TestBed.createComponent(FeePlansPage);
     fixture.detectChanges();
     await fixture.whenStable();

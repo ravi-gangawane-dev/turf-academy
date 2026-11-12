@@ -20,11 +20,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class FeeViewNavigation {
   protected readonly views = [
+    { label: 'Fees', icon: 'pi-wallet', route: '/fees' },
     { label: 'Fee Plans', icon: 'pi-list', route: '/fees/plans' },
-    { label: 'Monthly Charges', icon: 'pi-wallet', route: '/fees' },
-    { label: 'Discounts', icon: 'pi-percentage', route: '/fees/discounts' },
-    { label: 'Late Fees', icon: 'pi-clock', route: '/fees/late-fees' },
-    { label: 'Pending Fees', icon: 'pi-hourglass', route: '/fees/pending' },
-    { label: 'Fee Summary', icon: 'pi-chart-bar', route: '/fees/summary' },
+    { label: 'Fee Adjustments', icon: 'pi-sliders-h', route: '/fees/discounts' },
   ];
 }

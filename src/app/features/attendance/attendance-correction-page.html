@@ -1,7 +1,4 @@
 <div class="app-list-page attendance-section correction-page">
-  @if (message()) {
-    <div class="correction-notice" role="status">{{ message() }}</div>
-  }
   @if (error()) {
     <div class="page-info" role="alert">
       <i aria-hidden="true" class="pi pi-exclamation-triangle"></i>{{ error() }}
@@ -9,9 +6,7 @@
   }
   <section class="correction-card">
     
-    @if (loading()) {
-      <div class="queue-state">Loading correction requests…</div>
-    } @else if (!error() && !rows().length) {
+    @if (!loading() && !error() && !rows().length) {
       <app-async-state kind="empty" title="No correction requests found." />
     }
       <div class="table-wrap">
@@ -19,6 +14,15 @@
 <table #exportTable1 class="academy-table">
           <thead><tr><th><app-sortable-header sortKey="student" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th><th><app-sortable-header sortKey="attendance_date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Date</app-sortable-header></th><th><app-sortable-header sortKey="batch" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch</app-sortable-header></th><th><app-sortable-header sortKey="current" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Current</app-sortable-header></th><th><app-sortable-header sortKey="requested" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Requested</app-sortable-header></th><th><app-sortable-header sortKey="reason" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Reason</app-sortable-header></th><th><app-sortable-header sortKey="resolution_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''" (changed)="columns.set('student',$event)" /></th><th><app-column-filter label="date" type="date" [value]="columns.values()['attendance_date'] || ''" (changed)="columns.set('attendance_date',$event)" /></th><th><app-column-filter label="batch" type="search" [value]="columns.values()['batch'] || ''" (changed)="columns.set('batch',$event)" /></th><th><app-column-filter label="current" type="search" [value]="columns.values()['current'] || ''" (changed)="columns.set('current',$event)" /></th><th><app-column-filter label="requested" type="search" [value]="columns.values()['requested'] || ''" (changed)="columns.set('requested',$event)" /></th><th><app-column-filter label="reason" type="search" [value]="columns.values()['reason'] || ''" (changed)="columns.set('reason',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['resolution_status'] || ''" (changed)="columns.set('resolution_status',$event)" /></th><th><button (click)="columns.reset()">Reset</button></th></tr></thead>
           <tbody>
+            @if (loading()) {
+              @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+                <tr class="skeleton-row" aria-hidden="true">
+                  @for (column of [1, 2, 3, 4, 5, 6, 7, 8]; track column) {
+                    <td><span></span></td>
+                  }
+                </tr>
+              }
+            } @else {
             @for (row of rows(); track row['id']) {
               @let record = relation(row, 'attendance'); @let student = relation(record, 'student');
               @let batch = relation(record, 'batch');
@@ -40,10 +44,10 @@
                 <td>
                   @if (row['resolution_status'] === 'pending') {
                     <div class="review-actions">
-                      <button [disabled]="!!submittingId()" (click)="resolve(row['id'], true)">
+                      <button class="app-button small secondary" [disabled]="!!submittingId()" (click)="resolve(row['id'], true)">
                         <i aria-hidden="true" class="pi pi-check"></i> Approve</button
                       ><button
-                        class="reject"
+                        class="app-button small danger"
                         [disabled]="!!submittingId()"
                         (click)="resolve(row['id'], false)"
                       >
@@ -53,6 +57,7 @@
                   }
                 </td>
               </tr>
+            }
             }
           </tbody>
         </table>

@@ -1,33 +1,24 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { permissionGuard } from './core/auth/permission.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { notificationRedirect } from './features/notifications/notification-query';
+import { paymentRedirect } from './features/payments/payment-query';
+import { legacyBatchRouteGuard } from './features/batches/legacy-batch-route.guard';
 
-const designSystemPage = () =>
-  import('./features/system/design-system-page').then((m) => m.DesignSystemPage);
-const developerHandoffPage = () =>
-  import('./features/system/developer-handoff-page').then((m) => m.DeveloperHandoffPage);
-const authUtilityPage = () =>
-  import('./features/auth/auth-utility-page').then((m) => m.AuthUtilityPage);
-const roleRedirectPage = () =>
-  import('./features/auth/role-redirect-page').then((m) => m.RoleRedirectPage);
-const parentPortalPage = () =>
-  import('./features/parents/parent-portal-page').then((m) => m.ParentPortalPage);
-const coachPortalPage = () =>
-  import('./features/coach/coach-portal-page').then((m) => m.CoachPortalPage);
+const designSystemPage = () => import('./features/system/design-system-page').then((m) => m.DesignSystemPage);
+const developerHandoffPage = () => import('./features/system/developer-handoff-page').then((m) => m.DeveloperHandoffPage);
+const authUtilityPage = () => import('./features/auth/auth-utility-page').then((m) => m.AuthUtilityPage);
+const roleRedirectPage = () => import('./features/auth/role-redirect-page').then((m) => m.RoleRedirectPage);
+const parentPortalPage = () => import('./features/parents/parent-portal-page').then((m) => m.ParentPortalPage);
+const coachPortalPage = () => import('./features/coach/coach-portal-page').then((m) => m.CoachPortalPage);
 const paymentsPage = () => import('./features/payments/payments-page').then((m) => m.PaymentsPage);
-const academySettingsPage = () =>
-  import('./features/settings/academy-settings-page').then((m) => m.AcademySettingsPage);
-const feeOperationsPage = () =>
-  import('./features/fees/fee-operations-page').then((m) => m.FeeOperationsPage);
+const academySettingsPage = () => import('./features/settings/academy-settings-page').then((m) => m.AcademySettingsPage);
+const feeOperationsPage = () => import('./features/fees/fee-operations-page').then((m) => m.FeeOperationsPage);
 const reportsPage = () => import('./features/reports/reports-page').then((m) => m.ReportsPage);
-const notificationTemplatesPage = () =>
-  import('./features/notifications/notification-templates-page').then(
-    (m) => m.NotificationTemplatesPage,
-  );
-const academyEventsPage = () =>
-  import('./features/notifications/academy-events-page').then((m) => m.AcademyEventsPage);
+const notificationTemplatesPage = () => import('./features/notifications/notification-templates-page').then((m) => m.NotificationTemplatesPage);
+const academyEventsPage = () => import('./features/notifications/academy-events-page').then((m) => m.AcademyEventsPage);
 
 export const routes: Routes = [
   // Public entry points and authentication flows.
@@ -45,8 +36,7 @@ export const routes: Routes = [
   {
     path: 'unauthorized',
     title: 'Access denied · Turf Academy',
-    loadComponent: () =>
-      import('./features/auth/unauthorized-page').then((m) => m.UnauthorizedPage),
+    loadComponent: () => import('./features/auth/unauthorized-page').then((m) => m.UnauthorizedPage),
   },
   {
     path: 'auth/forgot-password',
@@ -62,6 +52,15 @@ export const routes: Routes = [
       title: 'Reset Password',
       kind: 'password',
       description: 'Choose a new secure password.',
+    },
+    loadComponent: authUtilityPage,
+  },
+  {
+    path: 'auth/set-password',
+    data: {
+      title: 'Set Your Password',
+      kind: 'password',
+      description: 'Activate your academy account by creating your own password.',
     },
     loadComponent: authUtilityPage,
   },
@@ -176,8 +175,7 @@ export const routes: Routes = [
         data: { roles: ['coach'], permission: 'coach:portal', view: 'check-in-out' },
         loadComponent: coachPortalPage,
       },
-      // The old fragmented coach attendance URLs keep working and land on the
-      // unified hardened view (mirrors the staff /attendance/* redirects).
+      // The old fragmented coach attendance URLs keep working and land on the unified hardened view (mirrors the staff /attendance/* redirects).
       {
         path: 'coach/attendance/qr',
         redirectTo: 'coach/attendance/check-in-out',
@@ -241,50 +239,42 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
         title: 'Admin Dashboard · Turf Academy',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
+        loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
       },
       {
         path: 'dashboard/coach',
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
         title: 'Coach Dashboard · Turf Academy',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
+        loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
       },
       {
         path: 'dashboard/reception',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'receptionist'] },
         title: 'Reception Dashboard · Turf Academy',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
+        loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
       },
       {
         path: 'parent/dashboard',
         canActivate: [roleGuard],
         data: { roles: ['parent'] },
         title: 'Parent Dashboard · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-dashboard-page').then((m) => m.ParentDashboardPage),
+        loadComponent: () => import('./features/parents/parent-dashboard-page').then((m) => m.ParentDashboardPage),
       },
       {
         path: 'parent/children/:id/edit',
         canActivate: [roleGuard],
         data: { roles: ['parent'], permission: 'children:read', parentChildEdit: true },
         title: 'Complete Child Profile · Turf Academy',
-        loadComponent: () =>
-          import('./features/students/student-form-page').then((m) => m.StudentFormPage),
+        loadComponent: () => import('./features/students/student-form-page').then((m) => m.StudentFormPage),
       },
       {
         path: 'parent/children/:id',
         canActivate: [roleGuard],
         data: { roles: ['parent'], permission: 'children:read' },
         title: 'Child Profile · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-child-profile-page').then(
-            (m) => m.ParentChildProfilePage,
-          ),
+        loadComponent: () => import('./features/parents/parent-child-profile-page').then((m) => m.ParentChildProfilePage),
       },
       {
         path: 'parent/children',
@@ -351,10 +341,7 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['parent'], permission: 'children:read' },
         title: 'Complete Parent Profile · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-profile-form-page').then(
-            (m) => m.ParentProfileFormPage,
-          ),
+        loadComponent: () => import('./features/parents/parent-profile-form-page').then((m) => m.ParentProfileFormPage),
       },
       {
         path: 'parent/support',
@@ -367,8 +354,7 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
         title: 'Dashboard · Turf Academy',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
+        loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.DashboardPage),
       },
       // Staff directory and academy operations.
       {
@@ -382,53 +368,46 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['admin', 'receptionist'], permission: 'students:write' },
         title: 'Add Student · Turf Academy',
-        loadComponent: () =>
-          import('./features/students/student-form-page').then((m) => m.StudentFormPage),
+        loadComponent: () => import('./features/students/student-form-page').then((m) => m.StudentFormPage),
       },
       {
         path: 'students/:id/edit',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'receptionist'], permission: 'students:write' },
         title: 'Edit Student · Turf Academy',
-        loadComponent: () =>
-          import('./features/students/student-form-page').then((m) => m.StudentFormPage),
+        loadComponent: () => import('./features/students/student-form-page').then((m) => m.StudentFormPage),
       },
       {
         path: 'students/:id',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'receptionist'], permission: 'students:read' },
         title: 'Student Details · Turf Academy',
-        loadComponent: () =>
-          import('./features/students/student-details-page').then((m) => m.StudentDetailsPage),
+        loadComponent: () => import('./features/students/student-details-page').then((m) => m.StudentDetailsPage),
       },
       {
         path: 'students',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'receptionist'], permission: 'students:read' },
         title: 'Students · Turf Academy',
-        loadComponent: () =>
-          import('./features/students/students-page').then((m) => m.StudentsPage),
+        loadComponent: () => import('./features/students/students-page').then((m) => m.StudentsPage),
       },
       {
         path: 'parents/add',
         data: { permission: 'parents:write' },
         title: 'Add Parent · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-form-page').then((m) => m.ParentFormPage),
+        loadComponent: () => import('./features/parents/parent-form-page').then((m) => m.ParentFormPage),
       },
       {
         path: 'parents/:id/edit',
         data: { permission: 'parents:write' },
         title: 'Edit Parent · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-form-page').then((m) => m.ParentFormPage),
+        loadComponent: () => import('./features/parents/parent-form-page').then((m) => m.ParentFormPage),
       },
       {
         path: 'parents/:id',
         data: { permission: 'parents:read' },
         title: 'Parent Details · Turf Academy',
-        loadComponent: () =>
-          import('./features/parents/parent-details-page').then((m) => m.ParentDetailsPage),
+        loadComponent: () => import('./features/parents/parent-details-page').then((m) => m.ParentDetailsPage),
       },
       {
         path: 'parents',
@@ -437,32 +416,41 @@ export const routes: Routes = [
         loadComponent: () => import('./features/parents/parents-page').then((m) => m.ParentsPage),
       },
       {
+        path: 'batches/details/:batchId',
+        data: { permission: 'batches:read', batchView: 'list' },
+        loadComponent: () => import('./features/batches/batch-details-page').then((m) => m.BatchDetailsPage),
+      },
+      {
         path: 'batches/student-allocation',
-        data: { permission: 'batches:write' },
+        canActivate: [legacyBatchRouteGuard],
+        data: { permission: 'batches:write', legacyView: 'student-allocation' },
         title: 'Student Allocation · Turf Academy',
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
       {
         path: 'batches/coach-assignment',
-        data: { permission: 'batches:write' },
+        canActivate: [legacyBatchRouteGuard],
+        data: { permission: 'batches:write', legacyView: 'coach-assignment' },
         title: 'Coach Assignment · Turf Academy',
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
       {
         path: 'batches/schedule',
-        data: { permission: 'batches:write' },
+        canActivate: [legacyBatchRouteGuard],
+        data: { permission: 'batches:write', legacyView: 'schedule' },
         title: 'Batch Schedule · Turf Academy',
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
       {
         path: 'batches/capacity',
-        data: { permission: 'batches:write' },
+        canActivate: [legacyBatchRouteGuard],
+        data: { permission: 'batches:write', legacyView: 'capacity' },
         title: 'Batch Capacity · Turf Academy',
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
       {
         path: 'batches',
-        data: { permission: 'batches:read' },
+        data: { permission: 'batches:read', batchView: 'list' },
         title: 'Batches · Turf Academy',
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
@@ -470,22 +458,19 @@ export const routes: Routes = [
         path: 'coaches/add',
         data: { permission: 'coaches:write' },
         title: 'Add Coach · Turf Academy',
-        loadComponent: () =>
-          import('./features/coaches/coach-form-page').then((m) => m.CoachFormPage),
+        loadComponent: () => import('./features/coaches/coach-form-page').then((m) => m.CoachFormPage),
       },
       {
         path: 'coaches/:id/edit',
         data: { permission: 'coaches:write' },
         title: 'Edit Coach · Turf Academy',
-        loadComponent: () =>
-          import('./features/coaches/coach-form-page').then((m) => m.CoachFormPage),
+        loadComponent: () => import('./features/coaches/coach-form-page').then((m) => m.CoachFormPage),
       },
       {
         path: 'coaches/:id',
         data: { permission: 'coaches:read' },
         title: 'Coach Details · Turf Academy',
-        loadComponent: () =>
-          import('./features/coaches/coach-details-page').then((m) => m.CoachDetailsPage),
+        loadComponent: () => import('./features/coaches/coach-details-page').then((m) => m.CoachDetailsPage),
       },
       {
         path: 'coaches',
@@ -498,36 +483,31 @@ export const routes: Routes = [
         path: 'enrollments',
         data: { permission: 'enrollments:write' },
         title: 'Enrollment · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'enrollments/new',
         data: { permission: 'enrollments:write', enrollmentView: 'new' },
         title: 'New Enrollment · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'enrollments/transfer',
         data: { permission: 'enrollments:write', enrollmentView: 'transfer' },
         title: 'Transfer Batch · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'enrollments/pause',
         data: { permission: 'enrollments:write', enrollmentView: 'pause' },
         title: 'Pause Enrollment · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'enrollments/cancel',
         data: { permission: 'enrollments:write', enrollmentView: 'cancel' },
         title: 'Cancel Enrollment · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'enrollments/fee-plans',
@@ -539,22 +519,19 @@ export const routes: Routes = [
         path: 'enrollments/history',
         data: { permission: 'enrollments:write', enrollmentView: 'history' },
         title: 'Enrollment History · Turf Academy',
-        loadComponent: () =>
-          import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
+        loadComponent: () => import('./features/enrollments/enrollments-page').then((m) => m.EnrollmentsPage),
       },
       {
         path: 'attendance',
         data: { permission: 'attendance:read' },
         title: 'Attendance · Turf Academy',
-        loadComponent: () =>
-          import('./features/attendance/attendance-page').then((m) => m.AttendancePage),
+        loadComponent: () => import('./features/attendance/attendance-page').then((m) => m.AttendancePage),
       },
       {
         path: 'attendance/check-in-out',
         data: { permission: 'attendance:write' },
         title: 'Check In / Check Out · Turf Academy',
-        loadComponent: () =>
-          import('./features/attendance/qr-attendance-page').then((m) => m.QrAttendancePage),
+        loadComponent: () => import('./features/attendance/qr-attendance-page').then((m) => m.QrAttendancePage),
       },
       {
         path: 'attendance/manual-check-in',
@@ -575,28 +552,19 @@ export const routes: Routes = [
         path: 'attendance/correction',
         data: { permission: 'attendance:write', tab: 'corrections' },
         title: 'Attendance History & Corrections · Turf Academy',
-        loadComponent: () =>
-          import('./features/attendance/attendance-history-corrections-page').then(
-            (m) => m.AttendanceHistoryCorrectionsPage,
-          ),
+        loadComponent: () => import('./features/attendance/attendance-history-corrections-page').then((m) => m.AttendanceHistoryCorrectionsPage),
       },
       {
         path: 'attendance/history',
         data: { permission: 'attendance:write' },
         title: 'Attendance History & Corrections · Turf Academy',
-        loadComponent: () =>
-          import('./features/attendance/attendance-history-corrections-page').then(
-            (m) => m.AttendanceHistoryCorrectionsPage,
-          ),
+        loadComponent: () => import('./features/attendance/attendance-history-corrections-page').then((m) => m.AttendanceHistoryCorrectionsPage),
       },
       {
         path: 'attendance/calendar',
         data: { permission: 'attendance:write' },
         title: 'Attendance Calendar · Turf Academy',
-        loadComponent: () =>
-          import('./features/attendance/attendance-calendar-page').then(
-            (m) => m.AttendanceCalendarPage,
-          ),
+        loadComponent: () => import('./features/attendance/attendance-calendar-page').then((m) => m.AttendanceCalendarPage),
       },
       {
         path: 'attendance/offline-queue',
@@ -619,8 +587,7 @@ export const routes: Routes = [
         path: 'notifications',
         data: { permission: 'notifications:read' },
         title: 'Notifications · Turf Academy',
-        loadComponent: () =>
-          import('./features/notifications/notifications-page').then((m) => m.NotificationsPage),
+        loadComponent: () => import('./features/notifications/notifications-page').then((m) => m.NotificationsPage),
       },
       {
         path: 'notifications/events',
@@ -653,14 +620,16 @@ export const routes: Routes = [
       {
         path: 'fees/pending',
         data: { permission: 'fees:write', feeView: 'pending' },
-        loadComponent: feeOperationsPage,
+        pathMatch: 'full',
+        redirectTo: ({ queryParams }) => inject(Router).createUrlTree(['/fees'], { queryParams: { ...queryParams, status: 'pending' } }),
       },
       {
         path: 'fees/summary',
         data: { permission: 'fees:write', feeView: 'summary' },
-        loadComponent: feeOperationsPage,
+        pathMatch: 'full',
+        redirectTo: ({ queryParams }) => inject(Router).createUrlTree(['/fees'], { queryParams: { ...queryParams, summary: '1' } }),
       },
-      // Payment views.
+      // Payment views - consolidated routes.
       {
         path: 'payments',
         data: {
@@ -671,32 +640,28 @@ export const routes: Routes = [
       },
       {
         path: 'payments/new',
-        data: {
-          permission: 'fees:write',
-          paymentView: 'new',
-        },
-        loadComponent: paymentsPage,
+        data: { permission: 'fees:write' },
+        redirectTo: paymentRedirect({ route: 'new', student: undefined, charge: undefined, search: undefined }),
       },
       {
         path: 'payments/partial',
-        data: {
-          permission: 'fees:write',
-          paymentView: 'partial',
-        },
-        loadComponent: paymentsPage,
+        data: { permission: 'fees:write' },
+        redirectTo: paymentRedirect({ route: 'partial', student: undefined, charge: undefined, search: undefined }),
       },
       {
         path: 'payments/full',
-        data: {
-          permission: 'fees:write',
-          paymentView: 'full',
-        },
-        loadComponent: paymentsPage,
+        data: { permission: 'fees:write' },
+        redirectTo: paymentRedirect({ route: 'full', student: undefined, charge: undefined, search: undefined }),
       },
       {
         path: 'payments/receipts',
-        data: { permission: 'fees:write', paymentView: 'receipts' },
-        loadComponent: paymentsPage,
+        data: { permission: 'fees:write' },
+        redirectTo: paymentRedirect({ route: 'receipts', student: undefined, charge: undefined, search: undefined }),
+      },
+      {
+        path: 'payments/history',
+        data: { permission: 'fees:write' },
+        redirectTo: paymentRedirect({ route: 'history', student: undefined, charge: undefined, search: undefined }),
       },
       {
         path: 'payments/refunds',
@@ -705,14 +670,6 @@ export const routes: Routes = [
           roles: ['admin'],
           permission: 'fees:write',
           paymentView: 'refunds',
-        },
-        loadComponent: paymentsPage,
-      },
-      {
-        path: 'payments/history',
-        data: {
-          permission: 'fees:write',
-          paymentView: 'history',
         },
         loadComponent: paymentsPage,
       },
@@ -763,12 +720,20 @@ export const routes: Routes = [
         title: 'Users & Roles',
         loadComponent: academySettingsPage,
       },
+      // /admin/users renders the same guarded Users & Roles page as /settings/users instead of redirecting, because a redirect cannot also carry role guards.
+      {
+        path: 'admin/users',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'], permission: 'settings:write', settingsSection: 'users' },
+        title: 'User Management',
+        loadComponent: academySettingsPage,
+      },
+      { path: 'admin', redirectTo: 'dashboard/admin', pathMatch: 'full' },
       {
         path: 'settings/audit-logs',
         canActivate: [roleGuard],
         data: { roles: ['admin'], permission: 'settings:write' },
-        loadComponent: () =>
-          import('./features/settings/audit-log-page').then((m) => m.AuditLogPage),
+        loadComponent: () => import('./features/settings/audit-log-page').then((m) => m.AuditLogPage),
       },
       {
         path: 'settings/profile',

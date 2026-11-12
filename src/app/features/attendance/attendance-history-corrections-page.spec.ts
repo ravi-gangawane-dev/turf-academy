@@ -6,6 +6,8 @@ import { AttendanceHistoryCorrectionsPage } from './attendance-history-correctio
 import { AttendanceService, StudentsService } from '../../core/supabase/domain-services';
 import { AcademyFacade } from '../../core/state/academy.facade';
 import { API_CONFIG } from '../../core/config/api.config';
+import { AuthService } from '../../core/auth/auth.service';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 
 async function setup(url = '/attendance/history') {
   const attendance = {
@@ -29,6 +31,8 @@ async function setup(url = '/attendance/history') {
       ]),
       { provide: AttendanceService, useValue: attendance },
       { provide: StudentsService, useValue: students },
+      { provide: AuthService, useValue: { hasPermission: vi.fn().mockReturnValue(true) } },
+      { provide: PrintDocumentService, useValue: { printAttendanceRegister: vi.fn() } },
       { provide: API_CONFIG, useValue: { useMockApi: false } },
       {
         provide: AcademyFacade,

@@ -1,17 +1,11 @@
 <div class="app-list-page parents-page">
-  @if (message()) {
-  <div class="parent-notice" role="status">
-    <span>{{ message() }}</span><button aria-label="Dismiss" (click)="message.set('')"><i
-        class="pi pi-times"></i></button>
-  </div>
-  }
   @if (error()) {
   <app-async-state kind="error" title="Could not load parents" [message]="error()" />
   }
 
   <app-page-hero class="student-list-hero" title="Parent List" subtitle="Manage and view all academy parents."
-    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents' }]" actionLabel="Add Parent"
-    actionIcon="pi-plus" (action)="addParent()" />
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents' }]"
+    actionLabel="Add Parent" actionIcon="pi-plus" (action)="addParent()" />
   <section class="student-metrics parent-summary">
     <app-summary-metric-card label="Total parents" [value]="metrics().total" icon="pi-users" />
     <app-summary-metric-card label="Active parents" [value]="metrics().active" icon="pi-user-plus" tone="blue" />
@@ -25,8 +19,9 @@
     (pageSizeChange)="changePageSize($event)">
 
     <div table-content class="parent-table-wrap table-wrap">
-      <app-table-tools title="Parents" [table]="exportTable1" [customExport]="true"><button type="button"
-          (click)="exportParents()" [disabled]="exporting()">Export parents</button></app-table-tools>
+      <app-table-tools title="Parents" [table]="exportTable1" [total]="parentTotal()" [exportColumns]="exportColumns"
+        [exportLoader]="exportParents" [exportReference]="exportReference"
+        [exportSubtitle]="parentTotal() + ' parents matching the current filters'"></app-table-tools>
       <table #exportTable1 class="academy-table student-table reference-table no-selection">
         <thead>
           <tr>
@@ -75,7 +70,7 @@
           @for (row of pagedRows(); track row.id; let i = $index) {
           <tr>
             <td>{{ (page() - 1) * pageSize() + i + 1 }}</td>
-            <td>
+            <td [attr.data-export-value]="row.name">
               <button class="parent-name" (click)="openDetails(row.id)">
                 <span>
                   @if (row.photoUrl) {
@@ -95,12 +90,12 @@
             <td><i class="pi pi-calendar"></i>{{ row.joinedOn?.slice(0, 10) || '—' }}</td>
             <td>
               <span class="row-actions">
-                <button class="icon-button" aria-label="View parent" (click)="openDetails(row.id)">
+                <button class="app-button icon" aria-label="View parent" (click)="openDetails(row.id)">
                   <i class="pi pi-eye"></i>
-                </button><button class="icon-button" aria-label="Edit parent" (click)="edit(row)">
+                </button><button class="app-button icon" aria-label="Edit parent" (click)="edit(row)">
                   <i class="pi pi-pencil"></i>
                 </button>
-                <button class="icon-button" aria-label="Delete parent" (click)="deleteParent(row)">
+                <button class="app-button icon danger" aria-label="Delete parent" (click)="deleteParent(row)">
                   <i class="pi pi-trash"></i>
                 </button>
               </span>

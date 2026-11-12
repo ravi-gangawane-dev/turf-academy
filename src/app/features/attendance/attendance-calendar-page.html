@@ -154,9 +154,6 @@
               <i class="pi pi-chevron-right" aria-hidden="true"></i>
             </button>
           </div>
-          <button type="button" class="export" (click)="export()">
-            <i class="pi pi-download" aria-hidden="true"></i> Export
-          </button>
         </header>
 
         <div class="weekdays">
@@ -189,6 +186,33 @@
           }
           }
         </div>
+
+        @if (calendarData(); as data) {
+        <section class="table-wrap calendar-summary" aria-label="Monthly attendance summary">
+          <app-table-tools title="Monthly summary" [table]="exportSummaryMonth"
+            [exportColumns]="summaryExportColumns" [exportRows]="monthSummaryRows()"
+            [exportSubtitle]="exportSubtitle()" exportReference="Attendance calendar"></app-table-tools>
+          <table #exportSummaryMonth class="academy-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Count</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of monthSummaryRows(); track row['status']) {
+              <tr>
+                <td>{{ row['status'] }}</td>
+                <td>{{ row['count'] }}</td>
+                <td>{{ row['percentage'] }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+        <p class="sr-only">Month totals cover {{ data.dates.from }} to {{ data.dates.to }}.</p>
+        }
       </section>
       }
 
@@ -198,9 +222,6 @@
       <section class="main-calendar">
         <header>
           <h2>Week {{ week.week }} ({{ week.startDate }} to {{ week.endDate }})</h2>
-          <button type="button" class="export" (click)="export()">
-            <i class="pi pi-download" aria-hidden="true"></i> Export
-          </button>
         </header>
 
         <div class="week-view">
@@ -213,6 +234,30 @@
           </article>
           }
         </div>
+
+        <section class="table-wrap calendar-summary" aria-label="Weekly attendance summary">
+          <app-table-tools title="Weekly summary" [table]="exportSummaryWeek"
+            [exportColumns]="summaryExportColumns" [exportRows]="weekSummaryRows()"
+            [exportSubtitle]="exportSubtitle()" exportReference="Attendance calendar"></app-table-tools>
+          <table #exportSummaryWeek class="academy-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Count</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of weekSummaryRows(); track row['status']) {
+              <tr>
+                <td>{{ row['status'] }}</td>
+                <td>{{ row['count'] }}</td>
+                <td>{{ row['percentage'] }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </section>
       </section>
       }
       }
@@ -223,14 +268,13 @@
       <section class="list-view">
         <header>
           <h2>Attendance Records</h2>
-          <button type="button" class="export" (click)="export()">
-            <i class="pi pi-download" aria-hidden="true"></i> Export current page CSV
-          </button>
         </header>
 
         @if (list.records.length > 0) {
         <div class="table-wrap">
-          <app-table-tools title="Attendance records" [table]="exportTable1" [total]="list.total"></app-table-tools>
+          <app-table-tools title="Attendance records" [table]="exportTable1" [total]="list.total"
+            [exportColumns]="recordExportColumns" [exportLoader]="exportAttendanceRows"
+            [exportSubtitle]="exportSubtitle()" exportReference="Attendance calendar"></app-table-tools>
           <table #exportTable1 class="academy-table">
             <thead>
               <tr>

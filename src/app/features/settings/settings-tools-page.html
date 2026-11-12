@@ -1,0 +1,87 @@
+<section class="app-list-page settings-tools">
+
+  <app-page-hero
+    [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/dashboard'},{label: view === 'backup' ? 'Academy Data Export' : view === 'theme' ? 'Appearance' : 'Role Permissions'}]"
+    title="{{ view === 'backup' ? 'Academy Data Export' : view === 'theme' ? 'Appearance' : 'Role Permissions' }}"
+    subtitle="Manage academy access, appearance and records." />
+  <app-settings-navigation />
+  <div class="tool-content">
+    @if (error()) {
+    <p role="alert">{{ error() }}</p>
+    }
+    @if (message()) {
+    <p role="status">{{ message() }}</p>
+    }
+    @if (view === 'permissions') {
+    <p>
+      Access granted to each academy role. Assign roles through
+      <a routerLink="/settings/users">Users &amp; roles</a>.
+    </p>
+    @if (roleCatalog.source() === 'fallback' && roleCatalog.error()) {
+    <div class="notice error" role="alert">
+      The database role catalogue could not be loaded, so the built-in permissions are shown.
+      <button type="button" class="app-button small secondary" (click)="reloadCatalog()"
+        [disabled]="roleCatalog.loading()">{{ roleCatalog.loading() ? 'Retrying…' : 'Retry' }}</button>
+    </div>
+    } @else {
+    <p class="catalogue-source" role="status">
+      Loaded from the academy database{{ roleCatalog.loading() ? '…' : '.' }}
+    </p>
+    }
+    <div class="table-wrap">
+      <app-table-tools title="Role permissions" [table]="exportTable1"></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Permissions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (role of rolePermissionSummary(); track role.key) {
+          <tr>
+            <th scope="row">
+              <strong>{{ role.label }}</strong>
+              @if (role.description) { <small class="role-description">{{ role.description }}</small> }
+            </th>
+            <td>
+              <div class="permission-list">
+                @for (permission of role.permissionLabels; track permission) {
+                <span class="permission-chip">{{ permission }}</span>
+                }
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+    @if (view === 'theme') {
+    <p>Choose the academy interface colors on this device.</p>
+    <div class="themes">
+      @for (choice of themes; track choice.id) {
+      <button [class.active]="theme() === choice.id" [attr.aria-pressed]="theme() === choice.id"
+        (click)="setTheme(choice.id)">
+        {{ choice.label }}
+      </button>
+      }
+    </div>
+    <p>Saved preferences apply when you reopen the app on this device.</p>
+    }
+    @if (view === 'backup') {
+    <p>
+      Download academy records as JSON. This export includes personal and financial records; store
+      it securely.
+    </p>
+    <p>
+      Uploaded files, login accounts, QR tokens and audit history are not included. Use the
+      database provider's backup tools for a complete backup and restore.
+    </p>
+    <button (click)="exportData()" [disabled]="busy()">
+      {{ busy() ? 'Preparing export…' : 'Download academy data' }}
+    </button>
+    <p role="status" aria-live="polite">{{ progress() }}</p>
+    }
+  </div>
+</section>

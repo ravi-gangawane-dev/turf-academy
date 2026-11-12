@@ -2,7 +2,7 @@
   <app-page-hero
     title="Events & Holidays"
     subtitle="Plan academy dates and notify parents automatically."
-    [breadcrumbs]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Events & Holidays' }]"
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Events & Holidays' }]"
     actionLabel="Add event"
     (action)="open()"
   />
@@ -11,9 +11,7 @@
   @if (error()) {
     <div class="notice error" role="alert">{{ error() }}</div>
   }
-  @if (message()) {
-    <div class="notice" role="status">{{ message() }}</div>
-  }
+  
 
   
   <section class="event-list">
@@ -53,13 +51,12 @@
                 <td><app-status-badge [status]="row.status" /></td>
                 <td>
                   <div class="event-row-actions" role="group" aria-label="Actions for {{ row.title }}">
-                    <button type="button" class="event-action edit-event-action" (click)="open(row)"
+                    <button type="button" class="app-button icon" (click)="open(row)"
                       [attr.aria-label]="'Edit ' + row.title" title="Edit">
                       <i class="pi pi-pencil" aria-hidden="true"></i><span class="action-tooltip" role="tooltip">Edit</span>
                     </button>
-                    <button type="button" class="event-action"
-                      [class.archive-event-action]="row.status === 'active'"
-                      [class.activate-event-action]="row.status !== 'active'" (click)="toggle(row)"
+                    <button type="button" class="app-button icon"
+                      [class.danger]="row.status === 'active'" (click)="toggle(row)"
                       [attr.aria-label]="(row.status === 'active' ? 'Archive ' : 'Activate ') + row.title"
                       [title]="row.status === 'active' ? 'Archive' : 'Activate'">
                       <i [class]="row.status === 'active' ? 'pi pi-folder' : 'pi pi-refresh'" aria-hidden="true"></i>

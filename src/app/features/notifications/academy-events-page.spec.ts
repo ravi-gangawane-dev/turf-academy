@@ -19,17 +19,20 @@ function setup() {
   const page = vi.fn().mockResolvedValue({ rows: [event], total: 1 });
   const save = vi.fn().mockResolvedValue(event);
   const setStatus = vi.fn().mockResolvedValue(undefined);
-  const toast = vi.fn();
+  const toastMock = { error: vi.fn(), success: vi.fn(), show: vi.fn() };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
       { provide: AcademyEventsService, useValue: { page, save, setStatus } },
-      { provide: ToastService, useValue: { show: toast } },
+      { provide: ToastService, useValue: toastMock },
       { provide: AuthService, useValue: { role: () => 'admin' } },
     ],
   });
   const fixture = TestBed.createComponent(AcademyEventsPage);
-  return { fixture, component: fixture.componentInstance, page, save, setStatus, toast };
+  const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+  const toastSuccess = vi.spyOn(TestBed.inject(ToastService), 'success');
+  const toastShow = vi.spyOn(TestBed.inject(ToastService), 'show');
+  return { fixture, component: fixture.componentInstance, page, save, setStatus, toast, toastSuccess, toastShow };
 }
 
 describe('AcademyEventsPage', () => {
@@ -82,7 +85,7 @@ describe('AcademyEventsPage', () => {
   });
 
   it('saves a new event and reloads the list', async () => {
-    const { component, save, toast } = setup();
+    const { component, save, toastSuccess } = setup();
     await component.ngOnInit();
     component['open']();
     component['form'].patchValue({ title: '  Sports day  ', description: ' Annual event ' });
@@ -91,7 +94,7 @@ describe('AcademyEventsPage', () => {
       expect.objectContaining({ title: 'Sports day', description: 'Annual event', event_type: 'holiday' }),
     );
     expect(component['dialogOpen']()).toBe(false);
-    expect(toast).toHaveBeenCalledWith('Event saved.', 'success');
+    expect(toastSuccess).toHaveBeenCalledWith('Event saved.');
   });
 
   it('keeps the archived status when an archived event is edited', async () => {
@@ -104,11 +107,11 @@ describe('AcademyEventsPage', () => {
   });
 
   it('archives an active event and activates an archived one', async () => {
-    const { component, setStatus, toast } = setup();
+    const { component, setStatus, toastShow } = setup();
     await component.ngOnInit();
     await component['toggle'](event);
     expect(setStatus).toHaveBeenCalledWith('e1', 'inactive');
-    expect(toast).toHaveBeenCalledWith('Event archived.', 'success');
+    expect(toastShow).toHaveBeenCalledWith('Event archived.');;
     await component['toggle']({ ...event, status: 'inactive' });
     expect(setStatus).toHaveBeenLastCalledWith('e1', 'active');
   });
@@ -128,8 +131,7 @@ describe('AcademyEventsPage', () => {
     component['form'].patchValue({ title: 'Sports day' });
     save.mockRejectedValue(new Error('Event could not be saved.'));
     await component['save']();
-    expect(component['error']()).toBe('Event could not be saved.');
-    expect(toast).toHaveBeenCalledWith('Event could not be saved.', 'error');
+    expect(toast).toHaveBeenCalledWith('Event could not be saved.');
     expect(component['dialogOpen']()).toBe(true);
   });
 

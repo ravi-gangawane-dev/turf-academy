@@ -1,0 +1,61 @@
+<button type="button" class="photo-trigger" [disabled]="saving || processing()" (click)="begin()">
+  @if(photoUrl){<img [src]="photoUrl" [alt]="label + ' photo'" />} @else {<i class="pi pi-image"></i>}
+  <span>{{photoUrl ? 'Change photo' : 'Add photo'}}</span>
+</button>
+@if(open){
+<div class="photo-modal" appModalFocus [modalBusy]="saving || processing()" (modalDismiss)="close()" [attr.aria-busy]="saving || processing()" aria-label="Profile photo editor">
+  <div class="photo-dialog">
+    <header class="photo-header">
+      <div class="heading-icon"><i class="pi pi-image"></i></div>
+      <div class="heading-copy"><h2>{{label}} Photo</h2><p>Upload, capture or update the {{label.toLowerCase()}}'s profile photo.</p></div>
+      <button type="button" [disabled]="saving || processing()" class="close" (click)="close()" aria-label="Close"><i class="pi pi-times"></i></button>
+    </header>
+    <fieldset class="photo-editor" [disabled]="saving || processing()" aria-label="Photo editing controls">
+      <div class="left-column">
+        <section class="upload-card">
+          <div class="mode-tabs">
+            <button type="button" class="active"><i class="pi pi-upload"></i>Upload Photo</button>
+            <button type="button" (click)="capture.click()"><i class="pi pi-camera"></i>Capture Photo</button>
+          </div>
+          <input #capture class="hidden-file" type="file" accept="image/jpeg,image/png" capture="user" (change)="select($event)" />
+          <div class="drop-zone" (dragover)="$event.preventDefault()" (drop)="drop($event)">
+            <i class="pi pi-cloud-upload cloud"></i>
+            <strong>Drag &amp; drop photo here</strong>
+            <div class="or"><span></span>or<span></span></div>
+            <div class="upload-actions">
+              <button type="button" class="choose-file" (click)="file.click()"><i class="pi pi-image"></i>Choose File</button>
+              <input #file class="hidden-file" type="file" accept="image/jpeg,image/png" (change)="select($event)" />
+              <button type="button" class="take-photo" (click)="capture.click()"><i class="pi pi-camera"></i>Take Photo</button>
+            </div>
+            <small>JPG, PNG (up to 2 MB)<i class="pi pi-info-circle"></i></small>
+          </div>
+        </section>
+        <section class="guidelines">
+          <h3><i class="pi pi-shield"></i>Photo Guidelines</h3>
+          @for (tip of ['Clear and recent photo','Face should be visible','Neutral background (preferred)','JPG or PNG format','Maximum size: 2 MB']; track tip) {
+            <p><i class="pi pi-check"></i>{{tip}}</p>
+          }
+        </section>
+      </div>
+      <section class="preview-panel">
+        <div class="preview">
+          @if(previewUrl()){
+            <img [src]="previewUrl()" [alt]="label + ' photo'" [style.transform]="'rotate(' + rotation + 'deg) scale(' + zoom + ')'" />
+            @if(cropMode){<div class="crop-grid" aria-hidden="true"></div>}
+          } @else {<i class="pi pi-image empty-image"></i>}
+        </div>
+        @if(cropMode && previewUrl()){<p class="crop-help">Fixed square crop. Adjust with zoom and rotation, then select Crop to apply.</p>}
+        <div class="controls">
+          <button type="button" (click)="rotate()"><i class="pi pi-refresh"></i><span>Rotate</span></button>
+          <button type="button" [class.active]="cropMode" (click)="cropMode ? crop() : cropMode=true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2v16h16M2 6h16v16"/></svg><span>Crop</span></button>
+          <button type="button" (click)="reset()"><i class="pi pi-replay"></i><span>Reset</span></button>
+          <label class="zoom"><i class="pi pi-search-minus"></i><input aria-label="Photo zoom" type="range" min="1" max="1.5" step="0.05" [value]="zoom" (input)="changeZoom($any($event.target).value)" /><i class="pi pi-search-plus"></i></label>
+        </div>
+      </section>
+    </fieldset>
+    @if(error()){<p class="photo-error" role="alert">{{error()}}</p>}
+    <footer class="photo-footer"><button type="button" [disabled]="saving || processing()" class="cancel" (click)="close()">Cancel</button><button type="button" class="save-photo" [disabled]="saving || processing() || !edited" (click)="saveAndClose()"><i class="pi pi-upload"></i>{{saving || processing() ? 'Saving...' : saveAction ? 'Save Photo' : 'Use Photo'}}</button></footer>
+  </div>
+</div>
+}
+

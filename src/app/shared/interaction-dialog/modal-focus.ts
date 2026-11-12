@@ -10,17 +10,19 @@ export class ModalFocus implements AfterViewInit, OnDestroy {
   private readonly previousFocus = document.activeElement as HTMLElement | null;
   private static openCount = 0;
   private static previousOverflow = '';
+  private acquiredScrollLock = false;
   readonly modalBusy = input(false);
   readonly modalDismiss = output<void>();
 
   ngAfterViewInit(): void {
+    this.acquiredScrollLock = true;
     if (ModalFocus.openCount++ === 0) {
       ModalFocus.previousOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
     }
     queueMicrotask(() => {
       if (!this.element.isConnected) return;
-      const field = this.element.querySelector<HTMLElement>('input:not([type="hidden"]):not(:disabled), textarea:not(:disabled), select:not(:disabled)');
+      const field = this.focusable().find(node => node.matches('input, textarea, select'));
       (field ?? this.focusable()[0] ?? this.element).focus();
     });
   }
@@ -49,7 +51,7 @@ export class ModalFocus implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (--ModalFocus.openCount === 0) document.body.style.overflow = ModalFocus.previousOverflow;
+    if (this.acquiredScrollLock && --ModalFocus.openCount === 0) document.body.style.overflow = ModalFocus.previousOverflow;
     if (this.previousFocus?.isConnected) this.previousFocus.focus();
   }
 }

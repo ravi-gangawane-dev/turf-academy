@@ -167,13 +167,11 @@ export class NotificationTemplatesPage implements OnInit, OnDestroy {
         status: v.status,
       });
       this.dialogOpen.set(false);
-      this.message.set('Notification template saved.');
       this.toast.show('Notification template saved.', 'success');
       this.pendingQuery = '';
       await this.reload();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Template could not be saved.';
-      this.error.set(message);
       this.toast.show(message, 'error');
     } finally {
       this.saving.set(false);

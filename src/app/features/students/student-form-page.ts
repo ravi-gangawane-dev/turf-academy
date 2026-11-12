@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { ToastService } from '../../shared/toast/toast.service';
 import { StudentListFilters, StudentListService } from './student-list.service';
 
 @Component({
@@ -16,11 +17,15 @@ export class StudentFormPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly students = inject(StudentListService);
+  private readonly toast = inject(ToastService);
   protected readonly editing = signal(false);
   protected readonly parentChildEdit = signal(false);
   protected readonly loading = signal(false);
   protected readonly message = signal('');
   protected readonly photoUrl = signal<string | null>(null);
+  protected readonly photoSaving = signal(false);
+  protected readonly photoPending = signal(false);
+  protected readonly photoMessage = signal('');
   protected readonly filters = signal<StudentListFilters>({ batches: [], programs: [], coaches: [] });
   private studentId = '';
   private selectedPhoto: File | null = null;
@@ -51,7 +56,7 @@ export class StudentFormPage implements OnInit {
     try {
       this.filters.set(await this.students.filters());
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Student form options could not be loaded.');
+      this.toast.error(error instanceof Error ? error.message : 'Student form options could not be loaded.');
     }
     this.parentChildEdit.set(this.route.snapshot.data['parentChildEdit'] === true);
     this.studentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -93,21 +98,21 @@ export class StudentFormPage implements OnInit {
       });
       this.photoUrl.set(student.photoUrl);
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Student could not be loaded.');
+      this.toast.error(error instanceof Error ? error.message : 'Student could not be loaded.');
     } finally {
       this.loading.set(false);
     }
   }
   protected async save(): Promise<void> {
+    if (this.loading() || this.photoSaving()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.message.set('Complete all required fields correctly.');
+      this.toast.error('Complete all required fields correctly.');
       return;
     }
     const { firstName, lastName, ...value } = this.form.getRawValue();
     const fullName = `${firstName} ${lastName}`.trim();
     this.loading.set(true);
-    this.message.set('');
     try {
       const mutation = {
         fullName,
@@ -151,7 +156,7 @@ export class StudentFormPage implements OnInit {
         },
       );
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Student could not be saved.');
+      this.toast.error(error instanceof Error ? error.message : 'Student could not be saved.');
     } finally {
       this.loading.set(false);
     }
@@ -163,16 +168,44 @@ export class StudentFormPage implements OnInit {
   }
 
   protected selectPhoto(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
     if (!file) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      this.photoMessage.set('Choose a JPG or PNG image.');
+      return;
+    }
     if (file.size > 2 * 1024 * 1024) {
-      this.message.set('Student photo must be 2MB or smaller.');
+      this.photoMessage.set('Student photo must be 2MB or smaller.');
       return;
     }
     this.selectedPhoto = file;
+    this.photoPending.set(true);
+    this.photoMessage.set(this.editing() ? 'Photo selected. Select Save photo to upload it.' : 'Photo will upload when you save the student.');
     const reader = new FileReader();
-    reader.onload = () => this.photoUrl.set(String(reader.result));
+    reader.onload = () => {
+      if (this.selectedPhoto === file) this.photoUrl.set(String(reader.result));
+    };
     reader.readAsDataURL(file);
+  }
+
+  protected async savePhoto(): Promise<void> {
+    if (!this.studentId || !this.selectedPhoto || this.photoSaving() || this.loading()) return;
+    this.photoSaving.set(true);
+    this.photoMessage.set('Uploading photo...');
+    try {
+      this.photoUrl.set(await this.students.updateStudentPhoto(this.studentId, this.selectedPhoto));
+      this.selectedPhoto = null;
+      this.photoPending.set(false);
+      this.photoMessage.set('');
+      this.toast.success('Photo saved to this student’s profile.');
+    } catch (error) {
+      this.photoMessage.set('');
+      this.toast.error(error instanceof Error ? error.message : 'Photo could not be saved. Please try again.');
+    } finally {
+      this.photoSaving.set(false);
+    }
   }
 
   protected openBreadcrumb(label: string): void {

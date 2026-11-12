@@ -1,15 +1,18 @@
 ﻿import { TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { ApplicationRef, signal } from '@angular/core';
+import { ToastService } from '../../shared/toast/toast.service';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { QrAttendancePage } from './qr-attendance-page';
 import { AcademyFacade } from '../../core/state/academy.facade';
-import { ToastService } from '../../shared/toast/toast.service';
 
 // Verify persistence boundaries without starting a camera or touching a backend.
 describe('Combined attendance workspace', () => {
   let page: any;
   let store: any;
+  let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
+  const flushEffects = () => TestBed.inject(ApplicationRef).tick();
   beforeEach(() => {
+    toast = { success: vi.fn(), error: vi.fn(), info: vi.fn() };
     store = {
       activeEnrollmentRows: signal([
         { id: 'one', studentId: 's1', studentName: 'First', batchId: 'b1', batchName: 'Morning' },
@@ -25,10 +28,16 @@ describe('Combined attendance workspace', () => {
         timestamp: '2026-10-21T10:00:00Z',
       })),
     };
-    TestBed.configureTestingModule({ providers: [
-      { provide: AcademyFacade, useValue: store }, { provide: ToastService, useValue: { show: vi.fn() } },
-    ] });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AcademyFacade, useValue: store }, { provide: ToastService, useValue: toast },
+      ]
+    });
     page = TestBed.runInInjectionContext(() => new QrAttendancePage());
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    TestBed.resetTestingModule();
   });
   it('offers only eligible arrivals and currently checked-in departures', () => {
     expect(page.availableRows().map((r: any) => r.id)).toEqual(['one', 'two']);
@@ -43,7 +52,8 @@ describe('Combined attendance workspace', () => {
     page.selectedIn.set(['one', 'two']);
     await page.markSelected('in');
     expect(page.selectedIn()).toEqual(['two']);
-    expect(page.message()).toBe('');
+    flushEffects();
+    expect(toast.success).not.toHaveBeenCalled();
     expect(page.error()).toContain('1 saved. Save failed');
     expect(page.saving()).toBe(false);
     expect(page.whatsappUpdates()).toHaveLength(1);
@@ -85,8 +95,8 @@ describe('Combined attendance workspace', () => {
     page.selectedOut.set(['three']);
     await page.markSelected('out');
     expect(store.checkOut).toHaveBeenCalledWith('a3');
-    expect(page.message()).toContain('checked out successfully');
-      expect(page.message()).not.toContain('queued');
+    flushEffects();
+    expect(toast.success).toHaveBeenCalledWith('1 student checked out successfully.');
     expect(store.attendanceWhatsApp).not.toHaveBeenCalled();
     expect(page.whatsappUpdates()).toEqual([]);
   });
@@ -112,7 +122,7 @@ describe('Combined attendance workspace', () => {
     open.mockRestore();
   });
   it('keeps attendance successful when parent lookup fails and continues preparing other messages', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const log = vi.spyOn(console, 'error').mockImplementation(() => { });
     store.attendanceWhatsApp.mockRejectedValueOnce(new Error('No active parent is linked to this student.'));
     page.selectedIn.set(['one', 'two']);
     await page.markSelected('in');
@@ -120,7 +130,8 @@ describe('Combined attendance workspace', () => {
     expect(page.whatsappUpdates()[0].error).toContain('No active parent');
     expect(page.whatsappUpdates()[1].message).not.toBeNull();
     expect(page.error()).toBe('');
-    expect(page.message()).toContain('2 students checked in');
+    flushEffects();
+    expect(toast.success).toHaveBeenCalledWith('2 students checked in successfully.');
     expect(log).toHaveBeenCalled();
     log.mockRestore();
   });

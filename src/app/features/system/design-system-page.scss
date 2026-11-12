@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+.library-page {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 0;
+  color: #17213b;
+}
+
+nav {
+  font-size: 0.85rem;
+  color: #668078;
+  margin-bottom: 1.25rem;
+}
+
+nav a {
+  color: #34794b;
+  text-decoration: none;
+}
+
+header,
+section {
+  background: #fff;
+  border: 1px solid #dce5e1;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+header p {
+  color: #438653;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0.25rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+article {
+  border: 1px solid #e2e9e6;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+article i {
+  color: #438653;
+  font-size: 1.4rem;
+}
+
+article p,
+header span {
+  color: #687871;
+}
+
+/* Buttons reference */
+.btn-lab .lab-note {
+  color: #687871;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.btn-lab code,
+.family-hint code {
+  background: #f2f6f3;
+  border: 1px solid #e2e9e6;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 0.8rem;
+}
+
+.recipe {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.family {
+  border: 1px solid #e2e9e6;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.family-hint {
+  color: #687871;
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0.75rem;
+}
+
+.families {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.families li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  flex: none;
+}
+
+.swatch.blue {
+  background: var(--app-info);
+}
+
+.swatch.amber {
+  background: var(--app-warning);
+}
+
+.swatch.green {
+  background: var(--app-primary);
+}
+
+.swatch.red {
+  background: var(--app-danger);
+}
+
+.swatch.violet {
+  background: var(--app-violet);
+}
+
+.swatch.teal {
+  background: var(--app-teal);
+}
+
+.swatch.gray {
+  background: var(--app-muted);
+}
+
+.lab-row .app-button.icon {
+  color: var(--app-muted);
+}

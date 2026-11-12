@@ -3,6 +3,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angul
 import { AuthService } from '../../core/auth/auth.service';
 import { StudentListService, StudentWorkspace } from './student-list.service';
 import { StudentDetailsPage } from './student-details-page';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
 
 const workspace = {
   student: {
@@ -46,6 +47,7 @@ const workspace = {
 function setup(id: string | null) {
   const getStudentWorkspace = vi.fn().mockResolvedValue(workspace);
   const detailPage = vi.fn().mockResolvedValue({ rows: [{ id: 't1', date: '2026-10-01' }], total: 1 });
+  const printDocuments = { printIdCard: vi.fn().mockResolvedValue(undefined) };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([{ path: 'students', children: [] }]),
@@ -55,11 +57,12 @@ function setup(id: string | null) {
       },
       { provide: StudentListService, useValue: { getStudentWorkspace, detailPage } },
       { provide: AuthService, useValue: { hasPermission: () => true } },
+      { provide: PrintDocumentService, useValue: printDocuments },
     ],
   });
   const fixture = TestBed.createComponent(StudentDetailsPage);
   fixture.detectChanges();
-  return { fixture, page: fixture.componentInstance, getStudentWorkspace, detailPage };
+  return { fixture, page: fixture.componentInstance, getStudentWorkspace, detailPage, printDocuments };
 }
 
 describe('StudentDetailsPage', () => {
@@ -136,5 +139,64 @@ describe('StudentDetailsPage', () => {
     resolveFirst({ rows: [{ id: 'stale' }], total: 1 });
     await stale;
     expect(page['timeline']()[0]?.id).not.toBe('stale');
+  });
+
+  it('prepares and prints an ID card from the live student workspace', async () => {
+    const { page, printDocuments } = setup('s1');
+    await page.ngOnInit();
+    page['data'].update((current) =>
+      current
+        ? {
+            ...current,
+            enrollment: {
+              id: 'e1',
+              batch: { id: 'b1', name: 'Morning Elite', code: 'B-MOR' },
+            },
+          }
+        : current,
+    );
+
+    page['openIdCard']();
+    expect(page['idCardOpen']()).toBe(true);
+    expect(page['idCard']()).toMatchObject({
+      holderType: 'student',
+      holderId: 's1',
+      fullName: 'Aarav Sharma',
+      holderCode: 'ST-1',
+      subtitle: 'Morning Elite · B-MOR',
+      cardNumber: 'ID-STU-ST1',
+      photoUrl: null,
+      validityNote: 'Valid while actively enrolled',
+    });
+    expect(page['idCard']()?.details).toContainEqual({
+      label: 'Guardian',
+      value: 'Ravi Sharma (Father)',
+    });
+
+    await page['printIdCard']('preview');
+
+    expect(printDocuments.printIdCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cardNumber: 'ID-STU-ST1',
+        holderId: 's1',
+        subtitle: 'Morning Elite · B-MOR',
+      }),
+      'preview',
+    );
+    expect(page['idCardOpen']()).toBe(false);
+    expect(page['idCardLoading']()).toBe(false);
+  });
+
+  it('keeps the ID card dialog open when preparation fails', async () => {
+    const { page, printDocuments } = setup('s1');
+    await page.ngOnInit();
+    printDocuments.printIdCard.mockRejectedValueOnce(new Error('QR generation failed'));
+
+    page['openIdCard']();
+    await page['printIdCard']('print');
+
+    expect(page['idCardOpen']()).toBe(true);
+    expect(page['idCardError']()).toBe('QR generation failed');
+    expect(page['idCardLoading']()).toBe(false);
   });
 });

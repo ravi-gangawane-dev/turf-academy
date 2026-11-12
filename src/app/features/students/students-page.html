@@ -1,12 +1,4 @@
 <div class="app-list-page students-page">
-  @if (message()) {
-    <div class="student-action-notice" role="status">
-      {{ message()
-      }}<button aria-label="Dismiss notification" (click)="message.set('')">
-        <i class="pi pi-times"></i>
-      </button>
-    </div>
-  }
   <app-page-hero
     class="student-list-hero"
     title="Student List"
@@ -35,9 +27,15 @@
   >
     
     <div table-content class="table-wrap">
-      <app-table-tools title="Students" [table]="exportTable1" [customExport]="true"><button type="button" class="export-button" (click)="exportStudents()">
-        <i class="pi pi-download" aria-hidden="true"></i>Export
-      </button></app-table-tools>
+      <app-table-tools
+        title="Students"
+        [table]="exportTable1"
+        [total]="total()"
+        [exportColumns]="exportColumns"
+        [exportLoader]="exportStudents"
+        [exportReference]="exportReference"
+        [exportSubtitle]="total() + ' students matching the current filters'"
+      ></app-table-tools>
 <table #exportTable1 class="academy-table student-table reference-table no-selection">
         <thead><tr><th>#</th><th><app-sortable-header sortKey="cf_full_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Student</app-sortable-header></th><th><app-sortable-header sortKey="cf_batch_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Batch / Program</app-sortable-header></th><th><app-sortable-header sortKey="cf_coach_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Coach</app-sortable-header></th><th><app-sortable-header sortKey="cf_date_of_birth" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Date of birth</app-sortable-header></th><th><app-sortable-header sortKey="cf_phone" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Phone</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th><app-sortable-header sortKey="cf_parent_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Parent / Guardian</app-sortable-header></th><th><app-sortable-header sortKey="cf_join_date" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Join date</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th></th><th><app-column-filter label="student" type="search" [value]="columns.values()['full_name'] || ''" (changed)="columns.set('full_name',$event)" /></th><th><app-column-filter label="batch / program" type="search" [value]="columns.values()['batch_name'] || ''" (changed)="columns.set('batch_name',$event)" /></th><th><app-column-filter label="coach" type="search" [value]="columns.values()['coach_name'] || ''" (changed)="columns.set('coach_name',$event)" /></th><th><app-column-filter label="date of birth" type="date" [value]="columns.values()['date_of_birth'] || ''" (changed)="columns.set('date_of_birth',$event)" /></th><th><app-column-filter label="phone" type="search" [value]="columns.values()['phone'] || ''" (changed)="columns.set('phone',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><app-column-filter label="parent / guardian" type="search" [value]="columns.values()['parent_name'] || ''" (changed)="columns.set('parent_name',$event)" /></th><th><app-column-filter label="join date" type="date" [value]="columns.values()['join_date'] || ''" (changed)="columns.set('join_date',$event)" /></th><th><button type="button" (click)="columns.reset()">Reset</button></th></tr></thead>
         <tbody>
@@ -57,7 +55,7 @@
             @for (row of rows(); track row.id; let index = $index) {
               <tr>
                 <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
-                <td>
+                <td [attr.data-export-value]="row.fullName + ' (' + row.studentCode + ')'">
                   <button class="student-link" (click)="openStudent(row.id)">
                     <span class="avatar-stack"
                       ><span class="mini-avatar">{{ initials(row.fullName) }}</span>
@@ -78,7 +76,7 @@
                 <td>
                   <span class="batch-chip">{{ row.batchName || 'Not assigned' }}</span>
                 </td>
-                <td>
+                <td [attr.data-export-value]="row.coachName || 'Not assigned'">
                   <span class="coach-cell"
                     ><span class="avatar-stack"
                       ><span class="coach-avatar">{{ initials(row.coachName || 'NA') }}</span>
@@ -98,7 +96,7 @@
                 <td>
                   <app-status-badge [status]="row.status" />
                 </td>
-                <td>
+                <td [attr.data-export-value]="row.parentName || 'Not linked'">
                   <strong class="guardian">{{ row.parentName || 'Not linked' }}</strong
                   ><small class="relation">{{ row.parentPhone || '—' }}</small>
                 </td>
@@ -106,7 +104,7 @@
                 <td>
                   <span class="row-actions"
                     ><button
-                      class="icon-button"
+                      class="app-button icon"
                       aria-label="View student"
                       (click)="openStudent(row.id)"
                     >
@@ -114,7 +112,7 @@
                     </button>
                     @if (auth.hasPermission('students:write')) {
                       <button
-                        class="icon-button"
+                        class="app-button icon"
                         aria-label="Edit student"
                         (click)="editStudent(row.id)"
                       >
@@ -123,7 +121,7 @@
                     }
                     @if (auth.role() === 'admin') {
                       <button
-                        class="icon-button danger-action"
+                        class="app-button icon danger"
                         [disabled]="deletingId() === row.id"
                         aria-label="Delete student"
                         (click)="deleteStudent(row)"

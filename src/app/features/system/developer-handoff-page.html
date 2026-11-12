@@ -1,0 +1,27 @@
+<main class="app-list-page handoff-page">
+
+  <app-page-hero [breadcrumbs]="[{label:'Dashboard',icon:'pi-home',route:'/dashboard'},{label:'Developer Handoff'}]"
+    title="Developer Handoff" subtitle="Implementation conventions and verification entry points for this portal." />
+  <app-settings-navigation />
+  <section>
+    <h2>Project checks</h2>
+    <dl>
+      <div>
+        <dt>Production build</dt>
+        <dd><code>npm run build</code></dd>
+      </div>
+      <div>
+        <dt>Unit tests</dt>
+        <dd><code>npm test -- --watch=false</code></dd>
+      </div>
+      <div>
+        <dt>Live E2E</dt>
+        <dd><code>npx playwright test -c playwright.live.config.ts</code></dd>
+      </div>
+      <div>
+        <dt>Database tests</dt>
+        <dd><code>npx supabase test db</code></dd>
+      </div>
+    </dl>
+  </section>
+</main>

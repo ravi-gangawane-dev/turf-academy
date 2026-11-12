@@ -1,0 +1,7 @@
+<footer class="print-page-footer">
+  <span class="print-page-footer-label">{{ label() }}</span>
+  @if (note()) {
+    <span class="print-page-footer-note">{{ note() }}</span>
+  }
+  <span class="print-page-footer-page">{{ pageLabel() }}</span>
+</footer>

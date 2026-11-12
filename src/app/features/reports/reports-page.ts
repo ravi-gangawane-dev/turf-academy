@@ -1,24 +1,26 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { AsyncState } from '../../shared/async-state/async-state';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ReportDataset, ReportType } from '../../core/models/academy.model';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import {
   BatchesService,
   EnrollmentsService,
   ReportsService,
 } from '../../core/supabase/domain-services';
-import { reportToCsv } from './report-csv';
-import { ToastService } from '../../shared/toast/toast.service';
-import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { sumMoney } from '../../core/supabase/payment-balances';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { Pagination } from '../../shared/pagination/pagination';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { Pagination } from '../../shared/pagination/pagination';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { printPages as paginate } from '../../shared/print/print-page';
+import { PrintPageFooter } from '../../shared/print/print-page-footer/print-page-footer';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { ToastService } from '../../shared/toast/toast.service';
 
 const isoDate = (date: Date) => {
   const year = date.getFullYear();
@@ -117,14 +119,14 @@ interface GeneratedReportCriteria {
 
 @Component({
   selector: 'app-reports-page',
-  imports: [TableTools, PageHero, AsyncState, Pagination, DatePipe, DecimalPipe, ReactiveFormsModule, SummaryMetricCard],
+  imports: [TableTools, PageHero, AsyncState, Pagination, DatePipe, DecimalPipe, ReactiveFormsModule, SummaryMetricCard, PrintPageFooter],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportsPage implements OnInit {
   private readonly reports = inject(ReportsService);
-  private readonly preferences = inject(AcademyPreferencesService);
+  protected readonly preferences = inject(AcademyPreferencesService);
   private readonly enrollments = inject(EnrollmentsService);
   private readonly batchApi = inject(BatchesService);
   private readonly formBuilder = inject(FormBuilder);
@@ -204,6 +206,38 @@ export class ReportsPage implements OnInit {
     const rows = this.report()?.rows ?? [];
     const start = (this.reportPage() - 1) * this.reportPageSize();
     return rows.slice(start, start + this.reportPageSize());
+  }
+
+  /** Real columns for the shared export dialog, independent of table markup. */
+  protected get exportColumns(): readonly ExportColumn[] {
+    return (this.report()?.columns ?? []).map((column) => ({
+      key: column.key,
+      label: column.label,
+      align: this.chartColumns.some((chart) => chart.key === column.key) ? 'right' : 'left',
+    }));
+  }
+
+  /** The full filtered dataset, not just the visible screen page. */
+  protected get exportRows(): readonly ExportRow[] {
+    return (this.report()?.rows ?? []) as readonly ExportRow[];
+  }
+
+  protected get exportReference(): string {
+    const report = this.report();
+    if (!report) return '';
+    const criteria = this.generatedCriteria();
+    return criteria ? `${report.title} · ${criteria.from} to ${criteria.to}` : report.title;
+  }
+
+  /** Page one carries the summary and optional chart, so it holds fewer rows. */
+  protected readonly printPages = computed(() =>
+    paginate(this.report()?.rows ?? [], this.printChartIncluded() ? 10 : 22, 26),
+  );
+
+  protected get printFooterNote(): string {
+    const report = this.report();
+    if (!report) return '';
+    return `${this.academyName} · Generated ${new Date(report.generatedAt).toLocaleString()}`;
   }
   protected changeReportPage(page: number): void {
     const total = this.report()?.rows.length ?? 0;
@@ -680,19 +714,6 @@ export class ReportsPage implements OnInit {
   private money(value: unknown): string {
     return this.preferences.money(Number(value ?? 0));
   }
-  protected exportCsv(): void {
-    const report = this.report();
-    if (!report) return;
-    const csv = reportToCsv(report);
-    const url = URL.createObjectURL(new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' }));
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = this.reportScope === 'batch'
-      ? 'batch-report.csv'
-      : `${this.reportScope || report.type}-${this.form.controls.from.value}-to-${this.form.controls.to.value}.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-  }
   protected viewReportDetail(row: ReportDataset['rows'][number]): void {
     const studentName = row['student'] || 'Unknown';
     const period = row['period'] || 'Unknown';
@@ -706,11 +727,11 @@ export class ReportsPage implements OnInit {
   protected async print(): Promise<void> {
     const includeChart = this.hasPlottedChart
       ? await this.dialogs.confirm(
-          'Would you like to include the displayed chart in the printed report?',
-          'Print report',
-          'Yes',
-          'No',
-        )
+        'Would you like to include the displayed chart in the printed report?',
+        'Print report',
+        'Yes',
+        'No',
+      )
       : false;
     this.printChartIncluded.set(includeChart);
     const restoreScreenState = () => {

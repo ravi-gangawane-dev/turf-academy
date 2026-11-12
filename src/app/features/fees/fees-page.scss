@@ -5,6 +5,19 @@
   display: grid;
   gap: 20px;
 }
+.charge-status-filter { display:flex; align-items:center; gap:.35rem; flex-wrap:wrap; }
+.charges-card .table-tools-heading { display:flex; align-items:center; gap:.5rem; padding: 16px 20px 8px; }
+.charges-card .table-tools-heading h2 { margin:0; font-size:1.1rem; }
+.charges-card .table-tools-count { display:inline-grid; place-items:center; min-width:1.7rem; height:1.7rem; padding:0 .4rem; border-radius:999px; background:#e8f6ed; color:#176536; font-size:.8rem; font-weight:700; }
+.charges-card app-fee-charge-table { display:block; position:relative; }
+.charges-card .charge-status-filter { justify-content:flex-end; padding: 14px 20px; }
+.charges-card app-fee-charge-table .table-tools-actions { position:absolute; top:-58px; right:20px; padding:0; }
+.charges-card .table-tools-actions button { display:inline-flex; align-items:center; gap:.45rem; border:1px solid #d8e1db; border-radius:8px; background:#fff; color:#176536; padding:.55rem .8rem; font-weight:600; }
+.charge-status-filter span { color:#65736d; font-size:.85rem; margin-right:.2rem; }
+.charge-status-filter button { border:1px solid #d8e1db; border-radius:999px; background:#fff; color:#33503f; padding:.35rem .65rem; }
+.charge-status-filter button.active, .charge-status-filter button:hover { border-color:#267d46; background:#e8f6ed; color:#176536; }
+.reconciliation-table th:nth-child(n+6):nth-child(-n+10),
+.reconciliation-table td:nth-child(n+6):nth-child(-n+10) { white-space: nowrap; }
 .breadcrumbs {
   display: flex;
   align-items: center;
@@ -294,9 +307,19 @@
 }
 .dialog form > footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
   padding-top: 5px;
+}
+.dialog .hint {
+  margin: 0;
+  color: #64746b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.dialog footer button i {
+  margin-right: 6px;
 }
 .dialog footer button {
   min-height: 42px;

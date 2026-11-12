@@ -360,8 +360,43 @@ export class AcademyStore {
       amountPaise: 250000,
       dueDate: '2026-08-05',
     },
+    {
+      id: 'charge-2',
+      studentId: 'student-1',
+      enrollmentId: 'enrollment-1',
+      period: 'September 2026',
+      amountPaise: 250000,
+      dueDate: '2026-09-05',
+    },
+    {
+      id: 'charge-3',
+      studentId: 'student-9',
+      enrollmentId: 'enrollment-9',
+      period: 'September 2026',
+      amountPaise: 250000,
+      dueDate: '2026-09-05',
+    },
   ] : []);
-  private readonly paymentsState = signal<readonly Payment[]>([]);
+  private readonly paymentsState = signal<readonly Payment[]>(this.config.useMockApi ? [
+    {
+      id: 'payment-1',
+      chargeId: 'charge-1',
+      studentId: 'student-1',
+      amountPaise: 125000,
+      mode: 'upi',
+      paidAt: '2026-08-10T10:30:00+05:30',
+      receiptNumber: 'TCA-2026-00001',
+    },
+    {
+      id: 'payment-2',
+      chargeId: 'charge-2',
+      studentId: 'student-1',
+      amountPaise: 50000,
+      mode: 'cash',
+      paidAt: '2026-09-01T14:15:00+05:30',
+      receiptNumber: 'TCA-2026-00002',
+    },
+  ] : []);
   private readonly notificationsState = signal<readonly NotificationLog[]>(this.config.useMockApi ? [
     {
       id: 'notification-1',

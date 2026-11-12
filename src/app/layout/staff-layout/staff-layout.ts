@@ -17,7 +17,6 @@ import { Permission } from '../../core/auth/permissions';
 import { NotificationsService, ParentsService } from '../../core/supabase/domain-services';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { StorageService } from '../../core/supabase/storage.service';
-import { ToastHost } from '../../shared/toast/toast-host';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 
 interface NavigationItem {
@@ -30,7 +29,7 @@ interface NavigationItem {
 
 @Component({
   selector: 'app-staff-layout',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, TitleCasePipe, ToastHost],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TitleCasePipe],
   templateUrl: './staff-layout.html',
   styleUrl: './staff-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

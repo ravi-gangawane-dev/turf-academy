@@ -3,12 +3,12 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { FeesService } from '../../core/supabase/domain-services';
 import { ServerListService } from '../../core/supabase/server-list.service';
 import { FeeOperationsPage } from './fee-operations-page';
+import { ToastService } from '../../shared/toast/toast.service';
 
 function listPage(rows: unknown[] = [], total = rows.length, page = 1, balance = 0) {
   return {
     rows, total, page,
     metrics: {},
-    options: {},
     totals: { count: total, base: 0, discount: 0, late: 0, final: 0, paid: 0, balance },
   };
 }
@@ -22,17 +22,22 @@ function setup(view: string) {
     saveLateFeeRule: vi.fn().mockResolvedValue({}),
   };
   const lists = { page: vi.fn().mockResolvedValue(listPage()) };
+  const toastMock = {
+    error: vi.fn(),
+    success: vi.fn(),
+  };
   TestBed.configureTestingModule({
     imports: [FeeOperationsPage],
     providers: [
       provideRouter([]),
       { provide: FeesService, useValue: api },
       { provide: ServerListService, useValue: lists },
+      { provide: ToastService, useValue: toastMock },
       { provide: ActivatedRoute, useValue: { snapshot: { data: { feeView: view } } } },
     ],
   });
   const fixture = TestBed.createComponent(FeeOperationsPage);
-  return { component: fixture.componentInstance, api, lists, fixture };
+  return { component: fixture.componentInstance, api, lists, fixture, toast: vi.spyOn(TestBed.inject(ToastService), 'error') };
 }
 
 describe('Fee operations', () => {
@@ -41,14 +46,14 @@ describe('Fee operations', () => {
   it('requests paged search results and uses server totals', async () => {
     const { component, lists, fixture } = setup('summary');
     const records = Array.from({ length: 23 }, (_, i) => ({
-        id: String(i),
-        student: { full_name: i === 22 ? 'Asha' : 'Ravi' },
-        charge_month: '2026-09-01',
-        status: 'partial',
-        final_amount: 100,
-        paid_amount: 25,
-        balance_amount: 75,
-      }));
+      id: String(i),
+      student: { full_name: i === 22 ? 'Asha' : 'Ravi' },
+      charge_month: '2026-09-01',
+      status: 'partial',
+      final_amount: 100,
+      paid_amount: 25,
+      balance_amount: 75,
+    }));
     lists.page.mockResolvedValueOnce(listPage(records.slice(0, 5), 23, 1, 172500));
     fixture.detectChanges();
     await fixture.whenStable();
@@ -84,7 +89,7 @@ describe('Fee operations', () => {
   });
 
   it('rejects invalid discounts and shows server errors inside the dialog', async () => {
-    const { component, api, fixture } = setup('discounts');
+    const { component, api, fixture, toast } = setup('discounts');
     fixture.detectChanges();
     await fixture.whenStable();
     component['open']();
@@ -97,10 +102,7 @@ describe('Fee operations', () => {
     component['form'].patchValue({ validTill: '2026-09-30' });
     api.saveDiscount.mockRejectedValueOnce(new Error('Save failed'));
     await component['save']();
-    fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[role="dialog"] [role="alert"]').textContent,
-    ).toContain('Save failed');
+    expect(toast).toHaveBeenCalledWith('Save failed');
     component['saving'].set(true);
     component['close']();
     expect(component['dialogOpen']()).toBe(true);

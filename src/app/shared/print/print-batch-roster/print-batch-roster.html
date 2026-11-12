@@ -1,0 +1,150 @@
+<article
+  class="print-sheet print-sheet--roster"
+  [attr.aria-label]="'Batch roster ' + roster().batchName"
+>
+  @for (page of pages(); track page.index) {
+    <section class="print-page" [class.print-page--last]="page.last">
+      <header class="letterhead">
+        <img
+          class="brand-logo"
+          [src]="roster().brand.logoUrl"
+          [alt]="roster().brand.name + ' logo'"
+        />
+        <div class="brand-copy">
+          <p class="brand-kicker">{{ roster().brand.name }}</p>
+          <h1>Batch Roster</h1>
+          <p class="brand-contact">
+            @if (roster().brand.address) { <span>{{ roster().brand.address }}</span> }
+            @if (roster().brand.phone) { <span>{{ roster().brand.phone }}</span> }
+            @if (roster().brand.email) { <span>{{ roster().brand.email }}</span> }
+          </p>
+        </div>
+        <div class="doc-label">
+          <strong>{{ roster().rosterNumber }}</strong>
+          <span>Generated {{ roster().issuedAt | date: 'dd MMM yyyy, HH:mm' : roster().brand.timezone }}</span>
+          <span class="doc-tag">{{ roster().enrolled }} enrolled</span>
+        </div>
+      </header>
+
+      @if (page.index === 1) {
+        <section class="doc-grid roster-meta">
+          <div class="box">
+            <h2>Batch</h2>
+            <strong>{{ roster().batchName }}</strong>
+            <small>
+              {{ roster().batchCode || 'No batch code' }}
+              @if (roster().ageGroup) { · {{ roster().ageGroup }} }
+              @if (roster().skillLevel) { · {{ roster().skillLevel }} }
+            </small>
+            <small>Status {{ roster().batchStatus }} · {{ roster().enrolled }} of {{ roster().capacity }} places filled</small>
+          </div>
+          <div class="box">
+            <h2>Schedule</h2>
+            <strong>{{ roster().schedule || 'Not scheduled' }}</strong>
+            @if (roster().batchTime) { <small>{{ roster().batchTime }}</small> }
+            @if (roster().batchDates) { <small>{{ roster().batchDates }}</small> }
+            @if (roster().coaches.length) {
+              <small>Coach{{ roster().coaches.length > 1 ? 'es' : '' }} {{ roster().coaches.join(' · ') }}</small>
+            }
+          </div>
+        </section>
+
+        @if (roster().includeMedical) {
+          <p class="roster-medical-note">
+            <i class="pi pi-shield" aria-hidden="true"></i>
+            Medical notes are included because your role can read student medical records. Handle
+            this roster confidentially.
+          </p>
+        } @else {
+          <p class="roster-medical-note roster-medical-note--restricted">
+            Medical notes are not included on this copy.
+          </p>
+        }
+      }
+
+      <table class="doc-table roster-table">
+        <thead>
+          <tr>
+            <th class="index">#</th>
+            <th>Student</th>
+            <th>Code</th>
+            <th>Date of birth</th>
+            <th>Guardian contacts</th>
+            <th>Pickup</th>
+            @if (roster().includeMedical) { <th>Medical notes</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of page.rows; track row.studentId; let index = $index) {
+            <tr>
+              <td class="index">{{ page.offset + index + 1 }}</td>
+              <td>
+                <strong>{{ row.studentName }}</strong>
+                <small>{{ row.status }}</small>
+              </td>
+              <td>{{ row.studentCode || '—' }}</td>
+              <td>{{ formatDay(row.dateOfBirth) }}</td>
+              <td>
+                @for (guardian of row.guardians; track guardian.name) {
+                  <div class="roster-guardian">
+                    <strong>
+                      {{ guardian.name }}
+                      @if (guardian.relation) { <span>({{ guardian.relation }})</span> }
+                      @if (guardian.isPrimary) { <em>Primary</em> }
+                    </strong>
+                    <small>
+                      {{ guardian.phone || 'No phone' }}
+                      @if (guardian.whatsapp && guardian.whatsapp !== guardian.phone) {
+                        · WhatsApp {{ guardian.whatsapp }}
+                      }
+                    </small>
+                  </div>
+                } @empty {
+                  <span class="roster-missing">No guardian linked</span>
+                }
+              </td>
+              <td>
+                @for (guardian of row.guardians; track guardian.name) {
+                  <div class="roster-pickup" [class.roster-pickup--no]="!guardian.canPickUp">
+                    {{ guardian.name }}: {{ pickupLabel(guardian.canPickUp) }}
+                  </div>
+                } @empty {
+                  <span class="roster-missing">—</span>
+                }
+              </td>
+              @if (roster().includeMedical) {
+                <td class="roster-medical">{{ row.medical || 'No medical notes recorded' }}</td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty" [attr.colspan]="roster().includeMedical ? 7 : 6">
+                No active enrollments were found for this batch.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (page.last) {
+        <footer class="receipt-signatures roster-signoff">
+          <div>Coach signature</div>
+          <div>Academy representative</div>
+          <div>Date</div>
+        </footer>
+
+        <p class="receipt-note">
+          Generated from live enrollment and guardian records · verify contact details before
+          sharing this roster outside the academy.
+        </p>
+      }
+
+      <app-print-page-footer
+        [page]="page.index"
+        [total]="page.total"
+        [label]="roster().batchName + ' · ' + roster().batchCode"
+        [note]="'Roster ' + roster().rosterNumber"
+      />
+    </section>
+  }
+</article>

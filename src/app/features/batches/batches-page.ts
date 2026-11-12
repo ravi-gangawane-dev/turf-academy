@@ -8,18 +8,23 @@ import { AsyncState } from '../../shared/async-state/async-state';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
-import { BatchWorkspaceService, emptyBatchWorkspace, WorkspaceBatch, WaitlistRow, WaitlistQuery } from '../../core/supabase/batch-workspace.service';
+import { BatchWorkspaceService, BatchRosterRecord, emptyBatchWorkspace, WorkspaceBatch, WaitlistRow, WaitlistQuery } from '../../core/supabase/batch-workspace.service';
 import { Pagination } from '../../shared/pagination/pagination';
-import { EnrollmentsService } from '../../core/supabase/domain-services';
+import { BatchesService, EnrollmentsService } from '../../core/supabase/domain-services';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
 import { DataTable } from '../../shared/data-table/data-table';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
-@Component({selector:'app-batches-page',imports: [TableTools, StatusBadge, PageHero, AsyncState, ReactiveFormsModule,FormsModule,RouterLink,AcademyMoneyPipe,DatePipe,DataTable,SummaryMetricCard,SortableHeader,Pagination],templateUrl:'./batches-page.html',styleUrl:'./batches-page.scss',changeDetection:ChangeDetectionStrategy.OnPush})
+import { ToastService } from '../../shared/toast/toast.service';
+import { PrintBatchRosterDocument, PrintDestination } from '../../shared/print/print-document.models';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
+@Component({selector:'app-batches-page',imports: [TableTools, StatusBadge, PageHero, AsyncState, ReactiveFormsModule,FormsModule,RouterLink,AcademyMoneyPipe,DatePipe,DataTable,SummaryMetricCard,SortableHeader,Pagination,ModalFocus],templateUrl:'./batches-page.html',styleUrl:'./batches-page.scss',changeDetection:ChangeDetectionStrategy.OnPush})
 export class BatchesPage implements OnInit, OnDestroy {
  private readonly preferences=inject(AcademyPreferencesService);
  private readonly lists=inject(ServerListService);
@@ -31,6 +36,15 @@ export class BatchesPage implements OnInit, OnDestroy {
  private readonly router=inject(Router);
  private readonly route=inject(ActivatedRoute);
  private readonly dialogs=inject(InteractionDialogService);
+ private readonly toast=inject(ToastService);
+ private readonly rosterService=inject(BatchesService);
+ private readonly printDocuments=inject(PrintDocumentService);
+ protected readonly rosterOpen=signal(false);
+ protected readonly rosterBatch=signal<WorkspaceBatch|null>(null);
+ protected readonly rosterLoading=signal(false);
+ protected readonly rosterError=signal('');
+ protected readonly rosterIncludeMedical=signal(false);
+ protected canPrintMedical():boolean{return this.auth.hasPermission('students:read');}
  protected readonly auth=inject(AuthService);
  protected readonly workspace=signal(emptyBatchWorkspace());
  protected readonly loading=signal(true);protected readonly saving=signal(false);
@@ -38,7 +52,8 @@ export class BatchesPage implements OnInit, OnDestroy {
  protected readonly editing=signal<string|null>(null);
  protected readonly days=signal<number[]>([1,3,5]);
  protected readonly dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
- protected readonly view=this.router.url.split('?')[0].split('/')[2]??'list';
+ protected view=String(this.route.snapshot.queryParamMap.get('view') ?? this.route.snapshot.data['batchView'] ?? this.router.url.split('?')[0].split('/')[2] ?? 'list');
+ private viewSubscription?: Subscription;
  protected readonly query=signal('');protected readonly status=signal('all');
  protected readonly sortBy=signal('name');protected readonly sortDirection=signal<'asc'|'desc'>('asc');
  protected readonly coachFilter=signal(this.route.snapshot.queryParamMap.get('coach')??'');
@@ -87,7 +102,7 @@ export class BatchesPage implements OnInit, OnDestroy {
  private waitingPending?:Promise<void>;
  private waitingKey='';
  private waitingBatchId=this.batchFilter();
- ngOnDestroy():void{clearTimeout(this.waitingTimer);clearTimeout(this.columnTimer);++this.waitingRequest;++this.requestId;}
+ ngOnDestroy():void{clearTimeout(this.waitingTimer);clearTimeout(this.columnTimer);++this.waitingRequest;++this.requestId;this.viewSubscription?.unsubscribe();}
  protected scheduleWaitingFilters():void{
   clearTimeout(this.waitingTimer);++this.waitingRequest;this.waitingKey='';
   this.waitingPage.set(1);this.waitingLoading.set(true);this.waitingError.set('');
@@ -120,7 +135,15 @@ export class BatchesPage implements OnInit, OnDestroy {
   finally{if(request===this.waitingRequest)this.waitingLoading.set(false);}
  }
  protected readonly metrics=signal({batches:0,active:0,capacity:0,waiting:0});
- async ngOnInit():Promise<void>{await Promise.all([this.load(),this.loadWaiting()]);}
+ async ngOnInit():Promise<void>{
+  this.viewSubscription=this.route.queryParamMap.subscribe(params=>{
+   const next=String(params.get('view') ?? this.route.snapshot.data['batchView'] ?? this.view);
+   if(next===this.view)return;
+   this.view=next;this.page.set(1);this.waitingPage.set(1);this.waitingKey='';
+   void this.load();void this.loadWaiting();
+  });
+  await Promise.all([this.load(),this.loadWaiting()]);
+ }
  protected async load():Promise<void>{
   clearTimeout(this.columnTimer);
   const request=++this.requestId;this.loading.set(true);this.error.set('');
@@ -171,6 +194,70 @@ export class BatchesPage implements OnInit, OnDestroy {
  }
  protected async cancelEnrollment(id:string):Promise<void>{if(await this.dialogs.confirm('Cancel this enrollment and remove the student from the batch?','Remove allocation','Remove'))await this.mutate(()=>this.enrollments.changeStatus(id,'cancelled','Removed from batch allocation'),'Enrollment cancelled.');}
  protected async waitAction(batch:string,student:string,action:string):Promise<void>{await this.mutate(()=>this.api.waitlist(batch,student,action,this.today),action==='promote'?'Student enrolled.':'Waiting list entry removed.');}
- private async mutate(action:()=>Promise<unknown>,success:string):Promise<void>{if(this.saving())return;this.saving.set(true);this.error.set('');this.message.set('');try{await action();this.message.set(success);this.waitingKey='';await Promise.all([this.load(),this.loadWaiting()]);}catch(e){this.error.set(this.errorText(e));}finally{this.saving.set(false);}}
+ protected openRoster(batch:WorkspaceBatch):void{
+  this.rosterBatch.set(batch);
+  this.rosterIncludeMedical.set(false);
+  this.rosterError.set('');
+  this.rosterOpen.set(true);
+ }
+ protected closeRoster():void{
+  if(this.rosterLoading())return;
+  this.rosterOpen.set(false);
+ }
+ protected onRosterMedicalChange(event:Event):void{
+  this.rosterIncludeMedical.set((event.target as HTMLInputElement).checked);
+ }
+ protected async printRoster(destination:PrintDestination='print'):Promise<void>{
+  const batch=this.rosterBatch();
+  if(!batch||this.rosterLoading())return;
+  const includeMedical=this.rosterIncludeMedical()&&this.canPrintMedical();
+  this.rosterLoading.set(true);this.rosterError.set('');
+  try{
+   const record=await this.rosterService.roster(batch.id,includeMedical);
+   await this.printDocuments.printBatchRoster(this.rosterInput(record,includeMedical),destination);
+   this.rosterOpen.set(false);
+  }catch(e){
+   this.rosterError.set(this.errorText(e));
+  }finally{
+   this.rosterLoading.set(false);
+  }
+ }
+ private rosterInput(record:BatchRosterRecord,includeMedical:boolean):Omit<PrintBatchRosterDocument,'kind'|'brand'>{
+  const batch=record.batch;
+  const days=[...batch.batch_days].sort((left,right)=>left.day_of_week-right.day_of_week);
+  return {
+   rosterNumber:'RST-'+((batch.code||batch.id.slice(0,8)).toUpperCase().replace(/[^A-Z0-9]+/g,'')||'BATCH'),
+   issuedAt:new Date().toISOString(),
+   batchName:batch.name,
+   batchCode:batch.code,
+   batchStatus:batch.status,
+   ageGroup:batch.age_group??undefined,
+   skillLevel:batch.skill_level??undefined,
+   schedule:days.length?days.map(day=>this.dayNames[day.day_of_week]).join(', '):'Not scheduled',
+   batchTime:batch.start_time&&batch.end_time?`${batch.start_time.slice(0,5)} – ${batch.end_time.slice(0,5)}`:undefined,
+   batchDates:batch.start_date?`${batch.start_date} – ${batch.end_date??'Ongoing'}`:undefined,
+   coaches:record.coaches,
+   capacity:batch.capacity,
+   enrolled:record.rows.length,
+   includeMedical,
+   rows:record.rows.map(row=>({
+    studentId:row.studentId,
+    studentCode:row.studentCode,
+    studentName:row.studentName,
+    dateOfBirth:row.dateOfBirth??undefined,
+    status:row.status,
+    guardians:row.guardians.map(guardian=>({
+     name:guardian.name,
+     relation:guardian.relation??undefined,
+     phone:guardian.phone,
+     whatsapp:guardian.whatsapp??undefined,
+     isPrimary:guardian.isPrimary,
+     canPickUp:guardian.canPickUp,
+    })),
+    medical:includeMedical?(row.medical??undefined):undefined,
+   })),
+  };
+ }
+ private async mutate(action:()=>Promise<unknown>,success:string):Promise<void>{if(this.saving())return;this.saving.set(true);this.error.set('');this.message.set('');try{await action();this.toast.success(success);this.waitingKey='';await Promise.all([this.load(),this.loadWaiting()]);}catch(e){this.toast.error(this.errorText(e));}finally{this.saving.set(false);}}
  private errorText(e:unknown):string{return e instanceof Error?e.message:'The operation failed. Please retry.';}
 }

@@ -179,3 +179,7 @@ turf-academy-ui/
    `docs/design-assets/` if repo size matters.
 5. CI can require all four gates from day one: `npm run lint`, `ng test --watch=false`,
    `npm run build`, `npm run test:scripts`.
+
+## Follow-up image cleanup - 29 October 2026
+
+Unreferenced design previews, obsolete hero artwork and unused icon sizes were removed after checking code, SQL, manifest and test references. Student/coach source masters were retained because they differ from their served copies. The current login uses only `stadium-scene.png` and `cricketer-reference.png`, with HTML content and controls. Manifest icons, the favicon, Apple touch icon, the QR test fixture and the academy logo remain available. Unreferenced intermediate login screenshots were removed. Earlier source-retention notes describe the pre-cleanup state.

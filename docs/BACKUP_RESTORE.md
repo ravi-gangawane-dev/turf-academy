@@ -1,5 +1,13 @@
 # Database backup and restore
 
+## Native backup and isolated restore verified — 5 November 2026
+
+Run `node scripts/backup-native.mjs --pg-bin <PostgreSQL-17-bin-directory>` using the linked Supabase CLI session. This route does not require Docker. It holds a consistent exported snapshot for the dump and source checksums, restores into a separate local PostgreSQL cluster bound to loopback, and compares every included table's row count and content digest using UTC timestamp formatting. Credentials are passed through child environments; backup files remain in the ignored `backups/` directory.
+
+Verified artifact: `backups/native-2026-11-05T06-22-44-937Z/manifest.json`, status `complete`, `restoreVerified: true`, **80 tables / 1,105 rows**. The command exited successfully and stopped its rehearsal server. Earlier failed artifacts remain marked incomplete and must not be used as verified backups.
+
+Coverage: `public`, `auth`, `storage`, and `supabase_migrations` database schemas. Uploaded storage object bytes and hosted/provider configuration are excluded. Role passwords and original object ownership are not restored; the rehearsal does not certify a hosted Supabase recovery. Keep these additional recovery requirements open. The native script passes syntax checking; the existing five Docker-backup tests also pass but do not test the native workflow. Native verification evidence is the actual dump/restore/content comparison above.
+
 ## Current backup tooling — 23 October 2026
 
 Latest recovery attempt: stopped the hung Docker application/backend processes and relaunched Desktop. Historical backend logs show shutdown after a disk-full error; C: now has approximately 8 GB free. The fresh startup fails with `DockerDesktop/Wsl/ExecError`: WSL bootstrap reports no recognized filesystem on its data block device and its attempted `mkfs` exits with status 1. Docker was stopped after this failure to prevent further initialization retries. No manual reset, disk formatting, volume deletion or database deployment was performed. `npm run backup` correctly exits nonzero before creating a backup. Docker data-disk recovery or a separate working backup environment is required; a routine application restart has not resolved the blocker.

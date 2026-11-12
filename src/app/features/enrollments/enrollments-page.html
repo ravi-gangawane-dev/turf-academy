@@ -5,16 +5,20 @@
     <div hero-actions><a class="primary" routerLink="/enrollments/new">New Enrollment</a></div>
   </app-page-hero>
 
-  @if (loading()) {
-  <app-async-state title="Loading enrollments…" />
-  } @else if (view === 'list') {
+  @if (view === 'list') {
   <app-enrollment-metrics [metrics]="metrics()" />
   <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="changePage($event)"
     (pageSizeChange)="setPageSize($event)">
     <div table-content class="table-scroll">
-      <app-table-tools title="Enrollments" [table]="exportTable1" [customExport]="true"><button type="button"
-          class="secondary" (click)="exportRows()" [disabled]="!total() || exporting()">Export
-          enrollments</button></app-table-tools>
+      <app-table-tools
+        title="Enrollments"
+        [table]="exportTable1"
+        [total]="total()"
+        [exportColumns]="enrollmentExportColumns"
+        [exportLoader]="exportRows"
+        [exportReference]="exportReference"
+        [exportSubtitle]="total() + ' enrollments matching the current filters'"
+      ></app-table-tools>
       <table #exportTable1 class="academy-table">
         <thead>
           <tr>
@@ -49,17 +53,26 @@
           </tr>
         </thead>
         <tbody>
+          @if (loading()) {
+          @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+          <tr class="skeleton-row" aria-hidden="true">
+            @for (column of [1, 2, 3, 4, 5, 6, 7]; track column) {
+            <td><span></span></td>
+            }
+          </tr>
+          }
+          } @else {
           @for (row of visibleRows(); track row.id) {
           <tr>
-            <td>
+            <td [attr.data-export-value]="(row.student?.full_name ?? 'Student unavailable') + (row.student ? ' (' + row.student.student_code + ')' : '')">
               <a [routerLink]="['/students', row.student_id]">{{
                 row.student?.full_name ?? 'Student unavailable'
                 }}</a><small>{{ row.student?.student_code }}</small>
             </td>
             <td>{{ row.batch?.name ?? 'Batch unavailable' }}</td>
             <td>{{ row.plan?.name ?? 'Plan unavailable' }}</td>
-            <td>{{ row.monthly_fee | academyMoney }}</td>
-            <td>
+            <td [attr.data-export-value]="row.monthly_fee">{{ row.monthly_fee | academyMoney }}</td>
+            <td [attr.data-export-value]="(row.valid_from | date: 'dd MMM yyyy') + ' – ' + (row.valid_till ? (row.valid_till | date: 'dd MMM yyyy') : 'No end date')">
               {{ row.valid_from | date: 'dd MMM yyyy'
               }}<small>{{
                 row.valid_till ? (row.valid_till | date: 'dd MMM yyyy') : 'No end date'
@@ -69,21 +82,21 @@
             <td>
               <div class="action-buttons">
                 @if (row.status === 'active') {
-                  <button class="action-transfer" title="Transfer" routerLink="/enrollments/transfer"
+                  <button class="app-button icon" title="Transfer" routerLink="/enrollments/transfer"
                     [queryParams]="{ enrollment: row.id }">
                     <i class="pi pi-arrow-right-arrow-left"></i>
                   </button>
-                  <button class="action-pause" title="Pause" routerLink="/enrollments/"
+                  <button class="app-button icon" title="Pause" routerLink="/enrollments/"
                     (click)="pause(row.id)">
                     <i class="pi pi-pause-circle"></i>
                   </button>
-                  <button class="action-cancel" title="Cancel" routerLink="/enrollments/cancel"
+                  <button class="app-button icon" title="Cancel" routerLink="/enrollments/cancel"
                     [queryParams]="{ enrollment: row.id }">
                     <i class="pi pi-times-circle"></i>
                   </button>
                 }
                 @if (row.status === 'paused') {
-                  <button class="action-reactivate" title="Reactivate" routerLink="/enrollments/"
+                  <button class="app-button icon" title="Reactivate" routerLink="/enrollments/"
                     (click)="reactivate(row.id)">
                     <i class="pi pi-replay"></i>
                   </button>
@@ -93,9 +106,10 @@
           </tr>
           } @empty {
           <tr>
-            <td colspan="7">@if (!loading() && !error()) { <app-async-state kind="empty"
+            <td colspan="7">@if (!error()) { <app-async-state kind="empty"
                 title="No matching enrollments." /> }</td>
           </tr>
+          }
           }
         </tbody>
       </table>
@@ -168,9 +182,6 @@
     <app-async-state kind="error" title="Enrollment history could not be loaded" [message]="historyError()"
       actionLabel="Retry" (action)="loadHistory()" />
     }
-    @if (historyLoading()) {
-    <app-async-state title="Loading history…" />
-    }
     <p>
       {{ historyTotal() }} matching activities
 
@@ -178,9 +189,15 @@
     <app-data-table [total]="historyTotal()" [page]="page()" [pageSize]="pageSize()"
       (pageChange)="historyPageChanged($event)" (pageSizeChange)="setPageSize($event)">
       <div table-content class="table-scroll">
-        <app-table-tools title="Enrollment history" [table]="exportTable2" [customExport]="true"><button type="button"
-            (click)="historyColumns.reset()">Reset filters</button><button type="button" (click)="exportHistory()"
-            [disabled]="exporting() || historyLoading() || !historyTotal()">Export history</button></app-table-tools>
+        <app-table-tools
+          title="Enrollment history"
+          [table]="exportTable2"
+          [total]="historyTotal()"
+          [exportColumns]="historyExportColumns"
+          [exportLoader]="exportHistory"
+          [exportReference]="historyExportReference"
+          [exportSubtitle]="historyTotal() + ' history events matching the current filters'"
+        ><button type="button" (click)="historyColumns.reset()">Reset filters</button></app-table-tools>
         <table #exportTable2 class="academy-table">
           <thead>
             <tr>
@@ -224,11 +241,20 @@
             </tr>
           </thead>
           <tbody>
+            @if (historyLoading()) {
+            @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+            <tr class="skeleton-row" aria-hidden="true">
+              @for (column of [1, 2, 3, 4, 5, 6, 7]; track column) {
+              <td><span></span></td>
+              }
+            </tr>
+            }
+            } @else {
             @for (row of historyRows(); track row.id) {
             <tr>
               <td>{{ row.created_at | date: 'dd MMM yyyy, HH:mm' }}</td>
               <td>{{ row.effective_on | date: 'dd MMM yyyy' }}</td>
-              <td>
+              <td [attr.data-export-value]="row.enrollment.student.full_name + ' (' + row.enrollment.student.student_code + ')'">
                 {{ row.enrollment.student.full_name
                 }}<small>{{ row.enrollment.student.student_code }}</small>
               </td>
@@ -239,9 +265,10 @@
             </tr>
             } @empty {
             <tr>
-              <td colspan="7">@if (!historyLoading() && !historyError()) { <app-async-state kind="empty"
+              <td colspan="7">@if (!historyError()) { <app-async-state kind="empty"
                   title="No matching enrollment history." /> }</td>
             </tr>
+            }
             }
           </tbody>
         </table>
@@ -287,5 +314,83 @@
       </footer>
     </fieldset>
   </form>
+  }
+  @if (confirmationOpen()) {
+  <div class="enrollment-confirm-backdrop">
+    <section class="enrollment-confirm-dialog" appModalFocus [modalBusy]="confirmationLoading()"
+      (modalDismiss)="closeConfirmation()" aria-labelledby="enrollment-confirm-title">
+      <header>
+        <div>
+          <p class="enrollment-confirm-kicker">Enrollment saved</p>
+          <h2 id="enrollment-confirm-title">
+            {{ confirmationAction() === 'created' ? 'Enrollment confirmation'
+              : confirmationAction() === 'transferred' ? 'Transfer confirmation'
+              : confirmationAction() === 'cancelled' ? 'Cancellation confirmation'
+              : 'Enrollment update confirmation' }}
+          </h2>
+        </div>
+        <button type="button" (click)="closeConfirmation()" [disabled]="confirmationLoading()"
+          aria-label="Close enrollment confirmation" title="Close">
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      @if (confirmationLoading()) {
+        <app-async-state title="Loading live enrollment…" />
+      } @else if (confirmationError()) {
+        <div class="enrollment-confirm-error" role="alert">
+          <p>{{ confirmationError() }}</p>
+          <button type="button" (click)="retryConfirmation()">Try again</button>
+        </div>
+      } @else if (confirmation(); as record) {
+        <dl class="enrollment-confirm-summary">
+          <div>
+            <dt>Student</dt>
+            <dd>{{ record.student.full_name }} · {{ record.student.student_code }}</dd>
+          </div>
+          <div>
+            <dt>Batch</dt>
+            <dd>{{ record.batch.name }} · {{ record.batch.code }}</dd>
+          </div>
+          @if (record.previousBatch) {
+            <div>
+              <dt>Previous batch</dt>
+              <dd>{{ record.previousBatch.name }} · {{ record.previousBatch.code }}</dd>
+            </div>
+          }
+          <div>
+            <dt>Fee plan</dt>
+            <dd>{{ record.plan.name }} · {{ record.plan.monthly_fee | academyMoney }}/month</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>{{ record.enrollment.status }}</dd>
+          </div>
+        </dl>
+        <p class="enrollment-confirm-hint">
+          Values come from the saved enrollment. Print, download or preview the confirmation now;
+          closing this dialog returns to the enrollment list.
+        </p>
+      }
+
+      <footer>
+        <button type="button" [disabled]="confirmationLoading()" (click)="closeConfirmation()">
+          Not now
+        </button>
+        <button type="button" [disabled]="confirmationLoading() || !confirmation()"
+          (click)="prepareConfirmation('preview')">
+          <i class="pi pi-eye" aria-hidden="true"></i> Preview
+        </button>
+        <button type="button" [disabled]="confirmationLoading() || !confirmation()"
+          (click)="prepareConfirmation('pdf')">
+          <i class="pi pi-file-pdf" aria-hidden="true"></i> Download PDF
+        </button>
+        <button type="button" class="primary" [disabled]="confirmationLoading() || !confirmation()"
+          (click)="prepareConfirmation('print')">
+          <i class="pi pi-print" aria-hidden="true"></i> Print confirmation
+        </button>
+      </footer>
+    </section>
+  </div>
   }
 </div>

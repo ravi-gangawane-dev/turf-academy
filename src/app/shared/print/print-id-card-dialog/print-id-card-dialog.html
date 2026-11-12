@@ -1,0 +1,64 @@
+@if (open()) {
+@if (card(); as card) {
+<div class="id-card-backdrop" role="presentation" (click)="onBackdrop($event)">
+  <section class="id-card-dialog" appModalFocus [modalBusy]="busy()" (modalDismiss)="close()"
+    aria-labelledby="id-card-dialog-title">
+    <header>
+      <div>
+        <p class="id-card-kicker">{{ kicker() }}</p>
+        <h2 id="id-card-dialog-title">{{ heading() }} — {{ card.fullName }}</h2>
+      </div>
+      <button type="button" class="id-card-close" (click)="close()" [disabled]="busy()"
+        aria-label="Close ID card dialog" title="Close">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <dl class="id-card-summary">
+      <div>
+        <dt>{{ codeLabel() }}</dt>
+        <dd>{{ card.holderCode || 'Not assigned' }}</dd>
+      </div>
+      <div>
+        <dt>{{ subtitleLabel() }}</dt>
+        <dd>{{ card.subtitle || 'Not assigned' }}</dd>
+      </div>
+      <div>
+        <dt>Card number</dt>
+        <dd>{{ card.cardNumber }}</dd>
+      </div>
+    </dl>
+
+    <p class="id-card-hint">
+      Prints two CR80 cards on A4 for duplex printing: page 1 holds the fronts and page 2
+      the matching backs, with crop marks. The QR code scans the live {{ card.holderType }} record.
+    </p>
+
+    @if (error()) {
+    <div class="id-card-error" role="alert">
+      <p>{{ error() }}</p>
+      <button type="button" [disabled]="busy()" (click)="retryPreparation()">Try again</button>
+    </div>
+    }
+
+    <footer>
+      <button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button type="button" [disabled]="busy()" (click)="request('preview')">
+        <i class="pi pi-eye" aria-hidden="true"></i>
+        {{ busy() ? 'Preparing…' : 'Preview' }}
+      </button>
+      <button type="button" [disabled]="busy()" (click)="request('pdf')">
+        <i class="pi pi-file-pdf" aria-hidden="true"></i>
+        {{ busy() ? 'Preparing…' : 'Download PDF' }}
+      </button>
+      <button type="button" class="primary" [disabled]="busy()" (click)="request('print')">
+        @if (busy()) {
+        <span class="spinner" aria-hidden="true"></span>
+        }
+        <i class="pi pi-print" aria-hidden="true"></i> Print
+      </button>
+    </footer>
+  </section>
+</div>
+}
+}

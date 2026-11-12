@@ -4,7 +4,7 @@
       <nav aria-label="Breadcrumb">
         @for (crumb of breadcrumbs(); track $index; let last = $last) {
           @if (last) {
-            <span class="current" aria-current="page">{{ crumb.label }}</span>
+            <span class="current" aria-current="page">@if (crumb.icon) { <i aria-hidden="true" class="pi {{ crumb.icon }}"></i> }{{ crumb.label }}</span>
           } @else if (crumb.route) {
             <a [routerLink]="crumb.route">@if (crumb.icon) { <i aria-hidden="true" class="pi {{ crumb.icon }}"></i> }{{ crumb.label }}</a>
           } @else {

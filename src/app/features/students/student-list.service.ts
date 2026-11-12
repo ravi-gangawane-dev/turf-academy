@@ -509,6 +509,28 @@ export class StudentListService {
     }
   }
 
+  async updateStudentPhoto(id: string, photo: File): Promise<string> {
+    const client = this.supabase.requireClient();
+    const current = await client.from('students').select('photo_path').eq('id', id).single();
+    if (current.error) throw this.toError('Get student photo', current.error);
+    const path = await this.storage.upload('student-photos', id, photo);
+    let url: string;
+    try {
+      url = await this.storage.signedUrl('student-photos', path, 3600);
+      const result = await client.rpc('update_student_photo', {
+        p_student_id: id, p_photo_path: path,
+      });
+      if (result.error) throw this.toError('Save student photo', result.error);
+    } catch (error) {
+      await this.storage.remove('student-photos', path).catch(() => undefined);
+      throw error;
+    }
+    if (current.data.photo_path) {
+      await this.storage.remove('student-photos', current.data.photo_path).catch(() => undefined);
+    }
+    return url;
+  }
+
   async updateLinkedChildProfile(id: string, input: ParentChildProfileMutation): Promise<void> {
     const client = this.supabase.requireClient();
     const current = await client.from('students').select('photo_path').eq('id', id).single();

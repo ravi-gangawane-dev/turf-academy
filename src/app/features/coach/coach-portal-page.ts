@@ -1,5 +1,6 @@
 import { TableTools } from '../../shared/data-table/table-tools';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { AcademySupport } from '../../shared/academy-support';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
@@ -163,7 +164,7 @@ export class CoachPortalPage implements OnInit, OnDestroy {
       })[this.view()],
   );
   protected readonly heroBreadcrumbs = computed<readonly PageHeroBreadcrumb[]>(() => [
-    { label: 'Dashboard', icon: 'pi-home' },
+    { label: 'Dashboard', icon: 'pi-home', route: '/coach/dashboard' },
     ...(this.view() === 'dashboard' ? [] : [{ label: this.title() }]),
   ]);
   protected readonly heroSubtitle = computed(() =>
@@ -205,16 +206,35 @@ export class CoachPortalPage implements OnInit, OnDestroy {
       ) ?? null,
   );
   protected readonly pagedStudents = computed(() => this.studentRows() ?? []);
-  protected readonly filteredAttendance = computed(() =>
-    (this.data()?.attendance ?? []).filter(
-      (row) =>
-        (!this.batchFilter() || row['batch_id'] === this.batchFilter()) &&
-        (!this.statusFilter() || row['status'] === this.statusFilter()) &&
-        (!this.selectedStudentId() || row['student_id'] === this.selectedStudentId()),
-    ),
-  );
   protected readonly correctionRecords = computed(() => this.data()?.attendance ?? []);
   protected readonly pagedAttendance = computed(() => this.attendanceRows() ?? []);
+  protected readonly attendanceExportColumns: readonly ExportColumn[] = [
+    { key: 'date', label: 'Date' },
+    { key: 'student', label: 'Student' },
+    { key: 'batch', label: 'Batch' },
+    { key: 'checkIn', label: 'Check in' },
+    { key: 'checkOut', label: 'Check out' },
+    { key: 'status', label: 'Status' },
+    { key: 'source', label: 'Source' },
+    { key: 'remarks', label: 'Remarks' },
+  ];
+  /** Reads every filtered attendance record, not just the visible page. */
+  protected readonly exportAttendanceRows = async (): Promise<readonly ExportRow[]> => {
+    const batchIds = this.data()?.batches.map((batch) => batch.id) ?? [];
+    const records = await this.portal.attendanceHistoryAll(
+      batchIds, this.batchFilter(), this.selectedStudentId(), this.statusFilter(),
+    );
+    return records.map((record) => ({
+      date: String(record['attendance_date'] ?? ''),
+      student: this.relation(record, 'student', 'full_name'),
+      batch: this.relation(record, 'batch', 'name'),
+      checkIn: String(record['check_in_at'] ?? ''),
+      checkOut: String(record['check_out_at'] ?? ''),
+      status: String(record['status'] ?? ''),
+      source: String(record['source'] ?? ''),
+      remarks: String(record['remarks'] ?? ''),
+    }));
+  };
   protected readonly notificationTotal = signal(0);
   private notificationRequest=0;
   protected readonly pagedNotifications = computed(() => this.data()?.notifications ?? []);
@@ -1020,36 +1040,6 @@ export class CoachPortalPage implements OnInit, OnDestroy {
     } finally {
       this.submitting.set(false);
     }
-  }
-  protected exportAttendance(): void {
-    const headers = [
-      'Date',
-      'Student',
-      'Batch',
-      'Check in',
-      'Check out',
-      'Status',
-      'Source',
-      'Remarks',
-    ];
-    const rows = this.filteredAttendance().map((record) => [
-      record['attendance_date'],
-      this.relation(record, 'student', 'full_name'),
-      this.relation(record, 'batch', 'name'),
-      record['check_in_at'] ?? '',
-      record['check_out_at'] ?? '',
-      record['status'] ?? '',
-      record['source'] ?? '',
-      record['remarks'] ?? '',
-    ]);
-    const csv = [headers, ...rows]
-      .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
-      .join('\r\n');
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    link.download = `coach-attendance-${this.todayDate()}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
   }
   protected beginProfileEdit(): void {
     this.profilePhone.set(String(this.data()?.coach['phone'] ?? ''));

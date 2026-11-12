@@ -11,12 +11,14 @@ for (const width of [1440, 390]) {
     await page.goto('/notifications/failed?channel=email&batchId=unlinked');
     await expect(page).toHaveURL(/\/notifications\?.*status=failed/);
     await expect(page.locator('app-page-hero + app-notification-section-nav')).toBeVisible();
+    await page.getByRole('button', { name: /More filters/ }).click();
     await expect(page.getByRole('combobox', { name: 'batches', exact: true })).toHaveValue(
       'unlinked',
     );
     await page.getByRole('combobox', { name: 'Channel', exact: true }).selectOption('whatsapp');
     await expect(page).toHaveURL(/channel=whatsapp/);
     await page.reload();
+    await page.getByRole('button', { name: /More filters/ }).click();
     await expect(page.getByRole('combobox', { name: 'Channel', exact: true })).toHaveValue(
       'whatsapp',
     );

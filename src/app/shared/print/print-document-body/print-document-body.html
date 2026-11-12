@@ -1,0 +1,30 @@
+@if (invoice(); as document) {
+  <app-print-invoice [invoice]="document" />
+}
+@if (receipt(); as document) {
+  <app-print-receipt [receipt]="document" />
+}
+@if (statement(); as document) {
+  <app-print-statement [statement]="document" />
+}
+@if (refundReceipt(); as document) {
+  <app-print-refund-receipt [refund]="document" />
+}
+@if (attendanceRegister(); as document) {
+  <app-print-attendance-register [register]="document" />
+}
+@if (attendanceMatrix(); as document) {
+  <app-print-attendance-matrix [matrix]="document" />
+}
+@if (idCard(); as document) {
+  <app-print-id-card [card]="document" />
+}
+@if (enrollmentConfirmation(); as document) {
+  <app-print-enrollment-confirmation [confirmation]="document" />
+}
+@if (batchRoster(); as document) {
+  <app-print-batch-roster [roster]="document" />
+}
+@if (table(); as document) {
+  <app-print-table [table]="document" />
+}

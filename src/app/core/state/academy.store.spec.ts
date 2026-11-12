@@ -41,6 +41,7 @@ describe('AcademyStore', () => {
   });
 
   it('refreshes attendance without erasing payments or pending offline attendance', () => {
+    const opening = store.feeRows().find((row) => row.id === 'charge-1')!.balancePaise;
     store.recordPayment('charge-1', 50000, 'upi');
     const payments = store.payments();
     store.addPendingCheckIn('queued-check-in', 'student-1', 'batch-2');
@@ -55,7 +56,7 @@ describe('AcademyStore', () => {
     });
     expect(store.payments()).toEqual(payments);
     expect(store.attendance()).toEqual([pending]);
-    expect(store.feeRows().find((row) => row.id === 'charge-1')?.balancePaise).toBe(200000);
+    expect(store.feeRows().find((row) => row.id === 'charge-1')?.balancePaise).toBe(opening - 50000);
   });
 
   it('requires an active matching enrollment for check-in', () => {
@@ -104,9 +105,11 @@ describe('AcademyStore', () => {
   });
 
   it('supports partial payment and rejects overpayment', () => {
+    const opening = store.feeRows().find((item) => item.id === 'charge-1')!.balancePaise;
     store.recordPayment('charge-1', 100000, 'upi');
-    expect(store.feeRows().find((item) => item.id === 'charge-1')?.balancePaise).toBe(150000);
-    expect(() => store.recordPayment('charge-1', 150001, 'cash')).toThrowError(
+    const remaining = store.feeRows().find((item) => item.id === 'charge-1')!.balancePaise;
+    expect(remaining).toBe(opening - 100000);
+    expect(() => store.recordPayment('charge-1', remaining + 1, 'cash')).toThrowError(
       'Payment amount must be within the outstanding balance.',
     );
     expect(() => store.recordPayment('charge-1', 10.5, 'cash')).toThrowError(
@@ -115,14 +118,14 @@ describe('AcademyStore', () => {
   });
 
   it('creates one monthly charge per enrollment and period', () => {
-    store.addMonthlyCharge('enrollment-1', 'September 2026', '2026-09-10', 250000);
+    store.addMonthlyCharge('enrollment-1', 'October 2026', '2026-10-10', 250000);
     expect(
       store
         .feeRows()
-        .some((item) => item.enrollmentId === 'enrollment-1' && item.period === 'September 2026'),
+        .some((item) => item.enrollmentId === 'enrollment-1' && item.period === 'October 2026'),
     ).toBe(true);
     expect(() =>
-      store.addMonthlyCharge('enrollment-1', 'September 2026', '2026-09-10', 250000),
+      store.addMonthlyCharge('enrollment-1', 'October 2026', '2026-10-10', 250000),
     ).toThrowError('A charge already exists for this student and month.');
   });
 
@@ -200,11 +203,16 @@ describe('AcademyStore', () => {
   });
 
   it('builds fee reports from paise-based balances', () => {
+    const opening = store.feeRows().find((item) => item.id === 'charge-1')!;
     store.recordPayment('charge-1', 50000, 'upi');
     const report = store.buildReport('fees', '2026-08-01', '2026-08-31');
-    expect(report.rows[0]?.['paid']).toBe(500);
-    expect(report.rows[0]?.['balance']).toBe(2000);
-    expect(report.summary.find((item) => item.label === 'Outstanding')?.value).toBe('₹2,000');
+    const row = report.rows.find((item) => item['period'] === opening.period);
+    expect(row?.['paid']).toBe((opening.paidPaise + 50000) / 100);
+    expect(row?.['balance']).toBe((opening.balancePaise - 50000) / 100);
+    const outstanding = report.rows.reduce((sum, item) => sum + Number(item['balance']), 0);
+    expect(report.summary.find((item) => item.label === 'Outstanding')?.value).toBe(
+      `₹${outstanding.toLocaleString('en-IN')}`,
+    );
   });
 });
 

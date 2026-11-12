@@ -35,6 +35,24 @@ export class ParentPortalService {
     localStorage.setItem('parent-selected-child', id);
   }
 
+  /** Exactly one receipt, scoped to the selected child, for the receipt screen. */
+  async payment(paymentId: string, studentId: string): Promise<ParentPortalRecord | null> {
+    const client = this.supabase.requireClient();
+    const result = await client
+      .from('payments')
+      .select('*,monthly_charge:monthly_charges(*),receipt:receipts(*)')
+      .eq('id', paymentId)
+      .eq('student_id', studentId)
+      .maybeSingle();
+    if (result.error) throw new DataRequestError('Load receipt', result.error);
+    if (!result.data) return null;
+    const payment = result.data as unknown as ParentPortalRecord;
+    const receiptValue = Array.isArray(payment.receipt) ? payment.receipt[0] : payment.receipt;
+    // Receipts are rendered live from the payment record. Legacy stored files
+    // are never used as the source of truth, so they cannot show stale details.
+    return { ...payment, receipt: receiptValue ?? null };
+  }
+
   async load(query?: Partial<ParentPortalQuery>): Promise<ParentPortalData> {
     const profileId = this.auth.profile()?.id;
     if (!profileId) throw new Error('The signed-in parent profile is unavailable.');
@@ -186,14 +204,13 @@ export class ParentPortalService {
       attendanceRows.error ??
       paymentRowsResult.error;
     if (error) throw new DataRequestError('Load academy data', error);
-    const paymentRows = await Promise.all(
-      ((paymentRowsResult.data ?? []) as unknown as ParentPortalRecord[]).map(async (payment) => {
+    const paymentRows = ((paymentRowsResult.data ?? []) as unknown as ParentPortalRecord[]).map(
+      (payment) => {
         const receiptValue = Array.isArray(payment.receipt) ? payment.receipt[0] : payment.receipt;
-        const url = receiptValue?.storage_path
-          ? await this.storage.signedUrl('receipts', receiptValue.storage_path).catch(() => null)
-          : null;
-        return { ...payment, receipt: receiptValue ? { ...receiptValue, url } : null };
-      }),
+        // No signed URL is generated per row: the stored copy is legacy and may
+        // be stale, and the receipt screen renders live data instead.
+        return { ...payment, receipt: receiptValue ?? null };
+      },
     );
     const coachRows: ParentCoachLinkRecord[] = await Promise.all(
       ((coaches.data ?? []) as unknown as ParentPortalRecord[]).map(async (link) => {

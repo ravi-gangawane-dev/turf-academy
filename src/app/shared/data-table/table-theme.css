@@ -12,6 +12,7 @@ app-table-tools {
   border-bottom: 1px solid var(--app-border);
   background: var(--app-card, #fff);
 }
+
 app-table-tools .table-tools-heading,
 app-table-tools .table-tools-actions {
   display: flex;
@@ -19,14 +20,23 @@ app-table-tools .table-tools-actions {
   gap: 8px;
   flex-wrap: wrap;
 }
-app-table-tools .table-tools-actions { margin-inline-start: auto; }
+
+app-table-tools .table-tools-actions {
+  justify-content: flex-end;
+  margin-inline-start: auto;
+}
+
 app-table-tools .table-tools-heading h2 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: var(--app-text);
 }
-app-table-tools .table-tools-heading small { color: var(--app-muted); }
+
+app-table-tools .table-tools-heading small {
+  color: var(--app-muted);
+}
+
 app-table-tools .table-tools-count {
   display: inline-flex;
   align-items: center;
@@ -42,6 +52,7 @@ app-table-tools .table-tools-count {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
 app-table-tools .table-tools-actions button {
   display: inline-flex;
   align-items: center;
@@ -57,12 +68,57 @@ app-table-tools .table-tools-actions button {
   font-size: 12px;
   cursor: pointer;
 }
-app-table-tools button:disabled { opacity: .5; cursor: default; }
-app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); outline-offset: 2px; }
-@media print { app-table-tools { display: none !important; } }
+
+app-table-tools button:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+app-table-tools button:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+@media print {
+  app-table-tools {
+    display: none !important;
+  }
+}
+
+/* Shared in-table loading rows. List pages keep their filters and header
+   visible while records load instead of replacing the whole page. */
+table.academy-table tr.skeleton-row>td {
+  padding: 14px 8px !important;
+}
+
+table.academy-table tr.skeleton-row>td>span {
+  display: block;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef2ef 25%, #f8faf9 50%, #eef2ef 75%);
+  background-size: 200% 100%;
+  animation: academy-table-shimmer 1.2s infinite;
+}
+
+@keyframes academy-table-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  table.academy-table tr.skeleton-row>td>span {
+    animation: none;
+  }
+}
+
 @media screen {
+
   /* Include compact dashboard/session tables that do not use academy-table. */
-  body table > :is(thead, tbody, tfoot) > tr > :is(th, td) { padding: 8px !important; }
+  body table> :is(thead, tbody, tfoot)>tr> :is(th, td) {
+    padding: 8px !important;
+  }
+
   table.academy-table {
     width: 100%;
     border-collapse: collapse !important;
@@ -70,16 +126,18 @@ app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); ou
     color: var(--app-text);
     font-size: 14px;
   }
-  table.academy-table > thead > tr > :is(th, td),
-  table.academy-table > tbody > tr > :is(th, td),
-  table.academy-table > tfoot > tr > :is(th, td) {
+
+  table.academy-table>thead>tr> :is(th, td),
+  table.academy-table>tbody>tr> :is(th, td),
+  table.academy-table>tfoot>tr> :is(th, td) {
     box-sizing: border-box;
     padding: 8px !important;
     border: 1px solid var(--app-border) !important;
     vertical-align: middle !important;
     line-height: 1.5;
   }
-  table.academy-table > thead > tr > th {
+
+  table.academy-table>thead>tr>th {
     height: 64px;
     color: var(--app-muted) !important;
     background: #f3f5f4 !important;
@@ -89,18 +147,25 @@ app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); ou
     letter-spacing: normal !important;
     text-align: left;
   }
-  table.academy-table > thead > .column-filters > th {
+
+  table.academy-table>thead>.column-filters>th {
     padding: 8px !important;
   }
-  table.academy-table > tbody > tr > :is(th, td) {
+
+  table.academy-table>tbody>tr> :is(th, td) {
     height: 68px;
     font-size: 14px !important;
     background: var(--app-card);
   }
-  table.academy-table > tbody > tr:hover > :is(th, td) {
+
+  table.academy-table>tbody>tr:hover> :is(th, td) {
     background: color-mix(in srgb, var(--app-primary-soft) 30%, var(--app-card));
   }
-  table.academy-table td small { color: var(--app-muted); }
+
+  table.academy-table td small {
+    color: var(--app-muted);
+  }
+
   table.academy-table .column-filters button {
     min-height: 44px;
     padding: 8px 12px;
@@ -111,6 +176,7 @@ app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); ou
     font: inherit;
     font-weight: 600;
   }
+
   table.academy-table td :is(button, a):has(> .pi) {
     display: inline-flex;
     align-items: center;
@@ -120,25 +186,30 @@ app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); ou
     min-height: 44px;
     border-radius: 8px;
   }
+
   table.academy-table td :is(button, a):has(> :is(.pi-pencil, .pi-file-edit)) {
     color: var(--app-primary) !important;
     background: var(--app-primary-soft) !important;
     border-color: transparent !important;
   }
+
   table.academy-table td :is(button, a):has(> .pi-eye) {
     color: #596579 !important;
     background: #f0f2f4 !important;
     border-color: transparent !important;
   }
+
   table.academy-table td :is(button, a):has(> .pi-trash) {
     color: #bd3434 !important;
     background: #fcecec !important;
     border-color: transparent !important;
   }
+
   table.academy-table :is(button, a, input, select):focus-visible {
     outline: 2px solid var(--app-primary);
     outline-offset: 2px;
   }
+
   :is(.table-wrap, .table-scroll, .table-wrapper):has(> table.academy-table) {
     max-width: 100%;
     overflow-x: auto;
@@ -146,28 +217,40 @@ app-table-tools button:focus-visible { outline: 2px solid var(--app-primary); ou
     border-radius: 12px;
     background: var(--app-card);
   }
+
   app-data-table :is(.table-wrap, .table-scroll, .table-wrapper):has(> table.academy-table) {
     border: 0;
     border-radius: 0;
   }
+
   @media (max-width: 650px) {
-    table.academy-table > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    table.academy-table> :is(thead, tbody, tfoot)>tr> :is(th, td) {
       padding: 8px !important;
     }
-    table.academy-table > thead > .column-filters > th { padding: 8px !important; }
+
+    table.academy-table>thead>.column-filters>th {
+      padding: 8px !important;
+    }
   }
 }
 
 /* Attendance history keeps compact filters grouped on the left and the export
    control anchored at the far right of the table toolbar. */
-app-attendance-history-page app-table-tools { align-items: flex-end; }
+app-attendance-history-page app-table-tools {
+  align-items: flex-end;
+}
+
 app-attendance-history-page app-table-tools .table-tools-actions {
   flex: 1 1 100%;
   align-items: flex-end;
   margin-inline-start: 0;
 }
-app-attendance-history-page app-table-tools .table-filters { flex: 1 1 auto; }
-app-attendance-history-page app-table-tools .table-tools-actions > button {
+
+app-attendance-history-page app-table-tools .table-filters {
+  flex: 1 1 auto;
+}
+
+app-attendance-history-page app-table-tools .table-tools-actions>button {
   flex: 0 0 auto;
   margin-inline-start: auto;
 }

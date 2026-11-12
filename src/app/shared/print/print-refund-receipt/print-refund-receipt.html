@@ -1,0 +1,100 @@
+<article
+  class="print-sheet print-sheet--refund"
+  [attr.aria-label]="'Refund receipt ' + refund().refundReceiptNumber"
+>
+  <header class="receipt-head">
+    <img
+      class="brand-logo"
+      [src]="refund().brand.logoUrl"
+      [alt]="refund().brand.name + ' logo'"
+    />
+    <div>
+      <p class="brand-kicker">{{ refund().brand.name }}</p>
+      <h1>Refund Receipt</h1>
+      <p class="brand-contact">
+        @if (refund().brand.address) { <span>{{ refund().brand.address }}</span> }
+        @if (refund().brand.phone) { <span>{{ refund().brand.phone }}</span> }
+      </p>
+    </div>
+    <div class="doc-label">
+      <strong>{{ refund().refundReceiptNumber }}</strong>
+      <span>{{ refund().refundedAt | date: 'dd MMM yyyy' : refund().brand.timezone }}</span>
+      <span class="status status--due">Refunded</span>
+    </div>
+  </header>
+
+  <section class="receipt-summary">
+    <div>
+      <span class="eyebrow">Refunded to</span>
+      <strong>{{ payerName() }}</strong>
+      <small>
+        {{ refund().studentName }}
+        @if (refund().studentCode) { · {{ refund().studentCode }} }
+        @if (refund().batchName) { · {{ refund().batchName }} }
+      </small>
+    </div>
+    <div class="amount">
+      <span class="eyebrow">Refund amount</span>
+      <strong>{{ money(refund().refundAmount) }}</strong>
+    </div>
+  </section>
+
+  <table class="receipt-details">
+    <tbody>
+      <tr>
+        <th>Original receipt</th>
+        <td>{{ refund().originalReceiptNumber || '—' }}</td>
+      </tr>
+      <tr>
+        <th>Original amount</th>
+        <td>{{ money(refund().originalAmount) }}</td>
+      </tr>
+      <tr>
+        <th>Payment method</th>
+        <td>{{ refund().paymentMode || '—' }}</td>
+      </tr>
+      <tr>
+        <th>Paid on</th>
+        <td>{{ refund().paidAt | date: 'dd MMMM yyyy, HH:mm' : refund().brand.timezone }}</td>
+      </tr>
+      <tr>
+        <th>Refunded on</th>
+        <td>{{ refund().refundedAt | date: 'dd MMMM yyyy, HH:mm' : refund().brand.timezone }}</td>
+      </tr>
+      <tr>
+        <th>Reason</th>
+        <td>{{ refund().reason || '—' }}</td>
+      </tr>
+      @if (refund().reference) {
+        <tr>
+          <th>Payment reference</th>
+          <td>{{ refund().reference }}</td>
+        </tr>
+      }
+      <tr>
+        <th>Approved by</th>
+        <td>{{ refund().approvedBy || '—' }}</td>
+      </tr>
+      @if (refund().period) {
+        <tr>
+          <th>Fee period</th>
+          <td>{{ refund().period }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="amount-words">
+    <span>Refund amount in words</span>
+    <strong>{{ words() }}</strong>
+  </div>
+
+  <footer class="receipt-signatures">
+    <div>Authorised signatory</div>
+    <div>Guardian / payer</div>
+  </footer>
+
+  <p class="receipt-note">
+    Refund issued against the original payment shown above · computer generated receipt
+  </p>
+</article>

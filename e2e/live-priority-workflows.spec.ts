@@ -61,12 +61,12 @@ test('payments recover a lost response and classify partial versus full settleme
  test.setTimeout(120_000);await login(page);
  const enrollment=await academy.admin.from('enrollments').select('id').eq('student_id',academy.studentId).single();
  const charge=await academy.admin.from('monthly_charges').insert({enrollment_id:enrollment.data!.id,student_id:academy.studentId,charge_month:new Date().toISOString().slice(0,7)+'-01',due_date:new Date().toISOString().slice(0,10),base_amount:100.50}).select('id').single();expect(charge.error).toBeNull();
- await page.goto('/payments/new');await page.getByLabel('Outstanding charge').selectOption(charge.data!.id);await page.getByLabel('Amount').fill('40.25');
+ await page.goto('/payments?record=1');await page.getByLabel('Outstanding charge').selectOption(charge.data!.id);await page.getByLabel('Amount').fill('40.25');
  await page.route('**/rest/v1/rpc/record_payment',async route=>{const response=await route.fetch();expect(response.ok()).toBe(true);await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Test lost response'})});},{times:1});
  await page.getByRole('button',{name:'Record payment',exact:true}).click();await expect(page.getByRole('status')).toContainText('Payment recorded');
  expect((await academy.admin.from('payments').select('id',{count:'exact'}).eq('monthly_charge_id',charge.data!.id)).count).toBe(1);
  await page.goto('/payments/partial?student='+academy.studentId);await expect(page.getByRole('row').filter({hasText:'E2E Assigned '+academy.suffix})).toContainText('40.25');
  await page.goto('/payments/full?student='+academy.studentId);await expect(page.getByText('No payment records found.')).toBeVisible();
- await page.goto('/payments/new');await page.getByLabel('Outstanding charge').selectOption(charge.data!.id);await expect(page.getByLabel('Amount')).toHaveValue('60.25');await page.getByRole('button',{name:'Record payment',exact:true}).click();await expect(page.getByRole('status')).toContainText('Payment recorded');
+ await page.goto('/payments?record=1');await page.getByLabel('Outstanding charge').selectOption(charge.data!.id);await expect(page.getByLabel('Amount')).toHaveValue('60.25');await page.getByRole('button',{name:'Record payment',exact:true}).click();await expect(page.getByRole('status')).toContainText('Payment recorded');
  await page.goto('/payments/full?student='+academy.studentId);await expect(page.getByRole('row').filter({hasText:'E2E Assigned '+academy.suffix})).toHaveCount(2);await expect(page.locator('.metrics').getByText(/100\.50/)).toBeVisible();await page.reload();await expect(page.locator('.metrics').getByText(/100\.50/)).toBeVisible();
 });

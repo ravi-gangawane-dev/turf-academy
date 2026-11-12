@@ -60,7 +60,7 @@ export class AcademyEventsPage implements OnInit {
     description: ['', Validators.maxLength(1000)],
   });
   private requestSequence = 0;
-  protected readonly columns=createColumnFilters(()=>{this.page.set(1);void this.reload();},()=>{++this.requestSequence;this.page.set(1);});
+  protected readonly columns = createColumnFilters(() => { this.page.set(1); void this.reload(); }, () => { ++this.requestSequence; this.page.set(1); });
 
   async ngOnInit(): Promise<void> {
     await this.reload();
@@ -98,13 +98,11 @@ export class AcademyEventsPage implements OnInit {
         status: this.editingStatus(),
       });
       this.dialogOpen.set(false);
-      this.message.set('Event saved. Active events notify parents on the event date.');
-      this.toast.show('Event saved.', 'success');
+      this.toast.success('Event saved.');
       await this.reload();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Event could not be saved.';
-      this.error.set(message);
-      this.toast.show(message, 'error');
+      this.toast.error(message);
     } finally {
       this.saving.set(false);
     }
@@ -114,12 +112,11 @@ export class AcademyEventsPage implements OnInit {
     const status = row.status === 'active' ? 'inactive' : 'active';
     try {
       await this.api.setStatus(row.id, status);
-      this.toast.show(`Event ${status === 'active' ? 'activated' : 'archived'}.`, 'success');
+      this.toast.show(`Event ${status === 'active' ? 'activated' : 'archived'}.`);
       await this.reload();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Event status could not be changed.';
-      this.error.set(message);
-      this.toast.show(message, 'error');
+      this.toast.error(message);
     }
   }
 
@@ -128,7 +125,8 @@ export class AcademyEventsPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
     try {
-      const result = await this.api.page(this.page(), this.pageSize(), {columns:this.columns.params(),
+      const result = await this.api.page(this.page(), this.pageSize(), {
+        columns: this.columns.params(),
         search: this.search,
         eventType: this.eventTypeFilter,
         status: this.statusFilter,
@@ -164,7 +162,7 @@ export class AcademyEventsPage implements OnInit {
   }
 
   protected async changeSort(event: Event | string): Promise<void> {
-    const value = typeof event==='string'?event:(event.target as HTMLSelectElement).value;
+    const value = typeof event === 'string' ? event : (event.target as HTMLSelectElement).value;
     if (!['title', 'description', 'eventDate', 'eventType', 'status', 'createdAt'].includes(value)) return;
     if (this.sortBy === value) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     else {

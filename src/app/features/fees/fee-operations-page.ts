@@ -19,11 +19,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { isValidFeeAdjustment, FeeAdjustmentFormValue } from '../../shared/fee-adjustments/fee-adjustment-contract';
 import { ActivatedRoute } from '@angular/router';
 import { FeesService } from '../../core/supabase/domain-services';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { ToastService } from '../../shared/toast/toast.service';
 
 interface Row {
   readonly id?: string;
@@ -44,7 +46,7 @@ interface Row {
   readonly due_date?: string;
   readonly charge_month?: string;
   readonly student?:
-    { readonly full_name?: string } | readonly { readonly full_name?: string }[] | null;
+  { readonly full_name?: string } | readonly { readonly full_name?: string }[] | null;
 }
 @Component({
   selector: 'app-fee-operations-page',
@@ -69,12 +71,13 @@ interface Row {
 export class FeeOperationsPage implements OnInit {
   private readonly lists = inject(ServerListService);
   private requestId = 0;
-  protected readonly columns=createColumnFilters(()=>this.filterChanged(),()=>{++this.requestId;this.page.set(1);});
+  protected readonly columns = createColumnFilters(() => this.filterChanged(), () => { ++this.requestId; this.page.set(1); });
   protected readonly total = signal(0);
   private readonly api = inject(FeesService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly dialogs = inject(InteractionDialogService);
+  private readonly toast = inject(ToastService);
   protected readonly view = String(this.route.snapshot.data['feeView'] ?? 'pending');
   protected readonly query = signal('');
   protected readonly statusFilter = signal('all');
@@ -106,7 +109,7 @@ export class FeeOperationsPage implements OnInit {
   protected readonly message = signal('');
   protected readonly dialogOpen = signal(false);
   protected readonly editingId = signal<string | null>(null);
-  protected readonly totals = signal({count: 0, base: 0, discount: 0, late: 0, final: 0, paid: 0, balance: 0});
+  protected readonly totals = signal({ count: 0, base: 0, discount: 0, late: 0, final: 0, paid: 0, balance: 0 });
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(80)]],
     kind: ['fixed', Validators.required],
@@ -136,15 +139,18 @@ export class FeeOperationsPage implements OnInit {
       status: String(row?.['status'] ?? 'active'),
     });
     this.dialogOpen.set(true);
-  }
-  protected async save(): Promise<void> {
+  } protected async save(): Promise<void> {
     if (this.saving()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.error.set('Enter a name and valid non-negative values.');
       return;
     }
-    const value = this.form.getRawValue();
+    const value = this.form.getRawValue() as FeeAdjustmentFormValue;
+    if (!isValidFeeAdjustment(value, this.view === 'late-fees' ? 'late-fees' : 'discounts')) {
+      this.error.set('Enter valid adjustment details before saving.');
+      return;
+    }
     if (
       !value.name.trim() ||
       !Number.isFinite(value.value) ||
@@ -163,7 +169,6 @@ export class FeeOperationsPage implements OnInit {
       return;
     }
     this.saving.set(true);
-    this.message.set('');
     this.error.set('');
     try {
       const v = this.form.getRawValue();
@@ -188,10 +193,10 @@ export class FeeOperationsPage implements OnInit {
           status: v.status,
         });
       this.dialogOpen.set(false);
-      this.message.set('Saved successfully.');
+      this.toast.success('Saved successfully.');
       await this.reload();
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'The rule could not be saved.');
+      this.toast.error(error instanceof Error ? error.message : 'The rule could not be saved.');
     } finally {
       this.saving.set(false);
     }
@@ -209,8 +214,9 @@ export class FeeOperationsPage implements OnInit {
       if (this.view === 'discounts') await this.api.deleteDiscount(String(row['id']));
       else await this.api.deleteLateFeeRule(String(row['id']));
       await this.reload();
+      this.toast.success('Rule deleted.');
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'The rule could not be deleted.');
+      this.toast.error(error instanceof Error ? error.message : 'The rule could not be deleted.');
     } finally {
       this.saving.set(false);
     }
@@ -236,7 +242,7 @@ export class FeeOperationsPage implements OnInit {
     } catch (error) {
       if (request !== this.requestId) return;
       this.rows.set([]); this.total.set(0);
-      this.totals.set({count: 0, base: 0, discount: 0, late: 0, final: 0, paid: 0, balance: 0});
+      this.totals.set({ count: 0, base: 0, discount: 0, late: 0, final: 0, paid: 0, balance: 0 });
       this.error.set(error instanceof Error ? error.message : 'Fee data could not be loaded.');
     } finally { if (request === this.requestId) this.loading.set(false); }
   }

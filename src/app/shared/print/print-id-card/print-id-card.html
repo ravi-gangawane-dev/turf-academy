@@ -1,0 +1,92 @@
+<article
+  class="print-sheet print-sheet--id-card"
+  [attr.aria-label]="kindLabel() + ' ' + card().fullName"
+>
+  <section class="id-card-sheet" aria-label="ID card fronts for duplex printing">
+    @for (copy of copies; track copy) {
+    <div class="id-card-slot">
+      <span class="crop crop--tl" aria-hidden="true"></span>
+      <span class="crop crop--tr" aria-hidden="true"></span>
+      <span class="crop crop--bl" aria-hidden="true"></span>
+      <span class="crop crop--br" aria-hidden="true"></span>
+      <div class="id-card id-card--front">
+        <header class="id-card-brand">
+          <img class="id-card-logo" [src]="card().brand.logoUrl" [alt]="card().brand.name + ' logo'" />
+          <div class="id-card-brand-copy">
+            <strong>{{ card().brand.name }}</strong>
+            <small>{{ card().brand.address }}</small>
+          </div>
+          <span class="id-card-kind">{{ kindLabel() }}</span>
+        </header>
+
+        <div class="id-card-body">
+          <div class="id-card-photo">
+            @if (card().photoUrl) {
+            <img [src]="card().photoUrl" [alt]="card().fullName" />
+            } @else {
+            <span>{{ initials(card().fullName) }}</span>
+            }
+          </div>
+          <div class="id-card-identity">
+            <p class="id-card-role">{{ kindLabel() }}</p>
+            <h1>{{ card().fullName }}</h1>
+            <p class="id-card-code">{{ card().holderCode }}</p>
+            <p class="id-card-subtitle">{{ card().subtitle }}</p>
+          </div>
+        </div>
+
+        <footer class="id-card-foot">
+          <span>{{ card().cardNumber }}</span>
+          <span>{{ card().validityNote }}</span>
+        </footer>
+      </div>
+    </div>
+    }
+  </section>
+
+  <section class="id-card-sheet" aria-label="ID card backs for duplex printing">
+    @for (copy of copies; track copy) {
+    <div class="id-card-slot">
+      <span class="crop crop--tl" aria-hidden="true"></span>
+      <span class="crop crop--tr" aria-hidden="true"></span>
+      <span class="crop crop--bl" aria-hidden="true"></span>
+      <span class="crop crop--br" aria-hidden="true"></span>
+      <div class="id-card id-card--back">
+        <header class="id-card-brand">
+          <span class="id-card-kind">{{ kindLabel() }}</span>
+          <div class="id-card-brand-copy">
+            <strong>{{ card().brand.code || card().brand.name }}</strong>
+            <small>Scan the code to verify this card.</small>
+          </div>
+        </header>
+
+        <div class="id-card-back-body">
+          <div class="id-card-qr">
+            <img [src]="card().qrDataUrl" [alt]="'QR code for ' + card().fullName" />
+            <small>{{ card().qrPayload }}</small>
+          </div>
+          <dl class="id-card-details">
+            @for (detail of card().details; track detail.label) {
+            <div>
+              <dt>{{ detail.label }}</dt>
+              <dd>{{ detail.value }}</dd>
+            </div>
+            } @empty {
+            <div>
+              <dt>Details</dt>
+              <dd>Not provided</dd>
+            </div>
+            }
+          </dl>
+        </div>
+
+        <footer class="id-card-foot id-card-foot--back">
+          <span>{{ card().brand.phone }}</span>
+          <span>{{ card().brand.email }}</span>
+          <span>{{ card().cardNumber }} · {{ card().issuedAt | date: 'dd MMM yyyy' : card().brand.timezone }}</span>
+        </footer>
+      </div>
+    </div>
+    }
+  </section>
+</article>

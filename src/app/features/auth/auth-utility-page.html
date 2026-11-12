@@ -21,7 +21,7 @@
       <p class="subtext">{{ description }}</p>
       @if (kind === 'expired') {
         <div class="notice error" role="alert">
-          Your session has expired. For your security, please sign in again.
+          {{ expiredMessage }}
         </div>
         <a class="login-button utility-link" routerLink="/auth/login">Back to login</a>
       } @else if (kind === 'success') {
@@ -31,9 +31,6 @@
         </p>
         <a class="login-button utility-link" routerLink="/auth/login">Back to login</a>
       } @else {
-        @if (message()) {
-          <div class="notice success" role="status">{{ message() }}</div>
-        }
         @if (error()) {
           <div class="notice error" role="alert">{{ error() }}</div>
           @if (kind === 'password' || kind === 'otp') {
@@ -74,6 +71,15 @@
           </div>
         }
         @if (kind === 'password') {
+          @if (accountEmail()) {
+            <div class="login-field">
+              <label for="account-email">Email</label>
+              <div>
+                <i class="pi pi-envelope"></i
+                ><input id="account-email" type="email" [value]="accountEmail()" readonly aria-readonly="true" />
+              </div>
+            </div>
+          }
           <div class="login-field">
             <label for="new-password">New password</label>
             <div>

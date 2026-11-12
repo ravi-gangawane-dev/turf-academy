@@ -1,17 +1,12 @@
 @if (state$ | async; as state) {
-@if (state.status === 'loading') {
-<section class="dashboard-state"><i class="pi pi-spin pi-spinner"></i>
-  <h2>Preparing your dashboard</h2>
-  <p>Loading profile, permissions, and academy data…</p>
-</section>
-} @else if (state.status === 'error') {
+@if (state.status === 'error') {
 <section class="dashboard-state error" role="alert"><i class="pi pi-exclamation-triangle"></i>
   <h2>Dashboard unavailable</h2>
   <p>Please refresh the page or try again shortly.</p>
 </section>
-} @else {
+} @else if (state.status === 'ready') {
 <div class="dashboard-page" [class.coach-dashboard]="auth.role() === 'coach'" [class.parent-dashboard]="auth.role() === 'parent'">
-  <app-page-hero [title]="auth.session()?.user?.name || 'Dashboard'" eyebrow="Good {{ greeting }}," subtitle="Here is what is happening at {{state.academyName}} today." [breadcrumbs]="[{label:'Dashboard'}]" [brandName]="state.academyName"><div hero-actions><time><i class="pi pi-calendar"></i>{{ state.businessDateLabel }}</time></div><div hero-details><nav class="hero-actions" aria-label="Primary actions">
+  <app-page-hero [title]="auth.session()?.user?.name || 'Dashboard'" eyebrow="Good {{ greeting }}," subtitle="Here is what is happening at {{state.academyName}} today." [breadcrumbs]="[{label:'Dashboard', icon:'pi-home'}]" [brandName]="state.academyName"><div hero-actions><time><i class="pi pi-calendar"></i>{{ state.businessDateLabel }}</time></div><div hero-details><nav class="hero-actions" aria-label="Primary actions">
       @if(auth.hasPermission('students:write')){<button class="dark" (click)="navigate('/students')"><i
           class="pi pi-plus"></i>Create Student</button>}
       @if(auth.hasPermission('attendance:write')){<button (click)="navigate('/attendance/check-in-out')"><i

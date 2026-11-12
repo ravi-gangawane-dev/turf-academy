@@ -39,6 +39,48 @@ export interface EnrollmentWorkspace {
   plans: EnrollmentPlan[];
   enrollments: EnrollmentRecord[];
 }
+export interface EnrollmentConfirmationGuardian {
+  id: string;
+  full_name: string;
+  relation: string | null;
+  phone: string;
+  whatsapp: string | null;
+  email: string | null;
+  is_primary: boolean;
+  can_pick_up: boolean;
+}
+export interface EnrollmentConfirmationBatch {
+  id: string;
+  code: string;
+  name: string;
+  age_group: string | null;
+  skill_level: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  status: string;
+  capacity: number;
+  batch_days: { day_of_week: number }[];
+  batch_coaches: { coach: { full_name: string } | null }[];
+}
+export interface EnrollmentConfirmationPlan {
+  id: string;
+  name: string;
+  monthly_fee: number;
+  registration_fee: number;
+  duration_months: number;
+  status: string;
+}
+/** Live enrollment detail used to print a create/transfer/status confirmation. */
+export interface EnrollmentConfirmationRecord {
+  enrollment: EnrollmentRecord;
+  student: EnrollmentStudent;
+  batch: EnrollmentConfirmationBatch;
+  plan: EnrollmentConfirmationPlan;
+  guardians: EnrollmentConfirmationGuardian[];
+  previousBatch: { name: string; code: string } | null;
+}
 export interface EnrollmentHistoryFilters {
   columns?: Record<string,string>;
   sortBy?: string;

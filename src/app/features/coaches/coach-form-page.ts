@@ -3,10 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoachesService } from '../../core/supabase/domain-services';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { ToastService } from '../../shared/toast/toast.service';
+import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 
 @Component({
   selector: 'app-coach-form-page',
-  imports: [ReactiveFormsModule, PageHero],
+  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload],
   templateUrl: './coach-form-page.html',
   styleUrl: './coach-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,12 +18,13 @@ export class CoachFormPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly coaches = inject(CoachesService);
+  private readonly toast = inject(ToastService);
   protected readonly editing = signal(false);
   protected readonly loading = signal(false);
-  protected readonly message = signal('');
-  protected readonly photoUrl = signal<string | null>(null);
   private coachId = '';
   private photo: File | null = null;
+  protected readonly photoUrl = signal<string | null>(null);
+  protected readonly photoSelected = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     employeeCode: ['', [Validators.required, Validators.minLength(3)]],
     firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -61,7 +64,7 @@ export class CoachFormPage implements OnInit {
       });
       this.photoUrl.set(coach.photo_url);
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Coach could not be loaded.');
+      this.toast.error(error instanceof Error ? error.message : 'Coach could not be loaded.');
     } finally {
       this.loading.set(false);
     }
@@ -69,11 +72,9 @@ export class CoachFormPage implements OnInit {
   protected async save(): Promise<void> {
     if (this.form.invalid || this.loading()) {
       this.form.markAllAsTouched();
-      this.message.set('Complete all required fields correctly.');
       return;
     }
     this.loading.set(true);
-    this.message.set('');
     try {
       const value = this.form.getRawValue();
       const specializations = [
@@ -99,20 +100,38 @@ export class CoachFormPage implements OnInit {
           success: this.editing() ? 'Coach updated successfully.' : 'Coach created successfully.',
         },
       });
+      this.toast.success(this.editing() ? 'Coach updated successfully.' : 'Coach created successfully.');
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Coach could not be saved.');
+      this.toast.error(error instanceof Error ? error.message : 'Coach could not be saved.');
     } finally {
       this.loading.set(false);
     }
   }
-  protected selectPhoto(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  protected readonly savePhotoAction = () => this.savePhoto();
+  protected async savePhoto(): Promise<boolean> {
+    if (!this.photo || this.loading()) return false;
+    if (!this.coachId) return true; // New-coach photo is saved with the main form.
+    this.loading.set(true);
+    try {
+      await this.coaches.updatePhoto(this.coachId, this.photo);
+      this.photoSelected.set(false);
+      this.photo = null;
+      this.toast.success('Coach photo saved successfully.');
+      return true;
+    } catch (error) {
+      this.toast.error(error instanceof Error ? error.message : 'Coach photo could not be saved.');
+      return false;
+    } finally { this.loading.set(false); }
+  }
+  protected selectPhoto(event: Event | File): void {
+    const file = event instanceof File ? event : (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      this.message.set('Coach photo must be 2MB or smaller.');
+      this.toast.error('Coach photo must be 2MB or smaller.');
       return;
     }
     this.photo = file;
+    this.photoSelected.set(true);
     const reader = new FileReader();
     reader.onload = () => this.photoUrl.set(String(reader.result));
     reader.readAsDataURL(file);

@@ -50,7 +50,6 @@ export interface ParentPortalRecord {
   readonly pinCode?: string;
   readonly receipt_number?: string;
   readonly storage_path?: string | null;
-  readonly url?: string | null;
   readonly email?: string | null;
   readonly photo_path?: string | null;
   readonly photo_url?: string | null;
@@ -64,7 +63,6 @@ export interface ParentPortalRecord {
     | (ParentPortalRecord & {
         readonly storage_path?: string | null;
         readonly receipt_number?: string;
-        readonly url?: string | null;
       })
     | readonly ParentPortalRecord[]
     | null;

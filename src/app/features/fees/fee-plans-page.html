@@ -1,25 +1,14 @@
 <div class="app-list-page fee-plans-page">
 
   <app-page-hero title="Fee Plans" subtitle="Create, import and manage fee plans for different programs and batches." [breadcrumbs]="[
-      { label: 'Dashboard', route: '/dashboard' },
+      { label: 'Dashboard', icon: 'pi-home', route: '/dashboard' },
       { label: 'Fee Plans' }
     ]" actionLabel="Add Fee Plan" (action)="openAdd()"></app-page-hero>
   <app-fee-view-navigation />
-  @if (message()) {
-    <div class="notice" role="status">{{ message() }}</div>
-  }
-  @if (uploadMessage()) {
-    <div class="notice success" role="status">{{ uploadMessage() }}</div>
-  }
-  @if (uploadError()) {
-    <div class="notice error" role="alert">{{ uploadError() }}</div>
-  }
   @if (uploadProgress()) {
     <div class="upload-progress" role="status">{{ uploadProgress() }}</div>
   }
-  @if (loading()) {
-    <app-async-state title="Loading fee plans…" />
-  } @else if (error() && !dialogOpen()) {
+  @if (error() && !loading() && !dialogOpen()) {
     <app-async-state kind="error" title="Fee plans could not be loaded" [message]="error()" actionLabel="Retry" (action)="reload()" />
   }
   <section class="metrics" [attr.aria-busy]="loading()">
@@ -55,6 +44,15 @@
 <table #exportTable1 class="academy-table">
         <thead><tr><th>#</th><th><app-sortable-header sortKey="cf_name" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Plan name</app-sortable-header></th><th><app-sortable-header sortKey="cf_description" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Description</app-sortable-header></th><th><app-sortable-header sortKey="cf_duration" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Duration</app-sortable-header></th><th><app-sortable-header sortKey="cf_fee" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Monthly fee</app-sortable-header></th><th><app-sortable-header sortKey="cf_totalFee" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Total fee</app-sortable-header></th><th><app-sortable-header sortKey="cf_status" [activeSort]="sortBy()" [direction]="sortDirection()" (sortChange)="sortColumn($event)">Status</app-sortable-header></th><th>Actions</th></tr><tr class="column-filters"><th></th><th><app-column-filter label="plan name" type="search" [value]="columns.values()['name'] || ''" (changed)="columns.set('name',$event)" /></th><th><app-column-filter label="description" type="search" [value]="columns.values()['description'] || ''" (changed)="columns.set('description',$event)" /></th><th><app-column-filter label="duration" type="number" [value]="columns.values()['duration'] || ''" (changed)="columns.set('duration',$event)" /></th><th><app-column-filter label="monthly fee" type="number" [value]="columns.values()['fee'] || ''" (changed)="columns.set('fee',$event)" /></th><th><app-column-filter label="total fee" type="number" [value]="columns.values()['totalFee'] || ''" (changed)="columns.set('totalFee',$event)" /></th><th><app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''" (changed)="columns.set('status',$event)" /></th><th><button type="button" (click)="columns.reset()">Reset</button></th></tr></thead>
         <tbody>
+          @if (loading()) {
+            @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
+              <tr class="skeleton-row" aria-hidden="true">
+                @for (column of [1, 2, 3, 4, 5, 6, 7, 8]; track column) {
+                  <td><span></span></td>
+                }
+              </tr>
+            }
+          } @else {
           @for (plan of visiblePlans(); track plan.id; let index = $index) {
             <tr>
               <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
@@ -75,12 +73,12 @@
               </td>
               <td>
                 <div class="actions">
-                  <button aria-label="Edit {{ plan.name }}" (click)="open(plan)">
+                  <button class="app-button icon" aria-label="Edit {{ plan.name }}" (click)="open(plan)">
                     <i class="pi pi-pencil"></i></button>
-                  <button aria-label="View {{ plan.name }}" (click)="open(plan, true)">
+                  <button class="app-button icon" aria-label="View {{ plan.name }}" (click)="open(plan, true)">
                     <i class="pi pi-eye"></i></button>
                   <button
-                    class="delete"
+                    class="app-button icon danger"
                     aria-label="Delete {{ plan.name }}"
                     (click)="remove(plan)"
                   >
@@ -91,8 +89,9 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="8">@if (!loading() && !error()) { <app-async-state kind="empty" title="No fee plans match your filters." /> }</td>
+              <td colspan="8">@if (!error()) { <app-async-state kind="empty" title="No fee plans match your filters." /> }</td>
             </tr>
+          }
           }
         </tbody>
       </table>

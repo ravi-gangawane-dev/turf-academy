@@ -1,0 +1,78 @@
+<article class="print-sheet print-sheet--receipt" [attr.aria-label]="'Payment receipt ' + receipt().receiptNumber">
+  <header class="receipt-head">
+    <img
+      class="brand-logo"
+      [src]="receipt().brand.logoUrl"
+      [alt]="receipt().brand.name + ' logo'"
+    />
+    <div>
+      <p class="brand-kicker">{{ receipt().brand.name }}</p>
+      <h1>Payment Receipt</h1>
+      <p class="brand-contact">
+        @if (receipt().brand.address) { <span>{{ receipt().brand.address }}</span> }
+        @if (receipt().brand.phone) { <span>{{ receipt().brand.phone }}</span> }
+      </p>
+    </div>
+    <div class="doc-label">
+      <strong>{{ receipt().receiptNumber }}</strong>
+      <span>{{ receipt().paidAt | date: 'dd MMM yyyy' : receipt().brand.timezone }}</span>
+      <span class="status" [class]="'status status--' + statusTone()">{{ statusLabel() }}</span>
+    </div>
+  </header>
+
+  <section class="receipt-summary">
+    <div>
+      <span class="eyebrow">Received from</span>
+      <strong>{{ payerName() }}</strong>
+      <small>
+        {{ receipt().studentName }}
+        @if (receipt().studentCode) { · {{ receipt().studentCode }} }
+        @if (receipt().batchName) { · {{ receipt().batchName }} }
+      </small>
+    </div>
+    <div class="amount">
+      <span class="eyebrow">Amount received</span>
+      <strong>{{ money(receipt().amount) }}</strong>
+    </div>
+  </section>
+
+  <table class="receipt-details">
+    <tbody>
+      @if (receipt().period) {
+        <tr>
+          <th>Fee period</th>
+          <td>{{ receipt().period }}</td>
+        </tr>
+      }
+      <tr>
+        <th>Payment method</th>
+        <td>
+          {{ receipt().paymentMode }}
+          @if (receipt().reference) { · {{ receipt().reference }} }
+        </td>
+      </tr>
+      <tr>
+        <th>Paid on</th>
+        <td>{{ receipt().paidAt | date: 'dd MMMM yyyy, HH:mm' : receipt().brand.timezone }}</td>
+      </tr>
+      @if (receipt().receivedBy) {
+        <tr>
+          <th>Received by</th>
+          <td>{{ receipt().receivedBy }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="amount-words">
+    <span>Amount in words</span>
+    <strong>{{ words() }}</strong>
+  </div>
+
+  <footer class="receipt-signatures">
+    <div>Authorised signatory</div>
+    <div>Guardian / payer</div>
+  </footer>
+
+  <p class="receipt-note">Computer generated receipt · retain for your records</p>
+</article>

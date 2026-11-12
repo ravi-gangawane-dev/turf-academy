@@ -50,57 +50,6 @@
   white-space: nowrap;
 }
 
-.event-action {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 36px;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
-}
-
-.edit-event-action {
-  color: #2563eb;
-  background: #eff6ff;
-  border-color: #dbeafe;
-}
-
-.edit-event-action:hover {
-  background: #dbeafe;
-  border-color: #bfdbfe;
-}
-
-.archive-event-action {
-  color: #c2413b;
-  background: #fff1f0;
-  border-color: #fecaca;
-}
-
-.archive-event-action:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-}
-
-.activate-event-action {
-  color: #238044;
-  background: #eaf7ee;
-  border-color: #bbebc8;
-}
-
-.activate-event-action:hover {
-  background: #d7f2df;
-  border-color: #86d6a0;
-}
-
-.event-action .pi {
-  font-size: 14px;
-}
-
 .action-tooltip {
   position: absolute;
   z-index: 5;
@@ -121,16 +70,6 @@
   transition: opacity 120ms ease, transform 120ms ease;
 }
 
-.event-action:hover .action-tooltip,
-.event-action:focus-visible .action-tooltip {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.event-action:focus-visible {
-  outline: 2px solid var(--app-primary);
-  outline-offset: 2px;
-}
 .list-controls {
   display: flex;
   flex-wrap: wrap;
@@ -141,6 +80,7 @@
   border-radius: 12px;
   background: #fff;
 }
+
 .list-controls label {
   display: grid;
   gap: 0.3rem;
@@ -148,6 +88,7 @@
   font-size: 0.75rem;
   font-weight: 700;
 }
+
 .list-controls input,
 .list-controls select {
   min-height: 40px;
@@ -156,6 +97,7 @@
   border-radius: 8px;
   font: inherit;
 }
+
 .list-controls button {
   min-height: 40px;
   padding: 0 1rem;
@@ -264,7 +206,7 @@ button.primary {
   text-align: center;
 }
 
-.event-empty > i {
+.event-empty>i {
   color: #277d47;
   font-size: 1.5rem;
 }
@@ -275,7 +217,7 @@ button.primary {
 }
 
 .event-empty p,
-.dialog > p {
+.dialog>p {
   color: #69766f;
 }
 
@@ -298,7 +240,7 @@ button.primary {
   margin: 0;
 }
 
-.dialog > p {
+.dialog>p {
   margin: 0.5rem 0 1rem;
 }
 

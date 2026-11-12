@@ -2,8 +2,11 @@
 .page-hero { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; min-height: 132px; padding: 20px 28px; border-radius: var(--app-radius-md, 12px); background: linear-gradient(90deg, rgba(248,252,250,.98), rgba(239,248,242,.9)); }
 .hero-copy { flex: 1 1 280px; min-width: 0; }
 nav { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:9px; font-size:13px; }
-nav button, nav a { display:inline-flex; align-items:center; gap:6px; padding:0; border:0; color:#176c41; background:transparent; font:inherit; cursor:pointer; text-decoration:none; }
-nav .current { color:#0b5f36; font-weight:800; }
+nav button, nav a, nav .current { display:inline-flex; align-items:center; gap:6px; padding:0; border:0; color:#176c41; background:transparent; font:inherit; cursor:pointer; text-decoration:none; }
+nav .current { color:#0b5f36; font-weight:800; cursor:default; }
+nav i.pi { display:inline-flex; align-items:center; font-size:13px; line-height:1; }
+nav a:hover, nav button:hover { color:#0b5f36; text-decoration:underline; }
+nav .separator { font-size:10px; color:#819189; }
 .separator { color:#819189; }
 h1 { margin:0; color:#111a31; font-size:clamp(24px, 3vw, 30px); line-height:1.2; letter-spacing:-.025em; overflow-wrap:anywhere; }
 .eyebrow { display:block; margin:0 0 5px; color:var(--app-muted); font-size:13px; }

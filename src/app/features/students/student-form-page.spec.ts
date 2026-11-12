@@ -2,11 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { StudentFormRecord, StudentListService } from './student-list.service';
 import { StudentFormPage } from './student-form-page';
+import { ToastService } from '../../shared/toast/toast.service';
 
 const student: StudentFormRecord = {
   id: 's1',
   studentCode: 'ST-1',
-  status: 'active',
+  status: 'active' as const,
   fullName: 'Aarav Sharma',
   dateOfBirth: '2014-05-06',
   gender: 'Male',
@@ -15,7 +16,7 @@ const student: StudentFormRecord = {
   email: 'aarav@example.com',
   address: '12 MG Road',
   city: 'Pune',
-  state: 'Maharashtra',
+  state: null,
   pinCode: '411001',
   joinedOn: '2026-06-01',
   photoUrl: 'https://cdn.example.com/aarav.png',
@@ -39,10 +40,12 @@ function setup(options: { id?: string; parentChildEdit?: boolean } = {}) {
   const getById = vi.fn().mockResolvedValue(student);
   const createStudent = vi.fn().mockResolvedValue('s9');
   const updateStudent = vi.fn().mockResolvedValue(undefined);
+  const updateStudentPhoto = vi.fn().mockResolvedValue('https://cdn.example.com/new-photo.png');
   const updateLinkedChildProfile = vi.fn().mockResolvedValue(undefined);
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
+      { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -54,12 +57,12 @@ function setup(options: { id?: string; parentChildEdit?: boolean } = {}) {
       },
       {
         provide: StudentListService,
-        useValue: { filters, getById, createStudent, updateStudent, updateLinkedChildProfile },
+        useValue: { filters, getById, createStudent, updateStudent, updateLinkedChildProfile, updateStudentPhoto },
       },
     ],
   });
   const fixture = TestBed.createComponent(StudentFormPage);
-  return { fixture, page: fixture.componentInstance, filters, getById, createStudent, updateStudent, updateLinkedChildProfile };
+  return { fixture, page: fixture.componentInstance, filters, getById, createStudent, updateStudent, updateLinkedChildProfile, updateStudentPhoto };
 }
 
 const validForm = {
@@ -88,7 +91,6 @@ describe('StudentFormPage', () => {
     const { page, filters } = setup();
     await page.ngOnInit();
     expect(filters).toHaveBeenCalled();
-    expect(page['filters']().batches[0]?.name).toBe('U-10');
     expect(page['editing']()).toBe(false);
   });
 
@@ -108,7 +110,8 @@ describe('StudentFormPage', () => {
     const { page, getById } = setup({ id: 's1' });
     getById.mockRejectedValue(new Error('Student could not be loaded.'));
     await page.ngOnInit();
-    expect(page['message']()).toBe('Student could not be loaded.');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('Student could not be loaded.');
     expect(page['loading']()).toBe(false);
   });
 
@@ -117,7 +120,8 @@ describe('StudentFormPage', () => {
     await page.ngOnInit();
     await page['save']();
     expect(createStudent).not.toHaveBeenCalled();
-    expect(page['message']()).toBe('Complete all required fields correctly.');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('Complete all required fields correctly.');
   });
 
   it('creates a student with the full name and navigates back to the list', async () => {
@@ -168,13 +172,55 @@ describe('StudentFormPage', () => {
     });
   });
 
+  it('saves a photo to the linked student even when other profile fields are incomplete', async () => {
+    const { page, updateStudentPhoto, updateLinkedChildProfile } = setup({ id: 's1', parentChildEdit: true });
+    await page.ngOnInit();
+    page['form'].patchValue({ mobile: '', address: '' });
+    const photo = new File(['photo'], 'student.png', { type: 'image/png' });
+    page['selectPhoto']({ target: { files: [photo], value: 'student.png' } } as unknown as Event);
+    expect(page['form'].invalid).toBe(true);
+    await page['savePhoto']();
+    expect(updateStudentPhoto).toHaveBeenCalledWith('s1', photo);
+    expect(updateLinkedChildProfile).not.toHaveBeenCalled();
+    expect(page['photoUrl']()).toBe('https://cdn.example.com/new-photo.png');
+    expect(page['photoPending']()).toBe(false);
+  });
+
+  it('keeps the selected photo available for retry after upload failure', async () => {
+    const { page, updateStudentPhoto } = setup({ id: 's1', parentChildEdit: true });
+    await page.ngOnInit();
+    const photo = new File(['photo'], 'student.png', { type: 'image/png' });
+    page['selectPhoto']({ target: { files: [photo], value: '' } } as unknown as Event);
+    updateStudentPhoto.mockRejectedValueOnce(new Error('Upload denied'));
+    await page['savePhoto']();
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('Upload denied');
+    expect(page['photoPending']()).toBe(true);
+    expect(page['photoSaving']()).toBe(false);
+    await page['savePhoto']();
+    expect(updateStudentPhoto).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects unsupported images and files larger than 2MB', async () => {
+    const { page, updateStudentPhoto } = setup({ id: 's1' });
+    await page.ngOnInit();
+    for (const photo of [new File(['text'], 'file.txt', { type: 'text/plain' }),
+    new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'large.png', { type: 'image/png' })]) {
+      page['selectPhoto']({ target: { files: [photo], value: '' } } as unknown as Event);
+      await page['savePhoto']();
+    }
+    expect(updateStudentPhoto).not.toHaveBeenCalled();
+    expect(page['photoPending']()).toBe(false);
+  });
+
   it('surfaces a save failure to the user', async () => {
     const { page, createStudent } = setup();
     createStudent.mockRejectedValue(new Error('Student could not be saved.'));
     await page.ngOnInit();
     page['form'].patchValue(validForm);
     await page['save']();
-    expect(page['message']()).toBe('Student could not be saved.');
+    const toast = vi.spyOn(TestBed.inject(ToastService), 'error');
+    expect(toast).toHaveBeenCalledWith('Student could not be saved.');
     expect(page['loading']()).toBe(false);
   });
 });

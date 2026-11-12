@@ -91,6 +91,28 @@
 .table-wrap {
   overflow: auto;
 }
+.settlement-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: 0;
+  color: #65736d;
+  font-size: .85rem;
+}
+.settlement-filter a {
+  border: 1px solid #d8e1db;
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  color: #33503f;
+  background: #fff;
+  text-decoration: none;
+}
+.settlement-filter a:hover, .settlement-filter a.active {
+  border-color: #267d46;
+  background: #e8f6ed;
+  color: #176536;
+}
 table {
   width: 100%;
   border-collapse: collapse;
@@ -105,6 +127,34 @@ td small {
   display: block;
   color: #78847e;
 }
+td:last-child {
+  white-space: nowrap;
+  width: 1%;
+}
+td:last-child button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-inline-end: 0.35rem;
+  padding: 0;
+  border: 1px solid #dce5e0;
+  border-radius: 8px;
+  background: #f3f6f4;
+  color: #33503f;
+  cursor: pointer;
+}
+td:last-child button:hover:not(:disabled) {
+  border-color: #87b493;
+  background: #e8f6ed;
+  color: #176536;
+}
+td:last-child button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+td:last-child button:last-child { margin-inline-end: 0; }
 .status {
   border-radius: 99px;
   background: #e7f5eb;
@@ -123,6 +173,18 @@ td small {
   padding: 0.75rem 0;
   border-bottom: 1px solid #e7ece9;
 }
+.refund-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.refund-row-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
 .dialog-backdrop {
   position: fixed;
   inset: 0;
@@ -132,6 +194,24 @@ td small {
   padding: 1rem;
   background: #07192fa6;
 }
+.payment-record-backdrop { align-items: start; padding-top: 8vh; }
+.payment-record-modal {
+  width: min(720px, 100%);
+  background: #fff;
+  border: 1px solid #dce5e0;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px #0004;
+}
+.payment-record-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 0;
+}
+.payment-record-header h2, .payment-record-header p { margin: 0; }
+.payment-record-header p { margin-top: .35rem; color: #65736d; }
+.payment-record-header a { color: #33503f; font-size: 1.1rem; }
 .refund-dialog {
   width: min(520px, 100%);
   background: #fff;
@@ -147,6 +227,27 @@ td small {
   border: 1px solid #ccd7d1;
   border-radius: 8px;
   padding: 0.6rem;
+}
+.refund-receipt-dialog {
+  width: min(560px, 100%);
+  max-height: min(80vh, 640px);
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #dce5e0;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px #0004;
+}
+.refund-receipt-dialog .refund-row span:first-child {
+  display: grid;
+  gap: 0.2rem;
+}
+.refund-receipt-dialog .refund-row small {
+  color: #65736d;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.75rem;
 }
 @media (max-width: 800px) {
   .metrics {

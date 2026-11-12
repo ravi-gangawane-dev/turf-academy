@@ -3,13 +3,14 @@ begin;
 create temporary table workflow_fixture (name text primary key, id uuid) on commit drop;
 grant select, insert on workflow_fixture to authenticated;
 do $$
-declare p uuid; b1 uuid; b2 uuid; s uuid; suffix text := gen_random_uuid()::text;
+declare p uuid; b1 uuid; b2 uuid; s uuid; s2 uuid; suffix text := gen_random_uuid()::text;
 begin
   insert into public.fee_plans(name,monthly_fee,duration_months) values('Workflow plan '||suffix,1000,1) returning id into p;
   insert into public.batches(code,name,capacity,fee_plan_id) values('WF-A-'||suffix,'Workflow batch A',1,p) returning id into b1;
   insert into public.batches(code,name,capacity,fee_plan_id) values('WF-B-'||suffix,'Workflow batch B',1,p) returning id into b2;
   insert into public.students(student_code,full_name,date_of_birth) values('WF-S-'||suffix,'Workflow SQL fixture','2014-01-01') returning id into s;
-  insert into workflow_fixture values('plan',p),('batch1',b1),('batch2',b2),('student',s);
+  insert into public.students(student_code,full_name,date_of_birth) values('WF-S2-'||suffix,'Workflow SQL fixture 2','2014-01-01') returning id into s2;
+  insert into workflow_fixture values('plan',p),('batch1',b1),('batch2',b2),('student',s),('student2',s2);
 end $$;
 
 select set_config('request.jwt.claim.sub', (select id::text from public.profiles where role='receptionist' and is_active and status='active' limit 1), true);
@@ -22,6 +23,12 @@ begin
   insert into workflow_fixture values('enrollment',enrolled.id);
   enrolled := public.transfer_enrollment(enrolled.id,(select id from workflow_fixture where name='batch2'),current_date,'SQL workflow transfer');
   if enrolled.batch_id <> (select id from workflow_fixture where name='batch2') then raise exception 'Transfer did not persist'; end if;
+  begin
+    perform public.create_enrollment((select id from workflow_fixture where name='student2'),(select id from workflow_fixture where name='batch2'),(select id from workflow_fixture where name='plan'),current_date);
+    raise exception 'Capacity overbooking was accepted';
+  exception when others then
+    if sqlerrm not like '%batch_capacity_reached%' then raise; end if;
+  end;
   if (select count(*) from public.enrollment_history where enrollment_id=enrolled.id and changed_by=auth.uid()) <> 2 then raise exception 'History or actor did not persist'; end if;
   update public.batches set capacity=100 where id=enrolled.batch_id;
   if found then raise exception 'Direct batch updates were unexpectedly granted'; end if;

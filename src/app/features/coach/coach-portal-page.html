@@ -1,7 +1,5 @@
 <div class="coach-page">
-  @if (loading()) {
-  <app-async-state title="Loading coach portal…" />
-  } @else if (error()) {
+  @if (error()) {
   <app-async-state kind="error" [title]="'Unable to load ' + title()" [message]="error()" actionLabel="Retry"
     (action)="load()" />
   } @else if (data(); as vm) {
@@ -576,7 +574,7 @@
                 <app-status-badge [status]="s.status" />
               </td>
               <td>
-                <button aria-label="View student profile"
+                <button class="app-button icon" aria-label="View student profile"
                   (click)="$event.stopPropagation(); go('/coach/students/' + s.id)">
                   <i aria-hidden="true" class="pi pi-eye"></i>
                 </button>
@@ -986,7 +984,7 @@
               <td>{{ time(record?.['check_in_at']) }}</td>
               <td>{{ time(record?.['check_out_at']) }}</td>
               <td>
-                <button aria-label="Open student profile" (click)="go('/coach/students/' + student.id)">
+                <button class="app-button icon" aria-label="Open student profile" (click)="go('/coach/students/' + student.id)">
                   <i aria-hidden="true" class="pi pi-eye"></i>
                 </button>
               </td>
@@ -1431,12 +1429,17 @@
   }
   @case ('profile') {
   <section class="card coach-profile-hero">
-    <div class="coach-profile-photo">
-      @if (vm.coach['photo_url']) {
-      <img [src]="$any(vm.coach['photo_url'])" [alt]="$any(vm.coach['full_name'])" />
-      } @else {
-      {{ initials($any(vm.coach['full_name'])) }}
-      }
+    <div class="coach-photo-block">
+      <div class="coach-profile-photo">
+        @if (vm.coach['photo_url']) {
+        <img [src]="$any(vm.coach['photo_url'])" [alt]="$any(vm.coach['full_name'])" />
+        } @else {
+        {{ initials($any(vm.coach['full_name'])) }}
+        }
+      </div>
+      <button type="button" class="photo-edit" aria-label="Change profile photo" (click)="beginProfileEdit()">
+        <i aria-hidden="true" class="pi pi-camera"></i>
+      </button>
     </div>
     <div class="coach-profile-identity">
       <h2>
@@ -1494,30 +1497,47 @@
   }
 
   <nav class="card coach-profile-tabs" aria-label="Profile sections">
-    <button [class.active]="profileTab() === 'personal'" (click)="profileTab.set('personal')">Personal information</button><button [class.active]="profileTab() === 'coaching'" (click)="profileTab.set('coaching')">Coaching
-      details</button><button [class.active]="profileTab() === 'preferences'" (click)="profileTab.set('preferences')">Preferences</button><button [class.active]="profileTab() === 'security'" (click)="profileTab.set('security')">Security</button>
+    <button [class.active]="profileTab() === 'personal'" (click)="profileTab.set('personal')"><i aria-hidden="true"
+        class="pi pi-user"></i><span>Personal information</span></button><button [class.active]="profileTab() === 'coaching'"
+      (click)="profileTab.set('coaching')"><i aria-hidden="true" class="pi pi-briefcase"></i><span>Coaching details</span></button><button
+      [class.active]="profileTab() === 'preferences'" (click)="profileTab.set('preferences')"><i aria-hidden="true"
+        class="pi pi-sliders-h"></i><span>Preferences</span></button><button [class.active]="profileTab() === 'security'"
+      (click)="profileTab.set('security')"><i aria-hidden="true" class="pi pi-lock"></i><span>Security</span></button>
   </nav>
 
   <section class="coach-profile-grid">
     <app-ui-card class="profile-personal" title="Personal information" [hidden]="profileTab() !== 'personal'">
-      <dl class="icon-details">
-        <dt><i aria-hidden="true" class="pi pi-user"></i>Full name</dt>
-        <dd>{{ vm.coach['full_name'] }}</dd>
-        <dt><i aria-hidden="true" class="pi pi-calendar"></i>Date of birth</dt>
-        <dd>
-          {{ ($any(vm.coach['date_of_birth']) | date: 'dd MMM yyyy') || 'Not provided' }}
-        </dd>
-        <dt><i aria-hidden="true" class="pi pi-envelope"></i>Email</dt>
-        <dd>{{ vm.coach['email'] || 'Not provided' }}</dd>
-        <dt><i aria-hidden="true" class="pi pi-phone"></i>Phone</dt>
-        <dd>{{ vm.coach['phone'] || 'Not provided' }}</dd>
-        <dt><i aria-hidden="true" class="pi pi-id-card"></i>Employee code</dt>
-        <dd>{{ vm.coach['employee_code'] }}</dd>
-        <dt><i aria-hidden="true" class="pi pi-check-circle"></i>Status</dt>
-        <dd>
-          <app-status-badge [status]="$any(vm.coach['status'])" />
-        </dd>
-      </dl>
+      <div class="profile-fields">
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-user"></i></span>
+          <span class="profile-field-copy"><small>Full name</small><strong>{{ vm.coach['full_name'] }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-calendar"></i></span>
+          <span class="profile-field-copy"><small>Date of birth</small><strong>{{
+              ($any(vm.coach['date_of_birth']) | date: 'dd MMM yyyy') || 'Not provided'
+              }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-envelope"></i></span>
+          <span class="profile-field-copy"><small>Email</small><strong>{{ vm.coach['email'] || 'Not
+              provided' }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-phone"></i></span>
+          <span class="profile-field-copy"><small>Phone</small><strong>{{ vm.coach['phone'] || 'Not
+              provided' }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-id-card"></i></span>
+          <span class="profile-field-copy"><small>Employee code</small><strong>{{ vm.coach['employee_code'] }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-check-circle"></i></span>
+          <span class="profile-field-copy"><small>Status</small><app-status-badge
+              [status]="$any(vm.coach['status'])" /></span>
+        </div>
+      </div>
     </app-ui-card>
     <div class="coach-profile-center" [hidden]="profileTab() !== 'coaching'">
       <article class="card coaching-information">
@@ -1626,9 +1646,6 @@
         <option value="late">Late</option>
         <option value="absent">Absent</option>
       </select>
-      <button type="button" (click)="exportAttendance()">
-        <i aria-hidden="true" class="pi pi-download"></i> Export CSV
-      </button>
     </app-filter-bar>
     @if (attendanceOutbox.operations().length) {
     <p class="message" role="status">
@@ -1636,7 +1653,8 @@
     </p>
     }
     <div class="table-scroll">
-      <app-table-tools title="Attendance report" [table]="exportTable8" [total]="attendanceTotal()"></app-table-tools>
+      <app-table-tools title="Attendance report" [table]="exportTable8" [total]="attendanceTotal()"
+        [exportColumns]="attendanceExportColumns" [exportLoader]="exportAttendanceRows"></app-table-tools>
 <table #exportTable8 class="academy-table">
         <caption class="sr-only">
           Attendance records for assigned students
