@@ -5,12 +5,14 @@ import { ParentsService, StudentsService } from '../../core/supabase/domain-serv
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ToastService } from '../../shared/toast/toast.service';
 import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
+import { addressFromDatabase, createAddressForm } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 interface StudentOption { readonly id: string; readonly full_name: string; readonly student_code: string; }
 
 @Component({
   selector: 'app-parent-form-page',
-  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload],
+  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload, AddressFields],
   templateUrl: './parent-form-page.html',
   styleUrl: './parent-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,10 +41,7 @@ export class ParentFormPage implements OnInit {
     whatsapp: ['', [Validators.required, Validators.pattern(/^(?:[6-9]\d{9}|\+[1-9]\d{7,14})$/)]],
     email: ['', Validators.email],
     occupation: [''],
-    address: ['', Validators.required],
-    city: ['', Validators.required],
-    state: ['Maharashtra', Validators.required],
-    pinCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+    address: createAddressForm(this.fb.nonNullable),
     studentId: [''],
     isPrimary: [true],
     communication: ['WhatsApp', Validators.required],
@@ -58,7 +57,7 @@ export class ParentFormPage implements OnInit {
       if (!this.parentId) return;
       const parent = await this.parents.getById(this.parentId);
       const [firstName, ...lastName] = String(parent.full_name).trim().split(/\s+/);
-      const address = (parent.address ?? {}) as Record<string, string>;
+      const address = addressFromDatabase(parent.address);
       const preferences = (parent.communication_preferences ?? {}) as Record<string, string>;
       const link = parent.student_parents?.[0];
       this.form.patchValue({
@@ -69,10 +68,7 @@ export class ParentFormPage implements OnInit {
         whatsapp: parent.whatsapp ?? parent.phone ?? '',
         email: parent.email ?? '',
         occupation: parent.occupation ?? '',
-        address: address['formatted'] ?? address['address'] ?? '',
-        city: address['city'] ?? '',
-        state: address['state'] ?? 'Maharashtra',
-        pinCode: address['pinCode'] ?? address['pin_code'] ?? '',
+        address,
         studentId: link?.student?.id ?? '',
         isPrimary: link?.is_primary ?? true,
         communication: preferences['channel'] ?? 'WhatsApp',
@@ -101,8 +97,7 @@ export class ParentFormPage implements OnInit {
         whatsapp: value.whatsapp || existingParent?.whatsapp || '',
         email: value.email || null,
         occupation: value.occupation || null,
-        address: { formatted: value.address, city: value.city, state: value.state, pinCode: value.pinCode },
-        ...(existingParent?.address && { address: { ...existingParent.address, formatted: value.address, city: value.city, state: value.state, pinCode: value.pinCode } }),
+        address: value.address,
         communication_preferences: { ...existingParent?.communication_preferences, channel: value.communication ?? existingParent?.communication_preferences?.channel ?? 'WhatsApp' },
         // Preserve existing consent/status/metadata on edit
         status: this.editing() ? existingParent?.status ?? 'active' : 'active',

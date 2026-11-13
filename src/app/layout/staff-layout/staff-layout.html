@@ -19,32 +19,9 @@
       </div>
       }
       @if (item.route) {
-      @if (item.route === '/coach/attendance') {
-      <div class="nav-item-with-action">
-        <a [routerLink]="itemRoute(item)" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
-            [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a>
-        <button type="button" class="nav-expand" aria-label="Attendance options"
-          [attr.aria-expanded]="coachAttendanceMenuOpen()" (click)="toggleCoachAttendanceMenu($event)">
-          <i class="pi" [class.pi-chevron-down]="!coachAttendanceMenuOpen()"
-            [class.pi-chevron-up]="coachAttendanceMenuOpen()"></i>
-        </button>
-      </div>
-      @if (coachAttendanceMenuOpen()) {
-      <div class="enrollment-subnav attendance-subnav">
-        <a routerLink="/coach/attendance" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active"
-          (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Today</a>
-        <a routerLink="/coach/attendance/check-in-out" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Check In /
-          Out</a>
-        <a routerLink="/coach/attendance/history" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>History</a>
-        <a routerLink="/coach/attendance/correction" routerLinkActive="active"
-          (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Correction</a>
-        <a routerLink="/coach/attendance/summary" routerLinkActive="active" (click)="menuOpen.set(false)"><span class="subnav-dot"></span>Summary</a>
-      </div>
-      }
-      } @else {
       <a [routerLink]="itemRoute(item)" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' }" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
-          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a> }
+        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' || item.route === '/coach/attendance' }" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
+          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a>
       } @else {
       <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><span class="nav-icon-wrap"><i class="pi"
           [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ item.label
@@ -134,10 +111,10 @@
 
         <div class="top-divider"></div>
 
-        <div class="profile">
+        <a class="profile" routerLink="/profile" aria-label="View and edit your profile">
           <b>
-            @if (profilePhoto()) {
-            <img [src]="profilePhoto()" alt="Profile photo" />
+            @if (auth.profileImageUrl() || profilePhoto() || auth.profile()?.avatarUrl) {
+            <img [src]="auth.profileImageUrl() || profilePhoto() || auth.profile()?.avatarUrl" alt="Profile photo" />
             } @else {
             {{ auth.session()?.user?.name?.slice(0, 2)?.toUpperCase() }}
             }</b>
@@ -151,7 +128,7 @@
               }}
             </small>
           </div>
-        </div>
+        </a>
 
         <div class="top-divider"></div>
 

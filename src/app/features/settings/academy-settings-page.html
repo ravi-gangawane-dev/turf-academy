@@ -97,12 +97,8 @@
           </div>
 
           <div class="form-group">
-            <label for="settings-address">Full Address</label>
-            <textarea id="settings-address" formControlName="address" rows="3" class="form-control"
-              placeholder="Kishor Gole Fitness Club, Police Chowki, Daud Rd, beside the main field"></textarea>
-            @if (form.controls.address.errors && (form.controls.address.touched || form.controls.address.dirty)) {
-            <small class="error-text">Maximum 500 characters</small>
-            }
+            <label>Academy address</label>
+            <app-address-fields [form]="form.controls.address" />
           </div>
         </div>
       </div>
@@ -331,4 +327,3 @@
   <button class="secondary-button" (click)="load()">Retry</button>
 </div>
 }
-

@@ -10,7 +10,7 @@ describe('Notifications list state', () => {
   function setup() {
     const api = {
       page: vi.fn().mockResolvedValue({ rows: [{ id: 'n', subject: 'Result' }], total: 21 }),
-      counts: vi.fn().mockResolvedValue({ all: 21, delivered: 0, pending: 21, failed: 0 }),
+      counts: vi.fn().mockResolvedValue({ all: 21, delivered: 0, pending: 21, failed: 0, sent: 0 }),
       deliveryAction: vi.fn().mockResolvedValue({ channels: ['in_app'] }),
     };
     const queryParams = new BehaviorSubject(convertToParamMap({channel:'whatsapp'}));
@@ -55,7 +55,7 @@ describe('Notifications list state', () => {
     api.counts.mockRejectedValueOnce(new Error('Summary unavailable'));
     await state.reload(false);
     expect(state.error()).toBe('Summary unavailable');
-    expect(state.counts()).toEqual({ all: 0, delivered: 0, pending: 0, failed: 0 });
+    expect(state.counts()).toEqual({ all: 0, delivered: 0, pending: 0, failed: 0, sent: 0 });
     expect(state.rows()).toEqual([]);
     state.clearFilters();
     await state.reload();

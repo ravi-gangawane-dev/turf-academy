@@ -47,7 +47,6 @@ export class StaffLayout implements OnInit {
   private readonly storage = inject(StorageService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly menuOpen = signal(false);
-  protected readonly coachAttendanceMenuOpen = signal(false);
   protected readonly profilePhoto = signal<string | null>(null);
   protected readonly bellCount = signal(0);
   protected readonly globalSearch = signal('');
@@ -136,7 +135,7 @@ export class StaffLayout implements OnInit {
       permission: 'children:read',
       section: 'Communication',
     },
-    { label: 'Profile', icon: 'pi-user', route: '/parent/profile', permission: 'children:read', section: 'Support' },
+    { label: 'Profile', icon: 'pi-user', route: '/profile', permission: 'children:read', section: 'Support' },
     {
       label: 'Help & Support',
       icon: 'pi-question-circle',
@@ -176,13 +175,6 @@ export class StaffLayout implements OnInit {
       section: 'Training',
     },
     {
-      label: 'Attendance Summary',
-      icon: 'pi-chart-bar',
-      route: '/coach/attendance/summary',
-      permission: 'coach:portal',
-      section: 'Training',
-    },
-    {
       label: 'Notifications',
       icon: 'pi-bell',
       route: '/coach/notifications',
@@ -217,11 +209,6 @@ export class StaffLayout implements OnInit {
 
   protected toggleMenu(): void {
     this.menuOpen.update((open) => !open);
-  }
-  protected toggleCoachAttendanceMenu(event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.coachAttendanceMenuOpen.update((open) => !open);
   }
   protected submitGlobalSearch(): void {
     const query = this.globalSearch().trim();
@@ -296,15 +283,32 @@ export class StaffLayout implements OnInit {
 
   private async loadProfilePhoto(): Promise<void> {
     const role = this.auth.session()?.user?.role;
-    if (role !== 'parent' && role !== 'coach') {
+    if (!role) {
       this.profilePhoto.set(null);
+      this.auth.setProfileImageUrl(null);
       return;
     }
     const profileId = this.auth.profile()?.id;
     if (!profileId) return;
     try {
+      if (role === 'admin' || role === 'receptionist') {
+        const result = await this.supabase.requireClient()
+          .from('profiles')
+          .select('avatar_url,avatar_path')
+          .eq('id', profileId)
+          .maybeSingle();
+        if (result.error) throw result.error;
+        const photo = result.data?.avatar_path
+          ? await this.storage.signedUrl('profile-photos', result.data.avatar_path, 3600)
+          : result.data?.avatar_url ?? null;
+        this.profilePhoto.set(photo);
+        this.auth.setProfileImageUrl(photo);
+        return;
+      }
       if (role === 'parent') {
-        this.profilePhoto.set((await this.parents.getByProfile(profileId)).photo_url ?? null);
+        const photo = (await this.parents.getByProfile(profileId)).photo_url ?? null;
+        this.profilePhoto.set(photo);
+        this.auth.setProfileImageUrl(photo);
         return;
       }
       const result = await this.supabase
@@ -320,8 +324,10 @@ export class StaffLayout implements OnInit {
           ? await this.storage.signedUrl('coach-photos', result.data.photo_path, 3600)
           : null;
       this.profilePhoto.set(photo ?? null);
+      this.auth.setProfileImageUrl(photo ?? null);
     } catch {
       this.profilePhoto.set(null);
+      this.auth.setProfileImageUrl(null);
     }
   }
   protected itemRoute(item: NavigationItem): string | undefined {

@@ -14,7 +14,7 @@
           <p class="brand-kicker">{{ roster().brand.name }}</p>
           <h1>Batch Roster</h1>
           <p class="brand-contact">
-            @if (roster().brand.address) { <span>{{ roster().brand.address }}</span> }
+            @if (roster().brand.addressText) { <span>{{ roster().brand.addressText }}</span> }
             @if (roster().brand.phone) { <span>{{ roster().brand.phone }}</span> }
             @if (roster().brand.email) { <span>{{ roster().brand.email }}</span> }
             @if (roster().brand.registrationNumber) { <span>Reg. {{ roster().brand.registrationNumber }}</span> }

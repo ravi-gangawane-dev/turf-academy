@@ -10,9 +10,9 @@
         <div class="brand-copy">
           <p class="brand-kicker">{{ statement().brand.name }}</p>
           <h1>Fee Statement</h1>
-          @if (statement().brand.address || statement().brand.phone || statement().brand.email || statement().brand.registrationNumber) {
+          @if (statement().brand.addressText || statement().brand.phone || statement().brand.email || statement().brand.registrationNumber) {
             <p class="brand-contact">
-              @if (statement().brand.address) { <span>{{ statement().brand.address }}</span> }
+              @if (statement().brand.addressText) { <span>{{ statement().brand.addressText }}</span> }
               @if (statement().brand.phone) { <span>{{ statement().brand.phone }}</span> }
               @if (statement().brand.email) { <span>{{ statement().brand.email }}</span> }
               @if (statement().brand.registrationNumber) { <span>Reg. {{ statement().brand.registrationNumber }}</span> }

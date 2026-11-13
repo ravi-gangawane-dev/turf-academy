@@ -218,7 +218,6 @@ export class ParentsPage implements OnInit {
       this.apiParents.set(
         await Promise.all(
           directory.rows.map(async (record) => {
-            const address = record.address ?? {};
             const links = record.student_parents;
             return {
               id: record.id,
@@ -228,10 +227,7 @@ export class ParentsPage implements OnInit {
               whatsapp: record.whatsapp ?? record.phone,
               email: record.email ?? undefined,
               occupation: record.occupation ?? undefined,
-              address: address['formatted'] ?? address['address'] ?? undefined,
-              city: address['city'] ?? undefined,
-              state: address['state'] ?? undefined,
-              pinCode: address['pinCode'] ?? address['pin_code'] ?? undefined,
+              address: record.address ?? undefined,
               status: record.status,
               joinedOn: record.created_at,
               photoUrl: record.photo_path

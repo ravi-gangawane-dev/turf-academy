@@ -14,7 +14,7 @@
           <p class="brand-kicker">{{ register().brand.name }}</p>
           <h1>Daily Attendance Register</h1>
           <p class="brand-contact">
-            @if (register().brand.address) { <span>{{ register().brand.address }}</span> }
+            @if (register().brand.addressText) { <span>{{ register().brand.addressText }}</span> }
             @if (register().brand.phone) { <span>{{ register().brand.phone }}</span> }
             @if (register().brand.email) { <span>{{ register().brand.email }}</span> }
             @if (register().brand.registrationNumber) { <span>Reg. {{ register().brand.registrationNumber }}</span> }

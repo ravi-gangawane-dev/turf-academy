@@ -141,6 +141,15 @@
   font-size: var(--app-font-sm);
 }
 
+app-root :is(
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='file']):not([type='range']):not([type='button']):not([type='submit']):not([type='reset']):not([type='image']):not([type='color']),
+  select:not([multiple])
+) {
+  box-sizing: border-box;
+  height: var(--app-control-height) !important;
+  min-height: var(--app-control-height) !important;
+}
+
 .workspace>main :is(input, select) {
   padding-block: 9px;
 }

@@ -5,6 +5,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from '../../core/auth/auth.service';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { StorageService } from '../../core/supabase/storage.service';
+import { Address, addressFromDatabase } from '../../core/models/address.model';
 
 export interface CoachBatch {
   readonly id: string;
@@ -31,7 +32,7 @@ export interface CoachStudent {
   readonly email: string | null;
   readonly photo_url: string | null;
   readonly joined_on: string;
-  readonly address: CoachRow;
+  readonly address: Address;
   readonly notes: string | null;
   readonly student_parents?: readonly {
     readonly is_primary: boolean;
@@ -50,6 +51,7 @@ export interface CoachProfile extends CoachRow {
   readonly phone?: string | null;
   readonly photo_path?: string | null;
   readonly photo_url?: string | null;
+  readonly address?: Address;
 }
 export interface CoachAttendanceRecord extends CoachRow {
   readonly id: string;
@@ -102,7 +104,10 @@ export class CoachPortalService {
       .maybeSingle();
     if (coachResult.error) throw new DataRequestError('Load academy data', coachResult.error);
     if (!coachResult.data) throw new Error('No active coach record is linked to this account.');
-    let coach = { ...coachResult.data } as unknown as CoachProfile;
+    let coach = {
+      ...coachResult.data,
+      address: addressFromDatabase(coachResult.data.address),
+    } as unknown as CoachProfile;
     if (coach['photo_path'])
       coach = {
         ...coach,
@@ -140,6 +145,7 @@ export class CoachPortalService {
       >;
       return {
         ...student,
+        address: addressFromDatabase(student.address),
         enrollment_id: row.id,
         batch_id: row.batch_id,
         batch_name: batchById.get(row.batch_id)?.name ?? 'Assigned batch',
@@ -377,6 +383,60 @@ export class CoachPortalService {
       p_photo_path: photoPath,
     });
     if (result.error) throw new DataRequestError('Load academy data', result.error);
+  }
+
+  async updateOwnProfilePhoto(coachId: string, phone: string, photo: File): Promise<string> {
+    const photoPath = await this.storage.upload('coach-photos', coachId, photo);
+    try {
+      const result = await this.supabase.requireClient().rpc('coach_update_own_profile', {
+        p_phone: phone.trim(),
+        p_photo_path: photoPath,
+      });
+      if (result.error) throw new DataRequestError('Update coach photo', result.error);
+    } catch (error) {
+      try {
+        await this.storage.remove('coach-photos', photoPath);
+      } catch (cleanupError) {
+        throw new AggregateError(
+          [error, cleanupError],
+          'Coach photo update failed and the uploaded photo could not be removed.',
+        );
+      }
+      throw error;
+    }
+    return this.storage.signedUrl('coach-photos', photoPath, 3600);
+  }
+
+  async updateFullOwnProfile(
+    coachId: string,
+    value: {
+      readonly fullName: string;
+      readonly phone: string;
+      readonly address: Address;
+      readonly email: string | null;
+      readonly dateOfBirth: string | null;
+      readonly experienceYears: number;
+      readonly qualification: string | null;
+      readonly biography: string | null;
+      readonly specializations: readonly string[];
+    },
+    photo?: File | null,
+  ): Promise<string | null> {
+    const photoPath = photo ? await this.storage.upload('coach-photos', coachId, photo) : null;
+    const result = await this.supabase.requireClient().rpc('coach_update_own_profile_details', {
+      p_full_name: value.fullName.trim(),
+      p_phone: value.phone.trim(),
+      p_address: value.address,
+      p_email: value.email,
+      p_date_of_birth: value.dateOfBirth,
+      p_experience_years: value.experienceYears,
+      p_qualification: value.qualification,
+      p_biography: value.biography,
+      p_specializations: [...value.specializations],
+      p_photo_path: photoPath,
+    });
+    if (result.error) throw new DataRequestError('Update coach profile', result.error);
+    return photoPath ? this.storage.signedUrl('coach-photos', photoPath, 3600) : null;
   }
 
   subscribe(

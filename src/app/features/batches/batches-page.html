@@ -63,10 +63,10 @@
     <p class="error" role="alert">{{ error() }}</p>
   }
   <section class="metrics" aria-label="Batch summary">
-    <app-summary-metric-card label="Batches" [value]="metrics().batches" icon="pi-calendar" hint="All registered batches" />
-    <app-summary-metric-card label="Active enrollments" [value]="metrics().active" icon="pi-users" hint="Currently enrolled students" tone="blue" />
-    <app-summary-metric-card label="Active batch capacity" [value]="metrics().capacity" icon="pi-chart-bar" hint="Total available places" tone="purple" />
-    <app-summary-metric-card label="Waiting students" [value]="metrics().waiting" icon="pi-clock" hint="Awaiting a place" tone="orange" />
+    @for (metric of metricCards(); track metric.label) {
+    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
+      [tone]="metric.tone" />
+    }
   </section>
   @if (editing() !== null) {
     <section class="card">

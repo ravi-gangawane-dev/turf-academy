@@ -26,14 +26,9 @@
               inputmode="numeric"
               maxlength="10" /></label
           ><label>Email address<input formControlName="email" type="email" /></label
-          ><label>Occupation<input formControlName="occupation" /></label
-          ><label>Address *<input formControlName="address" /></label
-          ><label>City *<input formControlName="city" /></label
-          ><label>State *<input formControlName="state" /></label
-          ><label
-            >PIN code *<input formControlName="pinCode" inputmode="numeric" maxlength="6"
-          /></label>
+          ><label>Occupation<input formControlName="occupation" /></label>
         </div>
+        <app-address-fields [form]="form.controls.address" />
       </section>
       <aside>
         <section class="photo-card">

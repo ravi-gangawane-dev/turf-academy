@@ -30,6 +30,8 @@ import { InteractionDialogService } from '../../shared/interaction-dialog/intera
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { FilterBar } from '../../shared/filter-bar/filter-bar';
 import { ToastService } from '../../shared/toast/toast.service';
+import { AttendanceViewNavigation } from '../attendance/attendance-view-navigation';
+import { Address, formatAddress } from '../../core/models/address.model';
 
 type CoachView =
   | 'dashboard'
@@ -49,7 +51,7 @@ type CoachView =
 
 @Component({
   selector: 'app-coach-portal-page',
-  imports: [TableTools, AcademySupport,
+  imports: [TableTools, AcademySupport, AttendanceViewNavigation,
     AsyncState,
     CalendarLayout,
     DatePipe,
@@ -130,9 +132,10 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   protected readonly correctionReason = signal('');
   protected readonly correctionStatus = signal('present');
   protected readonly profileEditing = signal(false);
-  protected readonly profileTab = signal<'personal' | 'coaching' | 'preferences' | 'security'>('personal');
   protected readonly profilePhone = signal('');
   protected readonly profilePhoto = signal<File | null>(null);
+  protected readonly profilePhotoPreview = signal('');
+  private profilePhotoPreviewUrl = '';
   protected readonly notificationFilter = signal<'all' | 'unread' | 'read'>('all');
   protected readonly notificationPage = signal(1);
   private channels: readonly RealtimeChannel[] = [];
@@ -146,22 +149,27 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   );
   protected readonly title = computed(
     () =>
-      ({
-        dashboard: 'Coach Dashboard',
-        batches: 'My Batches',
-        batch: 'Batch Details',
-        students: 'My Students',
-        student: 'Student Profile',
-        attendance: "Today's Attendance",
-        'check-in-out': 'Check In / Check Out',
-        history: 'Attendance History',
-        correction: 'Attendance Correction',
-        summary: 'Attendance Summary',
-        schedule: 'My Schedule',
-        notifications: 'Notifications',
-        profile: 'Coach Profile',
-        support: 'Help & Support',
-      })[this.view()],
+      this.view() === 'profile' && this.profileEditing()
+        ? 'Edit Coach Profile'
+        : ({
+          dashboard: 'Coach Dashboard',
+          batches: 'My Batches',
+          batch: 'Batch Details',
+          students: 'My Students',
+          student: 'Student Profile',
+          attendance: "Today's Attendance",
+          'check-in-out': 'Check In / Check Out',
+          history: 'Attendance History',
+          correction: 'Attendance Correction',
+          summary: 'Attendance Summary',
+          schedule: 'My Schedule',
+          notifications: 'Notifications',
+          profile: 'Coach Profile',
+          support: 'Help & Support',
+        })[this.view()],
+  );
+  protected readonly showAttendanceNavigation = computed(() =>
+    ['attendance', 'check-in-out', 'history', 'correction', 'summary'].includes(this.view()),
   );
   protected readonly heroBreadcrumbs = computed<readonly PageHeroBreadcrumb[]>(() => [
     { label: 'Dashboard', icon: 'pi-home', route: '/coach/dashboard' },
@@ -170,7 +178,9 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   protected readonly heroSubtitle = computed(() =>
     this.view() === 'dashboard'
       ? 'Great coaches build great players.'
-      : 'Your coaching workspace and academy activity.',
+      : this.view() === 'profile' && this.profileEditing()
+        ? 'Update your contact information and profile photo.'
+        : 'Your coaching workspace and academy activity.',
   );
   protected readonly filteredStudents = computed(() => {
     if (this.studentRows()) return this.studentRows()!;
@@ -496,6 +506,7 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.reloadTimer) clearTimeout(this.reloadTimer);
     if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.clearProfilePhotoPreview();
     void this.stopQrCamera();
     void this.portal.unsubscribe(this.channels);
   }
@@ -795,8 +806,7 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   }
   protected address(value: unknown): string {
     if (!value || typeof value !== 'object') return 'Not provided';
-    const item = value as CoachRow;
-    return String(item['formatted'] ?? item['address'] ?? item['line1'] ?? 'Not provided');
+    return formatAddress(value as Address) || 'Not provided';
   }
   protected batchStudentCount(batchId: string): number {
     return (this.data()?.students ?? []).filter((student) => student.batch_id === batchId).length;
@@ -1045,6 +1055,14 @@ export class CoachPortalPage implements OnInit, OnDestroy {
     this.profilePhone.set(String(this.data()?.coach['phone'] ?? ''));
     this.profileEditing.set(true);
     this.profilePhoto.set(null);
+    this.clearProfilePhotoPreview();
+    this.actionMessage.set('');
+  }
+  protected cancelProfileEdit(): void {
+    this.profileEditing.set(false);
+    this.profilePhone.set(String(this.data()?.coach['phone'] ?? ''));
+    this.profilePhoto.set(null);
+    this.clearProfilePhotoPreview();
     this.actionMessage.set('');
   }
   protected async saveProfile(): Promise<void> {
@@ -1060,6 +1078,8 @@ export class CoachPortalPage implements OnInit, OnDestroy {
         this.profilePhoto(),
       );
       this.profileEditing.set(false);
+      this.profilePhoto.set(null);
+      this.clearProfilePhotoPreview();
       this.actionMessage.set('Profile updated successfully.');
       await this.load();
     } catch (error) {
@@ -1071,19 +1091,34 @@ export class CoachPortalPage implements OnInit, OnDestroy {
     }
   }
   protected chooseProfilePhoto(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
     if (file && !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
       this.actionMessage.set('Choose a JPG, PNG or WebP image.');
       this.profilePhoto.set(null);
+      input.value = '';
+      this.clearProfilePhotoPreview();
       return;
     }
     if (file && file.size > 5 * 1024 * 1024) {
       this.actionMessage.set('Profile photo must be 5 MB or smaller.');
       this.profilePhoto.set(null);
+      input.value = '';
+      this.clearProfilePhotoPreview();
       return;
     }
     this.profilePhoto.set(file);
+    this.clearProfilePhotoPreview();
+    if (file) {
+      this.profilePhotoPreviewUrl = URL.createObjectURL(file);
+      this.profilePhotoPreview.set(this.profilePhotoPreviewUrl);
+    }
     this.actionMessage.set('');
+  }
+  private clearProfilePhotoPreview(): void {
+    if (this.profilePhotoPreviewUrl) URL.revokeObjectURL(this.profilePhotoPreviewUrl);
+    this.profilePhotoPreviewUrl = '';
+    this.profilePhotoPreview.set('');
   }
   protected setNotificationFilter(filter: 'all' | 'unread' | 'read'): void {
     this.notificationFilter.set(filter);

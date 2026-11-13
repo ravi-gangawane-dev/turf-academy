@@ -39,6 +39,22 @@ describe('Batch saves',()=> {
 
 describe('Batch directory', () => {
  afterEach(() => TestBed.resetTestingModule());
+ it('renders five summary metrics and derives available places from capacity', async () => {
+  const result = listPage();
+  result.metrics = { batches: 8, active: 12, capacity: 30, waiting: 2 };
+  const lists = { page: vi.fn().mockResolvedValue(result) };
+  TestBed.configureTestingModule({ imports: [BatchesPage], providers: [
+   provideRouter([]), { provide: BatchWorkspaceService, useValue: {} },
+   { provide: EnrollmentsService, useValue: {} }, { provide: ServerListService, useValue: lists },
+  ] });
+  const fixture = TestBed.createComponent(BatchesPage);
+  fixture.detectChanges();
+  await fixture.whenStable();
+  fixture.detectChanges();
+  expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+  expect(fixture.nativeElement.textContent).toContain('Available places');
+  expect(fixture.nativeElement.textContent).toContain('18');
+ });
  it('renders missing schedules, every coach, status and an accessible edit action', async () => {
   const workspace = emptyBatchWorkspace();
   workspace.coaches = [{id:'coach-1',full_name:'First Coach',status:'active'},{id:'coach-2',full_name:'Second Coach',status:'active'}];

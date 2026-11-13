@@ -18,12 +18,13 @@ import {
   StudentListService,
   StudentWorkspace,
 } from '../students/student-list.service';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 type ChildTab = 'overview' | 'attendance' | 'fees' | 'documents' | 'medical';
 
 @Component({
   selector: 'app-parent-child-profile-page',
-  imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe],
+  imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, AddressFields],
   templateUrl: './parent-child-profile-page.html',
   styleUrl: './parent-child-profile-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,10 +60,10 @@ export class ParentChildProfilePage implements OnInit {
       student.bloodGroup,
       student.phone,
       student.email,
-      student.address,
-      student.city,
-      student.state,
-      student.pinCode,
+      student.address.line1,
+      student.address.city,
+      student.address.state,
+      student.address.pinCode,
       student.nationality,
       student.photoUrl,
     ];

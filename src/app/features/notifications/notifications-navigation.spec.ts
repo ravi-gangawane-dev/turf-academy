@@ -58,7 +58,7 @@ describe('Notification management navigation', () => {
           useValue: {
             page,
             history,
-            counts: vi.fn().mockResolvedValue({ all: 1, delivered: 0, pending: 0, failed: 1 }),
+            counts: vi.fn().mockResolvedValue({ all: 1, delivered: 0, pending: 0, failed: 1, sent: 0 }),
             deliveryAction: vi.fn().mockResolvedValue({ channels: ['in_app'] }),
           },
         },

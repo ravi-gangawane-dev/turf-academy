@@ -8,7 +8,7 @@ const receipt: PrintReceiptDocument = {
     name: 'Turf Cricket Academy',
     code: 'TCA',
     logoUrl: 'https://cdn.example/logo.png',
-    address: 'Sector 21, Kharadi',
+    addressText: 'Sector 21, Kharadi',
     phone: '+91 98765 43210',
     email: 'accounts@example.com',
     currencyCode: 'INR',

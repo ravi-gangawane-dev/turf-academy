@@ -23,13 +23,10 @@
                 }}</strong></span></div>
           <div><i aria-hidden="true" class="pi pi-briefcase"></i><span>Occupation<strong>{{ item.occupation || 'Not
                 provided' }}</strong></span></div>
-          <div><i aria-hidden="true" class="pi pi-map-marker"></i><span>Address<strong>{{ addressPart('formatted')
-                }}</strong></span></div>
-          <div><i aria-hidden="true" class="pi pi-map"></i><span>City / PIN<strong>{{ addressPart('city') }} · {{
-                addressPart('pinCode') }}</strong></span></div>
           <div><i aria-hidden="true" class="pi pi-comments"></i><span>Preferred contact<strong>{{ preference()
                 }}</strong></span></div>
         </div>
+        <app-address-fields [value]="item.address" />
       </div>
     </section>
     <aside class="quick-card">
@@ -43,9 +40,8 @@
         parents</button>
     </aside>
   </div>
-  <app-print-id-card-dialog [open]="idCardOpen()" [card]="idCard()" [busy]="idCardLoading()"
-    [error]="idCardError()" (prepare)="printIdCard($event)" (retry)="retryIdCard()"
-    (closed)="closeIdCard()" />
+  <app-print-id-card-dialog [open]="idCardOpen()" [card]="idCard()" [busy]="idCardLoading()" [error]="idCardError()"
+    (prepare)="printIdCard($event)" (retry)="retryIdCard()" (closed)="closeIdCard()" />
   <nav class="tabs"><button [class.active]="tab()==='children'" (click)="selectTab('children')"><i aria-hidden="true"
         class="pi pi-users"></i>Linked students</button><button [class.active]="tab()==='activity'"
       (click)="selectTab('activity')"><i aria-hidden="true" class="pi pi-history"></i>Activity</button><button

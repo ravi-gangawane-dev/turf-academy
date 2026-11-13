@@ -13,10 +13,12 @@ import { PrintBrandService } from '../../shared/print/print-brand.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SETTINGS_SECTIONS } from './settings-sections';
 import { UsersSettingsPanel } from './users-settings-panel';
+import { createAddressForm, addressFromDatabase, addressValue } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 @Component({
   selector: 'app-academy-settings-page',
-  imports: [ReactiveFormsModule, TitleCasePipe, PageHero, RouterLink, UsersSettingsPanel],
+  imports: [ReactiveFormsModule, TitleCasePipe, PageHero, RouterLink, UsersSettingsPanel, AddressFields],
   templateUrl: './academy-settings-page.html',
   styleUrl: './academy-settings-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,7 +68,7 @@ export class AcademySettingsPage implements OnInit {
     academyDescription: ['Turf Cricket Academy - Excellence in Cricket Training', [Validators.maxLength(500)]],
     contactEmail: ['', Validators.email],
     contactPhone: ['', [Validators.maxLength(30)]],
-    address: ['', [Validators.maxLength(500)]],
+    address: createAddressForm(this.fb.nonNullable),
     printRegistrationNumber: ['', [Validators.maxLength(60)]],
     printTerms: ['', [Validators.maxLength(1200)]],
     printFooterNote: ['', [Validators.maxLength(200)]],
@@ -106,7 +108,7 @@ export class AcademySettingsPage implements OnInit {
         academyDescription: v.academy_description ?? 'Turf Cricket Academy - Excellence in Cricket Training',
         contactEmail: v.contact_email ?? '',
         contactPhone: v.contact_phone ?? '',
-        address: v.address ?? '',
+        address: addressFromDatabase(v.address),
         printRegistrationNumber: v.print_registration_number ?? '',
         printTerms: v.print_terms ?? '',
         printFooterNote: v.print_footer_note ?? '',
@@ -142,7 +144,7 @@ export class AcademySettingsPage implements OnInit {
         academy_description: v.academyDescription?.trim() || '',
         contact_email: v.contactEmail.trim() || null,
         contact_phone: v.contactPhone.trim() || null,
-        address: v.address.trim() || null,
+        address: addressValue(v.address),
         print_registration_number: v.printRegistrationNumber.trim() || null,
         print_terms: v.printTerms.trim() || null,
         print_footer_note: v.printFooterNote.trim() || null,

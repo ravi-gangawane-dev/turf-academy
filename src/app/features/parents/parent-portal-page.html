@@ -583,7 +583,7 @@
         <dt>Occupation</dt>
         <dd>{{ vm.parent['occupation'] || 'Not provided' }}</dd>
         <dt>Address</dt>
-        <dd>{{ addressText(vm.parent['address']) }}</dd>
+        <dd><app-address-fields [value]="vm.parent.address" /></dd>
         <dt>Linked children</dt>
         <dd>{{ vm.children.length }}</dd>
       </dl>

@@ -270,6 +270,7 @@ describe('Monthly charge totals', () => {
       chargeSummary: vi.fn().mockResolvedValue({
         students: 17,
         total: 12500,
+        collected: 7500,
         pending: 3500,
         overdue: 1500,
       }),
@@ -296,8 +297,10 @@ describe('Monthly charge totals', () => {
       Array.from(
         fixture.nativeElement.querySelectorAll('.metrics strong') as NodeListOf<HTMLElement>,
       ).map((element) => element.textContent?.trim());
-    const expectedAmounts = ['17', '₹12,500.00', '₹3,500.00', '₹1,500.00', '₹0.00', '₹0.00', '₹0.00'];
+    const expectedAmounts = ['17', '₹12,500.00', '₹3,500.00', '₹1,500.00', '₹7,500.00'];
     expect(amounts()).toEqual(expectedAmounts);
+    expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelector('.table-tools-actions .charge-status-filter')).not.toBeNull();
 
     const status: HTMLInputElement = fixture.nativeElement.querySelector(
       'input[aria-label="Filter status"]',

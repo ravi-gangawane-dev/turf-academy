@@ -8,7 +8,7 @@ describe('ParentFormPage', () => {
     const parent = {
       id: 'p1', full_name: 'Test Parent', phone: '9876543210', whatsapp: '9876543210',
       relation: 'Father', status: 'inactive',
-      address: { formatted: 'Test address', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
+      address: { line1: 'Test address', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
       communication_preferences: { channel: 'Email', whatsapp: false, email: true },
     };
     const parents = { getById: vi.fn().mockResolvedValue(parent), update: vi.fn().mockResolvedValue(parent) };

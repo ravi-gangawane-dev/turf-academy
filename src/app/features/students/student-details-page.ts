@@ -31,12 +31,14 @@ import {
 } from '../../shared/print/print-document.models';
 import { PrintIdCardDialog } from '../../shared/print/print-id-card-dialog/print-id-card-dialog';
 import { ToastService } from '../../shared/toast/toast.service';
+import { formatAddress } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 type DetailTab = 'overview' | 'documents' | 'attendance' | 'payments' | 'medical' | 'timeline';
 
 @Component({
   selector: 'app-student-details-page',
-  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, PageHero, DataTable, SummaryMetricCard, PrintIdCardDialog],
+  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, PageHero, DataTable, SummaryMetricCard, PrintIdCardDialog, AddressFields],
   templateUrl: './student-details-page.html',
   styleUrl: './student-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -229,10 +231,7 @@ export class StudentDetailsPage implements OnInit {
     const batchCode = this.text(batch, 'code');
     const summary = this.attendanceSummary();
     const medical = workspace.medical;
-    const address =
-      [student.address, student.city, student.state, student.pinCode]
-        .filter(Boolean)
-        .join(', ') || 'Not recorded';
+    const address = formatAddress(student.address) || 'Not recorded';
     const guardian =
       [
         student.parentName,

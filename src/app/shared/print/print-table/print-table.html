@@ -10,9 +10,9 @@
         <div class="brand-copy">
           <p class="brand-kicker">{{ table().brand.name }}</p>
           <h1>{{ table().title }}</h1>
-          @if (table().brand.address || table().brand.phone || table().brand.email || table().brand.registrationNumber) {
+          @if (table().brand.addressText || table().brand.phone || table().brand.email || table().brand.registrationNumber) {
             <p class="brand-contact">
-              @if (table().brand.address) { <span>{{ table().brand.address }}</span> }
+              @if (table().brand.addressText) { <span>{{ table().brand.addressText }}</span> }
               @if (table().brand.phone) { <span>{{ table().brand.phone }}</span> }
               @if (table().brand.email) { <span>{{ table().brand.email }}</span> }
               @if (table().brand.registrationNumber) { <span>Reg. {{ table().brand.registrationNumber }}</span> }

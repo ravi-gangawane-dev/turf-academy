@@ -12,7 +12,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PaymentMode } from '../../core/models/academy.model';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { EnrollmentsService, FeesService, FeeStatementRecord, PaymentsService } from '../../core/supabase/domain-services';
-import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { createColumnFilters } from '../../shared/column-filter/column-filter';
 import { DataTable } from '../../shared/data-table/data-table';
@@ -60,7 +59,6 @@ interface ChargeListRow {
   selector: 'app-fees-page',
   imports: [FeeViewNavigation, PageHero, AsyncState,
     ModalFocus,
-    AcademyMoneyPipe,
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
@@ -315,6 +313,16 @@ export class FeesPage implements OnInit {
     Math.max(1, Math.ceil(this.total() / this.pageSize())),
   );
   protected readonly metrics = signal({ students: 0, total: 0, discount: 0, late: 0, paid: 0, pending: 0, overdue: 0 });
+  protected readonly metricCards = computed(() => {
+    const metrics = this.metrics();
+    return [
+      { label: 'Total Students', value: metrics.students, icon: 'pi-users', detail: 'With monthly charges', tone: 'green' },
+      { label: 'Total Monthly Collection', value: this.preferences.money(metrics.total / 100), icon: 'pi-wallet', detail: 'Expected collection', tone: 'blue' },
+      { label: 'Pending Collection', value: this.preferences.money(metrics.pending / 100), icon: 'pi-clock', detail: 'Open balances', tone: 'orange' },
+      { label: 'Overdue', value: this.preferences.money(metrics.overdue / 100), icon: 'pi-exclamation-circle', detail: 'Past due date', tone: 'red' },
+      { label: 'Collected', value: this.preferences.money(metrics.paid / 100), icon: 'pi-check-circle', detail: 'Recorded payments', tone: 'green' },
+    ] as const;
+  });
   protected changeSortBy(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     if (['dueDate', 'student', 'period', 'amount', 'balance', 'status'].includes(value)) {
@@ -494,7 +502,7 @@ export class FeesPage implements OnInit {
           total: summary.total * 100,
           discount: 0,
           late: 0,
-          paid: 0,
+          paid: summary.collected * 100,
           pending: summary.pending * 100,
           overdue: summary.overdue * 100,
         });
@@ -522,9 +530,8 @@ export class FeesPage implements OnInit {
       const reconciliation = result.rows.reduce((acc, row) => ({
         discount: acc.discount + Number(row.discount_amount ?? 0),
         late: acc.late + Number(row.late_fee_amount ?? 0),
-        paid: acc.paid + Number(row.paid_amount ?? 0),
-      }), { discount: 0, late: 0, paid: 0 });
-      this.metrics.update(current => ({ ...current, discount: reconciliation.discount * 100, late: reconciliation.late * 100, paid: reconciliation.paid * 100 }));
+      }), { discount: 0, late: 0 });
+      this.metrics.update(current => ({ ...current, discount: reconciliation.discount * 100, late: reconciliation.late * 100 }));
     } catch (error) {
       if (request !== this.loadId) return;
       this.rows.set([]);

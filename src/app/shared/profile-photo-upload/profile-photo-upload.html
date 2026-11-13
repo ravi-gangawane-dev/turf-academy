@@ -1,23 +1,39 @@
-<button type="button" class="photo-trigger" [disabled]="saving || processing()" (click)="begin()">
-  @if(photoUrl){<img [src]="photoUrl" [alt]="label + ' photo'" />} @else {<i class="pi pi-image"></i>}
-  <span>{{photoUrl ? 'Change photo' : 'Add photo'}}</span>
+<button type="button" class="photo-trigger" [class.avatar-trigger]="avatar" [class.photo-selected]="selected"
+  [disabled]="saving || processing()" (click)="begin()"
+  [attr.aria-label]="avatar ? (selected ? 'Save selected profile photo' : 'Change profile photo') : null">
+  @if(photoUrl){<img [src]="photoUrl" [alt]="avatar ? label + ' photo' : ''" />} @else if (avatar) {<span class="avatar-initials">{{initials}}</span>} @else {<i class="pi pi-image"></i>}
+  @if (avatar) {
+    <span class="camera-badge"><i class="pi pi-camera" aria-hidden="true"></i></span>
+  } @else {
+    <span>{{selected ? 'Photo selected' : photoUrl ? 'Change photo' : 'Add photo'}}</span>
+  }
 </button>
 @if(open){
-<div class="photo-modal" appModalFocus [modalBusy]="saving || processing()" (modalDismiss)="close()" [attr.aria-busy]="saving || processing()" aria-label="Profile photo editor">
+<div class="photo-modal" appModalFocus [modalBusy]="saving || processing()" (modalDismiss)="close()"
+  [attr.aria-busy]="saving || processing()" [attr.aria-label]="label + ' photo editor'">
   <div class="photo-dialog">
     <header class="photo-header">
       <div class="heading-icon"><i class="pi pi-image"></i></div>
-      <div class="heading-copy"><h2>{{label}} Photo</h2><p>Upload, capture or update the {{label.toLowerCase()}}'s profile photo.</p></div>
+      <div class="heading-copy">
+        <h2>{{label}} Photo</h2>
+        @if (avatar) {
+          <p>Upload, capture or update your profile photo.</p>
+        } @else {
+          <p>Upload, capture or update the {{label.toLowerCase()}}'s profile photo.</p>
+        }
+      </div>
       <button type="button" [disabled]="saving || processing()" class="close" (click)="close()" aria-label="Close"><i class="pi pi-times"></i></button>
     </header>
     <fieldset class="photo-editor" [disabled]="saving || processing()" aria-label="Photo editing controls">
       <div class="left-column">
         <section class="upload-card">
-          <div class="mode-tabs">
-            <button type="button" class="active"><i class="pi pi-upload"></i>Upload Photo</button>
-            <button type="button" (click)="capture.click()"><i class="pi pi-camera"></i>Capture Photo</button>
+          <div class="mode-tabs" role="tablist" aria-label="Photo source">
+            <button type="button" role="tab" [class.active]="mode === 'upload'" [attr.aria-selected]="mode === 'upload'"
+              (click)="selectMode('upload')"><i class="pi pi-upload"></i>Upload Photo</button>
+            <button type="button" role="tab" [class.active]="mode === 'camera'" [attr.aria-selected]="mode === 'camera'"
+              (click)="selectMode('camera')"><i class="pi pi-camera"></i>Capture Photo</button>
           </div>
-          <input #capture class="hidden-file" type="file" accept="image/jpeg,image/png" capture="user" (change)="select($event)" />
+          @if(mode === 'upload') {
           <div class="drop-zone" (dragover)="$event.preventDefault()" (drop)="drop($event)">
             <i class="pi pi-cloud-upload cloud"></i>
             <strong>Drag &amp; drop photo here</strong>
@@ -25,10 +41,30 @@
             <div class="upload-actions">
               <button type="button" class="choose-file" (click)="file.click()"><i class="pi pi-image"></i>Choose File</button>
               <input #file class="hidden-file" type="file" accept="image/jpeg,image/png" (change)="select($event)" />
-              <button type="button" class="take-photo" (click)="capture.click()"><i class="pi pi-camera"></i>Take Photo</button>
+              <button type="button" class="take-photo" (click)="uploadDeviceCamera.click()"><i class="pi pi-camera"></i>Take Photo</button>
+              <input #uploadDeviceCamera class="hidden-file" type="file" accept="image/jpeg,image/png" capture="user" (change)="select($event)" />
             </div>
             <small>JPG, PNG (up to 2 MB)<i class="pi pi-info-circle"></i></small>
           </div>
+          } @else {
+          <div class="camera-panel">
+            @if(cameraStream(); as stream) {
+            <video #cameraVideo [srcObject]="stream" autoplay playsinline muted aria-label="Live camera preview"></video>
+            <button type="button" class="capture-button" (click)="captureCameraPhoto(cameraVideo)">
+              <i class="pi pi-camera" aria-hidden="true"></i>Take Photo
+            </button>
+            } @else {
+            <div class="camera-unavailable">
+              <i class="pi pi-camera" aria-hidden="true"></i>
+              <span>{{cameraStarting() ? 'Starting camera…' : 'Camera preview is unavailable.'}}</span>
+              @if(!cameraStarting()) {
+              <button type="button" class="take-photo" (click)="fallbackDeviceCamera.click()">Use device camera</button>
+              <input #fallbackDeviceCamera class="hidden-file" type="file" accept="image/jpeg,image/png" capture="user" (change)="select($event)" />
+              }
+            </div>
+            }
+          </div>
+          }
         </section>
         <section class="guidelines">
           <h3><i class="pi pi-shield"></i>Photo Guidelines</h3>
@@ -38,18 +74,25 @@
         </section>
       </div>
       <section class="preview-panel">
-        <div class="preview">
+        <div class="preview" [class.pannable]="previewUrl()" [attr.tabindex]="previewUrl() ? 0 : null"
+          [attr.aria-label]="previewUrl() ? 'Photo preview. Drag to reposition, or use arrow keys.' : 'Photo preview is empty.'"
+          (pointerdown)="panStart($event)" (pointermove)="panMove($event)"
+          (pointerup)="panEnd($event)" (pointercancel)="panEnd($event)" (keydown)="panByKeyboard($event)">
           @if(previewUrl()){
-            <img [src]="previewUrl()" [alt]="label + ' photo'" [style.transform]="'rotate(' + rotation + 'deg) scale(' + zoom + ')'" />
+            <img [src]="previewUrl()" [alt]="label + ' photo'" (load)="imageLoaded($event)"
+              [style.width.%]="previewImageWidth()" [style.height.%]="previewImageHeight()"
+              [style.left]="'calc(50% + ' + panX * 100 + '%)'"
+              [style.top]="'calc(50% + ' + panY * 100 + '%)'"
+              [style.transform]="'translate(-50%, -50%) rotate(' + rotation + 'deg)'" />
             @if(cropMode){<div class="crop-grid" aria-hidden="true"></div>}
           } @else {<i class="pi pi-image empty-image"></i>}
         </div>
         @if(cropMode && previewUrl()){<p class="crop-help">Fixed square crop. Adjust with zoom and rotation, then select Crop to apply.</p>}
         <div class="controls">
-          <button type="button" (click)="rotate()"><i class="pi pi-refresh"></i><span>Rotate</span></button>
-          <button type="button" [class.active]="cropMode" (click)="cropMode ? crop() : cropMode=true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2v16h16M2 6h16v16"/></svg><span>Crop</span></button>
-          <button type="button" (click)="reset()"><i class="pi pi-replay"></i><span>Reset</span></button>
-          <label class="zoom"><i class="pi pi-search-minus"></i><input aria-label="Photo zoom" type="range" min="1" max="1.5" step="0.05" [value]="zoom" (input)="changeZoom($any($event.target).value)" /><i class="pi pi-search-plus"></i></label>
+          <button type="button" [disabled]="!previewUrl()" (click)="rotate()"><i class="pi pi-refresh"></i><span>Rotate</span></button>
+          <button type="button" [disabled]="!previewUrl()" [class.active]="cropMode" (click)="cropMode ? crop() : cropMode=true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2v16h16M2 6h16v16"/></svg><span>Crop</span></button>
+          <button type="button" [disabled]="!previewUrl()" (click)="reset()"><i class="pi pi-replay"></i><span>Reset</span></button>
+          <label class="zoom"><i class="pi pi-search-minus"></i><input aria-label="Photo zoom" type="range" min="1" max="1.5" step="0.05" [disabled]="!previewUrl()" [value]="zoom" (input)="changeZoom($any($event.target).value)" /><i class="pi pi-search-plus"></i></label>
         </div>
       </section>
     </fieldset>
@@ -58,4 +101,3 @@
   </div>
 </div>
 }
-

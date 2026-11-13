@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { SupabaseClientService } from './supabase-client.service';
 import { DataRequestError } from './data-error';
 
-export type PrivateBucket = 'student-photos' | 'parent-photos' | 'student-documents' | 'coach-photos' | 'medical-documents' | 'receipts';
+export type PrivateBucket = 'student-photos' | 'parent-photos' | 'student-documents' | 'coach-photos' | 'profile-photos' | 'medical-documents' | 'receipts';
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {

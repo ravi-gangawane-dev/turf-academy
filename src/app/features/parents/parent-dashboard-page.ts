@@ -27,6 +27,7 @@ import { latestChargeBalance } from './parent-fee-summary';
 import { ParentPortalService } from './parent-portal.service';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { formatAddress } from '../../core/models/address.model';
 
 interface ChildWorkspace {
   readonly link: ParentDetailRecord['student_parents'][number];
@@ -159,8 +160,7 @@ export class ParentDashboardPage implements OnInit, OnDestroy {
     void this.portal.unsubscribe(this.channels);
   }
   protected address(): string {
-    const value = this.parent()?.address as Record<string, string> | undefined;
-    return value?.['formatted'] ?? value?.['address'] ?? 'Not provided';
+    return formatAddress(this.parent()?.address) || 'Not provided';
   }
   protected initials(name: string): string {
     return name

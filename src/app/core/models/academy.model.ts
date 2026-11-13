@@ -1,3 +1,5 @@
+import { Address } from './address.model';
+
 export type StudentStatus = 'active' | 'inactive';
 export type EnrollmentStatus = 'active' | 'paused' | 'cancelled';
 export type AttendanceStatus = 'present' | 'late' | 'checked-out' | 'absent';
@@ -14,10 +16,7 @@ export interface Parent {
   readonly occupation?: string;
   readonly alternatePhone?: string;
   readonly email?: string;
-  readonly address?: string;
-  readonly city?: string;
-  readonly state?: string;
-  readonly pinCode?: string;
+  readonly address?: Address;
   readonly communication?: string;
   readonly contactTime?: string;
   readonly parentType?: string;
@@ -25,7 +24,7 @@ export interface Parent {
   readonly emergencyName?: string;
   readonly emergencyRelation?: string;
   readonly emergencyPhone?: string;
-  readonly emergencyAddress?: string;
+  readonly emergencyAddress?: Address;
   readonly joinedOn?: string;
   readonly photoUrl?: string | null;
 }
@@ -71,7 +70,7 @@ export interface Coach {
   readonly specialization: string;
   readonly status: 'active' | 'inactive';
   readonly email?: string;
-  readonly address?: string;
+  readonly address?: Address;
   readonly dateOfBirth?: string;
   readonly experienceYears?: number;
   readonly qualification?: string;

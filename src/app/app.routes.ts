@@ -13,6 +13,7 @@ const authUtilityPage = () => import('./features/auth/auth-utility-page').then((
 const roleRedirectPage = () => import('./features/auth/role-redirect-page').then((m) => m.RoleRedirectPage);
 const parentPortalPage = () => import('./features/parents/parent-portal-page').then((m) => m.ParentPortalPage);
 const coachPortalPage = () => import('./features/coach/coach-portal-page').then((m) => m.CoachPortalPage);
+const userProfilePage = () => import('./features/profile/user-profile-page').then((m) => m.UserProfilePage);
 const paymentsPage = () => import('./features/payments/payments-page').then((m) => m.PaymentsPage);
 const academySettingsPage = () => import('./features/settings/academy-settings-page').then((m) => m.AcademySettingsPage);
 const feeOperationsPage = () => import('./features/fees/fee-operations-page').then((m) => m.FeeOperationsPage);
@@ -132,6 +133,13 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/staff-layout/staff-layout').then((m) => m.StaffLayout),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path: 'profile',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'receptionist', 'coach', 'parent'] },
+        title: 'My Profile · Turf Academy',
+        loadComponent: userProfilePage,
+      },
       // Coach portal.
       {
         path: 'coach/dashboard',
@@ -223,9 +231,8 @@ export const routes: Routes = [
       },
       {
         path: 'coach/profile',
-        canActivate: [roleGuard],
-        data: { roles: ['coach'], permission: 'coach:portal', view: 'profile' },
-        loadComponent: coachPortalPage,
+        redirectTo: 'profile',
+        pathMatch: 'full',
       },
       {
         path: 'coach/support',
@@ -332,16 +339,15 @@ export const routes: Routes = [
       },
       {
         path: 'parent/profile',
-        canActivate: [roleGuard],
-        data: { roles: ['parent'], permission: 'children:read', view: 'profile' },
-        loadComponent: parentPortalPage,
+        redirectTo: 'profile',
+        pathMatch: 'full',
       },
       {
         path: 'parent/profile/edit',
         canActivate: [roleGuard],
         data: { roles: ['parent'], permission: 'children:read' },
-        title: 'Complete Parent Profile · Turf Academy',
-        loadComponent: () => import('./features/parents/parent-profile-form-page').then((m) => m.ParentProfileFormPage),
+        title: 'My Profile · Turf Academy',
+        loadComponent: userProfilePage,
       },
       {
         path: 'parent/support',

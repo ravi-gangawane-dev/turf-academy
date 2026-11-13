@@ -12,7 +12,7 @@
       <p class="brand-kicker">{{ refund().brand.name }}</p>
       <h1>Refund Receipt</h1>
       <p class="brand-contact">
-        @if (refund().brand.address) { <span>{{ refund().brand.address }}</span> }
+        @if (refund().brand.addressText) { <span>{{ refund().brand.addressText }}</span> }
         @if (refund().brand.phone) { <span>{{ refund().brand.phone }}</span> }
         @if (refund().brand.registrationNumber) { <span>Reg. {{ refund().brand.registrationNumber }}</span> }
       </p>

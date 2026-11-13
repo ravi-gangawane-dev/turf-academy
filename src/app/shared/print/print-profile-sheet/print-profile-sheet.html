@@ -12,7 +12,7 @@
       <p class="brand-kicker">{{ sheet().brand.name }}</p>
       <h1>{{ title() }}</h1>
       <p class="brand-contact">
-        @if (sheet().brand.address) { <span>{{ sheet().brand.address }}</span> }
+        @if (sheet().brand.addressText) { <span>{{ sheet().brand.addressText }}</span> }
         @if (sheet().brand.phone) { <span>{{ sheet().brand.phone }}</span> }
         @if (sheet().brand.email) { <span>{{ sheet().brand.email }}</span> }
         @if (sheet().brand.registrationNumber) { <span>Reg. {{ sheet().brand.registrationNumber }}</span> }

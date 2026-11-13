@@ -50,7 +50,18 @@ function setup(
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      { provide: AuthService, useValue: { session: () => session, role: () => role, profile: () => session.profile, hasPermission, logout } },
+      {
+        provide: AuthService,
+        useValue: {
+          session: () => session,
+          role: () => role,
+          profile: () => session.profile,
+          profileImageUrl: signal(null),
+          setProfileImageUrl: vi.fn(),
+          hasPermission,
+          logout,
+        },
+      },
       { provide: AcademyFacade, useValue: academy },
       { provide: AcademyPreferencesService, useValue: preferences },
       { provide: NotificationsService, useValue: notifications },
@@ -75,6 +86,11 @@ describe('StaffLayout', () => {
   it('should create', () => {
     const { layout } = setup('admin');
     expect(layout).toBeTruthy();
+  });
+
+  it('links the signed-in user profile control to the shared profile page', () => {
+    const { fixture } = setup('admin');
+    expect(fixture.nativeElement.querySelector('.top-actions .profile')?.getAttribute('href')).toBe('/profile');
   });
 
   it('lists the staff navigation for an administrator', async () => {
@@ -114,16 +130,13 @@ describe('StaffLayout', () => {
     expect(labels).not.toContain('Settings');
   });
 
-  it('opens and closes the coach attendance sub-navigation', async () => {
+  it('keeps coach attendance navigation in the attendance workspace', async () => {
     const { fixture, layout } = setup('coach');
     await layout.ngOnInit();
-    const toggle: HTMLButtonElement = fixture.nativeElement.querySelector('.nav-expand');
-    expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    toggle.click();
-    fixture.detectChanges();
-    expect(layout['coachAttendanceMenuOpen']()).toBe(true);
-    expect(toggle.getAttribute('aria-expanded')).toBe('true');
-    expect(fixture.nativeElement.textContent).toContain('Correction');
+    expect(navLabels(fixture)).toContain('Attendance');
+    expect(navLabels(fixture)).not.toContain('Attendance Summary');
+    expect(fixture.nativeElement.querySelector('.nav-expand')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.attendance-subnav')).toBeNull();
   });
 
   it('keeps one attendance sidebar item on every attendance page', async () => {

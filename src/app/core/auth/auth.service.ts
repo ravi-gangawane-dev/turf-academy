@@ -27,6 +27,7 @@ export class AuthService {
   private readonly sessionState = signal<AuthSession | null>(!this.usesSupabase && this.config.useMockApi ? this.readMockSession() : null);
   readonly session = this.sessionState.asReadonly();
   readonly profile = computed(() => this.sessionState()?.profile ?? null);
+  readonly profileImageUrl = signal<string | null>(null);
   readonly role = computed(() => this.sessionState()?.user.role ?? null);
   readonly initialized = signal(!this.usesSupabase);
   readonly isAuthenticated = computed(() => this.initialized() && Boolean(this.sessionState()?.accessToken));
@@ -99,6 +100,17 @@ export class AuthService {
   accessToken(): string | null { return this.sessionState()?.accessToken ?? null; }
   hasRole(roles: readonly StaffRole[]): boolean { const role=this.role(); return Boolean(role && roles.includes(role)); }
   hasPermission(permission?: Permission): boolean { const role=this.role(); return !permission || Boolean(role && this.roleCatalog.matrix()[role].includes(permission)); }
+  updateCurrentProfile(value: Partial<Pick<UserProfile, 'fullName' | 'phone' | 'avatarUrl'>>): void {
+    const session = this.sessionState();
+    if (!session?.profile) return;
+    const profile = { ...session.profile, ...value };
+    this.sessionState.set({
+      ...session,
+      profile,
+      user: { ...session.user, name: profile.fullName },
+    });
+  }
+  setProfileImageUrl(url: string | null): void { this.profileImageUrl.set(url); }
   dashboardForRole(role=this.role()): string { return role==='admin'?'/redirect/admin':role==='coach'?'/redirect/coach':role==='receptionist'?'/redirect/reception':role==='parent'?'/redirect/parent':'/auth/login'; }
 
   refresh(): Observable<AuthSession> {
@@ -254,7 +266,7 @@ export class AuthService {
   private async refreshSupabase():Promise<AuthSession>{const {data,error}=await this.supabase.requireClient().auth.refreshSession();if(error||!data.session){this.clearSession();throw error??new Error('Session expired.');}return this.restoreSession(data.session);}
   private async writeAudit(action:string,userId?:string,email?:string):Promise<void>{await this.supabase.requireClient().from('auth_audit_logs').insert({user_id:userId??this.sessionState()?.user.id,email:email??this.profile()?.email,action,metadata:{user_agent:navigator.userAgent}});}
   private updateToken(token:string):void{const value=this.sessionState();if(value)this.sessionState.set({...value,accessToken:token});}
-  private clearSession():void{this.sessionState.set(null);sessionStorage.removeItem(SESSION_KEY);}
+  private clearSession():void{this.sessionState.set(null);this.profileImageUrl.set(null);sessionStorage.removeItem(SESSION_KEY);}
   private saveMockSession(session:AuthSession):void{this.sessionState.set(session);sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));}
   private readMockSession():AuthSession|null{try{const value=sessionStorage.getItem(SESSION_KEY);return value?JSON.parse(value) as AuthSession:null;}catch{sessionStorage.removeItem(SESSION_KEY);return null;}}
 }

@@ -4,10 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ToastService } from '../../shared/toast/toast.service';
 import { StudentListFilters, StudentListService } from './student-list.service';
+import { addressFromDatabase, createAddressForm } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 @Component({
   selector: 'app-student-form-page',
-  imports: [ReactiveFormsModule, PageHero],
+  imports: [ReactiveFormsModule, PageHero, AddressFields],
   templateUrl: './student-form-page.html',
   styleUrl: './student-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,10 +41,7 @@ export class StudentFormPage implements OnInit {
     email: ['', Validators.email],
     nationality: ['Indian'],
     aadhaar: [''],
-    address: ['', Validators.required],
-    city: ['', Validators.required],
-    state: ['Maharashtra', Validators.required],
-    pinCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+    address: createAddressForm(this.fb.nonNullable),
     skillLevel: ['Beginner', Validators.required],
     program: ['', Validators.required],
     coach: [''],
@@ -84,10 +83,7 @@ export class StudentFormPage implements OnInit {
         nationality: student.nationality ?? 'Indian',
         aadhaar: student.aadhaar ?? '',
         skillLevel: student.skillLevel,
-        address: student.address ?? '',
-        city: student.city ?? '',
-        state: student.state ?? 'Maharashtra',
-        pinCode: student.pinCode ?? '',
+        address: addressFromDatabase(student.address),
         joiningDate: student.joinedOn,
         program: student.batchId ?? '',
         coach: student.coachId ?? '',
@@ -124,9 +120,6 @@ export class StudentFormPage implements OnInit {
         nationality: value.nationality,
         aadhaar: value.aadhaar,
         address: value.address,
-        city: value.city,
-        state: value.state,
-        pinCode: value.pinCode,
         skillLevel: value.skillLevel,
         batchId: value.program,
         joinedOn: value.joiningDate,

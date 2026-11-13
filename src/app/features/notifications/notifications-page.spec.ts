@@ -13,7 +13,7 @@ async function setup(list:()=>Promise<unknown[]>,data:Record<string,unknown>={})
     const term=(args[6] as any)?.columns?.cf_templateKey;
     return !term || String(row['template_key']).includes(term);
   });return {rows,total:rows.length};});
-  await TestBed.configureTestingModule({imports:[NotificationsPage],providers:[provideRouter([]),{provide:NotificationsService,useValue:{page,counts:async()=>({all:1,delivered:1,pending:0,failed:0}),deliveryAction:vi.fn().mockResolvedValue({channels:['in_app']})}},{provide:AuthService,useValue:{role:()=> 'admin'}},{provide:ActivatedRoute,useValue:{snapshot:{data},queryParamMap:of(convertToParamMap({channel:data['notificationChannel'],status:data['notificationStatus']}))}}]}).compileComponents();
+  await TestBed.configureTestingModule({imports:[NotificationsPage],providers:[provideRouter([]),{provide:NotificationsService,useValue:{page,counts:async()=>({all:1,delivered:1,pending:0,failed:0,sent:0}),deliveryAction:vi.fn().mockResolvedValue({channels:['in_app']})}},{provide:AuthService,useValue:{role:()=> 'admin'}},{provide:ActivatedRoute,useValue:{snapshot:{data},queryParamMap:of(convertToParamMap({channel:data['notificationChannel'],status:data['notificationStatus']}))}}]}).compileComponents();
   const fixture:ComponentFixture<NotificationsPage>=TestBed.createComponent(NotificationsPage);fixture.detectChanges();await fixture.whenStable();await new Promise(resolve=>setTimeout(resolve,0));fixture.detectChanges();return {fixture,page};
 }
 describe('NotificationsPage',()=>{
@@ -99,6 +99,7 @@ describe('NotificationsPage',()=>{
     expect(fixture.nativeElement.textContent).toContain('delivered');
     expect(fixture.nativeElement.textContent).toContain('Notifications Management');
     expect(fixture.nativeElement.querySelector('a[href="/notifications/templates"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.notification-metrics app-summary-metric-card')).toHaveLength(5);
   });
   it('shows check-in and check-out attendance notifications in the activity feed',async()=>{
     const {fixture}=await setup(vi.fn().mockResolvedValue([

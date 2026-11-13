@@ -32,8 +32,10 @@
                 (sortChange)="sortColumn($event)">Coach</app-sortable-header></th>
             <th><app-sortable-header sortKey="cf_specialization" [activeSort]="sortBy()" [direction]="sortDirection()"
                 (sortChange)="sortColumn($event)">Specialization</app-sortable-header></th>
-            <th><app-sortable-header sortKey="cf_contact" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Contact</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_phone" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Phone</app-sortable-header></th>
+            <th><app-sortable-header sortKey="cf_email" [activeSort]="sortBy()" [direction]="sortDirection()"
+                (sortChange)="sortColumn($event)">Email</app-sortable-header></th>
             <th><app-sortable-header sortKey="cf_experience" [activeSort]="sortBy()" [direction]="sortDirection()"
                 (sortChange)="sortColumn($event)">Experience</app-sortable-header></th>
             <th><app-sortable-header sortKey="cf_qualification" [activeSort]="sortBy()" [direction]="sortDirection()"
@@ -49,8 +51,10 @@
             <th><app-column-filter label="specialization" type="search"
                 [value]="columns.values()['specialization'] || ''" (changed)="columns.set('specialization',$event)" />
             </th>
-            <th><app-column-filter label="contact" type="search" [value]="columns.values()['contact'] || ''"
-                (changed)="columns.set('contact',$event)" /></th>
+            <th><app-column-filter label="phone" type="search" [value]="columns.values()['phone'] || ''"
+                (changed)="columns.set('phone',$event)" /></th>
+            <th><app-column-filter label="email" type="search" [value]="columns.values()['email'] || ''"
+                (changed)="columns.set('email',$event)" /></th>
             <th><app-column-filter label="experience" type="number" [value]="columns.values()['experience'] || ''"
                 (changed)="columns.set('experience',$event)" /></th>
             <th><app-column-filter label="qualification" type="search" [value]="columns.values()['qualification'] || ''"
@@ -63,7 +67,7 @@
         <tbody>
           @if (loadingCoaches()) {
           <tr>
-            <td colspan="8"><app-async-state title="Loading coaches..." /></td>
+            <td colspan="9"><app-async-state title="Loading coaches..." /></td>
           </tr>
           } @else {
           @for (coach of coaches(); track coach.id; let i = $index) {
@@ -80,10 +84,8 @@
               </button>
             </td>
             <td>{{ coach.specialization }}</td>
-            <td>
-              <span class="coach-contact"><span><i class="pi pi-phone"></i>+91 {{ coach.mobile }}</span><span><i
-                    class="pi pi-envelope"></i>{{ coachEmail(coach) }}</span></span>
-            </td>
+            <td><span class="coach-contact"><i class="pi pi-phone"></i>+91 {{ coach.mobile }}</span></td>
+            <td><span class="coach-contact"><i class="pi pi-envelope"></i>{{ coachEmail(coach) }}</span></td>
             <td>{{ coach.experienceYears ?? 0 }} years</td>
             <td>{{ coach.qualification || 'Not provided' }}</td>
             <td>
@@ -100,7 +102,7 @@
           </tr>
           } @empty {
           <tr>
-            <td colspan="8">@if (!error()) { <app-async-state kind="empty" title="No matching coaches." /> }</td>
+            <td colspan="9">@if (!error()) { <app-async-state kind="empty" title="No matching coaches." /> }</td>
           </tr>
           }
           }

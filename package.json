@@ -13,6 +13,7 @@
     "test:notifications:db": "node scripts/test-notification-db.mjs",
     "test:user-access:db": "node scripts/test-user-access-db.mjs",
     "test:role-catalog:db": "node scripts/test-role-catalog-db.mjs",
+    "test:address:db": "node scripts/test-address-db.mjs",
     "test:notifications:live": "node scripts/verify-notification-live.mjs",
     "test:batch:live": "node scripts/verify-batch-live.mjs",
     "test:e2e": "playwright test",

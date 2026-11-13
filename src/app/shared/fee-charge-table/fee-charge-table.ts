@@ -32,6 +32,7 @@ export interface FeeChargeTableRow {
   template: `
     @if (showTools) {
       <app-table-tools title="Fees" [table]="chargeTable" [total]="total">
+        <ng-content select="[table-actions]" />
         <button type="button" (click)="resetFilters.emit()">Reset filters</button>
       </app-table-tools>
     } @else {
@@ -55,7 +56,7 @@ export interface FeeChargeTableRow {
   `,
   styles: [`
     :host { display:block; }
-    .table-tools-actions { position:absolute; top:-58px; right:20px; display:flex; justify-content:flex-end; padding:0; }
+    .table-tools-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:.5rem; padding:0; }
     .table-tools-actions button { display:inline-flex; align-items:center; gap:.45rem; border:1px solid #d8e1db; border-radius:8px; background:#fff; color:#176536; padding:.55rem .8rem; font-weight:600; }
     .row-actions { display:flex; align-items:center; justify-content:center; gap:.35rem; white-space:nowrap; }
     .row-actions button { display:inline-grid; place-items:center; width:34px; height:34px; padding:0; border:1px solid #d8e1db; border-radius:8px; background:#fff; color:#176536; }

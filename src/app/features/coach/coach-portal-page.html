@@ -6,6 +6,9 @@
   <app-page-hero [title]="$any(view() === 'dashboard' ? vm.coach['full_name'] : title())" [subtitle]="heroSubtitle()"
     [breadcrumbs]="heroBreadcrumbs()" [eyebrow]="view() === 'dashboard' ? 'Good day,' : ''"
     quote="Good coaches build great players." [brandName]="academyPreferences.value().academy_name" (breadcrumbSelected)="$event === 'Dashboard' && go('/coach/dashboard')" />
+  @if (showAttendanceNavigation()) {
+  <app-attendance-view-navigation [coachMode]="true" />
+  }
 
   @if (batchesLoading()) { <app-async-state title="Loading assigned batches…" /> }
   @if (batchesError()) { <p class="message error" role="alert">Batches: {{ batchesError() }}</p> }
@@ -1428,6 +1431,84 @@
   </section>
   }
   @case ('profile') {
+  @if (profileEditing()) {
+  <form class="coach-profile-edit-form" (submit)="$event.preventDefault(); saveProfile()">
+    <main>
+      <section class="card edit-personal">
+        <h2><i aria-hidden="true" class="pi pi-user"></i>Personal information</h2>
+        <div class="edit-fields">
+          <label>Full name<input readonly [value]="$any(vm.coach['full_name'] || '')" /></label>
+          <label>Employee code<input readonly [value]="$any(vm.coach['employee_code'] || '')" /></label>
+          <label>Date of birth<input readonly [value]="($any(vm.coach['date_of_birth']) | date: 'dd-MM-yyyy') || 'Not provided'" /></label>
+          <label>Status<input readonly [value]="$any(vm.coach['status'] || 'Not provided')" /></label>
+          <label>Phone number *
+            <input type="tel" autocomplete="tel" inputmode="tel" [value]="profilePhone()"
+              (input)="profilePhone.set($any($event.target).value)" placeholder="Enter phone number" />
+          </label>
+          <label>Email address<input readonly [value]="$any(vm.coach['email'] || 'Not provided')" /></label>
+        </div>
+        <p class="edit-managed-note">
+          <i aria-hidden="true" class="pi pi-info-circle"></i>
+          Name, date of birth, employee code, email and status are managed by the academy.
+        </p>
+      </section>
+
+      <section class="card edit-professional">
+        <h2><i aria-hidden="true" class="pi pi-briefcase"></i>Professional information</h2>
+        <div class="edit-fields">
+          <label>Role<input readonly value="Academy coach" /></label>
+          <label>Experience<input readonly [value]="$any((vm.coach['experience_years'] || 0) + ' years')" /></label>
+          <label>Qualification<input readonly [value]="$any(vm.coach['qualification'] || 'Not provided')" /></label>
+          <label>Specialization<input readonly [value]="coachSpecializations(vm.coach)" /></label>
+          <label class="edit-biography">Biography
+            <textarea readonly rows="2">{{ vm.coach['biography'] || 'Not provided' }}</textarea>
+          </label>
+        </div>
+      </section>
+
+      @if (actionMessage()) {
+      <p class="edit-profile-message" role="alert">{{ actionMessage() }}</p>
+      }
+
+      <footer>
+        <button type="button" [disabled]="submitting()" (click)="cancelProfileEdit()">Cancel</button>
+        <button type="submit" class="edit-profile-primary" [disabled]="submitting()">
+          <i aria-hidden="true" [class]="submitting() ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
+          {{ submitting() ? 'Saving...' : 'Update profile' }}
+        </button>
+      </footer>
+    </main>
+
+    <aside>
+      <section class="card edit-photo">
+        <h2><i aria-hidden="true" class="pi pi-image"></i>Coach photo</h2>
+        <label class="edit-photo-upload" [class.has-photo]="profilePhotoPreview() || vm.coach['photo_url']">
+          @if (profilePhotoPreview() || vm.coach['photo_url']) {
+          <img [src]="profilePhotoPreview() || $any(vm.coach['photo_url'])" [alt]="$any(vm.coach['full_name'])" />
+          } @else {
+          <i aria-hidden="true" class="pi pi-camera"></i>
+          }
+          <strong>{{ profilePhoto() ? 'Change coach photo' : 'Upload coach photo' }}</strong>
+          <small>JPG, PNG or WebP up to 5 MB</small>
+          <b>Choose file</b>
+          <input type="file" accept="image/jpeg,image/png,image/webp" [disabled]="submitting()"
+            (change)="chooseProfilePhoto($event)" />
+        </label>
+        @if (profilePhoto()) {
+        <p class="edit-photo-name">{{ profilePhoto()?.name }}</p>
+        }
+      </section>
+
+      <section class="card edit-coach-info">
+        <h2><i aria-hidden="true" class="pi pi-info-circle"></i>Profile details</h2>
+        <p>Your coach profile is linked to your academy account.</p>
+        <div><span>Academy</span><strong>{{ academyPreferences.value().academy_name }}</strong></div>
+        <div><span>Joined</span><strong>{{ $any(vm.coach['created_at']) | date: 'dd MMM yyyy' }}</strong></div>
+        <div><span>Assigned batches</span><strong>{{ vm.batches.length }}</strong></div>
+      </section>
+    </aside>
+  </form>
+  } @else {
   <section class="card coach-profile-hero">
     <div class="coach-photo-block">
       <div class="coach-profile-photo">
@@ -1437,9 +1518,6 @@
         {{ initials($any(vm.coach['full_name'])) }}
         }
       </div>
-      <button type="button" class="photo-edit" aria-label="Change profile photo" (click)="beginProfileEdit()">
-        <i aria-hidden="true" class="pi pi-camera"></i>
-      </button>
     </div>
     <div class="coach-profile-identity">
       <h2>
@@ -1458,9 +1536,11 @@
           {{ $any(vm.coach['created_at']) | date: 'dd MMM yyyy' }}</span>
       </div>
     </div>
-    <button class="profile-edit-action" (click)="beginProfileEdit()">
+    @if (!profileEditing()) {
+    <button type="button" class="profile-edit-action" (click)="beginProfileEdit()">
       <i aria-hidden="true" class="pi pi-pencil"></i> Edit profile
     </button>
+    }
     <aside class="coach-profile-metrics">
       <div>
         <i aria-hidden="true" class="pi pi-users"></i><strong>{{ vm.batches.length }}</strong><span>Batches</span><small>Assigned</small>
@@ -1476,37 +1556,8 @@
     </aside>
   </section>
 
-  @if (profileEditing()) {
-  <section class="card profile-edit-form" aria-labelledby="coach-profile-edit-title">
-    <h2 id="coach-profile-edit-title">Update contact information</h2>
-    <label>Phone number
-      <input type="tel" autocomplete="tel" [value]="profilePhone()"
-        (input)="profilePhone.set($any($event.target).value)" /></label>
-    <label>Profile photo
-      <input type="file" accept="image/jpeg,image/png,image/webp" (change)="chooseProfilePhoto($event)" /></label>
-    <div>
-      <button type="button" (click)="profileEditing.set(false)">Cancel</button>
-      <button type="button" [disabled]="submitting()" (click)="saveProfile()">
-        {{ submitting() ? 'Saving…' : 'Save profile' }}
-      </button>
-    </div>
-    @if (actionMessage()) {
-    <p class="message" role="status">{{ actionMessage() }}</p>
-    }
-  </section>
-  }
-
-  <nav class="card coach-profile-tabs" aria-label="Profile sections">
-    <button [class.active]="profileTab() === 'personal'" (click)="profileTab.set('personal')"><i aria-hidden="true"
-        class="pi pi-user"></i><span>Personal information</span></button><button [class.active]="profileTab() === 'coaching'"
-      (click)="profileTab.set('coaching')"><i aria-hidden="true" class="pi pi-briefcase"></i><span>Coaching details</span></button><button
-      [class.active]="profileTab() === 'preferences'" (click)="profileTab.set('preferences')"><i aria-hidden="true"
-        class="pi pi-sliders-h"></i><span>Preferences</span></button><button [class.active]="profileTab() === 'security'"
-      (click)="profileTab.set('security')"><i aria-hidden="true" class="pi pi-lock"></i><span>Security</span></button>
-  </nav>
-
   <section class="coach-profile-grid">
-    <app-ui-card class="profile-personal" title="Personal information" [hidden]="profileTab() !== 'personal'">
+    <app-ui-card class="profile-personal" title="Personal information">
       <div class="profile-fields">
         <div class="profile-field">
           <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-user"></i></span>
@@ -1530,7 +1581,13 @@
         </div>
         <div class="profile-field">
           <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-id-card"></i></span>
-          <span class="profile-field-copy"><small>Employee code</small><strong>{{ vm.coach['employee_code'] }}</strong></span>
+          <span class="profile-field-copy"><small>Employee code</small><strong>{{ vm.coach['employee_code'] || 'Not provided' }}</strong></span>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-calendar-plus"></i></span>
+          <span class="profile-field-copy"><small>Joined academy</small><strong>{{
+              ($any(vm.coach['created_at']) | date: 'dd MMM yyyy') || 'Not provided'
+              }}</strong></span>
         </div>
         <div class="profile-field">
           <span class="profile-field-icon"><i aria-hidden="true" class="pi pi-check-circle"></i></span>
@@ -1539,7 +1596,7 @@
         </div>
       </div>
     </app-ui-card>
-    <div class="coach-profile-center" [hidden]="profileTab() !== 'coaching'">
+    <div class="coach-profile-center">
       <article class="card coaching-information">
         <header>
           <h2>Coaching information</h2>
@@ -1555,37 +1612,7 @@
           <dd>{{ vm.coach['qualification'] || 'Not provided' }}</dd>
         </dl>
       </article>
-      <article class="card coach-qualifications">
-        <header>
-          <h2>Qualifications & certifications</h2>
-        </header>
-        @if (vm.coach['qualification']) {
-        <div>
-          <i aria-hidden="true" class="pi pi-verified"></i><span><strong>{{ vm.coach['qualification'] }}</strong><small>Professional
-              qualification</small></span>
-        </div>
-        }
-        @for (
-        item of $any(vm.coach['coach_specializations']);
-        track item['id'] || item['specialization']
-        ) {
-        <div>
-          <i aria-hidden="true" class="pi pi-star"></i><span><strong>{{ item['specialization'] }}</strong><small>Coaching
-              specialization</small></span>
-        </div>
-        } @empty {
-        @if (!vm.coach['qualification']) {
-        <p class="empty">No qualifications have been added.</p>
-        }
-        }
-      </article>
     </div>
-    @if (profileTab() === 'preferences') {
-    <article class="card coaching-information profile-tab-panel"><header><h2>Preferences</h2></header><dl class="icon-details"><dt><i aria-hidden="true" class="pi pi-bell"></i>Notifications</dt><dd>Academy and attendance alerts enabled</dd><dt><i aria-hidden="true" class="pi pi-calendar"></i>Schedule</dt><dd>Local academy timezone</dd><dt><i aria-hidden="true" class="pi pi-language"></i>Language</dt><dd>English</dd></dl><button (click)="go('/coach/notifications')">Manage notifications</button></article>
-    }
-    @if (profileTab() === 'security') {
-    <article class="card coaching-information profile-tab-panel"><header><h2>Security</h2></header><p>Your password and active session are managed by the secure academy account service.</p><button (click)="go('/auth/change-password')"><i aria-hidden="true" class="pi pi-key"></i> Change password</button></article>
-    }
     <aside class="coach-profile-side">
       <article class="card profile-activity">
         <header>
@@ -1599,7 +1626,7 @@
               }}</small></span>
         </div>
         } @empty {
-        <p class="empty">No recent profile activity.</p>
+        <div class="profile-activity-empty"><i class="pi pi-history" aria-hidden="true"></i><strong>No recent profile activity</strong><small>Your academy updates will appear here.</small></div>
         }
       </article>
       <article class="card profile-quick-actions">
@@ -1619,10 +1646,14 @@
             <i aria-hidden="true" class="pi pi-question-circle"></i><span><strong>Help & support</strong><small>Contact the
                 academy</small></span>
           </button>
+          <button (click)="go('/auth/change-password')">
+            <i aria-hidden="true" class="pi pi-key"></i><span><strong>Change password</strong><small>Manage account security</small></span>
+          </button>
         </div>
       </article>
     </aside>
   </section>
+  }
   }
   @case ('support') {
 <app-academy-support />

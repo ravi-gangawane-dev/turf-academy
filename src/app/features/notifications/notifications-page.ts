@@ -293,7 +293,17 @@ export class NotificationsPage implements OnInit, OnDestroy {
   protected readonly total = signal(0);
   protected readonly error = signal('');
   protected readonly rows = this.records.asReadonly();
-  protected readonly counts = signal({ all: 0, delivered: 0, pending: 0, failed: 0 });
+  protected readonly counts = signal({ all: 0, delivered: 0, pending: 0, failed: 0, sent: 0 });
+  protected readonly metricCards = computed(() => {
+    const counts = this.counts();
+    return [
+      { label: 'Total alerts', value: counts.all, icon: 'pi-send', detail: 'Matching notification records', tone: 'blue' },
+      { label: 'Delivered', value: counts.delivered, icon: 'pi-check-circle', detail: 'Reached the recipient', tone: 'green' },
+      { label: 'In progress', value: counts.pending, icon: 'pi-clock', detail: 'Queued or processing', tone: 'orange' },
+      { label: 'Failed', value: counts.failed, icon: 'pi-exclamation-circle', detail: 'Needs attention', tone: 'red' },
+      { label: 'Sent', value: counts.sent, icon: 'pi-send', detail: 'Sent, awaiting delivery confirmation', tone: 'green' },
+    ] as const;
+  });
   private requestSequence = 0;
   protected readonly columns = createColumnFilters(
     () => {
@@ -472,7 +482,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
       this.error.set('From date must be on or before To date.');
       this.records.set([]);
       this.total.set(0);
-      this.counts.set({ all: 0, delivered: 0, pending: 0, failed: 0 });
+      this.counts.set({ all: 0, delivered: 0, pending: 0, failed: 0, sent: 0 });
       return Promise.resolve();
     }
     if (writeUrl && this.initialized) {
@@ -587,7 +597,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
       if (request === this.requestSequence) {
         this.records.set([]);
         this.total.set(0);
-        this.counts.set({ all: 0, delivered: 0, pending: 0, failed: 0 });
+        this.counts.set({ all: 0, delivered: 0, pending: 0, failed: 0, sent: 0 });
         this.error.set(
           error instanceof Error ? error.message : 'Notifications could not be loaded.',
         );

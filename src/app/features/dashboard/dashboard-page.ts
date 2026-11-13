@@ -1,6 +1,6 @@
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, of, startWith } from 'rxjs';
@@ -15,7 +15,7 @@ import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metr
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [PageHero, AsyncPipe, AcademyMoneyPipe, RecentActivity, SummaryMetricCard],
+  imports: [PageHero, AsyncPipe, DatePipe, AcademyMoneyPipe, RecentActivity, SummaryMetricCard],
   providers: [
     MockDashboardRepository,
     HttpDashboardRepository,
@@ -27,9 +27,10 @@ import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metr
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
-  protected chartHeight(value:number,values:readonly number[]):number{return Math.max(0,value/Math.max(1,...values)*100);}
-  protected attendanceValues(rows:readonly {count:number}[]):number[]{return rows.map(r=>Number(r.count));}
-  protected collectionValues(rows:readonly {amount:number}[]):number[]{return rows.map(r=>Number(r.amount));}
+  protected total(values: readonly number[]): number { return values.reduce((sum, value) => sum + value, 0); }
+  protected chartHeight(value: number, values: readonly number[]): number { return Math.max(0, value / Math.max(1, ...values) * 100); }
+  protected attendanceValues(rows: readonly { count: number }[]): number[] { return rows.map(r => Number(r.count)); }
+  protected collectionValues(rows: readonly { amount: number }[]): number[] { return rows.map(r => Number(r.amount)); }
   private readonly repository = inject(DASHBOARD_REPOSITORY);
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);

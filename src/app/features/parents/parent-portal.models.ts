@@ -1,5 +1,6 @@
 import { ParentDetailRecord } from '../../core/supabase/domain-services';
 import { StudentWorkspace } from '../students/student-list.service';
+import { Address } from '../../core/models/address.model';
 
 export interface ParentPortalRecord {
   readonly id?: string;
@@ -44,10 +45,7 @@ export interface ParentPortalRecord {
   readonly phone?: string | null;
   readonly experience_years?: number;
   readonly qualification?: string | null;
-  readonly formatted?: string;
-  readonly city?: string;
-  readonly state?: string;
-  readonly pinCode?: string;
+  readonly address?: Address;
   readonly receipt_number?: string;
   readonly storage_path?: string | null;
   readonly email?: string | null;

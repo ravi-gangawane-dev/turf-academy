@@ -14,7 +14,7 @@
           <p class="brand-kicker">{{ matrix().brand.name }}</p>
           <h1>Monthly Attendance Matrix</h1>
           <p class="brand-contact">
-            @if (matrix().brand.address) { <span>{{ matrix().brand.address }}</span> }
+            @if (matrix().brand.addressText) { <span>{{ matrix().brand.addressText }}</span> }
             @if (matrix().brand.phone) { <span>{{ matrix().brand.phone }}</span> }
             @if (matrix().brand.email) { <span>{{ matrix().brand.email }}</span> }
             @if (matrix().brand.registrationNumber) { <span>Reg. {{ matrix().brand.registrationNumber }}</span> }

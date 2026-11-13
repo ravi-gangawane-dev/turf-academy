@@ -13,7 +13,7 @@
         <p class="brand-kicker">{{ confirmation().brand.name }}</p>
         <h1>{{ title() }}</h1>
         <p class="brand-contact">
-          @if (confirmation().brand.address) { <span>{{ confirmation().brand.address }}</span> }
+          @if (confirmation().brand.addressText) { <span>{{ confirmation().brand.addressText }}</span> }
           @if (confirmation().brand.phone) { <span>{{ confirmation().brand.phone }}</span> }
           @if (confirmation().brand.email) { <span>{{ confirmation().brand.email }}</span> }
           @if (confirmation().brand.registrationNumber) { <span>Reg. {{ confirmation().brand.registrationNumber }}</span> }

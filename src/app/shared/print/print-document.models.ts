@@ -3,7 +3,7 @@ export interface PrintBrand {
   readonly name: string;
   readonly code: string;
   readonly logoUrl: string;
-  readonly address: string;
+  readonly addressText: string;
   readonly phone: string;
   readonly email: string;
   readonly currencyCode: string;

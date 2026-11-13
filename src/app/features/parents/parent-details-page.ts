@@ -27,10 +27,12 @@ import { printDateOnly, printProfileReference } from '../../shared/print/print-f
 interface ParentNotice { id: string; subject: string; body: string; channel: string; status: string; created_at: string; }
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ToastService } from '../../shared/toast/toast.service';
+import { formatAddress } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 @Component({
   selector: 'app-parent-details-page',
-  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, DatePipe, ReactiveFormsModule, RouterLink, PrintIdCardDialog],
+  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, DatePipe, ReactiveFormsModule, RouterLink, PrintIdCardDialog, AddressFields],
   templateUrl: './parent-details-page.html',
   styleUrl: './parent-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -121,10 +123,7 @@ export class ParentDetailsPage implements OnInit {
     const parent = this.parent();
     if (!parent) return null;
     const address = parent.address;
-    const addressLine =
-      [address?.formatted, address?.address, address?.city, address?.state, address?.pinCode]
-        .filter(Boolean)
-        .join(', ') || 'Not recorded';
+    const addressLine = formatAddress(address) || 'Not recorded';
     const linked = parent.student_parents ?? [];
     const linkedFields = linked.map((link) => ({
       label: link.student.full_name,
@@ -155,7 +154,7 @@ export class ParentDetailsPage implements OnInit {
       },
       {
         label: 'Residential address',
-        recorded: Boolean(address?.formatted || address?.address || address?.city),
+        recorded: Boolean(address?.line1 || address?.city || address?.state || address?.pinCode),
         detail: addressLine,
       },
       {
@@ -197,10 +196,11 @@ export class ParentDetailsPage implements OnInit {
         {
           title: 'Address',
           fields: [
-            { label: 'Address', value: address?.formatted || address?.address || 'Not recorded' },
+            { label: 'Address Line 1', value: address?.line1 || 'Not recorded' },
+            { label: 'Address Line 2', value: address?.line2 || 'Not recorded' },
             { label: 'City', value: address?.city || 'Not recorded' },
             { label: 'State', value: address?.state || 'Not recorded' },
-            { label: 'PIN code', value: address?.pinCode || address?.pin_code || 'Not recorded' },
+            { label: 'PIN Code', value: address?.pinCode || 'Not recorded' },
           ],
         },
         {
@@ -244,10 +244,6 @@ export class ParentDetailsPage implements OnInit {
     } finally {
       this.loading.set(false);
     }
-  }
-  protected addressPart(key: 'formatted' | 'city' | 'state' | 'pinCode'): string {
-    const address = this.parent()?.address;
-    return address?.[key] || (key === 'formatted' ? address?.['address'] : '') || 'Not provided';
   }
   protected preference(): string {
     return this.parent()?.['communication_preferences']?.['channel'] ?? 'Not provided';

@@ -172,7 +172,9 @@ export class SupabaseDashboardRepository implements DashboardRepository {
                 tone: 'blue' as const,
               },
             ]
-          : await this.staffMetrics();
+          : await this.staffMetrics(
+              attendance?.filter((row) => row.status !== 'absent').length ?? 0,
+            );
     const analytics = role === 'admin' || role === 'receptionist' ? await db.rpc('get_dashboard_analytics') : { data: null, error: null };
     if(analytics.error)throw analytics.error;
     const trends = analytics.data as { attendance: {day:string;count:number}[]; collections:{month:string;amount:number}[]; pendingFees: DashboardSummary['pendingFees'] } | null;
@@ -192,7 +194,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     };
   }
 
-  private async staffMetrics() {
+  private async staffMetrics(presentToday: number) {
     const db = this.supabase.requireClient();
     const tables = await Promise.all(
       ['students', 'coaches', 'batches', 'parents'].map((table) => {
@@ -229,6 +231,13 @@ export class SupabaseDashboardRepository implements DashboardRepository {
         detail: 'Parent profiles',
         icon: 'pi-heart',
         tone: 'green' as const,
+      },
+      {
+        label: 'Present today',
+        value: String(presentToday),
+        detail: 'Students checked in today',
+        icon: 'pi-check-circle',
+        tone: 'blue' as const,
       },
     ];
   }

@@ -29,6 +29,7 @@ import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 type ParentView =
   | 'children'
@@ -45,7 +46,7 @@ type ParentView =
 
 @Component({
   selector: 'app-parent-portal-page',
-  imports: [TableTools, PageHero, AcademySupport,DatePipe, AcademyMoneyPipe, Pagination, StatusBadge, AsyncState, SummaryMetricCard, SortableHeader],
+  imports: [TableTools, PageHero, AcademySupport,DatePipe, AcademyMoneyPipe, Pagination, StatusBadge, AsyncState, SummaryMetricCard, SortableHeader, AddressFields],
   templateUrl: './parent-portal-page.html',
   styleUrl: './parent-portal-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -355,10 +356,10 @@ export class ParentPortalPage implements OnInit, OnDestroy {
       student.bloodGroup,
       student.phone,
       student.email,
-      student.address,
-      student.city,
-      student.state,
-      student.pinCode,
+      student.address.line1,
+      student.address.city,
+      student.address.state,
+      student.address.pinCode,
       student.nationality,
       student.photoUrl,
     ];
@@ -381,16 +382,6 @@ export class ParentPortalPage implements OnInit, OnDestroy {
       support: 'Help & Support',
     };
     return titles[this.view];
-  }
-  protected addressText(value: unknown): string {
-    if (!value || typeof value !== 'object') return 'Not provided';
-    const address = value as ParentPortalRecord;
-    return (
-      [address['formatted'], address['city'], address['state'], address['pinCode']]
-        .map((part) => String(part ?? '').trim())
-        .filter(Boolean)
-        .join(', ') || 'Not provided'
-    );
   }
   protected go(path: string) {
     void this.router.navigateByUrl(path);

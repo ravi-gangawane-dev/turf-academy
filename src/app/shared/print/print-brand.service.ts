@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { AcademySettingsRecord, AcademySettingsService } from '../../core/supabase/domain-services';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { PrintBrand } from './print-document.models';
+import { formatAddress } from '../../core/models/address.model';
 
 /** Bundled artwork is only used when the academy has not uploaded its own logo. */
 export const FALLBACK_PRINT_LOGO = '/branding/turf-cricket-academy-logo.png';
@@ -33,7 +34,7 @@ export class PrintBrandService {
       name: clean(record?.academy_name) || clean(fallback.academy_name) || 'Academy',
       code: clean(record?.academy_code) || clean(fallback.academy_code),
       logoUrl: clean(record?.academy_logo_url) || FALLBACK_PRINT_LOGO,
-      address: clean(record?.address),
+      addressText: formatAddress(record?.address),
       phone: clean(record?.contact_phone),
       email: clean(record?.contact_email),
       currencyCode: clean(record?.currency_code) || clean(fallback.currency_code) || 'INR',

@@ -16,7 +16,7 @@ const parent: ParentDetailRecord = {
   whatsapp: '+91 98765 43212',
   email: 'ravi@example.com',
   occupation: 'Engineer',
-  address: { formatted: 'Kharadi, Pune' },
+  address: { line1: 'Kharadi', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   communication_preferences: { channel: 'whatsapp' },
   status: 'active',
   photo_path: null,

@@ -9,6 +9,7 @@ import { notificationDayRange } from './notification-time';
 import { loadPaymentBalances } from './payment-balances';
 import { readAllPages } from './read-all-pages';
 import { StorageService } from './storage.service';
+import { Address, addressFromDatabase } from '../models/address.model';
 
 abstract class TableService {
   protected readonly db = inject(DatabaseService);
@@ -41,10 +42,14 @@ export interface ParentWrite {
   readonly whatsapp?: string | null;
   readonly email?: string | null;
   readonly occupation?: string | null;
-  readonly address?: object;
+  readonly address?: Address;
   readonly status?: string;
   readonly communication_preferences?: object;
   readonly photo_path?: string | null;
+}
+export interface ParentSelfProfileFields {
+  readonly dateOfBirth: string | null;
+  readonly qualification: string | null;
 }
 export interface CoachWrite {
   readonly id?: string;
@@ -57,6 +62,7 @@ export interface CoachWrite {
   readonly experience_years?: number;
   readonly qualification?: string | null;
   readonly biography?: string | null;
+  readonly address?: Address;
   readonly status?: string;
   readonly photo_path?: string | null;
 }
@@ -520,7 +526,7 @@ export interface ParentDirectoryRecord {
   readonly whatsapp: string | null;
   readonly email: string | null;
   readonly occupation: string | null;
-  readonly address: Readonly<Record<string, string>> | null;
+  readonly address: Address | null;
   readonly status: 'active' | 'inactive';
   readonly created_at: string;
   readonly photo_path: string | null;
@@ -539,19 +545,16 @@ export interface ParentDetailRecord {
   readonly whatsapp: string | null;
   readonly email: string | null;
   readonly occupation: string | null;
-  readonly address: Readonly<{
-    formatted?: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    pinCode?: string;
-    pin_code?: string;
-  }>;
+  readonly address: Address;
   readonly communication_preferences: Readonly<{ channel?: string; contactTime?: string }>;
   readonly status: 'active' | 'inactive';
   readonly photo_path: string | null;
   readonly photo_url: string | null;
   readonly created_at: string;
+  readonly profile?: {
+    readonly date_of_birth: string | null;
+    readonly qualification: string | null;
+  } | null;
   readonly student_parents: readonly {
     readonly is_primary: boolean;
     readonly can_pick_up: boolean;
@@ -647,7 +650,10 @@ export class ParentsService extends TableService {
       .select('*, student_parents(student:students(*))')
       .order('full_name');
     this.fail('List parents', r.error);
-    return r.data ?? [];
+    return (r.data ?? []).map((row) => ({
+      ...row,
+      address: addressFromDatabase(row.address),
+    })) as unknown as ParentDirectoryRecord[];
   }
   async save(value: ParentWrite) {
     const r = await this.db.client.from('parents').upsert(value).select().single();
@@ -725,7 +731,10 @@ export class ParentsService extends TableService {
     const result = await query;
     this.fail('List parent directory page', result.error);
     return {
-      rows: (result.data ?? []) as unknown as ParentDirectoryRecord[],
+      rows: ((result.data ?? []) as unknown as readonly Record<string, unknown>[]).map((row) => ({
+        ...row,
+        address: addressFromDatabase(row['address']),
+      })) as unknown as ParentDirectoryRecord[],
       total: result.count ?? 0,
     };
   }
@@ -774,14 +783,15 @@ export class ParentsService extends TableService {
     const r = await this.db.client
       .from('parents')
       .select(
-        '*,student_parents(is_primary,can_pick_up,student:students(id,student_code,full_name,date_of_birth,phone,status,photo_path))',
+        '*,profile:profiles(date_of_birth,qualification),student_parents(is_primary,can_pick_up,student:students(id,student_code,full_name,date_of_birth,phone,status,photo_path))',
       )
       .eq('id', id)
       .single();
     this.fail('Get parent', r.error);
-    const data = r.data as unknown as Omit<ParentDetailRecord, 'photo_url'>;
+    const data = r.data as unknown as Omit<ParentDetailRecord, 'photo_url' | 'address'> & { address: unknown };
     return {
       ...data,
+      address: addressFromDatabase(data.address),
       photo_url: data['photo_path']
         ? await this.storage.signedUrl('parent-photos', data['photo_path'])
         : null,
@@ -832,7 +842,11 @@ export class ParentsService extends TableService {
     }
   }
 
-  async updateOwnProfile(value: ParentWrite, photo?: File | null) {
+  async updateOwnProfile(
+    value: ParentWrite,
+    photo?: File | null,
+    personalFields?: ParentSelfProfileFields,
+  ) {
     const user = await this.db.client.auth.getUser();
     this.fail('Get signed-in parent', user.error);
     if (!user.data.user) throw new Error('Get signed-in parent: session is unavailable.');
@@ -848,7 +862,16 @@ export class ParentsService extends TableService {
     try {
       if (photo) newPhotoPath = await this.storage.upload('parent-photos', current.data.id, photo);
       const result = await this.db.client.rpc('parent_update_own_profile', {
-        p_payload: { ...value, ...(newPhotoPath ? { photo_path: newPhotoPath } : {}) },
+        p_payload: {
+          ...value,
+          ...(personalFields
+            ? {
+                date_of_birth: personalFields.dateOfBirth,
+                qualification: personalFields.qualification,
+              }
+            : {}),
+          ...(newPhotoPath ? { photo_path: newPhotoPath } : {}),
+        },
       });
       this.fail('Update parent profile', result.error);
       if (newPhotoPath && oldPhotoPath && oldPhotoPath !== newPhotoPath)
@@ -2168,6 +2191,7 @@ export class FeesService extends TableService {
   async chargeSummary(): Promise<{
     readonly students: number;
     readonly total: number;
+    readonly collected: number;
     readonly pending: number;
     readonly overdue: number;
   }> {
@@ -2176,12 +2200,14 @@ export class FeesService extends TableService {
     const value = result.data as {
       students?: number;
       total?: number;
+      collected?: number;
       pending?: number;
       overdue?: number;
     } | null;
     return {
       students: Number(value?.students ?? 0),
       total: Number(value?.total ?? 0),
+      collected: Number(value?.collected ?? 0),
       pending: Number(value?.pending ?? 0),
       overdue: Number(value?.overdue ?? 0),
     };
@@ -2403,7 +2429,7 @@ export interface AcademySettingsRecord {
   readonly academy_logo_url: string;
   readonly contact_phone: string | null;
   readonly academy_description: string;
-  readonly address: string | null;
+  readonly address: Address;
   readonly timezone: string;
   readonly currency_code: string;
   readonly attendance_grace_minutes: number;
@@ -2432,8 +2458,10 @@ export class AcademySettingsService extends TableService {
   async get(): Promise<AcademySettingsRecord> {
     const r = await this.db.client.from('academy_settings').select('*').eq('id', true).single();
     this.fail('Load academy settings', r.error);
-    this.preferences.value.set(r.data as AcademySettingsRecord);
-    return r.data as AcademySettingsRecord;
+    const record = r.data as unknown as Omit<AcademySettingsRecord, 'address'> & { address: unknown };
+    const normalized = { ...record, address: addressFromDatabase(record.address) };
+    this.preferences.value.set(normalized);
+    return normalized;
   }
   async save(value: AcademySettingsRecord): Promise<AcademySettingsRecord> {
     const {
@@ -2674,10 +2702,10 @@ export class NotificationsService extends TableService {
       this.fail('Count notifications', r.error);
       return r.count ?? 0;
     };
-    const [all, delivered, pending, failed] = await Promise.all([
-      count(), count(['delivered']), count(['queued', 'sending']), count(['failed']),
+    const [all, delivered, pending, failed, sent] = await Promise.all([
+      count(), count(['delivered']), count(['queued', 'sending']), count(['failed']), count(['sent']),
     ]);
-    return { all, delivered, pending, failed };
+    return { all, delivered, pending, failed, sent };
   }
   async markRead(id: string): Promise<void> {
     const r = await this.db.client.rpc('parent_mark_notification_read', {

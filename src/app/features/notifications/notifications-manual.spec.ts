@@ -45,7 +45,7 @@ describe('Manual notification activity', () => {
             manualWhatsApp,
             deliveryAction,
             page: vi.fn(async () => ({ rows: [{ ...row }], total: 1 })),
-            counts: vi.fn().mockResolvedValue({ all: 1, delivered: 0, pending: 0, failed: 0 }),
+            counts: vi.fn().mockResolvedValue({ all: 1, delivered: 0, pending: 0, failed: 0, sent: 0 }),
           },
         },
       ],

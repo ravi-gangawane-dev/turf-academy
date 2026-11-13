@@ -18,7 +18,7 @@ const parentRecord = {
   whatsapp: '+919130451715',
   email: 'qa.parent@turf.local',
   occupation: null,
-  address: { formatted: '12 MG Road', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
+  address: { line1: '12 MG Road', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   photo_path: 'parent-1/photo.png',
   photo_url: 'https://cdn.example.com/parent.png',
 };
@@ -95,7 +95,7 @@ describe('Parent profile photo upload', () => {
       full_name: 'QA Parent',
       phone: '9130451715',
       whatsapp: '9130451715',
-      address: { city: 'Pune', pinCode: '411001' },
+      address: { line1: '12 MG Road', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
     });
     expect(photo).toBeInstanceOf(File);
     expect(photo!.name).toBe('avatar.png');

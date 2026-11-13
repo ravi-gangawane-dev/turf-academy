@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ParentsService } from '../../core/supabase/domain-services';
+import { addressFromDatabase, createAddressForm } from '../../core/models/address.model';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
@@ -14,10 +16,10 @@ const FIELD_LABELS: Record<string, string> = {
   phone: 'phone number (10 digits)',
   whatsapp: 'WhatsApp number (10 digits)',
   email: 'email address',
-  address: 'address',
-  city: 'city',
-  state: 'state',
-  pinCode: 'PIN code (6 digits)',
+  'address.line1': 'address line 1',
+  'address.city': 'city',
+  'address.state': 'state',
+  'address.pinCode': 'PIN code (6 digits)',
 };
 
 /** Keeps stored numbers that carry a country code (+91 / leading 0) editable in a 10-digit field. */
@@ -31,7 +33,7 @@ export function nationalPhone(value: string | null | undefined): string {
 
 @Component({
   selector: 'app-parent-profile-form-page',
-  imports: [PageHero, ReactiveFormsModule],
+  imports: [PageHero, ReactiveFormsModule, AddressFields],
   templateUrl: './parent-profile-form-page.html',
   styleUrl: './parent-profile-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,10 +56,7 @@ export class ParentProfileFormPage implements OnInit {
     whatsapp: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     email: ['', Validators.email],
     occupation: [''],
-    address: ['', Validators.required],
-    city: ['', Validators.required],
-    state: ['Maharashtra', Validators.required],
-    pinCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+    address: createAddressForm(this.fb.nonNullable),
   });
   async ngOnInit() {
     const profileId = this.auth.profile()?.id;
@@ -68,8 +67,8 @@ export class ParentProfileFormPage implements OnInit {
     }
     try {
       const parent = await this.parents.getByProfile(profileId);
-      const [firstName, ...lastName] = String(parent.full_name).split(/\s+/),
-        address = parent.address ?? {};
+      const [firstName, ...lastName] = String(parent.full_name).split(/\s+/);
+      const address = addressFromDatabase(parent.address);
       this.form.patchValue({
         firstName,
         lastName: lastName.join(' '),
@@ -78,10 +77,7 @@ export class ParentProfileFormPage implements OnInit {
         whatsapp: nationalPhone(parent.whatsapp ?? parent.phone),
         email: parent.email ?? '',
         occupation: parent.occupation ?? '',
-        address: address.formatted ?? address.address ?? '',
-        city: address.city ?? '',
-        state: address.state ?? 'Maharashtra',
-        pinCode: address.pinCode ?? address.pin_code ?? '',
+        address,
       });
       this.photoUrl.set(parent.photo_url);
     } catch (e) {
@@ -134,7 +130,7 @@ export class ParentProfileFormPage implements OnInit {
           whatsapp: v.whatsapp,
           email: v.email || null,
           occupation: v.occupation || null,
-          address: { formatted: v.address, city: v.city, state: v.state, pinCode: v.pinCode },
+          address: v.address,
         },
         this.photo,
       );

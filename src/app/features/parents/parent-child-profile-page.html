@@ -97,7 +97,7 @@
             <dt>Email</dt>
             <dd>{{ workspace.student.email || 'Not provided' }}</dd>
             <dt>Address</dt>
-            <dd>{{ workspace.student.address || 'Not provided' }}</dd>
+            <dd><app-address-fields [value]="workspace.student.address" /></dd>
             <dt>Status</dt>
             <dd>
               <app-status-badge [status]="$any(workspace.student.status)" />

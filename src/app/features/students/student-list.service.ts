@@ -4,6 +4,7 @@ import { PostgrestError } from '@supabase/supabase-js';
 import { StorageService } from '../../core/supabase/storage.service';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { loadPaymentBalances, sumMoney } from '../../core/supabase/payment-balances';
+import { Address, addressFromDatabase, addressValue } from '../../core/models/address.model';
 
 export type StudentListStatus = 'active' | 'inactive' | 'graduated';
 export interface StudentListItem {
@@ -24,8 +25,7 @@ export interface StudentListItem {
   readonly parentName: string | null;
   readonly parentPhone: string | null;
   readonly joinDate: string;
-  readonly address: string | null;
-  readonly pinCode: string | null;
+  readonly address: Address;
 }
 export interface StudentSummary {
   readonly total: number;
@@ -53,10 +53,7 @@ export interface StudentFormRecord {
   readonly skillLevel: string;
   readonly phone: string | null;
   readonly email: string | null;
-  readonly address: string | null;
-  readonly city: string | null;
-  readonly state: string | null;
-  readonly pinCode: string | null;
+  readonly address: Address;
   readonly joinedOn: string;
   readonly photoUrl: string | null;
   readonly bloodGroup: string | null;
@@ -91,10 +88,7 @@ export interface StudentMutation {
   readonly email: string;
   readonly nationality: string;
   readonly aadhaar: string;
-  readonly address: string;
-  readonly city: string;
-  readonly state: string;
-  readonly pinCode: string;
+  readonly address: Address;
   readonly skillLevel: string;
   readonly batchId: string;
   readonly joinedOn: string;
@@ -116,9 +110,6 @@ export type ParentChildProfileMutation = Pick<
   | 'nationality'
   | 'aadhaar'
   | 'address'
-  | 'city'
-  | 'state'
-  | 'pinCode'
   | 'photo'
 >;
 
@@ -160,10 +151,7 @@ interface StudentRpcPayload {
   readonly email: string | null;
   readonly nationality: string;
   readonly aadhaar: string | null;
-  readonly address: string;
-  readonly city: string;
-  readonly state: string;
-  readonly pin_code: string;
+  readonly address: Address;
   readonly skill_level: string;
   readonly batch_id: string | null;
   readonly joined_on: string;
@@ -191,8 +179,7 @@ interface StudentListDbRow {
   parent_name: string | null;
   parent_phone: string | null;
   join_date: string;
-  address: string | null;
-  pin_code: string | null;
+  address: Address;
   total_count: number;
 }
 
@@ -206,7 +193,7 @@ export class StudentListService {
     const studentResult = await client
       .from('students')
       .select(
-        'id,student_code,full_name,date_of_birth,gender,skill_level,phone,email,address,joined_on,photo_url,photo_path,status',
+        'id,student_code,full_name,date_of_birth,gender,skill_level,phone,email,address,nationality,aadhaar,joined_on,photo_url,photo_path,status',
       )
       .eq('id', id)
       .single();
@@ -251,7 +238,6 @@ export class StudentListService {
       coachId = coachResult.data?.coach_id ?? null;
     }
 
-    const address = (data.address ?? {}) as Record<string, string>;
     const parentRelation = parentResult.data?.parents as unknown as {
       full_name: string;
       relation: string | null;
@@ -269,17 +255,14 @@ export class StudentListService {
       skillLevel: data.skill_level,
       phone: data.phone,
       email: data.email,
-      address: address['formatted'] ?? address['address'] ?? address['line1'] ?? null,
-      city: address['city'] ?? null,
-      state: address['state'] ?? null,
-      pinCode: address['pinCode'] ?? address['pin_code'] ?? address['postal_code'] ?? null,
+      address: addressFromDatabase(data.address),
       joinedOn: enrollment?.valid_from ?? data.joined_on,
       photoUrl: data.photo_path
         ? await this.storage.signedUrl('student-photos', data.photo_path, 3600)
         : data.photo_url,
       bloodGroup: medicalResult.data?.blood_group ?? null,
-      nationality: address['nationality'] ?? null,
-      aadhaar: address['aadhaar'] ?? null,
+      nationality: data.nationality ?? null,
+      aadhaar: data.aadhaar ?? null,
       batchId: enrollment?.batch_id ?? null,
       coachId,
       parentName: parentRelation?.full_name ?? null,
@@ -323,8 +306,7 @@ export class StudentListService {
       parentName: row.parent_name,
       parentPhone: row.parent_phone,
       joinDate: row.join_date,
-      address: row.address,
-      pinCode: row.pin_code,
+      address: addressFromDatabase(row.address),
     }));
     const idsWithoutPhotos = rows.filter((row) => !row.photoUrl).map((row) => row.id);
     if (idsWithoutPhotos.length) {
@@ -475,7 +457,7 @@ export class StudentListService {
     let photoPath: string | null = null;
     try {
       if (input.photo) photoPath = await this.storage.upload('student-photos', id, input.photo);
-      const { data, error } = await this.supabase.requireClient().rpc('create_student_profile', {
+      const { data, error } = await this.supabase.requireClient().rpc('create_student_profile_v2', {
         p_payload: this.payload(input, { id, photo_path: photoPath }),
       });
       if (error) throw this.toError('Create student', error);
@@ -494,7 +476,7 @@ export class StudentListService {
     try {
       if (input.photo) newPhotoPath = await this.storage.upload('student-photos', id, input.photo);
       const extra = newPhotoPath === undefined ? {} : { photo_path: newPhotoPath };
-      const { error } = await client.rpc('update_student_profile', {
+      const { error } = await client.rpc('update_student_profile_v2', {
         p_student_id: id,
         p_payload: this.payload(input, extra),
       });
@@ -538,7 +520,7 @@ export class StudentListService {
     let newPhotoPath: string | undefined;
     try {
       if (input.photo) newPhotoPath = await this.storage.upload('student-photos', id, input.photo);
-      const { error } = await client.rpc('parent_update_linked_student', {
+      const { error } = await client.rpc('parent_update_linked_student_v2', {
         p_student_id: id,
         p_payload: {
           full_name: input.fullName.trim(),
@@ -549,10 +531,7 @@ export class StudentListService {
           email: input.email.trim() || null,
           nationality: input.nationality,
           aadhaar: input.aadhaar.trim() || null,
-          address: input.address.trim(),
-          city: input.city.trim(),
-          state: input.state,
-          pin_code: input.pinCode.trim(),
+          address: addressValue(input.address),
           ...(newPhotoPath ? { photo_path: newPhotoPath } : {}),
         },
       });
@@ -636,10 +615,7 @@ export class StudentListService {
       email: input.email.trim() || null,
       nationality: input.nationality,
       aadhaar: input.aadhaar.trim() || null,
-      address: input.address.trim(),
-      city: input.city.trim(),
-      state: input.state,
-      pin_code: input.pinCode.trim(),
+      address: addressValue(input.address),
       skill_level: input.skillLevel,
       batch_id: input.batchId || null,
       joined_on: input.joinedOn,

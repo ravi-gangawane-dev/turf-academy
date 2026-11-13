@@ -20,4 +20,9 @@ describe('AttendancePage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('renders five summary cards including checked-out students', () => {
+    expect(fixture.nativeElement.querySelectorAll('.attendance-metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.textContent).toContain('Checked Out');
+  });
 });

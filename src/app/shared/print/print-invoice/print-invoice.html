@@ -10,7 +10,7 @@
       <h1>Fee Invoice</h1>
       @if (hasContact()) {
         <p class="brand-contact">
-          @if (invoice().brand.address) { <span>{{ invoice().brand.address }}</span> }
+          @if (invoice().brand.addressText) { <span>{{ invoice().brand.addressText }}</span> }
           @if (invoice().brand.phone) { <span>{{ invoice().brand.phone }}</span> }
           @if (invoice().brand.email) { <span>{{ invoice().brand.email }}</span> }
           @if (invoice().brand.registrationNumber) { <span>Reg. {{ invoice().brand.registrationNumber }}</span> }

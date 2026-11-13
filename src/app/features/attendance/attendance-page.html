@@ -14,14 +14,10 @@
     (action)="store.loadAttendanceWorkspace()" />
   }
   <section class="attendance-metrics">
-    <app-summary-metric-card label="Total Students" [value]="metrics().total" icon="pi-users"
-      hint="Active enrollments" />
-    <app-summary-metric-card label="Present Today" [value]="metrics().present" icon="pi-check-circle"
-      [hint]="metrics().rate + '%'" tone="green" />
-    <app-summary-metric-card label="Absent / Unmarked" [value]="metrics().absent" icon="pi-user-minus"
-      [hint]="percentage(metrics().absent) + '%'" tone="orange" />
-    <app-summary-metric-card label="Late Today" [value]="metrics().late" icon="pi-clock" [hint]="metrics().late + '%'"
-      tone="purple" />
+    @for (metric of metricCards(); track metric.label) {
+    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
+      [tone]="metric.tone" />
+    }
   </section>
   <section class="dashboard-row bottom-row">
     <article class="dash-card recent">
@@ -41,14 +37,8 @@
       }
       }
     </article>
-    <article class="dash-card quick-attendance">
-      <h2>Quick Actions</h2>
-      <div>
-        <a routerLink="/attendance/check-in-out"><i class="pi pi-qrcode"></i>Check In / Check Out</a><a
-          routerLink="/attendance/history"><i class="pi pi-history"></i>Attendance History &amp; Corrections</a><a
-          routerLink="/attendance/calendar"><i class="pi pi-calendar"></i>Calendar View</a>
-      </div>
-    </article>@if (whatsappData(); as data) {
+
+    @if (whatsappData(); as data) {
     <section class="whatsapp-action-card">
       <h3>Notify Parent</h3>
       <p>WhatsApp message prepared for:</p>
@@ -58,5 +48,5 @@
       </button>
     </section>
     }
-</section>
+  </section>
 </div>

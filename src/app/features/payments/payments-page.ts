@@ -105,7 +105,17 @@ export class PaymentsPage implements OnInit {
   protected readonly recordDialogOpen = signal(false);
   protected readonly filteredRows = computed(() => this.rows());
   protected readonly pageRows = computed(() => this.rows());
-  protected readonly metrics = signal({ total: 0, transactions: 0, receipts: 0, refunded: 0 });
+  protected readonly metrics = signal({ total: 0, transactions: 0, receipts: 0, refunded: 0, openCharges: 0 });
+  protected readonly metricCards = computed(() => {
+    const metrics = this.metrics();
+    return [
+      { label: 'Net collection', value: this.preferences.money(metrics.total / 100), icon: 'pi-wallet', detail: 'After refunds', tone: 'green' },
+      { label: 'Transactions', value: metrics.transactions, icon: 'pi-arrow-right-arrow-left', detail: '', tone: 'blue' },
+      { label: 'Receipts', value: metrics.receipts, icon: 'pi-receipt', detail: '', tone: 'purple' },
+      { label: 'Amount refunded', value: this.preferences.money(metrics.refunded / 100), icon: 'pi-undo', detail: '', tone: 'orange' },
+      { label: 'Open charges', value: metrics.openCharges, icon: 'pi-clock', detail: 'Charges with an outstanding balance', tone: 'amber' },
+    ] as const;
+  });
   protected readonly canRefund = computed(() => this.auth.role() === 'admin');
   protected readonly paymentDialogCharges = computed(() => this.charges().map((charge) => ({ ...charge, balanceMinor: charge.balancePaise })));
   protected readonly form = this.fb.nonNullable.group({
@@ -364,7 +374,12 @@ export class PaymentsPage implements OnInit {
       ]);
       if (loadId !== this.loadId) return;
       this.total.set(paymentPage.total);
-      this.metrics.set({ ...paymentPage.metrics, total: Math.round(paymentPage.metrics.total * 100), refunded: Math.round(paymentPage.metrics.refunded * 100) });
+      this.metrics.set({
+        ...paymentPage.metrics,
+        total: Math.round(paymentPage.metrics.total * 100),
+        refunded: Math.round(paymentPage.metrics.refunded * 100),
+        openCharges: charges.filter((row) => Number(row.balance_amount) > 0).length,
+      });
       this.rows.set(
         paymentPage.rows.map((row) => {
           const student = this.paymentStudent(row);

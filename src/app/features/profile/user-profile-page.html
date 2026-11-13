@@ -1,0 +1,397 @@
+<main class="profile-page">
+  <app-page-hero title="My Profile" subtitle="Manage your account, personal information and preferences."
+    [breadcrumbs]="breadcrumbs()">
+  </app-page-hero>
+
+
+  @if (loading()) {
+  <app-ui-card class="loading-card" role="status">
+    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+    Loading your profile…
+  </app-ui-card>
+  } @else {
+  <div class="profile-layout">
+    <app-ui-card class="identity-card" [fillHeight]="true">
+      <div class="identity">
+        <app-profile-photo-upload label="Profile" [photoUrl]="avatarUrl()" [avatar]="true" [initials]="initials()"
+          [saving]="saving()" [saveAction]="saveAvatarPhotoAction" (fileSelected)="stagePhoto($event)" />
+        <div class="identity-copy">
+          <h2>{{ profile()?.fullName }}</h2>
+          <span class="role-badge">{{ roleLabel() }}</span>
+          @if (role() === 'admin') {
+          <span class="academy-name">{{ academyName() }}</span>
+          }
+        </div>
+        <div class="account-status" [attr.data-status]="profile()?.status"
+          [attr.aria-label]="'Account status: ' + (profile()?.status | titlecase)" role="status">
+          <span class="status-dot"></span>
+          {{ profile()?.status | titlecase }}
+        </div>
+      </div>
+
+      <div class="identity-contact">
+        @if (contactEmail()) {
+        <div class="contact-row">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span>{{ contactEmail() }}</span>
+        </div>
+        }
+        @if (profile()?.phone) {
+        <div class="contact-row">
+          <i class="pi pi-phone" aria-hidden="true"></i>
+          <span>{{ profile()?.phone }}</span>
+        </div>
+        }
+        <div class="contact-row">
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+          <span>{{ location() }}</span>
+        </div>
+        @if (joinedDate()) {
+        <div class="contact-row">
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          <span>Joined {{ joinedDate() }}</span>
+        </div>
+        }
+      </div>
+    </app-ui-card>
+
+    <app-ui-card class="details-card" [fillHeight]="true">
+      <nav class="profile-tabs" role="tablist" aria-label="Profile sections">
+        @for (tab of tabs(); track tab.id) {
+        <button type="button" role="tab" [id]="'profile-tab-' + tab.id" aria-controls="profile-panel"
+          [attr.aria-selected]="selectedTab() === tab.id" [class.active]="selectedTab() === tab.id"
+          (click)="setTab(tab.id)">
+          <i [class]="tab.icon" aria-hidden="true"></i>
+          {{ tab.label }}
+        </button>
+        }
+      </nav>
+
+      <div id="profile-panel" class="profile-content" role="tabpanel"
+        [attr.aria-labelledby]="'profile-tab-' + selectedTab()">
+        @if (error()) {
+        <div class="feedback error" role="alert">
+          <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+          {{ error() }}
+        </div>
+        }
+        @if (success()) {
+        <div class="feedback success" role="status">
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
+          {{ success() }}
+        </div>
+        }
+
+        @if (selectedTab() === 'personal') {
+        <section aria-labelledby="personal-title">
+          <div class="section-heading">
+            <div>
+              <h3 id="personal-title">Personal details</h3>
+              <p>Keep your contact information up to date.</p>
+            </div>
+            @if (!isEditing()) {
+            <button class="primary-button" type="button" [disabled]="saving()" (click)="editProfile()">
+              <i class="pi pi-pencil" aria-hidden="true"></i>
+              Edit profile
+            </button>
+            }
+          </div>
+
+          @if (isEditing()) {
+          <form [formGroup]="form" (ngSubmit)="saveProfile()" class="profile-form">
+            <section class="personal-edit-section" aria-label="Basic Information">
+              <h4>Basic Information</h4>
+              <div class="form-grid">
+                <label class="field">
+                  <span>Full Name</span>
+                  <input formControlName="fullName" autocomplete="name" />
+                  @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+                  <small class="field-error">Enter a name between 2 and 120 characters.</small>
+                  }
+                </label>
+                <div class="field">
+                  <span>Role</span>
+                  <div class="readonly-field" aria-readonly="true">{{ roleLabel() }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                @if (role() === 'admin' || role() === 'receptionist') {
+                <div class="field">
+                  <span>Email Address</span>
+                  <div class="readonly-field" aria-readonly="true">{{ contactEmail() || '—' }}</div>
+                  <small class="readonly-note">Read only · Contact support to change your sign-in email.</small>
+                </div>
+                } @else {
+                <label class="field">
+                  <span>Email Address</span>
+                  <input formControlName="email" type="email" autocomplete="email" />
+                  @if (form.controls.email.touched && form.controls.email.invalid) {
+                  <small class="field-error">Enter a valid email address.</small>
+                  }
+                </label>
+                }
+                <div class="field">
+                  <span>{{ mobileLabel() }}</span>
+                  <input formControlName="phone" inputmode="numeric" autocomplete="tel" />
+                  @if (form.controls.phone.touched && form.controls.phone.invalid) {
+                  <small class="field-error">{{ role() === 'parent' ? 'Enter exactly 10 digits.' : 'Enter a phone number with 10–15 digits.' }}</small>
+                  }
+                  @if (role() === 'parent') {
+                  <small class="number-sub-label">Preferred WhatsApp Number</small>
+                  <input class="secondary-number" formControlName="whatsapp" inputmode="numeric" aria-label="Preferred WhatsApp number" />
+                  @if (form.controls.whatsapp.touched && form.controls.whatsapp.invalid) {
+                  <small class="field-error">Enter exactly 10 digits.</small>
+                  }
+                  }
+                </div>
+                <div class="field">
+                  <span>Account Status</span>
+                  <div class="readonly-field" aria-readonly="true">{{ profile()?.status ? (profile()?.status | titlecase) : '—' }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                <div class="field">
+                  <span>Joined Date</span>
+                  <div class="readonly-field" aria-readonly="true">{{ joinedDate() || '—' }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                <label class="field">
+                  <span>Date of Birth</span>
+                  <input formControlName="dateOfBirth" type="date" />
+                  @if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.invalid) {
+                  <small class="field-error">Date of birth cannot be in the future.</small>
+                  } @else {
+                  <small>Optional</small>
+                  }
+                </label>
+                <label class="field">
+                  <span>Qualification</span>
+                  <input formControlName="qualification" maxlength="160" />
+                  @if (form.controls.qualification.touched && form.controls.qualification.invalid) {
+                  <small class="field-error">Use no more than 160 characters.</small>
+                  } @else {
+                  <small>Optional</small>
+                  }
+                </label>
+              </div>
+            </section>
+
+            <section class="personal-edit-section" aria-label="Address Information">
+              <h4>Address Information</h4>
+              <app-address-fields [form]="form.controls.address" />
+            </section>
+
+            <section class="personal-edit-section" aria-label="Role-Specific Information">
+              <h4>Role-Specific Information</h4>
+              <div class="form-grid">
+                @if (role() === 'parent') {
+                <label class="field">
+                  <span>Relationship</span>
+                  <input formControlName="relation" autocomplete="organization-title" />
+                  @if (form.controls.relation.touched && form.controls.relation.invalid) {
+                  <small class="field-error">Enter your relationship to the student.</small>
+                  }
+                </label>
+                <label class="field">
+                  <span>Occupation</span>
+                  <input formControlName="occupation" />
+                </label>
+                <div class="field">
+                  <span>Preferred Communication</span>
+                  <div class="readonly-field" aria-readonly="true">{{ parentRecord()?.communication_preferences?.channel || '—' }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                <div class="field">
+                  <span>Preferred Contact Time</span>
+                  <div class="readonly-field" aria-readonly="true">{{ parentRecord()?.communication_preferences?.contactTime || '—' }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                } @else if (role() === 'coach') {
+                <div class="field">
+                  <span>Employee Code</span>
+                  <div class="readonly-field" aria-readonly="true">{{ coachRecord()?.['employee_code'] || '—' }}</div>
+                  <small class="readonly-note">Read only</small>
+                </div>
+                <label class="field">
+                  <span>Years of Experience</span>
+                  <input formControlName="experienceYears" type="number" min="0" max="60" step="0.5" />
+                  @if (form.controls.experienceYears.touched && form.controls.experienceYears.invalid) {
+                  <small class="field-error">Enter a value between 0 and 60 years.</small>
+                  }
+                </label>
+                <label class="field span-two">
+                  <span>Specializations</span>
+                  <input formControlName="specializations" placeholder="Batting, Fielding, Fitness" />
+                  @if (form.controls.specializations.touched && form.controls.specializations.invalid) {
+                  <small class="field-error">Use up to 20 specializations, each no longer than 80 characters.</small>
+                  } @else {
+                  <small>Separate each specialization with a comma.</small>
+                  }
+                </label>
+                <label class="field span-two">
+                  <span>About You</span>
+                  <textarea formControlName="biography" rows="4" maxlength="2000"></textarea>
+                  @if (form.controls.biography.touched && form.controls.biography.invalid) {
+                  <small class="field-error">Use no more than 2000 characters.</small>
+                  }
+                </label>
+                } @else {
+                <p class="role-empty">No additional role-specific details are available.</p>
+                }
+              </div>
+            </section>
+
+            <div class="form-actions">
+              <button class="secondary-button" type="button" [disabled]="saving()" (click)="cancelEdit()">Cancel</button>
+              <button class="primary-button" type="submit" [disabled]="saving()">
+                @if (saving()) {
+                <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+                Saving…
+                } @else {
+                Save changes
+                }
+              </button>
+            </div>
+          </form>
+          } @else {
+          <div class="personal-sections">
+            @for (section of personalDetailSections(); track section.title) {
+            <section class="personal-detail-section" [attr.aria-label]="section.title">
+              <h4>{{ section.title }}</h4>
+              <div class="details-grid">
+                @if (section.title === 'Address Information') {
+                <app-address-fields [value]="profileAddress()" />
+                } @else {
+                @for (field of section.fields; track field.label) {
+                <div class="detail">
+                  <span>{{ field.label }}</span>
+                  <strong>{{ field.value }}</strong>
+                </div>
+                }
+                }
+              </div>
+              @if (section.title === 'Role-Specific Information' && !section.fields.length) {
+              <p class="role-empty">No additional role-specific details are available.</p>
+              }
+            </section>
+            }
+          </div>
+          }
+        </section>
+        }
+
+        @if (selectedTab() === 'role') {
+        <section aria-labelledby="role-title">
+          <div class="section-heading">
+            <div>
+              <h3 id="role-title">Children</h3>
+              <p>Your linked student profiles.</p>
+            </div>
+            @if (role() === 'parent') {
+            <button class="text-button" type="button" (click)="setTab('personal'); editProfile()">Edit details</button>
+            }
+          </div>
+
+          @if (role() === 'parent') {
+          @if (children().length) {
+          <div class="children-list">
+            @for (child of children(); track child.id) {
+            <article class="child-card">
+              <div class="child-avatar"><i class="pi pi-user" aria-hidden="true"></i></div>
+              <div>
+                <strong>{{ child.full_name }}</strong>
+                <span>{{ child.student_code }}</span>
+              </div>
+              <span class="child-status">{{ child.status }}</span>
+            </article>
+            }
+          </div>
+          } @else {
+          <div class="empty-state">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            <strong>No linked children</strong>
+            <span>There are no student profiles linked to this account yet.</span>
+          </div>
+          }
+          }
+        </section>
+        }
+
+        @if (selectedTab() === 'security') {
+        <section aria-labelledby="security-title">
+          <div class="section-heading">
+            <div>
+              <h3 id="security-title">Account security</h3>
+              <p>Choose a strong password that you do not use elsewhere.</p>
+            </div>
+          </div>
+          @if (passwordError()) {
+          <div class="feedback error" role="alert">{{ passwordError() }}</div>
+          }
+          @if (passwordSuccess()) {
+          <div class="feedback success" role="status">{{ passwordSuccess() }}</div>
+          }
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
+            <label class="field">
+              <span>New password</span>
+              <input formControlName="password" type="password" autocomplete="new-password" />
+              <small>Use at least 8 characters, including a letter, number and symbol.</small>
+            </label>
+            <label class="field">
+              <span>Confirm new password</span>
+              <input formControlName="confirmPassword" type="password" autocomplete="new-password" />
+            </label>
+            <div class="form-actions">
+              <button class="primary-button" type="submit" [disabled]="changingPassword()">
+                @if (changingPassword()) {
+                <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+                Updating…
+                } @else {
+                Update password
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+        }
+
+        @if (selectedTab() === 'availability' || selectedTab() === 'payments' || selectedTab() === 'attendance' ||
+        selectedTab() === 'communications' || selectedTab() === 'notifications' || selectedTab() === 'activity') {
+        <section aria-labelledby="workspace-title">
+          <div class="section-heading">
+            <div>
+              <h3 id="workspace-title">{{ activeTabLabel() }}</h3>
+              <p>Continue to the secure workspace for this information.</p>
+            </div>
+          </div>
+          @if (sectionAction(); as action) {
+          <a class="workspace-link featured-link" [routerLink]="action.route">
+            <span class="workspace-icon"><i [class]="action.icon" aria-hidden="true"></i></span>
+            <span class="workspace-copy">
+              <strong>{{ action.label }}</strong>
+              <small>{{ action.description }}</small>
+            </span>
+            <i class="pi pi-arrow-up-right workspace-arrow" aria-hidden="true"></i>
+          </a>
+          }
+        </section>
+        }
+
+        @if (selectedTab() === 'preferences') {
+        <section aria-labelledby="preferences-title">
+          <div class="section-heading">
+            <div>
+              <h3 id="preferences-title">Preferences</h3>
+              <p>Role-specific presentation and notification options.</p>
+            </div>
+          </div>
+          <div class="empty-state preference-state">
+            <i class="pi pi-sliders-h" aria-hidden="true"></i>
+            <strong>No preference controls available</strong>
+            <span>Additional preference options are not configured for this role yet.</span>
+          </div>
+        </section>
+        }
+      </div>
+    </app-ui-card>
+  </div>
+  }
+</main>

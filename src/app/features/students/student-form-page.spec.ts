@@ -14,10 +14,7 @@ const student: StudentFormRecord = {
   skillLevel: 'Beginner',
   phone: '9876543210',
   email: 'aarav@example.com',
-  address: '12 MG Road',
-  city: 'Pune',
-  state: null,
-  pinCode: '411001',
+  address: { line1: '12 MG Road', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   joinedOn: '2026-06-01',
   photoUrl: 'https://cdn.example.com/aarav.png',
   bloodGroup: 'B+',
@@ -70,9 +67,7 @@ const validForm = {
   lastName: 'Menon',
   dateOfBirth: '2015-02-03',
   mobile: '9812345678',
-  address: '5 Park Street',
-  city: 'Pune',
-  pinCode: '411001',
+  address: { line1: '5 Park Street', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   program: 'b1',
   joiningDate: '2026-07-01',
   parentName: 'Suresh Menon',
@@ -163,7 +158,7 @@ describe('StudentFormPage', () => {
     await page.ngOnInit();
     expect(page['parentChildEdit']()).toBe(true);
     const form = page['form'];
-    form.patchValue({ firstName: 'Aarav', lastName: 'Sharma', dateOfBirth: '2014-05-06', mobile: '9876543210', address: '12 MG Road', city: 'Pune', pinCode: '411001', joiningDate: '2026-06-01' });
+    form.patchValue({ firstName: 'Aarav', lastName: 'Sharma', dateOfBirth: '2014-05-06', mobile: '9876543210', address: { line1: '12 MG Road', city: 'Pune', state: 'Maharashtra', pinCode: '411001' }, joiningDate: '2026-06-01' });
     expect(form.valid).toBe(true);
     await page['save']();
     expect(updateLinkedChildProfile).toHaveBeenCalledWith('s1', expect.objectContaining({ fullName: 'Aarav Sharma' }));
@@ -175,7 +170,7 @@ describe('StudentFormPage', () => {
   it('saves a photo to the linked student even when other profile fields are incomplete', async () => {
     const { page, updateStudentPhoto, updateLinkedChildProfile } = setup({ id: 's1', parentChildEdit: true });
     await page.ngOnInit();
-    page['form'].patchValue({ mobile: '', address: '' });
+    page['form'].patchValue({ mobile: '', address: { line1: '', city: '', state: '', pinCode: '' } });
     const photo = new File(['photo'], 'student.png', { type: 'image/png' });
     page['selectPhoto']({ target: { files: [photo], value: 'student.png' } } as unknown as Event);
     expect(page['form'].invalid).toBe(true);

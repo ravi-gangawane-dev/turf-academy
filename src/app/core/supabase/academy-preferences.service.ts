@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { API_CONFIG } from '../config/api.config';
 import { DataRequestError } from './data-error';
 import { DatabaseService } from './database.service';
+import { Address, addressFromDatabase } from '../models/address.model';
 
 export interface AcademyPreferences {
   academy_name: string;
@@ -9,7 +10,7 @@ export interface AcademyPreferences {
   academy_logo_url: string | null;
   contact_email: string | null;
   contact_phone: string | null;
-  address: string | null;
+  address: Address;
   currency_code: string;
   timezone: string;
   attendance_grace_minutes: number;
@@ -31,7 +32,7 @@ export class AcademyPreferencesService {
     academy_logo_url: null,
     contact_email: null,
     contact_phone: null,
-    address: null,
+    address: addressFromDatabase(null),
     currency_code: 'INR',
     timezone: 'Asia/Kolkata',
     attendance_grace_minutes: 10,
@@ -59,7 +60,12 @@ export class AcademyPreferencesService {
         this.pending = undefined;
         throw new DataRequestError('Load academy data', r.error);
       }
-      this.value.set({ academy_code: 'TCM', academy_logo_url: null, ...(r.data as Omit<AcademyPreferences, 'academy_code' | 'academy_logo_url'>) });
+      this.value.set({
+        academy_code: 'TCM',
+        academy_logo_url: null,
+        ...(r.data as Omit<AcademyPreferences, 'academy_code' | 'academy_logo_url' | 'address'>),
+        address: addressFromDatabase(r.data.address),
+      });
     })();
   }
 

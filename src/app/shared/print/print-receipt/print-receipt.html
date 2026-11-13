@@ -9,7 +9,7 @@
       <p class="brand-kicker">{{ receipt().brand.name }}</p>
       <h1>Payment Receipt</h1>
       <p class="brand-contact">
-        @if (receipt().brand.address) { <span>{{ receipt().brand.address }}</span> }
+        @if (receipt().brand.addressText) { <span>{{ receipt().brand.addressText }}</span> }
         @if (receipt().brand.phone) { <span>{{ receipt().brand.phone }}</span> }
         @if (receipt().brand.registrationNumber) { <span>Reg. {{ receipt().brand.registrationNumber }}</span> }
       </p>

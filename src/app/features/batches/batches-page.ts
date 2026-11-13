@@ -7,7 +7,7 @@ import { PageHero } from '../../shared/page-hero/page-hero';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -134,7 +134,21 @@ export class BatchesPage implements OnInit, OnDestroy {
   }catch(e){if(request===this.waitingRequest){this.waiting.set([]);this.waitingTotal.set(0);this.waitingError.set(this.errorText(e));}}
   finally{if(request===this.waitingRequest)this.waitingLoading.set(false);}
  }
- protected readonly metrics=signal({batches:0,active:0,capacity:0,waiting:0});
+ private readonly metricTotals=signal({batches:0,active:0,capacity:0,waiting:0});
+ protected readonly metrics=computed(()=>({
+  ...this.metricTotals(),
+  available:Math.max(0,this.metricTotals().capacity-this.metricTotals().active),
+ }));
+ protected readonly metricCards=computed(()=>{
+  const metrics=this.metrics();
+  return [
+   {label:'Batches',value:metrics.batches,icon:'pi-calendar',detail:'All registered batches',tone:'green'},
+   {label:'Active enrollments',value:metrics.active,icon:'pi-users',detail:'Currently enrolled students',tone:'blue'},
+   {label:'Active batch capacity',value:metrics.capacity,icon:'pi-chart-bar',detail:'Total available places',tone:'purple'},
+   {label:'Waiting students',value:metrics.waiting,icon:'pi-clock',detail:'Awaiting a place',tone:'orange'},
+   {label:'Available places',value:metrics.available,icon:'pi-user-plus',detail:'Capacity minus active enrollments',tone:'green'},
+  ] as const;
+ });
  async ngOnInit():Promise<void>{
   this.viewSubscription=this.route.queryParamMap.subscribe(params=>{
    const next=String(params.get('view') ?? this.route.snapshot.data['batchView'] ?? this.view);
@@ -152,7 +166,7 @@ export class BatchesPage implements OnInit, OnDestroy {
     this.view==='student-allocation'?'allocations':'batches',this.page(),this.pageSize(),{...Object.fromEntries(Object.entries(this.columnFilters).map(([key,value])=>[key,String(value??'').trim()])),search:this.query(),status:this.status(),batchId:this.batchFilter(),coachId:this.coachFilter(),view:this.view,omitWaitlist:'true',sortBy:this.sortBy(),sortDirection:this.sortDirection()});
    if(request!==this.requestId)return;
    this.workspace.set({...emptyBatchWorkspace(),...result.options});
-   this.total.set(result.total);this.page.set(result.page);this.metrics.set(result.metrics);
+   this.total.set(result.total);this.page.set(result.page);this.metricTotals.set(result.metrics);
    this.pageRows.set(this.view==='student-allocation'?[]:result.rows);
    this.pageAllocations.set(this.view==='student-allocation'?result.rows:[]);
   }catch(e){if(request===this.requestId){this.error.set(this.errorText(e));this.pageRows.set([]);this.pageAllocations.set([]);this.total.set(0);}}

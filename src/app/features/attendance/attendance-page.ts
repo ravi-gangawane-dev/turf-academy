@@ -51,13 +51,27 @@ export class AttendancePage implements OnInit {
     const late = this.store
       .activeEnrollmentRows()
       .filter((row) => row.attendance?.status === 'late').length;
+    const checkedOut = this.store
+      .activeEnrollmentRows()
+      .filter((row) => !!row.attendance?.checkOutAt).length;
     return {
       total,
       present,
       absent: Math.max(0, total - present),
       late,
+      checkedOut,
       rate: total ? ((present / total) * 100).toFixed(2) : '0.00',
     };
+  });
+  protected readonly metricCards = computed(() => {
+    const metrics = this.metrics();
+    return [
+      { label: 'Total Students', value: metrics.total, icon: 'pi-users', detail: 'Active enrollments', tone: 'green' },
+      { label: 'Present Today', value: metrics.present, icon: 'pi-check-circle', detail: `${metrics.rate}%`, tone: 'green' },
+      { label: 'Absent / Unmarked', value: metrics.absent, icon: 'pi-user-minus', detail: `${this.percentage(metrics.absent)}%`, tone: 'orange' },
+      { label: 'Late Today', value: metrics.late, icon: 'pi-clock', detail: `${metrics.late}%`, tone: 'purple' },
+      { label: 'Checked Out', value: metrics.checkedOut, icon: 'pi-sign-out', detail: 'Students checked out today', tone: 'blue' },
+    ] as const;
   });
   protected readonly recent = computed(() => {
     return this.store

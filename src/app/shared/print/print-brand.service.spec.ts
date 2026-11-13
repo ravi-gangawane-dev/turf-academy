@@ -7,6 +7,7 @@ import {
 } from '../../core/supabase/academy-preferences.service';
 import { AcademySettingsService } from '../../core/supabase/domain-services';
 import { PrintBrandService } from './print-brand.service';
+import { addressFromDatabase } from '../../core/models/address.model';
 
 const fallbackPreferences = (): AcademyPreferences => ({
   academy_name: 'Fallback Academy',
@@ -14,7 +15,7 @@ const fallbackPreferences = (): AcademyPreferences => ({
   academy_logo_url: null,
   contact_email: null,
   contact_phone: null,
-  address: null,
+  address: addressFromDatabase(null),
   currency_code: 'INR',
   timezone: 'Asia/Kolkata',
   attendance_grace_minutes: 10,
@@ -44,7 +45,7 @@ describe('PrintBrandService', () => {
       academy_name: 'Turf Cricket Academy',
       academy_code: 'TCA',
       academy_logo_url: 'https://cdn.example/logo.png',
-      address: 'Sector 21, Kharadi',
+      address: { line1: 'Sector 21, Kharadi', city: '', state: '', pinCode: '' },
       contact_phone: '+91 98765 43210',
       contact_email: 'accounts@example.com',
       currency_code: 'INR',
@@ -55,7 +56,7 @@ describe('PrintBrandService', () => {
       name: 'Turf Cricket Academy',
       code: 'TCA',
       logoUrl: 'https://cdn.example/logo.png',
-      address: 'Sector 21, Kharadi',
+      addressText: 'Sector 21, Kharadi',
       phone: '+91 98765 43210',
       email: 'accounts@example.com',
       currencyCode: 'INR',

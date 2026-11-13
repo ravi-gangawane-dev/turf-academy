@@ -51,10 +51,19 @@ async function setup() {
       { provide: StorageService, useValue: {} },
     ],
   });
-  return { page: TestBed.createComponent(PaymentsPage).componentInstance, api };
+  const fixture = TestBed.createComponent(PaymentsPage);
+  return { page: fixture.componentInstance, fixture, api };
 }
 describe('Payment workflows', () => {
   afterEach(() => TestBed.resetTestingModule());
+  it('renders five payment summary cards', async () => {
+    const { fixture } = await setup();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.textContent).toContain('Open charges');
+  });
   it('closes the URL-driven payment form only after a successful retry', async () => {
     const { page, api } = await setup();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
@@ -126,6 +135,7 @@ describe('Payment workflows', () => {
       refunded: 2525,
       transactions: 35,
       receipts: 35,
+      openCharges: 0,
     });
     expect(page['total']()).toBe(35);
     page['setPageSize'](20);

@@ -13,13 +13,10 @@
   </div>
   }
   <section class="metrics">
-    <app-summary-metric-card label="Net collection" [value]="metrics().total / 100 | academyMoney : 'symbol' : '1.2-2'"
-      icon="pi-wallet" hint="After refunds" />
-    <app-summary-metric-card label="Transactions" [value]="metrics().transactions" icon="pi-arrow-right-arrow-left"
-      tone="blue" />
-    <app-summary-metric-card label="Receipts" [value]="metrics().receipts" icon="pi-receipt" tone="purple" />
-    <app-summary-metric-card label="Amount refunded"
-      [value]="metrics().refunded / 100 | academyMoney : 'symbol' : '1.2-2'" icon="pi-undo" tone="orange" />
+    @for (metric of metricCards(); track metric.label) {
+    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
+      [tone]="metric.tone" />
+    }
   </section>
   @if (view === 'new') {
   <div class="dialog-backdrop payment-record-backdrop">

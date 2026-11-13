@@ -2,12 +2,23 @@
   display: block;
   min-width: 0;
 }
+:host(.fill-height-host) {
+  height: 100%;
+}
 .ui-card {
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-md);
   background: var(--app-card);
   box-shadow: var(--app-shadow);
+}
+.ui-card.fill-height {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+.ui-card.fill-height .ui-card-content {
+  flex: 1;
 }
 header {
   min-height: 58px;
