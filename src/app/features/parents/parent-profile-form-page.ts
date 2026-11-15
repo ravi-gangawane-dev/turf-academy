@@ -6,6 +6,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { ParentsService } from '../../core/supabase/domain-services';
 import { addressFromDatabase, createAddressForm } from '../../core/models/address.model';
 import { AddressFields } from '../../shared/address-fields/address-fields';
+import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
@@ -33,7 +34,7 @@ export function nationalPhone(value: string | null | undefined): string {
 
 @Component({
   selector: 'app-parent-profile-form-page',
-  imports: [PageHero, ReactiveFormsModule, AddressFields],
+  imports: [PageHero, ReactiveFormsModule, AddressFields, ProfilePhotoUpload],
   templateUrl: './parent-profile-form-page.html',
   styleUrl: './parent-profile-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +48,7 @@ export class ParentProfileFormPage implements OnInit {
   protected readonly saving = signal(false);
   protected readonly error = signal('');
   protected readonly photoUrl = signal<string | null>(null);
+  protected readonly photoSelected = signal(false);
   private photo: File | null = null;
   protected readonly form = this.fb.nonNullable.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -86,10 +88,9 @@ export class ParentProfileFormPage implements OnInit {
       this.loading.set(false);
     }
   }
-  protected choosePhoto(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0];
-    input.value = '';
+  protected choosePhoto(event: Event | File) {
+    const file = event instanceof File ? event : (event.target as HTMLInputElement).files?.[0];
+    if (event instanceof Event) (event.target as HTMLInputElement).value = '';
     if (!file) return;
     if (!PHOTO_TYPES.includes(file.type)) {
       this.error.set('Profile photo must be a JPG, PNG or WebP image.');
@@ -101,6 +102,7 @@ export class ParentProfileFormPage implements OnInit {
     }
     this.error.set('');
     this.photo = file;
+    this.photoSelected.set(true);
     const reader = new FileReader();
     reader.onload = () => this.photoUrl.set(String(reader.result));
     reader.readAsDataURL(file);

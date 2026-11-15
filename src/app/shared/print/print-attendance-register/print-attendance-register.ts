@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { PrintAttendanceRegisterDocument } from '../print-document.models';
+import { printDateOnly } from '../print-format';
 import { PrintPage, printPages } from '../print-page';
 import { PrintPageFooter } from '../print-page-footer/print-page-footer';
 
@@ -65,8 +66,6 @@ export class PrintAttendanceRegister {
   }
 
   private formatDate(value: string, options: Intl.DateTimeFormatOptions): string {
-    const date = new Date(`${String(value ?? '').slice(0, 10)}T00:00:00Z`);
-    if (Number.isNaN(date.getTime())) return value || '—';
-    return new Intl.DateTimeFormat('en-GB', { ...options, timeZone: 'UTC' }).format(date);
+    return printDateOnly(value, this.register().brand.currencyCode, options);
   }
 }

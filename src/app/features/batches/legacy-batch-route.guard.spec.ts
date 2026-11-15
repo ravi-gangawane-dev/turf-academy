@@ -12,4 +12,16 @@ describe('legacy batch route guard', () => {
     expect(router.createUrlTree).toHaveBeenCalledWith(['/batches'], { queryParams: { view: 'capacity', batch: 'b1', student: 's1' } });
     expect(result).toBeDefined();
   });
+
+  it('routes the waiting-list tab into the canonical batches workspace', () => {
+    const router = { createUrlTree: vi.fn((commands, extras) => ({ commands, extras })) };
+    TestBed.configureTestingModule({ providers: [{ provide: Router, useValue: router }] });
+    const route = { data: { legacyView: 'waiting-list' } } as unknown as ActivatedRouteSnapshot;
+    const state = { url: '/batches/waiting-list?batch=b1' } as RouterStateSnapshot;
+    const result = TestBed.runInInjectionContext(() => legacyBatchRouteGuard(route, state));
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/batches'], {
+      queryParams: { view: 'waiting-list', batch: 'b1' },
+    });
+    expect(result).toBeDefined();
+  });
 });

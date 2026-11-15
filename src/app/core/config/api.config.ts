@@ -5,7 +5,7 @@ export interface ApiConfig {
   readonly baseUrl: string;
   readonly useMockApi: boolean;
   readonly allowOfflineAttendance?: boolean;
-  readonly backend?: 'mock' | 'rest' | 'supabase';
+  readonly backend?: 'mock' | 'supabase';
   readonly supabaseUrl?: string;
   readonly supabaseAnonKey?: string;
   readonly academySupport?: {

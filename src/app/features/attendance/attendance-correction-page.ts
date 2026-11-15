@@ -1,13 +1,13 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
-import { AsyncState } from '../../shared/async-state/async-state';
 import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AttendanceCorrectionRecord, AttendanceService } from '../../core/supabase/domain-services';
-import { ToastService } from '../../shared/toast/toast.service';
-import { Pagination } from '../../shared/pagination/pagination';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { ListQueryState } from '../../shared/list-query';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { ToastService } from '../../shared/toast/toast.service';
 
 type CorrectionStatus = 'pending' | 'approved' | 'rejected' | 'all';
 interface CorrectionRelationView {
@@ -23,7 +23,7 @@ interface CorrectionRelationView {
 
 @Component({
   selector: 'app-attendance-correction-page',
-  imports: [TableTools, AsyncState, ColumnFilter, FormsModule, Pagination, SortableHeader],
+  imports: [TableTools, AsyncState, ColumnFilter, FormsModule, SortableHeader, DataTable],
   templateUrl: './attendance-correction-page.html',
   styleUrl: './attendance-correction-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,11 +34,16 @@ export class AttendanceCorrectionPage implements OnInit {
   protected readonly rows = signal<readonly AttendanceCorrectionRecord[]>([]);
   protected readonly status = signal<CorrectionStatus>('pending');
   protected readonly search = signal('');
-  protected readonly sortBy = signal<string>('createdAt');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   protected readonly total = signal(0);
+  protected readonly listQuery = new ListQueryState<string>({
+    sortBy: 'createdAt',
+    sortDirection: 'desc',
+    total: this.total,
+  });
+  protected readonly sortBy = this.listQuery.sortBy;
+  protected readonly sortDirection = this.listQuery.sortDirection;
+  protected readonly page = this.listQuery.page;
+  protected readonly pageSize = this.listQuery.pageSize;
   protected readonly loading = signal(true);
   protected readonly submittingId = signal('');
   protected readonly message = signal('');
@@ -50,7 +55,7 @@ export class AttendanceCorrectionPage implements OnInit {
   });
   protected reviewReason = '';
   private requestSequence = 0;
-  protected readonly columns = createColumnFilters(()=>{this.page.set(1);void this.load();},()=>{++this.requestSequence;this.page.set(1);});
+  protected readonly columns = createColumnFilters(() => { this.page.set(1); void this.load(); }, () => { ++this.requestSequence; this.page.set(1); });
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -73,31 +78,27 @@ export class AttendanceCorrectionPage implements OnInit {
   }
   protected async changeSortBy(event: Event): Promise<void> {
     const value = (event.target as HTMLSelectElement).value;
-    if (!['createdAt','attendanceDate','student','status','batch','current','requested','reason','resolution_status','attendance_date'].includes(value)) return;
+    if (!['createdAt', 'attendanceDate', 'student', 'status', 'batch', 'current', 'requested', 'reason', 'resolution_status', 'attendance_date'].includes(value)) return;
     this.sortBy.set(value as 'createdAt' | 'attendanceDate' | 'student' | 'status');
     this.page.set(1);
     await this.load();
   }
   protected async sortColumn(value: string): Promise<void> {
-    if (!['createdAt','attendanceDate','student','status','batch','current','requested','reason','resolution_status','attendance_date'].includes(value)) return;
+    if (!['createdAt', 'attendanceDate', 'student', 'status', 'batch', 'current', 'requested', 'reason', 'resolution_status', 'attendance_date'].includes(value)) return;
     const key = value as 'createdAt' | 'attendanceDate' | 'student' | 'status';
-    this.sortDirection.set(this.sortBy() === key ? (this.sortDirection() === 'asc' ? 'desc' : 'asc') : 'asc');
-    this.sortBy.set(key);
-    this.page.set(1);
+    this.listQuery.sortByColumn(key);
     await this.load();
   }
   protected async changeSortDirection(event: Event): Promise<void> {
-    this.sortDirection.set((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
-    this.page.set(1);
+    this.listQuery.setSortDirection((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
     await this.load();
   }
   protected async changePage(page: number): Promise<void> {
-    this.page.set(page);
+    this.listQuery.setPage(page);
     await this.load();
   }
   protected async setPageSize(size: number): Promise<void> {
-    this.pageSize.set(size);
-    this.page.set(1);
+    this.listQuery.setPageSize(size);
     await this.load();
   }
   protected async resolve(id: unknown, approve: boolean): Promise<void> {
@@ -141,7 +142,8 @@ export class AttendanceCorrectionPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
     try {
-      const result = await this.attendance.correctionPage(this.page(), this.pageSize(), {columns:this.columns.params(),
+      const result = await this.attendance.correctionPage(this.page(), this.pageSize(), {
+        columns: this.columns.params(),
         status: this.status(),
         search: this.search(),
         sortBy: this.sortBy(),

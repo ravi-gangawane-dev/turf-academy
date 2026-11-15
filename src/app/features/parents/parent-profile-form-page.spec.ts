@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Component } from '@angular/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { ParentsService } from '../../core/supabase/domain-services';
 import { ParentProfileFormPage, nationalPhone } from './parent-profile-form-page';
+import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 
 @Component({ template: '', standalone: true })
 class EmptyPage {}
@@ -40,23 +42,20 @@ async function setup() {
   await harness.fixture.whenStable();
   harness.detectChanges();
   const root = harness.routeNativeElement as HTMLElement;
-  const fileInput = () => root.querySelector<HTMLInputElement>('.upload input[type="file"]')!;
+  const photoUpload = harness.fixture.debugElement.query(By.directive(ProfilePhotoUpload)).componentInstance as ProfilePhotoUpload;
+  const photoTrigger = () => root.querySelector<HTMLButtonElement>('.photo-trigger')!;
   const phone = () => root.querySelector<HTMLInputElement>('input[formcontrolname="phone"]')!;
   const submit = () => root.querySelector<HTMLButtonElement>('footer button[type="submit"]')!;
-  const pick = async (file: File) => {
-    const input = fileInput();
-    Object.defineProperty(input, 'files', { configurable: true, value: [file] });
-    input.dispatchEvent(new Event('change'));
-    if (file.type.startsWith('image/') && file.size <= 2 * 1024 * 1024) {
-      await vi.waitFor(() => {
-        harness.detectChanges();
-        expect(root.querySelector('.photo img')?.getAttribute('src')).toContain('data:');
-      });
-    }
+  const stagePhoto = async (file: File) => {
+    photoUpload.fileSelected.emit(file);
+    await vi.waitFor(() => {
+      harness.detectChanges();
+      expect(root.querySelector('.photo-trigger img')?.getAttribute('src')).toContain('data:');
+    });
     await harness.fixture.whenStable();
     harness.detectChanges();
   };
-  return { harness, root, getByProfile, updateOwnProfile, phone, submit, pick };
+  return { harness, root, getByProfile, updateOwnProfile, phone, submit, photoTrigger, photoUpload, stagePhoto };
 }
 
 describe('Parent profile photo upload', () => {
@@ -75,17 +74,17 @@ describe('Parent profile photo upload', () => {
   it('loads the saved photo and a valid 10-digit phone', async () => {
     const { root, phone } = await setup();
     expect(phone().value).toBe('9130451715');
-    expect(root.querySelector('.photo img')?.getAttribute('src')).toBe(
+    expect(root.querySelector('.photo-trigger img')?.getAttribute('src')).toBe(
       'https://cdn.example.com/parent.png',
     );
   });
 
   it('previews the chosen photo and uploads it on save', async () => {
-    const { root, updateOwnProfile, submit, pick } = await setup();
+    const { root, updateOwnProfile, submit, stagePhoto } = await setup();
 
-    await pick(new File(['binary'], 'avatar.png', { type: 'image/png' }));
+    await stagePhoto(new File(['binary'], 'avatar.png', { type: 'image/jpeg' }));
 
-    expect(root.querySelector('.photo img')?.getAttribute('src')).toContain('data:image/png');
+    expect(root.querySelector('.photo-trigger img')?.getAttribute('src')).toContain('data:image/jpeg');
     submit().click();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -101,17 +100,32 @@ describe('Parent profile photo upload', () => {
     expect(photo!.name).toBe('avatar.png');
   });
 
-  it('rejects photos that are too large or not an image', async () => {
-    const { root, updateOwnProfile, submit, pick } = await setup();
+  it('opens the shared profile photo editor', async () => {
+    const { harness, root, photoTrigger } = await setup();
+    photoTrigger().click();
+    harness.detectChanges();
+    expect(root.querySelector('.photo-modal')).not.toBeNull();
+    expect(root.querySelector('.photo-dialog h2')?.textContent).toContain('Profile Photo');
+  });
 
-    await pick(new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'big.png', { type: 'image/png' }));
-    expect(root.querySelector('footer p')?.textContent).toContain('2 MB');
-    expect(root.querySelector('.photo img')?.getAttribute('src')).toBe(
+  it('rejects photos that are too large or not an image in the shared editor', async () => {
+    const { harness, root, updateOwnProfile, submit, photoTrigger } = await setup();
+    photoTrigger().click();
+    harness.detectChanges();
+    const input = root.querySelector<HTMLInputElement>('.hidden-file')!;
+    const invalidFiles = [
+      new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'big.png', { type: 'image/png' }),
+      new File(['pdf'], 'notes.pdf', { type: 'application/pdf' }),
+    ];
+    for (const file of invalidFiles) {
+      Object.defineProperty(input, 'files', { configurable: true, value: [file] });
+      input.dispatchEvent(new Event('change'));
+      harness.detectChanges();
+    }
+    expect(root.querySelector('.photo-error')?.textContent).toContain('JPG, PNG or WebP');
+    expect(root.querySelector('.photo-trigger img')?.getAttribute('src')).toBe(
       'https://cdn.example.com/parent.png',
     );
-
-    await pick(new File(['pdf'], 'notes.pdf', { type: 'application/pdf' }));
-    expect(root.querySelector('footer p')?.textContent).toContain('JPG, PNG or WebP');
 
     submit().click();
     await new Promise((resolve) => setTimeout(resolve, 0));

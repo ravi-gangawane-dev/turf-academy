@@ -7,15 +7,15 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--app-space-4);
   width: 100%;
   min-height: 112px;
-  padding: 18px 20px;
-  border: 1px solid #dce6e1;
-  border-radius: 16px;
-  color: #18241e;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(13, 56, 39, 0.05);
+  padding: var(--app-space-4) var(--app-space-5);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  color: var(--app-text);
+  background: var(--app-card);
+  box-shadow: var(--app-shadow);
   text-align: left;
   text-decoration: none;
 }
@@ -29,8 +29,8 @@ a.metric-card {
 
 a.metric-card:hover {
   transform: translateY(-2px);
-  border-color: #b8d8c5;
-  box-shadow: 0 8px 20px rgba(13, 56, 39, 0.1);
+  border-color: color-mix(in srgb, var(--app-primary) 35%, var(--app-border));
+  box-shadow: var(--app-shadow-lg);
 }
 
 .metric-icon {
@@ -39,27 +39,27 @@ a.metric-card:hover {
   place-items: center;
   width: 54px;
   height: 54px;
-  border-radius: 16px;
-  color: #3478c5;
-  background: #e9f2fc;
-  font-size: 21px;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-info);
+  background: color-mix(in srgb, var(--app-info) 12%, var(--app-card));
+  font-size: var(--app-fs-h2);
 }
 
 .metric-copy {
   display: grid;
   min-width: 0;
-  gap: 3px;
+  gap: var(--app-space-1);
 }
 
 .metric-label {
-  color: #687a70;
-  font-size: 14px;
+  color: var(--app-muted);
+  font-size: var(--app-fs-body);
   line-height: 1.35;
 }
 
 .metric-copy strong {
-  color: #17251e;
-  font-size: clamp(22px, 2vw, 30px);
+  color: var(--app-text);
+  font-size: var(--app-font-stat);
   font-weight: 750;
   line-height: 1.12;
   overflow-wrap: anywhere;
@@ -67,54 +67,46 @@ a.metric-card:hover {
 }
 
 .metric-hint {
-    color: #596b61;
-  font-size: 13px;
+  color: var(--app-muted);
+  font-size: var(--app-fs-label);
   line-height: 1.35;
 }
 
 .metric-card.green .metric-icon {
-  color: #27804a;
-  background: #e5f5eb;
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
 }
 
-.metric-card.orange .metric-icon {
-  color: #d5751b;
-  background: #fff1df;
+.metric-card.orange .metric-icon,
+.metric-card.amber .metric-icon {
+  color: var(--app-warning);
+  background: color-mix(in srgb, var(--app-warning) 12%, var(--app-card));
 }
 
-.metric-card.purple .metric-icon {
-  color: #8057b5;
-  background: #f0eafd;
+.metric-card.purple .metric-icon,
+.metric-card.violet .metric-icon {
+  color: var(--app-violet);
+  background: color-mix(in srgb, var(--app-violet) 10%, var(--app-card));
 }
 
 .metric-card.red .metric-icon {
-  color: #c34742;
-  background: #fcebea;
+  color: var(--app-danger);
+  background: var(--app-danger-bg);
 }
 
 .metric-card.teal .metric-icon {
-  color: #178681;
-  background: #e3f5f3;
-}
-
-.metric-card.amber .metric-icon {
-  color: #b66b16;
-  background: #fff2dc;
-}
-
-.metric-card.violet .metric-icon {
-  color: #8057b5;
-  background: #f0eafd;
+  color: var(--app-teal);
+  background: color-mix(in srgb, var(--app-teal) 10%, var(--app-card));
 }
 
 .metric-card.blue .metric-icon {
-  color: #3478c5;
-  background: #e9f2fc;
+  color: var(--app-info);
+  background: color-mix(in srgb, var(--app-info) 12%, var(--app-card));
 }
 
 @media (max-width: 620px) {
   .metric-card {
     min-height: 96px;
-    padding: 16px;
+    padding: var(--app-space-4);
   }
 }

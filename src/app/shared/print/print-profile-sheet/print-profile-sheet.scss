@@ -29,7 +29,7 @@
   height: 36mm;
   border-radius: 2mm;
   background: #e3f6eb;
-  color: #0b6339;
+  color: var(--app-primary-dark);
   font-size: 16pt;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -130,9 +130,9 @@
 .check {
   display: inline-block;
   padding: 0.4mm 1.8mm;
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: #e3f6eb;
-  color: #0b6339;
+  color: var(--app-primary-dark);
   font-size: 7.2pt;
   font-weight: 700;
   letter-spacing: 0.04em;

@@ -3,13 +3,13 @@
 }
 .fee-plans-page {
   display: grid;
-  gap: 20px;
+  gap: var(--app-space-5);
   color: #14221b;
 }
 .breadcrumbs {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   color: #64746b;
 }
 .breadcrumbs a {
@@ -22,7 +22,7 @@
 .page-heading {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--app-space-3-5);
 }
 .page-heading h1 {
   margin: 0 0 4px;
@@ -36,22 +36,22 @@
   place-items: center;
   width: 58px;
   height: 58px;
-  border-radius: 14px;
-  color: #16864b;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-primary);
   background: #e3f3e9;
-  font-size: 25px;
+  font-size: var(--app-fs-stat);
 }
 .primary {
-  border-color: #16864b !important;
+  border-color: var(--app-primary) !important;
   color: #fff !important;
-  background: #16864b !important;
+  background: var(--app-primary) !important;
 }
 .page-heading > button {
   margin-left: auto;
   min-height: 46px;
   padding: 0 18px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   font-weight: 700;
 }
 .page-heading > button i {
@@ -63,28 +63,28 @@
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+  gap: var(--app-space-4-5);
 }
 .metrics article {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: var(--app-space-4-5);
   min-height: 132px;
   padding: 20px;
   border: 1px solid #e2e8e5;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
-  box-shadow: 0 5px 18px rgb(7 25 47 / 4%);
+  box-shadow: var(--app-shadow);
 }
 .metrics article > i {
   display: grid;
   place-items: center;
   flex: 0 0 64px;
   height: 64px;
-  border-radius: 14px;
-  color: #16864b;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-primary);
   background: #e3f5e9;
-  font-size: 26px;
+  font-size: var(--app-fs-h1);
 }
 .metrics .inactive > i {
   color: #ef3f45;
@@ -105,20 +105,20 @@
 }
 .metrics strong {
   margin: 6px 0;
-  font-size: 28px;
+  font-size: var(--app-fs-h1);
 }
 .plans-card {
   overflow: hidden;
   border: 1px solid #e2e8e5;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
-  box-shadow: 0 5px 18px rgb(7 25 47 / 4%);
+  box-shadow: var(--app-shadow);
 }
 .plans-card > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--app-space-5);
   padding: 18px 20px;
 }
 .plans-card h2 {
@@ -126,7 +126,7 @@
 }
 .filters {
   display: flex;
-  gap: 12px;
+  gap: var(--app-space-3);
 }
 .filters label {
   position: relative;
@@ -142,7 +142,7 @@
 .filters select {
   height: 42px;
   border: 1px solid #d9e1dd;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
 }
 .filters input {
@@ -179,8 +179,8 @@
 .status {
   display: inline-flex;
   padding: 5px 13px;
-  border-radius: 999px;
-  color: #147a45;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-primary-dark);
   background: #dff5e7;
   font-weight: 700;
   text-transform: capitalize;
@@ -192,7 +192,7 @@
 .actions {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 .actions button,
 .plans-card > footer button {
@@ -201,8 +201,8 @@
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 7px;
-  color: #16864b;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary);
   background: #edf7f1;
 }
 .actions button:nth-child(2) {
@@ -222,7 +222,7 @@
 }
 .plans-card > footer div {
   display: flex;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 .plans-card > footer button {
   border: 1px solid #dbe3df;
@@ -231,7 +231,7 @@
 }
 .plans-card > footer button.current {
   color: #fff;
-  background: #16864b;
+  background: var(--app-primary);
 }
 .dialog-backdrop {
   position: fixed;
@@ -239,25 +239,28 @@
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: 20px;
-  background: rgb(7 25 47 / 54%);
+  padding: var(--app-space-4);
+  background: var(--app-overlay);
 }
 .plan-dialog {
   width: min(560px, 100%);
   overflow: hidden;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+  border-radius: var(--app-radius-md);
+  background: var(--app-card);
+  box-shadow: var(--app-shadow-lg);
 }
 .plan-dialog > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 22px;
-  border-bottom: 1px solid #e2e8e5;
+  padding: var(--app-space-3) var(--app-space-5);
+  border-bottom: 1px solid var(--app-border);
 }
 .plan-dialog h2 {
   margin: 0;
+  color: var(--app-text);
+  font-size: var(--app-fs-h3);
+  font-weight: 700;
 }
 .plan-dialog header button {
   border: 0;
@@ -265,27 +268,27 @@
 }
 .plan-dialog form {
   display: grid;
-  gap: 16px;
+  gap: var(--app-space-4);
   padding: 22px;
 }
 .plan-dialog label {
   display: grid;
-  gap: 7px;
+  gap: var(--app-space-2);
   font-weight: 700;
 }
 .plan-dialog form > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: var(--app-space-3-5);
 }
 .plan-dialog input,
 .plan-dialog textarea,
 .plan-dialog select {
   width: 100%;
-  min-height: 43px;
+  min-height: var(--app-control-md);
   padding: 10px 12px;
   border: 1px solid #d7dfdb;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
 }
 .plan-dialog textarea {
@@ -301,14 +304,14 @@
 .plan-dialog form > footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding-top: 5px;
 }
 .plan-dialog footer button {
-  min-height: 42px;
+  min-height: var(--app-control-md);
   padding: 0 16px;
   border: 1px solid #d7dfdb;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   font-weight: 700;
 }
@@ -319,11 +322,11 @@
 .upload-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
   padding: 10px 14px;
-  border: 1px dashed #16864b;
-  border-radius: 8px;
-  color: #16864b;
+  border: 1px dashed var(--app-primary);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary);
   background: #eaf6f0;
   font-weight: 700;
   cursor: pointer;

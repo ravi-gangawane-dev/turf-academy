@@ -9,7 +9,6 @@ app-table-tools {
   box-sizing: border-box;
   width: 100%;
   padding: 8px;
-  border-bottom: 1px solid var(--app-border);
   background: var(--app-card, #fff);
 }
 
@@ -69,6 +68,34 @@ app-table-tools .table-tools-actions button {
   cursor: pointer;
 }
 
+app-table-tools.coach-student-tools {
+  justify-content: space-between;
+}
+app-table-tools.coach-student-tools .table-tools-heading {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+app-table-tools.coach-student-tools .table-tools-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  margin-inline-start: auto;
+  max-width: 100%;
+  overflow-x: auto;
+}
+app-table-tools.coach-student-tools .student-header-filters {
+  flex: 0 0 auto;
+  max-width: none;
+}
+app-table-tools.coach-student-tools .student-header-filters > section {
+  flex-wrap: nowrap;
+  width: auto;
+}
+app-table-tools.coach-student-tools .filter-search {
+  box-sizing: border-box;
+  flex: 0 0 240px;
+  width: 240px;
+}
 app-table-tools button:disabled {
   opacity: .5;
   cursor: default;
@@ -119,22 +146,29 @@ table.academy-table tr.skeleton-row>td>span {
     padding: 8px !important;
   }
 
-  table.academy-table {
+  body :is(table, .p-datatable-table) {
     width: 100%;
     border-collapse: collapse !important;
+    border-spacing: 0 !important;
     background: var(--app-card);
     color: var(--app-text);
     font-size: 14px;
   }
 
-  table.academy-table>thead>tr> :is(th, td),
-  table.academy-table>tbody>tr> :is(th, td),
-  table.academy-table>tfoot>tr> :is(th, td) {
+  body :is(table, .p-datatable-table)> :is(thead, tbody, tfoot)>tr> :is(th, td) {
     box-sizing: border-box;
     padding: 8px !important;
-    border: 1px solid var(--app-border) !important;
+    border: 1px solid var(--app-table-border) !important;
     vertical-align: middle !important;
     line-height: 1.5;
+  }
+
+  body app-pagination {
+    border-top: 0 !important;
+  }
+
+  body app-pagination .pagination {
+    border-top: 0 !important;
   }
 
   table.academy-table>thead>tr>th {
@@ -210,15 +244,30 @@ table.academy-table tr.skeleton-row>td>span {
     outline-offset: 2px;
   }
 
-  :is(.table-wrap, .table-scroll, .table-wrapper):has(> table.academy-table) {
+  :is(.table-wrap, .table-scroll, .table-wrapper):has(> :is(table, .p-datatable-table)) {
     max-width: 100%;
     overflow-x: auto;
-    border: 1px solid var(--app-border);
+    border: 0 !important;
     border-radius: 12px;
     background: var(--app-card);
   }
 
-  app-data-table :is(.table-wrap, .table-scroll, .table-wrapper):has(> table.academy-table) {
+  app-data-table {
+    border: 1px solid var(--app-table-border) !important;
+    border-radius: var(--app-table-radius) !important;
+    box-shadow: none !important;
+  }
+
+  :is(.app-card, .card):has(table) {
+    border-radius: var(--app-table-radius);
+  }
+
+  :is(.app-card, .card) app-data-table {
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  app-data-table :is(.table-wrap, .table-scroll, .table-wrapper):has(> :is(table, .p-datatable-table)) {
     border: 0;
     border-radius: 0;
   }

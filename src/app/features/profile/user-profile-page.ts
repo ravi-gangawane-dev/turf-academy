@@ -11,7 +11,7 @@ import { CoachPortalService, CoachProfile } from '../coach/coach-portal.service'
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 import { UiCard } from '../../shared/ui-card/ui-card';
-import { Address, addressFromDatabase, addressValue, createAddressForm, formatAddress } from '../../core/models/address.model';
+import { Address, addressFromDatabase, addressLines, addressValue, createAddressForm } from '../../core/models/address.model';
 import { AddressFields } from '../../shared/address-fields/address-fields';
 
 interface CoachProfileDetails extends CoachProfile {
@@ -186,15 +186,9 @@ export class UserProfilePage implements OnInit {
     if (this.role() !== 'parent' || !whatsapp || whatsapp === phone) return phone || whatsapp || '—';
     return `${phone || '—'} (WhatsApp: ${whatsapp})`;
   });
-  protected readonly parentLocation = computed(() => {
-    const address = this.parentRecord()?.address;
-    return formatAddress(address);
-  });
-  protected readonly location = computed(() => {
-    if (this.role() === 'parent') return this.parentLocation() || 'Location not provided';
-    return formatAddress(this.academyPreferences.value().address)
-      || (this.locationLoadError() ? 'Location unavailable' : 'Location not provided');
-  });
+  protected readonly location = computed(() =>
+    addressLines(this.profileAddress()).join('\n') || 'Location not provided',
+  );
   protected readonly activeTabLabel = computed(() =>
     this.tabs().find((tab) => tab.id === this.selectedTab())?.label ?? '',
   );
@@ -390,6 +384,7 @@ export class UserProfilePage implements OnInit {
             throw new AggregateError(
               [error, cleanupError],
               'Profile photo update failed and the uploaded photo could not be removed.',
+              { cause: cleanupError },
             );
           }
           throw error;

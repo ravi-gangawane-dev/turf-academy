@@ -1,24 +1,27 @@
-import { DatePipe } from '@angular/common';
-import { RoleCatalogService } from '../../core/auth/role-catalog.service';
-import { TableTools } from '../../shared/data-table/table-tools';
-import { AsyncState } from '../../shared/async-state/async-state';
-import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AccountStatus, StaffRole } from '../../core/auth/auth.model';
+import { RoleCatalogService } from '../../core/auth/role-catalog.service';
 import {
-  UserManagementService,
   ManagedUser,
   ManagedUserFilters,
   ManagedUserQuery,
   UserAccessAuditRow,
   UserInvitationLink,
+  UserManagementService,
 } from '../../core/auth/user-management.service';
-import { AccountStatus, StaffRole } from '../../core/auth/auth.model';
-import { ToastService } from '../../shared/toast/toast.service';
-import { Pagination } from '../../shared/pagination/pagination';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { ToastService } from '../../shared/toast/toast.service';
 
 interface PendingAccessChange {
   readonly user: ManagedUser;
@@ -30,7 +33,7 @@ interface PendingAccessChange {
 
 @Component({
   selector: 'app-users-settings-panel',
-  imports: [TableTools, AsyncState, ModalFocus, ReactiveFormsModule, FormsModule, Pagination, SortableHeader, DatePipe],
+  imports: [TableTools, AsyncState, ModalFocus, ReactiveFormsModule, FormsModule, SortableHeader, AcademyDatePipe, ColumnFilter, StatusBadge, ModalBackdrop, DataTable],
   templateUrl: './users-settings-panel.html',
   styleUrl: './users-settings-panel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -72,8 +75,8 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
   async ngOnInit() { void this.roleCatalog.load(); await Promise.all([this.reload(), this.loadAudit()]); }
   protected async reloadCatalog(): Promise<void> { await this.roleCatalog.load(true); }
   ngOnDestroy(): void { if (this.filterTimer) clearTimeout(this.filterTimer); }
-  protected dismissInviteBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget && !this.saving()) this.inviteOpen.set(false);
+  protected dismissInviteBackdrop(): void {
+    if (!this.saving()) this.inviteOpen.set(false);
   }
   protected async invite() {
     if (this.saving()) return;
@@ -163,8 +166,8 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     input.select();
   }
-  protected dismissLinkBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.closeInviteLink();
+  protected dismissLinkBackdrop(): void {
+    this.closeInviteLink();
   }
   protected closeInviteLink(): void {
     if (this.linkBusy()) return;
@@ -185,8 +188,8 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
       phone: this.form.controls.phone.value.trim(),
     });
   }
-  protected dismissAccessBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget && !this.saving()) this.cancelAccessChange();
+  protected dismissAccessBackdrop(): void {
+    if (!this.saving()) this.cancelAccessChange();
   }
   /**
    * Role/status changes are reviewed before they are written: the select change
@@ -298,6 +301,7 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
   protected invitationLabel(user: ManagedUser): string { return user.invitation ? user.invitation.status : 'Not invited'; }
   protected invitedOn(user: ManagedUser): string { return user.invitation?.invited_at?.slice(0, 10) ?? '—'; }
   protected lastLogin(user: ManagedUser): string { return user.last_sign_in_at ? user.last_sign_in_at.slice(0, 10) : 'Never'; }
+  protected setFilter(key: keyof typeof this.filters, value: string): void { this.filters[key] = value; this.scheduleFilters(); }
   protected scheduleFilters(): void { if (this.filterTimer) clearTimeout(this.filterTimer); this.page.set(1); this.filterTimer = setTimeout(() => { void this.reload(); }, 250); }
   protected async setPage(page: number) { if (this.filterTimer) clearTimeout(this.filterTimer); this.page.set(page); await this.reload(); }
   protected async setPageSize(size: number) { if (this.filterTimer) clearTimeout(this.filterTimer); this.pageSize.set(size); this.page.set(1); await this.reload(); }

@@ -7,24 +7,24 @@
   min-width: 0;
   overflow-wrap: anywhere;
   color: #17223c;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 .page-hero {
   min-height: 116px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px 190px;
   align-items: center;
-  gap: 18px;
+  gap: var(--app-space-4-5);
   padding: 16px 22px;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: linear-gradient(90deg, #f9fcfb 0%, #eaf7f0 45%, #075c43 100%);
 }
 .page-hero nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  color: #167342;
+  gap: var(--app-space-2);
+  color: var(--app-primary-dark);
 }
 .page-hero nav button {
   padding: 0;
@@ -34,7 +34,7 @@
 }
 .page-hero h1 {
   margin: 9px 0 2px;
-  font-size: 27px;
+  font-size: var(--app-fs-h1);
 }
 .page-hero p {
   margin: 0;
@@ -43,15 +43,15 @@
 .page-hero blockquote {
   margin: 0;
   color: #fff;
-  font-size: 17px;
+  font-size: var(--app-fs-h3);
   line-height: 1.4;
 }
 .contact {
   height: 42px;
-  border: 1px solid #8ed0ae;
-  border-radius: 7px;
+  border: 1px solid var(--app-primary-soft);
+  border-radius: var(--app-radius-sm);
   color: #fff;
-  background: #07864e;
+  background: var(--app-primary);
   font-weight: 700;
 }
 .contact i {
@@ -60,11 +60,11 @@
 .profile-summary {
   display: grid;
   grid-template-columns: 145px minmax(0, 1fr) 480px;
-  gap: 16px;
+  gap: var(--app-space-4);
   margin-top: 10px;
   padding: 12px;
   border: 1px solid #dce7e1;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   background: #fff;
 }
 .profile-summary > *,
@@ -77,10 +77,10 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 8px;
-  color: #087340;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
   background: #e3f5ea;
-  font-size: 27px;
+  font-size: var(--app-fs-h1);
   font-weight: 800;
 }
 .photo img {
@@ -90,16 +90,16 @@
 }
 .identity h2 {
   margin: 5px 0;
-  font-size: 20px;
+  font-size: var(--app-fs-h2);
 }
 .edit-profile {
   margin-left: 12px;
   padding: 7px 11px;
-  border: 1px solid #16834d;
-  border-radius: 6px;
-  color: #087340;
+  border: 1px solid var(--app-primary);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
   background: #fff;
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   font-weight: 700;
 }
 .edit-profile i {
@@ -112,10 +112,10 @@
 .pill {
   margin-left: 6px;
   padding: 4px 10px;
-  border-radius: 999px;
-  color: #087340;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-primary-dark);
   background: #e0f5e8;
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   text-transform: capitalize;
 }
 .identity > p {
@@ -125,7 +125,7 @@
 .identity dl {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: var(--app-space-2-5);
   margin: 0;
 }
 .identity dl div {
@@ -147,7 +147,7 @@
 .summary-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 .summary-metrics article {
   display: grid;
@@ -155,18 +155,18 @@
   padding: 8px;
   place-items: center;
   align-content: center;
-  gap: 5px;
+  gap: var(--app-space-1);
   border: 1px solid #e1e9e5;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #f8fbf9;
   text-align: center;
 }
 .summary-metrics i {
-  font-size: 20px;
-  color: #0a8b4a;
+  font-size: var(--app-fs-h2);
+  color: var(--app-primary);
 }
 .summary-metrics strong {
-  font-size: 19px;
+  font-size: var(--app-fs-h2);
 }
 .summary-metrics small {
   color: #6d7c75;
@@ -175,7 +175,7 @@
   display: flex;
   margin-top: 10px;
   border: 1px solid #e0e8e4;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   overflow-x: auto;
 }
@@ -192,41 +192,41 @@
 }
 .tabs button.active {
   color: #fff;
-  background: #128b50;
+  background: var(--app-primary);
 }
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) minmax(0, 0.95fr);
-  gap: 10px;
+  gap: var(--app-space-2-5);
   margin-top: 10px;
 }
 .content-grid aside {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: var(--app-space-2-5);
 }
 .panel {
   min-width: 0;
   padding: 15px;
   border: 1px solid #dce6e1;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   background: #fff;
 }
 .panel h2 {
   margin: 0 0 12px;
-  font-size: 15px;
+  font-size: var(--app-fs-body);
 }
 .panel header {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--app-space-2);
   align-items: center;
   justify-content: space-between;
 }
 .panel header > span {
   padding: 4px 9px;
-  border-radius: 999px;
-  color: #087340;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-primary-dark);
   background: #e2f6e9;
 }
 .panel dl {
@@ -242,11 +242,11 @@
 .program-name {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: var(--app-space-3);
   margin: 8px 0 10px;
   padding: 12px;
   border: 1px solid #e5ebe8;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
   background: #f7faf8;
 }
 .program-name > i {
@@ -256,13 +256,13 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #078b4a;
+  color: var(--app-primary);
   background: #ddf5e7;
 }
 .program-name span {
   display: grid;
   min-width: 0;
-  gap: 4px;
+  gap: var(--app-space-1);
 }
 .program-name small {
   color: #64756d;
@@ -288,24 +288,24 @@
 .document-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: var(--app-space-2-5);
 }
 .document-grid article {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding: 13px;
   border: 1px solid #e1e9e5;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
 }
 .document-grid article > i {
-  color: #0a8b4a;
-  font-size: 20px;
+  color: var(--app-primary);
+  font-size: var(--app-fs-h2);
 }
 .document-grid span {
   display: grid;
   min-width: 0;
-  gap: 4px;
+  gap: var(--app-space-1);
 }
 .document-grid small {
   color: #6b7a73;
@@ -318,19 +318,19 @@
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   border: 1px solid #dce7e1;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   background: #fff;
   color: #687970;
 }
 .state i {
-  font-size: 25px;
+  font-size: var(--app-fs-stat);
 }
 .state button {
   padding: 8px 15px;
   border: 1px solid #cedbd4;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
 }
 .state.error {

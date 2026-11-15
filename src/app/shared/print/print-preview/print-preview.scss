@@ -13,7 +13,7 @@
   flex-direction: column;
   width: min(1000px, 100%);
   max-height: calc(100vh - 36px);
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   background: #fff;
   box-shadow: 0 30px 80px rgb(0 0 0 / 32%);
   overflow: hidden;
@@ -23,20 +23,20 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--app-space-4);
   padding: 16px 20px;
   border-bottom: 1px solid #e2e8e5;
 }
 
 .preview-head h2 {
   margin: 2px 0 0;
-  font-size: 19px;
+  font-size: var(--app-fs-h2);
 }
 
 .preview-kicker {
   margin: 0;
-  color: #0f6b3f;
-  font-size: 10.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -45,14 +45,14 @@
 .preview-hint {
   margin: 5px 0 0;
   color: #5f6f66;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   line-height: 1.5;
 }
 
 .preview-close {
   padding: 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: none;
   color: #5f6f66;
   cursor: pointer;
@@ -66,7 +66,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 10px 16px;
+  gap: var(--app-space-2-5) var(--app-space-4);
   padding: 10px 20px;
   border-bottom: 1px solid #e2e8e5;
   background: #f7faf8;
@@ -74,12 +74,12 @@
 
 .preview-field {
   display: grid;
-  gap: 4px;
+  gap: var(--app-space-1);
 }
 
 .preview-field span {
   color: #5f6f66;
-  font-size: 9.5px;
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -88,19 +88,19 @@
 .preview-field select {
   padding: 6px 8px;
   border: 1px solid #cfdcd4;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: #33503f;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .preview-link {
   padding: 6px 2px;
   border: 0;
   background: none;
-  color: #0f6b3f;
-  font-size: 11.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
@@ -115,7 +115,7 @@
   flex: 1 1 240px;
   margin: 0;
   color: #5f6f66;
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   line-height: 1.45;
   text-align: right;
 }
@@ -133,7 +133,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   min-height: 320px;
   padding: 32px;
   color: #33503f;
@@ -142,32 +142,32 @@
 
 .preview-state h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--app-fs-h3);
 }
 
 .preview-state p {
   max-width: 46ch;
   margin: 0;
   color: #5f6f66;
-  font-size: 12.5px;
+  font-size: var(--app-fs-meta);
   line-height: 1.55;
 }
 
 .preview-state-icon {
   color: #b45309;
-  font-size: 28px;
+  font-size: var(--app-fs-h1);
 }
 
 .preview-state button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--app-space-1-5);
   padding: 9px 16px;
-  border: 1px solid #076b38;
-  border-radius: 7px;
-  background: #076b38;
+  border: 1px solid var(--app-primary-dark);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-primary-dark);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 700;
   cursor: pointer;
 }
@@ -181,7 +181,7 @@
   width: 20px;
   height: 20px;
   border: 3px solid rgb(15 107 63 / 25%);
-  border-top-color: #0f6b3f;
+  border-top-color: var(--app-primary-dark);
 }
 
 .preview-paper {
@@ -190,7 +190,11 @@
   margin: 0 auto;
   padding: var(--preview-margin, 12mm);
   background: #fff;
-  box-shadow: 0 2px 18px rgb(15 36 25 / 18%);
+  box-shadow: var(--app-shadow);
+}
+
+.preview-paper + .preview-paper {
+  margin-top: 18px;
 }
 
 .preview-paper--a5 {
@@ -223,7 +227,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--app-space-2);
   padding: 14px 20px;
   border-top: 1px solid #e2e8e5;
 }
@@ -231,25 +235,25 @@
 .preview-actions button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--app-space-1-5);
   padding: 9px 14px;
   border: 1px solid #d8e1eb;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: #33503f;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 700;
   cursor: pointer;
 }
 
 .preview-actions button.secondary {
   border-color: #b9d3c4;
-  color: #0f6b3f;
+  color: var(--app-primary-dark);
 }
 
 .preview-actions .primary {
-  border-color: #076b38;
-  background: #076b38;
+  border-color: var(--app-primary-dark);
+  background: var(--app-primary-dark);
   color: #fff;
 }
 

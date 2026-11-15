@@ -1,27 +1,20 @@
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, of, startWith } from 'rxjs';
 import { DASHBOARD_REPOSITORY } from '../../core/api/dashboard.repository';
-import { MockDashboardRepository } from '../../core/api/mock-dashboard.repository';
-import { HttpDashboardRepository } from '../../core/api/http-dashboard.repository';
-import { API_CONFIG } from '../../core/config/api.config';
+import { provideDashboardRepository } from '../../core/api/dashboard.providers';
 import { AuthService } from '../../core/auth/auth.service';
-import { SupabaseDashboardRepository } from '../../core/api/supabase-dashboard.repository';
 import { RecentActivity } from './recent-activity';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { SummaryCards } from '../../shared/summary-cards/summary-cards';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [PageHero, AsyncPipe, DatePipe, AcademyMoneyPipe, RecentActivity, SummaryMetricCard],
-  providers: [
-    MockDashboardRepository,
-    HttpDashboardRepository,
-    SupabaseDashboardRepository,
-    { provide: DASHBOARD_REPOSITORY, useFactory: () => { const config = inject(API_CONFIG); return config.useMockApi ? inject(MockDashboardRepository) : config.backend === 'supabase' ? inject(SupabaseDashboardRepository) : inject(HttpDashboardRepository); } },
-  ],
+  imports: [PageHero, AsyncPipe, AcademyDatePipe, AcademyMoneyPipe, RecentActivity, SummaryCards],
+  providers: [provideDashboardRepository()],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

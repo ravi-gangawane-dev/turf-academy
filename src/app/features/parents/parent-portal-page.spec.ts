@@ -100,6 +100,8 @@ function setup(view = 'children') {
         useValue: {
           logoUrl: () => '/branding/turf-cricket-academy-logo.png',
           value: () => ({ academy_name: 'Turf Cricket Academy' }),
+          locale: () => 'en-IN',
+          timezone: () => 'Asia/Kolkata',
         },
       },
       { provide: PrintDocumentService, useValue: { printReceipt } },

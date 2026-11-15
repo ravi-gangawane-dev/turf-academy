@@ -1,9 +1,11 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
+import { DataTable } from '../../shared/data-table/data-table';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AcademySupport } from '../../shared/academy-support';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -46,7 +48,7 @@ type ParentView =
 
 @Component({
   selector: 'app-parent-portal-page',
-  imports: [TableTools, PageHero, AcademySupport,DatePipe, AcademyMoneyPipe, Pagination, StatusBadge, AsyncState, SummaryMetricCard, SortableHeader, AddressFields],
+  imports: [TableTools, PageHero, AcademySupport,DataTable,AcademyDatePipe, AcademyMoneyPipe, Pagination, StatusBadge, AsyncState, SummaryMetricCard, SortableHeader, AddressFields],
   templateUrl: './parent-portal-page.html',
   styleUrl: './parent-portal-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -416,7 +418,7 @@ export class ParentPortalPage implements OnInit, OnDestroy {
   private chargeMonth(charge: ParentPortalRecord | null): string | undefined {
     const month = String(charge?.['charge_month'] ?? '').slice(0, 7);
     if (!month) return undefined;
-    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString('en-GB', {
+    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString(this.preferences.locale(), {
       month: 'long',
       year: 'numeric',
       timeZone: 'UTC',

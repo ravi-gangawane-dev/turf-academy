@@ -85,7 +85,7 @@ describe('Notification backend list query', () => {
       if (query.get('select') === 'manual_state') return new Response(JSON.stringify({ code: '42703', message: 'column notifications.manual_state does not exist' }), { status: 400 });
       return new Response(null, { headers: { 'Content-Range': '0-0/1' } });
     });
-    expect(await api.counts()).toEqual({ all: 1, delivered: 1, pending: 1, failed: 1 });
+    expect(await api.counts()).toEqual({ all: 1, delivered: 1, pending: 1, failed: 1, sent: 1 });
     expect(fetch.mock.calls.filter(call => new URL(String(call[0])).searchParams.get('select') === 'manual_state')).toHaveLength(1);
   });
 
@@ -146,10 +146,10 @@ describe('Notification backend list query', () => {
     const { api, fetch } = setup();
     const result = await api.counts('in_app');
     const queries = fetch.mock.calls.map(call => new URL(String(call[0])).searchParams);
-    expect(queries).toHaveLength(4);
+    expect(queries).toHaveLength(5);
     expect(queries.every(query => query.get('channel') === 'eq.in_app')).toBe(true);
     expect(queries.map(query => query.get('status'))).toEqual([
-      null, 'in.(delivered)', 'in.(queued,sending)', 'in.(failed)',
+      null, 'in.(delivered)', 'in.(queued,sending)', 'in.(failed)', 'in.(sent)',
     ]);
     expect(result.pending).toBe(21);
   });
@@ -163,7 +163,7 @@ describe('Notification backend list query', () => {
     await api.page(2, 5, 'failed', 'email', 'parent-id', 'birthday', filters);
     await api.counts('email', { ...filters, status: 'failed', parentId: 'parent-id', templateCategory: 'birthday' });
     const queries = fetch.mock.calls.map(call => new URL(String(call[0])).searchParams);
-    expect(queries).toHaveLength(5);
+    expect(queries).toHaveLength(6);
     expect(queries[0].get('select')).toContain('student:students!inner(full_name)');
     expect(queries[0].get('student.full_name')).toBe('ilike.%Aarav%');
     for (const summary of queries.slice(1)) {

@@ -295,11 +295,11 @@ describe('Monthly charge totals', () => {
     await settle();
     const amounts = () =>
       Array.from(
-        fixture.nativeElement.querySelectorAll('.metrics strong') as NodeListOf<HTMLElement>,
+        fixture.nativeElement.querySelectorAll('app-summary-cards strong') as NodeListOf<HTMLElement>,
       ).map((element) => element.textContent?.trim());
     const expectedAmounts = ['17', '₹12,500.00', '₹3,500.00', '₹1,500.00', '₹7,500.00'];
     expect(amounts()).toEqual(expectedAmounts);
-    expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelectorAll('app-summary-cards app-summary-metric-card')).toHaveLength(5);
     expect(fixture.nativeElement.querySelector('.table-tools-actions .charge-status-filter')).not.toBeNull();
 
     const status: HTMLInputElement = fixture.nativeElement.querySelector(

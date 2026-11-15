@@ -1,5 +1,19 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, finalize, firstValueFrom, forkJoin, Observable, tap } from 'rxjs';
+import { normalizeHttpError } from '../api/app-http.error';
+import {
+  HttpAttendanceRepository,
+  HttpBatchesRepository,
+  HttpCoachesRepository,
+  HttpEnrollmentsRepository,
+  HttpFeesRepository,
+  HttpNotificationsRepository,
+  HttpParentsRepository,
+  HttpReportsRepository,
+  HttpStudentsRepository,
+} from '../api/http-academy.repositories';
+import { SupabaseAttendanceRepository } from '../api/supabase-attendance.repository';
 import { API_CONFIG } from '../config/api.config';
 import {
   Batch,
@@ -13,25 +27,13 @@ import {
   Student,
   StudentRegistration,
 } from '../models/academy.model';
-import {
-  HttpAttendanceRepository,
-  HttpBatchesRepository,
-  HttpCoachesRepository,
-  HttpEnrollmentsRepository,
-  HttpFeesRepository,
-  HttpNotificationsRepository,
-  HttpParentsRepository,
-  HttpReportsRepository,
-  HttpStudentsRepository,
-} from '../api/http-academy.repositories';
-import { AcademyStore } from './academy.store';
 import { AttendanceOutboxService } from '../offline/attendance-outbox.service';
-import { normalizeHttpError } from '../api/app-http.error';
-import { SupabaseAttendanceRepository } from '../api/supabase-attendance.repository';
 import { AttendanceWhatsApp } from '../services/whatsapp.service';
+import { AcademyStore } from './academy.store';
 
 @Injectable({ providedIn: 'root' })
 export class AcademyFacade {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly config = inject(API_CONFIG);
   private readonly state = inject(AcademyStore);
   private readonly studentsApi = inject(HttpStudentsRepository);
@@ -108,7 +110,7 @@ export class AcademyFacade {
         finalize(() => this.loading.set(false)),
         catchError((error) => this.handleError(error)),
       )
-      .subscribe((data) =>
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) =>
         this.state.hydrate({
           students: data.studentPage.items,
           parents: data.parents,
@@ -313,7 +315,7 @@ export class AcademyFacade {
         finalize(() => this.loading.set(false)),
         catchError((error) => this.handleError(error)),
       )
-      .subscribe(() => this.refresh());
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
     return null;
   }
   addMonthlyCharge(enrollmentId: string, period: string, dueDate: string, amountPaise: number): void {
@@ -332,7 +334,7 @@ export class AcademyFacade {
         finalize(() => this.loading.set(false)),
         catchError((error) => this.handleError(error)),
       )
-      .subscribe(() => this.refresh());
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
   }
   private handleError(error: unknown): Observable<never> {
     const normalized = normalizeHttpError(error);

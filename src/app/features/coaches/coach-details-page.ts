@@ -18,30 +18,43 @@ import {
 } from '../../shared/print/print-document.models';
 import { PrintIdCardDialog } from '../../shared/print/print-id-card-dialog/print-id-card-dialog';
 import { printDateOnly, printProfileReference } from '../../shared/print/print-format';
+import { AddressFields } from '../../shared/address-fields/address-fields';
+import { WhatsappService } from '../../core/services/whatsapp.service';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 @Component({
   selector: 'app-coach-details-page',
-  imports: [TableTools, AsyncState, StatusBadge, PageHero, FormsModule, PrintIdCardDialog],
+  imports: [TableTools, AsyncState, StatusBadge, PageHero, FormsModule, PrintIdCardDialog, AddressFields],
   templateUrl: './coach-details-page.html',
   styleUrl: './coach-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoachDetailsPage implements OnInit {
+  private readonly whatsapp = inject(WhatsappService);
+  protected sendMessage(): void {
+    try {
+      const url = this.whatsapp.linkForMessage(this.coach()?.phone || '', '');
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      this.toast.error('Add a valid phone number for this coach to open WhatsApp.');
+    }
+  }
   private readonly details = inject(StaffDetailsService);
   private readonly toast = inject(ToastService);
   private readonly printDocuments = inject(PrintDocumentService);
+  private readonly preferences = inject(AcademyPreferencesService);
   protected readonly tab = signal('overview');
   protected readonly summaryLoading = signal(false);
   protected readonly attendance = signal<CoachAttendanceSummary[]>([]);
   private attendanceRequest = 0;
-  protected from = new Date().toLocaleDateString('en-CA').slice(0,7)+'-01';
-  protected to = new Date().toLocaleDateString('en-CA');
-  protected batches(view:string):void{void this.router.navigate(['/batches',view],{queryParams:{coach:this.id}});}
-  protected async showAttendance():Promise<void>{
+  protected from = this.preferences.today().slice(0, 7) + '-01';
+  protected to = this.preferences.today();
+  protected batches(view: string): void { void this.router.navigate(['/batches', view], { queryParams: { coach: this.id } }); }
+  protected async showAttendance(): Promise<void> {
     const request = ++this.attendanceRequest;
     const from = this.from, to = this.to;
-    this.tab.set('attendance');this.error.set('');
+    this.tab.set('attendance'); this.error.set('');
     this.attendance.set([]);
-    if(!from||!to||to<from){this.summaryLoading.set(false);this.error.set('Enter a valid date range.');return;}
+    if (!from || !to || to < from) { this.summaryLoading.set(false); this.error.set('Enter a valid date range.'); return; }
     this.summaryLoading.set(true);
     try {
       const rows = await this.details.attendance(this.id, from, to);

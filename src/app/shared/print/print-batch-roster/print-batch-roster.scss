@@ -29,7 +29,7 @@
   border: 1px solid #cfe0d5;
   border-radius: 2mm;
   background: #f1f7f3;
-  color: #0f6b3f;
+  color: var(--app-primary-dark);
   font-size: 8pt;
 }
 
@@ -73,9 +73,9 @@
 .roster-guardian em {
   margin-left: 1.5mm;
   padding: 0.2mm 1.2mm;
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: #e3f6eb;
-  color: #0b6339;
+  color: var(--app-primary-dark);
   font-size: 6.5pt;
   font-style: normal;
   font-weight: 700;
@@ -84,7 +84,7 @@
 }
 
 .roster-pickup {
-  color: #0b6339;
+  color: var(--app-primary-dark);
   font-size: 7.4pt;
 }
 

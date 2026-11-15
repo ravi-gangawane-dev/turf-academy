@@ -15,6 +15,19 @@ describe('ProfilePhotoUpload save lifecycle', () => {
     expect(trigger.querySelector('.camera-badge')).not.toBeNull();
   });
 
+  it('uses a camera-only action over a square photo preview for role forms', () => {
+    const fixture = TestBed.createComponent(ProfilePhotoUpload);
+    fixture.componentRef.setInput('label', 'Student');
+    fixture.componentRef.setInput('photoUrl', 'https://cdn.example.com/student.png');
+    fixture.detectChanges();
+
+    const trigger = fixture.nativeElement.querySelector('.photo-trigger') as HTMLButtonElement;
+    expect(trigger.getAttribute('aria-label')).toBe('Change student photo');
+    expect(trigger.querySelector('.camera-badge')).not.toBeNull();
+    expect(trigger.querySelector('img')?.getAttribute('src')).toBe('https://cdn.example.com/student.png');
+    expect(trigger.textContent).not.toContain('Change photo');
+  });
+
   it('reflects a selected photo in the trigger state', () => {
     const fixture = TestBed.createComponent(ProfilePhotoUpload);
     fixture.componentRef.setInput('selected', true);

@@ -82,6 +82,18 @@ describe('StudentFormPage', () => {
     expect(page).toBeTruthy();
   });
 
+  it('uses the reusable photo editor on the student form', async () => {
+    const { fixture, page } = setup({ id: 's1' });
+    await page.ngOnInit();
+    fixture.detectChanges();
+
+    const trigger = fixture.nativeElement.querySelector('.photo-trigger') as HTMLButtonElement;
+    expect(trigger).not.toBeNull();
+    trigger.click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.photo-modal')).not.toBeNull();
+  });
+
   it('loads the batch, program and coach options for the form', async () => {
     const { page, filters } = setup();
     await page.ngOnInit();

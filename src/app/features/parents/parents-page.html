@@ -71,7 +71,7 @@
           <tr>
             <td>{{ (page() - 1) * pageSize() + i + 1 }}</td>
             <td [attr.data-export-value]="row.name">
-              <button class="parent-name" (click)="openDetails(row.id)">
+              <button type="button" class="parent-name" (click)="openDetails(row.id)">
                 <span>
                   @if (row.photoUrl) {
                   <img [src]="row.photoUrl" alt="" />
@@ -90,12 +90,13 @@
             <td><i class="pi pi-calendar"></i>{{ row.joinedOn?.slice(0, 10) || '—' }}</td>
             <td>
               <span class="row-actions">
-                <button class="app-button icon" aria-label="View parent" (click)="openDetails(row.id)">
+                <button type="button" class="app-button icon" aria-label="View parent" (click)="openDetails(row.id)">
                   <i class="pi pi-eye"></i>
-                </button><button class="app-button icon" aria-label="Edit parent" (click)="edit(row)">
+                </button><button type="button" class="app-button icon" aria-label="Edit parent" (click)="edit(row)">
                   <i class="pi pi-pencil"></i>
                 </button>
-                <button class="app-button icon danger" aria-label="Delete parent" (click)="deleteParent(row)">
+                <button type="button" class="app-button icon danger" aria-label="Delete parent"
+                  (click)="deleteParent(row)">
                   <i class="pi pi-trash"></i>
                 </button>
               </span>

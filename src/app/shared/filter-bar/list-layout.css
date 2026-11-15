@@ -105,6 +105,16 @@
   box-shadow: none;
   padding-block: 0;
 }
+.workspace > main app-filter-bar.list-toolbar:is(.batch-toolbar, .student-toolbar) > section {
+  justify-content: flex-end;
+}
+.workspace > main app-filter-bar.list-toolbar.batch-toolbar .schedule-action,
+.workspace > main app-filter-bar.list-toolbar.student-toolbar .attendance-action {
+  margin-inline-start: auto;
+}
+.workspace > main app-filter-bar.list-toolbar.student-toolbar > section > select {
+  flex: 0 1 180px;
+}
 @media (max-width: 700px) {
   .workspace > main .app-list-page { gap: 16px; }
   .workspace > main app-filter-bar:is([table-toolbar], .list-toolbar) .filter-search {

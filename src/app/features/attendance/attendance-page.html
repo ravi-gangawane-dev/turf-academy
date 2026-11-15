@@ -13,12 +13,7 @@
   <app-async-state kind="error" title="Attendance could not be loaded" [message]="store.apiError()" actionLabel="Retry"
     (action)="store.loadAttendanceWorkspace()" />
   }
-  <section class="attendance-metrics">
-    @for (metric of metricCards(); track metric.label) {
-    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
-      [tone]="metric.tone" />
-    }
-  </section>
+  <app-summary-cards [cards]="metricCards()" />
   <section class="dashboard-row bottom-row">
     <article class="dash-card recent">
       <header>
@@ -28,7 +23,7 @@
       @for (row of recent(); track row.id) {
       <div>
         <span class="att-avatar">{{ initials(row.studentName) }}</span><strong>{{ row.studentName }}</strong><small>{{
-          row.batchName }}</small><time>{{ row.attendance?.checkInAt || '—' }}</time><app-status-badge
+          row.batchName }}</small><time>{{ row.attendance?.checkInAt ? (row.attendance.checkInAt | academyDate: 'h:mm a') : '—' }}</time><app-status-badge
           [status]="$any(row.attendance?.status || '—')" />
       </div>
       } @empty {

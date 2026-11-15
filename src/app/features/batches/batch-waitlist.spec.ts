@@ -7,7 +7,7 @@ import { EnrollmentsService } from '../../core/supabase/domain-services';
 
 describe('Batch waitlist', () => {
  afterEach(() => { vi.useRealTimers(); TestBed.resetTestingModule(); });
- function setup(view='capacity') {
+ function setup(view='waiting-list') {
   const api={waitlistPage:vi.fn().mockResolvedValue({rows:[{id:'w1',student_id:'s1',batch_id:'b1',student_name:'Student One',batch_name:'Morning',created_at:'2026-10-14T00:00:00Z'}],total:12,page:1}),waitlist:vi.fn().mockResolvedValue(null)};
   const lists={page:vi.fn().mockResolvedValue({rows:[],total:0,page:1,options:{},metrics:{batches:0,active:0,capacity:0,waiting:12}})};
   TestBed.configureTestingModule({imports:[BatchesPage],providers:[provideRouter([]),{provide:BatchWorkspaceService,useValue:api},{provide:ServerListService,useValue:lists},{provide:EnrollmentsService,useValue:{}}]});
@@ -15,18 +15,30 @@ describe('Batch waitlist', () => {
   const fixture=TestBed.createComponent(BatchesPage);
   return {fixture,state:fixture.componentInstance as any,api,lists};
  }
- it.each(['capacity','student-allocation'])('renders column controls and independent pagination in %s',async(view)=>{
+ it('renders column controls and independent pagination in the waiting-list tab',async()=>{
+  const view='waiting-list';
   const {fixture,state,api,lists}=setup(view);
   fixture.detectChanges();await fixture.whenStable();fixture.detectChanges();
   const table:HTMLElement=fixture.nativeElement.querySelector('.waiting-directory');
   expect(table.querySelectorAll('app-sortable-header')).toHaveLength(3);
   expect(table.querySelectorAll('.column-filters input')).toHaveLength(3);
-  if(view==='student-allocation')expect(fixture.nativeElement.querySelectorAll('.allocation-directory .column-filters input')).toHaveLength(4);
+  expect(fixture.nativeElement.querySelector('.allocation-directory')).toBeNull();
+  expect(fixture.nativeElement.querySelector('.batch-directory:not(.waiting-directory)')).toBeNull();
+  expect(fixture.nativeElement.querySelector('.waiting-card .waiting-heading')).toBeNull();
+  expect([...fixture.nativeElement.querySelectorAll('.waiting-card .table-tools-heading h2')].map((heading:HTMLElement)=>heading.textContent?.trim())).toEqual(['Waiting list']);
+  expect(fixture.nativeElement.querySelector('.waiting-card app-table-tools button')?.textContent).toContain('Reset filters');
   expect(table.querySelector('input[type=date]')).not.toBeNull();
   expect(table.textContent).toContain('Student One');expect(table.textContent).toContain('Morning');
   expect(state.waitingTotal()).toBe(12);expect(api.waitlistPage).toHaveBeenCalledTimes(1);
   expect(lists.page.mock.calls[0][3]).toMatchObject({omitWaitlist:'true'});
   expect(fixture.nativeElement.querySelector('.waiting-card app-pagination').textContent).toContain('12');
+ });
+ it.each(['capacity','student-allocation'])('does not duplicate the waiting list in the %s tab',async(view)=>{
+  const {fixture,api}=setup(view);
+  fixture.detectChanges();await fixture.whenStable();fixture.detectChanges();
+  expect(fixture.nativeElement.querySelector('.waiting-directory')).toBeNull();
+  expect(fixture.nativeElement.querySelector('.waiting-card')).toBeNull();
+  expect(api.waitlistPage).not.toHaveBeenCalled();
  });
  it('combines column filters/sort, resets pages, debounces and avoids duplicate requests',async()=>{
   const {fixture,state,api,lists}=setup();

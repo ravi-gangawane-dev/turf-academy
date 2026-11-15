@@ -5,10 +5,12 @@ import { CoachesService } from '../../core/supabase/domain-services';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ToastService } from '../../shared/toast/toast.service';
 import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
+import { AddressFields } from '../../shared/address-fields/address-fields';
+import { addressFromDatabase, addressValue, createAddressForm } from '../../core/models/address.model';
 
 @Component({
   selector: 'app-coach-form-page',
-  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload],
+  imports: [ReactiveFormsModule, PageHero, ProfilePhotoUpload, AddressFields],
   templateUrl: './coach-form-page.html',
   styleUrl: './coach-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +40,7 @@ export class CoachFormPage implements OnInit {
     primarySpecialization: ['', Validators.required],
     additionalSpecializations: [''],
     biography: [''],
+    address: createAddressForm(this.fb.nonNullable),
   });
   async ngOnInit(): Promise<void> {
     this.coachId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -61,6 +64,7 @@ export class CoachFormPage implements OnInit {
         primarySpecialization: specs[0] ?? '',
         additionalSpecializations: specs.slice(1).join(', '),
         biography: coach.biography ?? '',
+        address: addressFromDatabase(coach.address),
       });
       this.photoUrl.set(coach.photo_url);
     } catch (error) {
@@ -90,6 +94,7 @@ export class CoachFormPage implements OnInit {
         experience_years: value.experienceYears,
         qualification: value.qualification,
         biography: value.biography || null,
+        address: addressValue(value.address),
         status: value.status,
       };
       const saved = this.editing()

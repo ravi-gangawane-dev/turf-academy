@@ -13,171 +13,169 @@
 
       @if (!error()) {
       <section class="records">
-        <div class="table-wrap" [attr.aria-busy]="loading()">
-          <app-table-tools title="Attendance history" [table]="exportTable1" [total]="total()">
-            <div class="table-filters" role="group" aria-label="Attendance filters">
-              <div class="filter-main">
-                <label class="search-field">
-                  <span>Search students</span>
-                  <input type="search" placeholder="Search by name or student code&#8230;" [value]="search()"
-                    (input)="onSearchChange($event)" />
-                </label>
+        <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="records"
+          (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+          <div class="table-wrap" [attr.aria-busy]="loading()">
+            <app-table-tools title="Attendance history" [table]="exportTable1" [total]="total()">
+              <div class="table-filters" role="group" aria-label="Attendance filters">
+                <div class="filter-main">
+                  <label class="search-field">
+                    <span>Search students</span>
+                    <input type="search" placeholder="Search by name or student code&#8230;" [value]="search()"
+                      (input)="onSearchChange($event)" />
+                  </label>
 
-                <label>
-                  <span>Attendance Status</span>
-                  <select [value]="status()" (change)="onStatusChange($event)">
-                    <option value="all">All statuses</option>
-                    @for (option of statusOptions; track option.value) {
-                    <option [value]="option.value">{{ option.label }}</option>
-                    }
-                  </select>
-                </label>
+                  <label>
+                    <span>Attendance Status</span>
+                    <select [value]="status()" (change)="onStatusChange($event)">
+                      <option value="all">All statuses</option>
+                      @for (option of statusOptions; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                      }
+                    </select>
+                  </label>
 
-                <div class="filter-actions">
-                  <button type="button" class="daily-register" (click)="openRegister()">
-                    <i class="pi pi-clipboard" aria-hidden="true"></i>
-                    Daily register
-                  </button>
-                  <button type="button" class="monthly-matrix" (click)="openMatrix()">
-                    <i class="pi pi-table" aria-hidden="true"></i>
-                    Monthly matrix
-                  </button>
-                  <button type="button" class="more-filters" (click)="toggleMoreFilters()"
-                    [attr.aria-expanded]="showMoreFilters()" aria-controls="attendance-advanced-filters">
-                    <i class="pi pi-sliders-h" aria-hidden="true"></i>
-                    {{ showMoreFilters() ? 'Fewer filters' : 'More filters' }}
-                    @if (advancedFilterCount()) {
-                    <span class="filter-count">{{ advancedFilterCount() }}</span>
-                    }
-                  </button>
-                  @if (hasActiveFilters()) {
-                  <button type="button" class="clear-filters" (click)="resetFilters()">Clear all filters</button>
-                  }
-                </div>
-              </div>
-
-              <div class="filter-meta">
-                <ul class="filter-chips" aria-label="Applied filters">
-                  @for (filter of activeFilters(); track filter.key) {
-                  <li>
-                    <button type="button" class="filter-chip" (click)="removeFilter(filter.key)"
-                      [attr.aria-label]="'Remove filter: ' + filter.label">
-                      <span>{{ filter.label }}</span>
-                      <i class="pi pi-times" aria-hidden="true"></i>
+                  <div class="filter-actions">
+                    <button type="button" class="daily-register" (click)="openRegister()">
+                      <i class="pi pi-clipboard" aria-hidden="true"></i>
+                      Daily register
                     </button>
-                  </li>
-                  }
-                </ul>
-                <p class="result-summary" role="status" aria-live="polite">{{ resultSummary() }}</p>
-              </div>
-
-              <div id="attendance-advanced-filters" class="filter-advanced" [hidden]="!showMoreFilters()">
-                <label>
-                  <span>Student</span>
-                  <select [value]="studentId()" (change)="onStudentChange($event)">
-                    <option value="">All students</option>
-                    @for (student of allStudents(); track student.id) {
-                    <option [value]="student.id">{{ student.name }}</option>
+                    <button type="button" class="monthly-matrix" (click)="openMatrix()">
+                      <i class="pi pi-table" aria-hidden="true"></i>
+                      Monthly matrix
+                    </button>
+                    <button type="button" class="more-filters" (click)="toggleMoreFilters()"
+                      [attr.aria-expanded]="showMoreFilters()" aria-controls="attendance-advanced-filters">
+                      <i class="pi pi-sliders-h" aria-hidden="true"></i>
+                      {{ showMoreFilters() ? 'Fewer filters' : 'More filters' }}
+                      @if (advancedFilterCount()) {
+                      <span class="filter-count">{{ advancedFilterCount() }}</span>
+                      }
+                    </button>
+                    @if (hasActiveFilters()) {
+                    <button type="button" class="clear-filters" (click)="resetFilters()">Clear all filters</button>
                     }
-                  </select>
-                </label>
+                  </div>
+                </div>
 
-                <label>
-                  <span>Batch</span>
-                  <select [value]="batchId()" (change)="onBatchChange($event)">
-                    <option value="">All batches</option>
-                    @for (batch of allBatches(); track batch.id) {
-                    <option [value]="batch.id">{{ batch.name }}</option>
+                <div class="filter-meta">
+                  <ul class="filter-chips" aria-label="Applied filters">
+                    @for (filter of activeFilters(); track filter.key) {
+                    <li>
+                      <button type="button" class="filter-chip" (click)="removeFilter(filter.key)"
+                        [attr.aria-label]="'Remove filter: ' + filter.label">
+                        <span>{{ filter.label }}</span>
+                        <i class="pi pi-times" aria-hidden="true"></i>
+                      </button>
+                    </li>
                     }
-                  </select>
-                </label>
+                  </ul>
+                  <p class="result-summary" role="status" aria-live="polite">{{ resultSummary() }}</p>
+                </div>
 
-                <label>
-                  <span>From date</span>
-                  <input type="date" [value]="from()" [attr.max]="to() || null"
-                    (change)="onFromChange($event)" />
-                </label>
-                <label>
-                  <span>To date</span>
-                  <input type="date" [value]="to()" [attr.min]="from() || null"
-                    (change)="onToChange($event)" />
-                </label>
+                <div id="attendance-advanced-filters" class="filter-advanced" [hidden]="!showMoreFilters()">
+                  <label>
+                    <span>Student</span>
+                    <select [value]="studentId()" (change)="onStudentChange($event)">
+                      <option value="">All students</option>
+                      @for (student of allStudents(); track student.id) {
+                      <option [value]="student.id">{{ student.name }}</option>
+                      }
+                    </select>
+                  </label>
 
-                <div class="range-presets" role="group" aria-label="Quick date ranges">
-                  <span class="range-label">Quick range</span>
-                  <button type="button" [class.active]="activeRange() === 0"
-                    [attr.aria-pressed]="activeRange() === 0" (click)="setRange(0)">Today</button>
-                  <button type="button" [class.active]="activeRange() === 7"
-                    [attr.aria-pressed]="activeRange() === 7" (click)="setRange(7)">7 days</button>
-                  <button type="button" [class.active]="activeRange() === 30"
-                    [attr.aria-pressed]="activeRange() === 30" (click)="setRange(30)">30 days</button>
+                  <label>
+                    <span>Batch</span>
+                    <select [value]="batchId()" (change)="onBatchChange($event)">
+                      <option value="">All batches</option>
+                      @for (batch of allBatches(); track batch.id) {
+                      <option [value]="batch.id">{{ batch.name }}</option>
+                      }
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>From date</span>
+                    <input type="date" [value]="from()" [attr.max]="to() || null" (change)="onFromChange($event)" />
+                  </label>
+                  <label>
+                    <span>To date</span>
+                    <input type="date" [value]="to()" [attr.min]="from() || null" (change)="onToChange($event)" />
+                  </label>
+
+                  <div class="range-presets" role="group" aria-label="Quick date ranges">
+                    <span class="range-label">Quick range</span>
+                    <button type="button" [class.active]="activeRange() === 0" [attr.aria-pressed]="activeRange() === 0"
+                      (click)="setRange(0)">Today</button>
+                    <button type="button" [class.active]="activeRange() === 7" [attr.aria-pressed]="activeRange() === 7"
+                      (click)="setRange(7)">7 days</button>
+                    <button type="button" [class.active]="activeRange() === 30"
+                      [attr.aria-pressed]="activeRange() === 30" (click)="setRange(30)">30 days</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </app-table-tools>
+            </app-table-tools>
 
-          <table #exportTable1 class="academy-table" [hidden]="!records().length && !loading()">
-            <thead>
-              <tr>
-                @for (col of columns; track col) {
-                <th>{{ col }}</th>
-                }
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (loading() && !records().length) {
-              @for (row of loadingRows; track row) {
-              <tr class="skeleton-row" aria-hidden="true">
-                @for (col of columns; track col) {
-                <td><span></span></td>
-                }
-                <td><span></span></td>
-              </tr>
-              }
-              } @else {
-              @for (row of visibleRecords(); track row['id']) {
-              <tr>
-                <td>{{ row['attendance_date'] }}</td>
-                <td>
-                  <b>{{ row.student?.full_name || '—' }}</b>
-                  @if (row.student?.student_code) {
-                  <small>{{ row.student.student_code }}</small>
+            <table #exportTable1 class="academy-table" [hidden]="!records().length && !loading()">
+              <thead>
+                <tr>
+                  @for (col of columns; track col) {
+                  <th>{{ col }}</th>
                   }
-                </td>
-                <td>{{ row.student?.student_code || '—' }}</td>
-                <td>{{ row['attendance_date'] | date: 'EEEE' }}</td>
-                <td>{{ row['check_in_at'] ? (row['check_in_at'] | date: 'shortTime') : '—' }}</td>
-                <td>{{ row['check_out_at'] ? (row['check_out_at'] | date: 'shortTime') : '—' }}</td>
-                <td>
-                  <span class="status" [class.absent]="row['status'] === 'absent'"
-                    [class.late]="row['status'] === 'late'" [class.not-marked]="row['status'] === 'not_marked'">
-                    {{ statusLabel(row['status']) }}
-                  </span>
-                </td>
-                <td>{{ row.batch?.name || '—' }}</td>
-                <td>{{ row['source'] || '—' }}</td>
-                <td>{{ row['remarks'] || '—' }}</td>
-                <td>
-                  <button type="button" class="app-button icon"
-                    [attr.aria-label]="'Correct attendance for ' + (row.student?.full_name || 'student') + ' on ' + row['attendance_date']"
-                    title="Make correction" (click)="startCorrection(row)">
-                    <i class="pi pi-pencil" aria-hidden="true"></i>
-                  </button>
-                </td>
-              </tr>
-              }
-              }
-            </tbody>
-          </table>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (loading() && !records().length) {
+                @for (row of loadingRows; track row) {
+                <tr class="skeleton-row" aria-hidden="true">
+                  @for (col of columns; track col) {
+                  <td><span></span></td>
+                  }
+                  <td><span></span></td>
+                </tr>
+                }
+                } @else {
+                @for (row of visibleRecords(); track row['id']) {
+                <tr>
+                  <td>{{ row['attendance_date'] }}</td>
+                  <td>
+                    <b>{{ row.student?.full_name || '—' }}</b>
+                    @if (row.student?.student_code) {
+                    <small>{{ row.student.student_code }}</small>
+                    }
+                  </td>
+                  <td>{{ row.student?.student_code || '—' }}</td>
+                  <td>{{ row['attendance_date'] | academyDate: 'EEEE' }}</td>
+                  <td>{{ row['check_in_at'] ? (row['check_in_at'] | academyDate: 'shortTime') : '—' }}</td>
+                  <td>{{ row['check_out_at'] ? (row['check_out_at'] | academyDate: 'shortTime') : '—' }}</td>
+                  <td>
+                    <span class="status" [class.absent]="row['status'] === 'absent'"
+                      [class.late]="row['status'] === 'late'" [class.not-marked]="row['status'] === 'not_marked'">
+                      {{ statusLabel(row['status']) }}
+                    </span>
+                  </td>
+                  <td>{{ row.batch?.name || '—' }}</td>
+                  <td>{{ row['source'] || '—' }}</td>
+                  <td>{{ row['remarks'] || '—' }}</td>
+                  <td>
+                    <button type="button" class="app-button icon"
+                      [attr.aria-label]="'Correct attendance for ' + (row.student?.full_name || 'student') + ' on ' + row['attendance_date']"
+                      title="Make correction" (click)="startCorrection(row)">
+                      <i class="pi pi-pencil" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+                }
+                }
+              </tbody>
+            </table>
 
-          @if (!loading() && !records().length) {
-          <app-async-state kind="empty" title="No attendance records match these filters." />
-          }
-        </div>
-
-        <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="onPageChange($event)"
-          (pageSizeChange)="onPageSizeChange($event)" />
+            @if (!loading() && !records().length) {
+            <app-async-state kind="empty" title="No attendance records match these filters." />
+            }
+          </div>
+        </app-data-table>
       </section>
       }
     </main>
@@ -189,81 +187,82 @@
             [attr.aria-expanded]="!correctionRailCollapsed()" aria-controls="correction-rail-content"
             [attr.aria-label]="correctionRailCollapsed() ? 'Expand correction panel' : 'Collapse correction panel'"
             [title]="correctionRailCollapsed() ? 'Expand correction panel' : 'Collapse correction panel'">
-            <i class="pi" [class.pi-angle-right]="!correctionRailCollapsed()" [class.pi-angle-left]="correctionRailCollapsed()" aria-hidden="true"></i>
+            <i class="pi" [class.pi-angle-right]="!correctionRailCollapsed()"
+              [class.pi-angle-left]="correctionRailCollapsed()" aria-hidden="true"></i>
           </button>
           <h2>Make Attendance Correction</h2>
         </header>
         <div id="correction-rail-content" [hidden]="correctionRailCollapsed()">
-        <p class="rail-hint">
-          <i class="pi pi-info-circle" aria-hidden="true"></i>
-          Correct an existing record, or pick the pencil icon on a row to load it here.
-        </p>
+          <p class="rail-hint">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            Correct an existing record, or pick the pencil icon on a row to load it here.
+          </p>
 
-        <label>
-          <span class="field-label">Student <em>*</em></span>
-          <select [value]="draft().studentId" (change)="onCorrectionStudent($event)">
-            <option value="">Select student</option>
-            @for (student of allStudents(); track student.id) {
-            <option [value]="student.id">{{ student.name }}</option>
-            }
-          </select>
-        </label>
-
-        <div class="rail-row">
           <label>
-            <span class="field-label">Date <em>*</em></span>
-            <input type="date" [value]="draft().date" (change)="onCorrectionDate($event)" />
+            <span class="field-label">Student <em>*</em></span>
+            <select [value]="draft().studentId" (change)="onCorrectionStudent($event)">
+              <option value="">Select student</option>
+              @for (student of allStudents(); track student.id) {
+              <option [value]="student.id">{{ student.name }}</option>
+              }
+            </select>
           </label>
+
+          <div class="rail-row">
+            <label>
+              <span class="field-label">Date <em>*</em></span>
+              <input type="date" [value]="draft().date" (change)="onCorrectionDate($event)" />
+            </label>
+            <label>
+              Batch / Program
+              <input type="text" [value]="draft().batchName || '—'" disabled />
+            </label>
+          </div>
+
           <label>
-            Batch / Program
-            <input type="text" [value]="draft().batchName || '—'" disabled />
+            <span class="field-label">Attendance Status <em>*</em></span>
+            <select [value]="draft().status" (change)="onCorrectionStatus($event)">
+              @for (option of statusOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
           </label>
-        </div>
 
-        <label>
-          <span class="field-label">Attendance Status <em>*</em></span>
-          <select [value]="draft().status" (change)="onCorrectionStatus($event)">
-            @for (option of statusOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
-        </label>
+          <div class="rail-row">
+            <label>
+              Check In Time
+              <input type="time" [value]="draft().checkIn" (change)="onCorrectionCheckIn($event)" />
+            </label>
+            <label>
+              Check Out Time
+              <input type="time" [value]="draft().checkOut" (change)="onCorrectionCheckOut($event)" />
+            </label>
+          </div>
 
-        <div class="rail-row">
           <label>
-            Check In Time
-            <input type="time" [value]="draft().checkIn" (change)="onCorrectionCheckIn($event)" />
+            <span class="field-label">Reason <em>*</em></span>
+            <textarea rows="3" maxlength="300" placeholder="Enter reason for correction (required)"
+              [value]="draft().reason" (input)="onCorrectionReason($event)"></textarea>
           </label>
-          <label>
-            Check Out Time
-            <input type="time" [value]="draft().checkOut" (change)="onCorrectionCheckOut($event)" />
-          </label>
-        </div>
 
-        <label>
-          <span class="field-label">Reason <em>*</em></span>
-          <textarea rows="3" maxlength="300" placeholder="Enter reason for correction (required)"
-            [value]="draft().reason" (input)="onCorrectionReason($event)"></textarea>
-        </label>
+          @if (draftNotice()) {
+          <p class="rail-notice" role="status">{{ draftNotice() }}</p>
+          }
+          @if (draftError()) {
+          <p class="rail-error" role="alert">{{ draftError() }}</p>
+          }
 
-        @if (draftNotice()) {
-        <p class="rail-notice" role="status">{{ draftNotice() }}</p>
-        }
-        @if (draftError()) {
-        <p class="rail-error" role="alert">{{ draftError() }}</p>
-        }
-
-        <footer>
-          <button type="button" class="secondary" [disabled]="saving()" (click)="resetCorrection()">
-            Reset
-          </button>
-          <button type="button" class="primary" [disabled]="saving()" (click)="saveCorrection()">
-            @if (saving()) {
-            <span class="spinner" aria-hidden="true"></span>
-            }
-            Save Correction
-          </button>
-        </footer>
+          <footer>
+            <button type="button" class="secondary" [disabled]="saving()" (click)="resetCorrection()">
+              Reset
+            </button>
+            <button type="button" class="primary" [disabled]="saving()" (click)="saveCorrection()">
+              @if (saving()) {
+              <span class="spinner" aria-hidden="true"></span>
+              }
+              Save Correction
+            </button>
+          </footer>
         </div>
       </section>
 
@@ -271,9 +270,9 @@
   </div>
 </div>
 @if (registerDialogOpen()) {
-<div class="register-dialog-backdrop">
-  <section class="register-dialog" appModalFocus [modalBusy]="registerLoading()"
-    (modalDismiss)="closeRegister()" aria-labelledby="register-dialog-title">
+<div class="register-dialog-backdrop" appModalBackdrop (dismiss)="closeRegister()">
+  <section class="register-dialog" appModalFocus [modalBusy]="registerLoading()" (modalDismiss)="closeRegister()"
+    aria-labelledby="register-dialog-title">
     <header>
       <div>
         <h2 id="register-dialog-title">Daily attendance register</h2>
@@ -332,7 +331,7 @@
 </div>
 }
 @if (matrixDialogOpen()) {
-<div class="register-dialog-backdrop">
+<div class="register-dialog-backdrop" appModalBackdrop (dismiss)="closeMatrix()">
   <section class="register-dialog matrix-dialog" appModalFocus [modalBusy]="matrixLoading()"
     (modalDismiss)="closeMatrix()" aria-labelledby="matrix-dialog-title">
     <header>

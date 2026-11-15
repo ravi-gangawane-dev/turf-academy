@@ -463,10 +463,10 @@ function statementDateKey(value: string, timezone: string): string {
   }).format(date);
 }
 
-function statementPeriod(value: string): string {
+function statementPeriod(value: string, locale: string): string {
   const month = String(value ?? '').slice(0, 7);
   if (!/^\d{4}-\d{2}$/.test(month)) return month || 'Monthly fee';
-  return new Date(`${month}-01T00:00:00Z`).toLocaleDateString('en-GB', {
+  return new Date(`${month}-01T00:00:00Z`).toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
@@ -484,11 +484,13 @@ function statementFirst(value: unknown): Record<string, unknown> | null {
 
 const ATTENDANCE_WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 const ATTENDANCE_WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
-const ATTENDANCE_MONTH_FORMAT = new Intl.DateTimeFormat('en-GB', {
-  month: 'long',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
+function attendanceMonthLabel(value: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${value}T00:00:00Z`));
+}
 
 /** Calendar days for the month; `scheduledDays` uses 0 = Sunday like `batch_days.day_of_week`. */
 function attendanceMonthDays(
@@ -581,6 +583,7 @@ export interface CoachDetailRecord {
   readonly experience_years: number;
   readonly qualification: string | null;
   readonly biography: string | null;
+  readonly address: Address;
   readonly photo_path: string | null;
   readonly photo_url: string | null;
   readonly status: 'active' | 'inactive';
@@ -925,6 +928,7 @@ export class CoachesService extends TableService {
     this.fail('Get coach', r.error);
     return {
       ...r.data,
+      address: addressFromDatabase(r.data.address),
       photo_url: r.data.photo_path
         ? await this.storage.signedUrl('coach-photos', r.data.photo_path)
         : (r.data.photo_url ?? null),
@@ -1379,6 +1383,7 @@ export class EnrollmentsService extends TableService {
 
 @Injectable({ providedIn: 'root' })
 export class AttendanceService extends TableService {
+  private readonly preferences = inject(AcademyPreferencesService);
   async history(
     from: string,
     to: string,
@@ -1719,7 +1724,7 @@ export class AttendanceService extends TableService {
 
     return {
       month: key,
-      monthLabel: ATTENDANCE_MONTH_FORMAT.format(new Date(`${monthStart}T00:00:00Z`)),
+      monthLabel: attendanceMonthLabel(monthStart, this.preferences.locale()),
       batchId: String(batch['id'] ?? id),
       batchCode: String(batch['code'] ?? '').trim(),
       batchName: String(batch['name'] ?? 'Selected batch').trim(),
@@ -1832,6 +1837,7 @@ export class AttendanceService extends TableService {
 
 @Injectable({ providedIn: 'root' })
 export class FeesService extends TableService {
+  private readonly preferences = inject(AcademyPreferencesService);
   async invoice(id: string) {
     const result = await this.db.client.from('monthly_charge_balances').select('*,student:students(full_name,student_code),enrollment:enrollments(batch:batches(name))').eq('id', id).single();
     this.fail('Load invoice', result.error); return result.data;
@@ -1914,7 +1920,7 @@ export class FeesService extends TableService {
       const enrollment = statementFirst(charge.enrollment);
       const batch = statementFirst(enrollment?.['batch']);
       const batchName = String(batch?.['name'] ?? '').trim();
-      const period = statementPeriod(charge.charge_month);
+      const period = statementPeriod(charge.charge_month, this.preferences.locale());
       drafts.push({
         date: charge.due_date,
         dateKey: statementDateKey(charge.due_date, timezone),
@@ -2252,6 +2258,8 @@ export class FeesService extends TableService {
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService extends TableService {
+  private readonly preferences = inject(AcademyPreferencesService);
+
   async ledgerPage(
     view: string,
     page: number,
@@ -2395,7 +2403,10 @@ export class PaymentsService extends TableService {
         ).trim();
         const refundedAt = String(record['refunded_at'] ?? '');
         const paidAt = String(payment?.['paid_at'] ?? '');
-        const period = statementPeriod(String(charge?.['charge_month'] ?? ''));
+        const period = statementPeriod(
+          String(charge?.['charge_month'] ?? ''),
+          this.preferences.locale(),
+        );
         const mode = String(payment?.['payment_mode'] ?? '');
         return {
           id: refundId,

@@ -1,4 +1,5 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -15,7 +16,7 @@ import { TableTools } from '../../shared/data-table/table-tools';
 import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { printPages as paginate } from '../../shared/print/print-page';
 import { PrintPageFooter } from '../../shared/print/print-page-footer/print-page-footer';
@@ -119,7 +120,7 @@ interface GeneratedReportCriteria {
 
 @Component({
   selector: 'app-reports-page',
-  imports: [TableTools, PageHero, AsyncState, Pagination, DatePipe, DecimalPipe, ReactiveFormsModule, SummaryMetricCard, PrintPageFooter],
+  imports: [TableTools, PageHero, AsyncState, DataTable, AcademyDatePipe, DecimalPipe, ReactiveFormsModule, SummaryMetricCard, PrintPageFooter],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

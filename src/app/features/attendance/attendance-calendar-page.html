@@ -7,7 +7,7 @@
   <app-attendance-view-navigation />
 
   <div class="calendar-layout">
-    <main>
+    <main [attr.aria-busy]="loading()">
       <section class="calendar-filters" aria-label="Calendar filters">
         <label>
           <span>Select Batch</span>
@@ -68,12 +68,13 @@
             </button>
           </div>
           @if (rangePickerOpen()) {
-          <section class="range-picker" role="dialog" aria-label="Choose attendance date range">
+          <section class="range-picker" appModalFocus aria-label="Choose attendance date range"
+            (modalDismiss)="rangePickerOpen.set(false)">
             <header>
               <button type="button" aria-label="Previous month" (click)="changeRangePickerMonth(-1)">
                 <i class="pi pi-chevron-left" aria-hidden="true"></i>
               </button>
-              <strong>{{ rangePickerMonth() | date: 'MMMM yyyy' }}</strong>
+              <strong>{{ rangePickerMonth() | academyDate: 'MMMM yyyy' }}</strong>
               <button type="button" aria-label="Next month" (click)="changeRangePickerMonth(1)">
                 <i class="pi pi-chevron-right" aria-hidden="true"></i>
               </button>
@@ -141,6 +142,14 @@
       <p role="alert">{{ optionsError() }}</p>
       }
 
+      @if (!loading() && ((viewMode() === 'month' && calendarData()) || (viewMode() === 'week' && weekData()))) {
+      <section class="attendance-metrics" aria-label="Attendance totals for selected period">
+        @for (row of (viewMode() === 'week' ? weekSummaryRows() : monthSummaryRows()); track row['status']) {
+        <article [attr.data-status]="row['status']"><span>{{ row['status'] }}</span><strong>{{ row['count']
+            }}</strong><small>{{ row['percentage'] }} of total</small></article>
+        }
+      </section>
+      }
       <!-- Month View -->
       @if (viewMode() === 'month') {
       <section class="main-calendar">
@@ -156,63 +165,40 @@
           </div>
         </header>
 
-        <div class="weekdays">
-          @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
-          <b>{{ day }}</b>
-          }
-        </div>
-
-        <div class="month-grid">
-          @if (calendarData(); as data) {
-          @for (day of data.days; track $index) {
-          <article [class.muted]="day.muted" [class.holiday]="day.isHoliday"
-            [class.today]="isCurrentMonth() && day.day === todayDate && !day.muted"
-            [class.out-of-range]="day.inRange === false">
-            <strong>{{ day.day }}</strong>
-            @if (!day.muted) {
-            @if (day.isHoliday) {
-            <em>Holiday</em>
-            <small>No Session</small>
-            } @else if (day.stats) {
-            <span class="present"> <i></i>{{ day.stats.present }} Present </span>
-            <span class="absent"> <i></i>{{ day.stats.absent }} Absent </span>
-            <span class="late"> <i></i>{{ day.stats.late }} Late </span>
-            <span>{{ day.stats.checked_out }} Checked Out</span>
-            } @else {
-            <small>No Records</small>
+        <div class="calendar-scroll" tabindex="0" role="region" aria-label="Monthly attendance grid">
+          <div class="weekdays">
+            @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+            <b>{{ day }}</b>
             }
-            }
-          </article>
-          }
-          }
-        </div>
+          </div>
 
-        @if (calendarData(); as data) {
-        <section class="table-wrap calendar-summary" aria-label="Monthly attendance summary">
-          <app-table-tools title="Monthly summary" [table]="exportSummaryMonth"
-            [exportColumns]="summaryExportColumns" [exportRows]="monthSummaryRows()"
-            [exportSubtitle]="exportSubtitle()" exportReference="Attendance calendar"></app-table-tools>
-          <table #exportSummaryMonth class="academy-table">
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Count</th>
-                <th>Percentage</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of monthSummaryRows(); track row['status']) {
-              <tr>
-                <td>{{ row['status'] }}</td>
-                <td>{{ row['count'] }}</td>
-                <td>{{ row['percentage'] }}</td>
-              </tr>
+          <div class="month-grid">
+            @if (calendarData(); as data) {
+            @for (day of data.days; track $index) {
+            <article [class.muted]="day.muted" [class.holiday]="day.isHoliday"
+              [class.today]="isCurrentMonth() && day.day === todayDate && !day.muted"
+              [class.out-of-range]="day.inRange === false">
+              <strong>{{ day.day }}</strong>
+              @if (!day.muted) {
+              @if (day.isHoliday) {
+              <em>Holiday</em>
+              <small>No Session</small>
+              } @else if (day.stats && (day.stats.present || day.stats.absent || day.stats.late ||
+              day.stats.checked_out)) {
+              <span class="present"> <i></i>{{ day.stats.present }} Present </span>
+              <span class="absent"> <i></i>{{ day.stats.absent }} Absent </span>
+              <span class="late"> <i></i>{{ day.stats.late }} Late </span>
+              <span>{{ day.stats.checked_out }} Checked Out</span>
+              } @else {
+              <small class="day-empty">No attendance</small>
               }
-            </tbody>
-          </table>
-        </section>
-        <p class="sr-only">Month totals cover {{ data.dates.from }} to {{ data.dates.to }}.</p>
-        }
+              }
+            </article>
+            }
+            }
+          </div>
+
+        </div>
       </section>
       }
 
@@ -236,9 +222,9 @@
         </div>
 
         <section class="table-wrap calendar-summary" aria-label="Weekly attendance summary">
-          <app-table-tools title="Weekly summary" [table]="exportSummaryWeek"
-            [exportColumns]="summaryExportColumns" [exportRows]="weekSummaryRows()"
-            [exportSubtitle]="exportSubtitle()" exportReference="Attendance calendar"></app-table-tools>
+          <app-table-tools title="Weekly summary" [table]="exportSummaryWeek" [exportColumns]="summaryExportColumns"
+            [exportRows]="weekSummaryRows()" [exportSubtitle]="exportSubtitle()"
+            exportReference="Attendance calendar"></app-table-tools>
           <table #exportSummaryWeek class="academy-table">
             <thead>
               <tr>
@@ -266,11 +252,9 @@
       @if (viewMode() === 'list') {
       @if (listData(); as list) {
       <section class="list-view">
-        <header>
-          <h2>Attendance Records</h2>
-        </header>
-
         @if (list.records.length > 0) {
+        <app-data-table [total]="list.total" [page]="listPage()" [pageSize]="listPageSize()"
+          itemLabel="records" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
         <div class="table-wrap">
           <app-table-tools title="Attendance records" [table]="exportTable1" [total]="list.total"
             [exportColumns]="recordExportColumns" [exportLoader]="exportAttendanceRows"
@@ -293,8 +277,8 @@
                 <td>{{ record.attendance_date }}</td>
                 <td>{{ record.student?.full_name }}</td>
                 <td>{{ record.batch?.name }}</td>
-                <td>{{ record.check_in_at | date: 'short' }}</td>
-                <td>{{ record.check_out_at | date: 'short' }}</td>
+                <td>{{ record.check_in_at | academyDate: 'short' }}</td>
+                <td>{{ record.check_out_at | academyDate: 'short' }}</td>
                 <td class="status" [attr.data-status]="record.status">
                   {{ record.status }}
                 </td>
@@ -304,9 +288,7 @@
             </tbody>
           </table>
         </div>
-
-        <app-pagination [total]="list.total" [page]="listPage()" [pageSize]="listPageSize()"
-          (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)" />
+        </app-data-table>
         } @else {
         <div class="empty">
           <i class="pi pi-inbox"></i>

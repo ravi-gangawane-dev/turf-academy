@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { LOCAL_KEYS, localStore } from '../../core/state/local-store';
 import type { PrintDocument, PrintPageSetup } from './print-document.models';
 import {
   FALLBACK_PAGE_SETUP,
@@ -8,7 +9,7 @@ import {
   supportsPageSetup,
 } from './print-page-setup';
 
-const STORAGE_KEY = 'academy-print-page-setup';
+const STORAGE_KEY = LOCAL_KEYS.printPageSetup;
 const PRINT_STYLE_ID = 'academy-print-page-setup-style';
 
 type PageSetupOverrides = Partial<Record<PrintDocument['kind'], PrintPageSetup>>;
@@ -74,28 +75,18 @@ export class PrintPageSetupService {
 }
 
 function readStoredOverrides(): PageSetupOverrides {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return {};
-    const stored: PageSetupOverrides = {};
-    for (const [kind, setup] of Object.entries(parsed as Record<string, unknown>)) {
-      if (kind in PRINT_DEFAULT_PAGE_SETUP && isPrintPageSetup(setup)) {
-        stored[kind as PrintDocument['kind']] = setup;
-      }
+  const parsed = localStore.readJson<unknown>(STORAGE_KEY);
+  if (!parsed || typeof parsed !== 'object') return {};
+  const stored: PageSetupOverrides = {};
+  for (const [kind, setup] of Object.entries(parsed as Record<string, unknown>)) {
+    if (kind in PRINT_DEFAULT_PAGE_SETUP && isPrintPageSetup(setup)) {
+      stored[kind as PrintDocument['kind']] = setup;
     }
-    return stored;
-  } catch {
-    // Private browsing or a corrupted value must not block printing.
-    return {};
   }
+  return stored;
 }
 
 function persist(overrides: PageSetupOverrides): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
-  } catch {
-    // A full or unavailable store only costs the remembered choice.
-  }
+  // A full or unavailable store only costs the remembered choice.
+  localStore.writeJson(STORAGE_KEY, overrides);
 }

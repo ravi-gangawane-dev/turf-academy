@@ -208,7 +208,7 @@ describe('AcademyStore', () => {
     expect(row?.['balance']).toBe((opening.balancePaise - 50000) / 100);
     const outstanding = report.rows.reduce((sum, item) => sum + Number(item['balance']), 0);
     expect(report.summary.find((item) => item.label === 'Outstanding')?.value).toBe(
-      `₹${outstanding.toLocaleString('en-IN')}`,
+      new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(outstanding),
     );
   });
 });

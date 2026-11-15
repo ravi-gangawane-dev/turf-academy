@@ -6,10 +6,11 @@ import { ToastService } from '../../shared/toast/toast.service';
 import { StudentListFilters, StudentListService } from './student-list.service';
 import { addressFromDatabase, createAddressForm } from '../../core/models/address.model';
 import { AddressFields } from '../../shared/address-fields/address-fields';
+import { ProfilePhotoUpload } from '../../shared/profile-photo-upload/profile-photo-upload';
 
 @Component({
   selector: 'app-student-form-page',
-  imports: [ReactiveFormsModule, PageHero, AddressFields],
+  imports: [ReactiveFormsModule, PageHero, AddressFields, ProfilePhotoUpload],
   templateUrl: './student-form-page.html',
   styleUrl: './student-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,6 @@ export class StudentFormPage implements OnInit {
   protected readonly photoUrl = signal<string | null>(null);
   protected readonly photoSaving = signal(false);
   protected readonly photoPending = signal(false);
-  protected readonly photoMessage = signal('');
   protected readonly filters = signal<StudentListFilters>({ batches: [], programs: [], coaches: [] });
   private studentId = '';
   private selectedPhoto: File | null = null;
@@ -160,22 +160,13 @@ export class StudentFormPage implements OnInit {
     );
   }
 
-  protected selectPhoto(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    input.value = '';
+  protected selectPhoto(event: Event | File): void {
+    const file = event instanceof File ? event : (event.target as HTMLInputElement).files?.[0];
+    if (event instanceof Event) (event.target as HTMLInputElement).value = '';
     if (!file) return;
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      this.photoMessage.set('Choose a JPG or PNG image.');
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      this.photoMessage.set('Student photo must be 2MB or smaller.');
-      return;
-    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 2 * 1024 * 1024) return;
     this.selectedPhoto = file;
     this.photoPending.set(true);
-    this.photoMessage.set(this.editing() ? 'Photo selected. Select Save photo to upload it.' : 'Photo will upload when you save the student.');
     const reader = new FileReader();
     reader.onload = () => {
       if (this.selectedPhoto === file) this.photoUrl.set(String(reader.result));
@@ -183,19 +174,20 @@ export class StudentFormPage implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  protected async savePhoto(): Promise<void> {
-    if (!this.studentId || !this.selectedPhoto || this.photoSaving() || this.loading()) return;
+  protected readonly savePhotoAction = (): Promise<boolean> => this.savePhoto();
+
+  protected async savePhoto(): Promise<boolean> {
+    if (!this.studentId || !this.selectedPhoto || this.photoSaving() || this.loading()) return false;
     this.photoSaving.set(true);
-    this.photoMessage.set('Uploading photo...');
     try {
       this.photoUrl.set(await this.students.updateStudentPhoto(this.studentId, this.selectedPhoto));
       this.selectedPhoto = null;
       this.photoPending.set(false);
-      this.photoMessage.set('');
       this.toast.success('Photo saved to this student’s profile.');
+      return true;
     } catch (error) {
-      this.photoMessage.set('');
       this.toast.error(error instanceof Error ? error.message : 'Photo could not be saved. Please try again.');
+      return false;
     } finally {
       this.photoSaving.set(false);
     }

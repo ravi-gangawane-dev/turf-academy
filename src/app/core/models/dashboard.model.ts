@@ -1,7 +1,7 @@
 export interface DashboardMetric {
   readonly label: string;
   readonly value: string;
-  readonly detail: string;
+  readonly hint: string;
   readonly icon: string;
   readonly tone: 'green' | 'blue' | 'amber' | 'violet';
 }

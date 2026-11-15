@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -9,6 +10,7 @@ import { API_CONFIG } from '../../core/config/api.config';
 export class LoginPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly formBuilder = inject(FormBuilder);
   protected readonly config = inject(API_CONFIG);
@@ -22,10 +24,12 @@ export class LoginPage {
     if (this.submitting()) return;
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.submitting.set(true); this.error.set('');
-    this.auth.login(this.form.getRawValue()).pipe(finalize(() => this.submitting.set(false))).subscribe({
-      next: (session) => void this.router.navigateByUrl(this.safeReturnUrl() || this.auth.dashboardForRole(session.user.role)),
-      error: (error) => this.error.set(this.auth.friendlyError(error)),
-    });
+    this.auth.login(this.form.getRawValue())
+      .pipe(finalize(() => this.submitting.set(false)), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (session) => void this.router.navigateByUrl(this.safeReturnUrl() || this.auth.dashboardForRole(session.user.role)),
+        error: (error) => this.error.set(this.auth.friendlyError(error)),
+      });
   }
 
   private safeReturnUrl(): string {
@@ -33,5 +37,5 @@ export class LoginPage {
     return returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '';
   }
 
-  protected togglePassword(): void { this.showPassword.update(value=>!value); }
+  protected togglePassword(): void { this.showPassword.update(value => !value); }
 }

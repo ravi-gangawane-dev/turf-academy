@@ -1,3 +1,4 @@
+import { academyLocaleForCurrency } from '../../core/localisation/academy-locale';
 import type { PrintProfileKind } from './print-document.models';
 
 const CURRENCY_NAMES: Readonly<
@@ -96,7 +97,7 @@ export function amountInWords(amount: number, currencyCode: string): string {
 export function printMoney(amount: number, currencyCode: string): string {
   const code = (currencyCode || 'INR').toUpperCase();
   try {
-    return new Intl.NumberFormat('en-IN', {
+    return new Intl.NumberFormat(academyLocaleForCurrency(code), {
       style: 'currency',
       currency: code,
       currencyDisplay: 'symbol',
@@ -118,15 +119,21 @@ export function printProfileReference(kind: PrintProfileKind, source: string): s
 }
 
 /** Date-only values are formatted in UTC so they never shift by a day. */
-export function printDateOnly(value: string | null | undefined): string {
+export function printDateOnly(
+  value: string | null | undefined,
+  currencyCode = 'INR',
+  options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  },
+): string {
   const raw = String(value ?? '').slice(0, 10);
   if (!raw) return '—';
   const date = new Date(`${raw}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return raw;
-  return new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+  return new Intl.DateTimeFormat(academyLocaleForCurrency(currencyCode), {
+    ...options,
     timeZone: 'UTC',
   }).format(date);
 }

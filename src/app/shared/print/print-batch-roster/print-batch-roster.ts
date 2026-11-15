@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { PrintBatchRosterDocument, PrintBatchRosterRow } from '../print-document.models';
+import { printDateOnly } from '../print-format';
 import { PrintPage, printPages } from '../print-page';
 import { PrintPageFooter } from '../print-page-footer/print-page-footer';
 
@@ -24,16 +25,7 @@ export class PrintBatchRoster {
 
   /** Date-only values must be pinned to UTC or a positive timezone shifts them a day back. */
   protected formatDay(value: string | undefined): string {
-    const raw = String(value ?? '').slice(0, 10);
-    if (!raw) return '—';
-    const date = new Date(`${raw}T00:00:00Z`);
-    if (Number.isNaN(date.getTime())) return raw;
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    }).format(date);
+    return printDateOnly(value, this.roster().brand.currencyCode);
   }
 
   protected pickupLabel(canPickUp: boolean): string {

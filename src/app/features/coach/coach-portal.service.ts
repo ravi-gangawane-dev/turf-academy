@@ -400,6 +400,7 @@ export class CoachPortalService {
         throw new AggregateError(
           [error, cleanupError],
           'Coach photo update failed and the uploaded photo could not be removed.',
+          { cause: cleanupError },
         );
       }
       throw error;

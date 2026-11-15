@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PrintDocumentBody } from '../print-document-body/print-document-body';
 import { PrintDocumentService } from '../print-document.service';
 
-/** Hidden until the print dialog opens; renders only the active document. */
+/** Hidden until the print dialog opens; renders every document in the print job. */
 @Component({
   selector: 'app-print-document-host',
   imports: [PrintDocumentBody],
@@ -13,5 +13,5 @@ import { PrintDocumentService } from '../print-document.service';
 export class PrintDocumentHost {
   private readonly source = inject(PrintDocumentService);
 
-  protected readonly document = computed(() => this.source.document());
+  protected readonly documents = this.source.documents;
 }

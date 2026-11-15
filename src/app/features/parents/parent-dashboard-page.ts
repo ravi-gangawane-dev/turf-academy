@@ -1,9 +1,8 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { DatePipe } from '@angular/common';
-import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,28 +12,21 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { RealtimeChannel } from '@supabase/supabase-js';
 import { Router } from '@angular/router';
+import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from '../../core/auth/auth.service';
-import { ParentDetailRecord, ParentsService } from '../../core/supabase/domain-services';
-import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
-import {
-  StudentDetailRecord,
-  StudentListService,
-  StudentWorkspace,
-} from '../students/student-list.service';
-import { latestChargeBalance } from './parent-fee-summary';
-import { ParentPortalService } from './parent-portal.service';
+import { formatAddress } from '../../core/models/address.model';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { ParentDetailRecord } from '../../core/supabase/domain-services';
+import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
-import { formatAddress } from '../../core/models/address.model';
+import { ChildWorkspace } from './parent-dashboard.service';
+import { ParentDashboardService } from './parent-dashboard.service';
+import { StudentDetailRecord } from '../students/student-list.service';
+import { latestChargeBalance } from './parent-fee-summary';
+import { ParentPortalService } from './parent-portal.service';
 
-interface ChildWorkspace {
-  readonly link: ParentDetailRecord['student_parents'][number];
-  readonly workspace: StudentWorkspace;
-  readonly balances: readonly StudentDetailRecord[];
-  readonly sessions: readonly StudentDetailRecord[];
-}
 interface ProfileCompletion {
   readonly percentage: number;
   readonly completed: number;
@@ -44,7 +36,7 @@ interface ProfileCompletion {
 
 @Component({
   selector: 'app-parent-dashboard-page',
-  imports: [TableTools, PageHero, StatusBadge, DatePipe, AcademyMoneyPipe, AsyncState, SummaryMetricCard],
+  imports: [TableTools, PageHero, StatusBadge, AcademyDatePipe, AcademyMoneyPipe, AsyncState, SummaryMetricCard],
   templateUrl: './parent-dashboard-page.html',
   styleUrl: './parent-dashboard-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,9 +44,7 @@ interface ProfileCompletion {
 export class ParentDashboardPage implements OnInit, OnDestroy {
   private readonly preferences = inject(AcademyPreferencesService);
   protected readonly auth = inject(AuthService);
-  private readonly parents = inject(ParentsService);
-  private readonly students = inject(StudentListService);
-  private readonly supabase = inject(SupabaseClientService);
+  private readonly dashboard = inject(ParentDashboardService);
   private readonly portal = inject(ParentPortalService);
   private readonly router = inject(Router);
   protected readonly parent = signal<ParentDetailRecord | null>(null);
@@ -107,36 +97,8 @@ export class ParentDashboardPage implements OnInit, OnDestroy {
     }
     try {
       await this.preferences.load();
-      const parent = await this.parents.getByProfile(profileId);
+      const { parent, children: childRows } = await this.dashboard.load(profileId);
       this.parent.set(parent);
-      const client = this.supabase.requireClient();
-      const childRows = await Promise.all(
-        parent.student_parents.map(async (link) => {
-          const workspace = await this.students.getStudentWorkspace(link.student.id);
-          const batchId = String(workspace.enrollment?.['batch_id'] ?? '');
-          const [balances, sessions] = await Promise.all([
-            client
-              .from('monthly_charge_balances')
-              .select('*')
-              .eq('student_id', link.student.id)
-              .order('charge_month', { ascending: false }),
-            batchId
-              ? client
-                  .from('training_sessions')
-                  .select('*')
-                  .eq('batch_id', batchId)
-                  .gte('session_date', new Date().toISOString().slice(0, 10))
-                  .in('status', ['upcoming', 'rescheduled'])
-                  .order('session_date')
-                  .order('start_time')
-                  .limit(1)
-              : Promise.resolve({ data: [], error: null }),
-          ]);
-          const childError = balances.error ?? sessions.error;
-          if (childError) throw new Error(childError.message);
-          return { link, workspace, balances: balances.data ?? [], sessions: sessions.data ?? [] };
-        }),
-      );
       this.children.set(childRows);
       const savedId = this.portal.selectedChildId();
       const selectedId = childRows.some((child) => child.workspace.student.id === savedId)
@@ -173,7 +135,7 @@ export class ParentDashboardPage implements OnInit, OnDestroy {
   protected batch(child: ChildWorkspace): string {
     return String(
       (child.workspace.enrollment?.['batch'] as StudentDetailRecord | undefined)?.['name'] ??
-        'Not enrolled',
+      'Not enrolled',
     );
   }
   protected attendance(child: ChildWorkspace): { total: number; present: number; rate: number } {
@@ -218,15 +180,16 @@ export class ParentDashboardPage implements OnInit, OnDestroy {
   protected time(value: unknown): string {
     if (!value) return 'Not scheduled';
     const [hours, minutes] = String(value).split(':').map(Number);
-    return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(
-      new Date(2000, 0, 1, hours, minutes),
-    );
+    return new Intl.DateTimeFormat(this.preferences.locale(), {
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(new Date(2000, 0, 1, hours, minutes));
   }
   protected nextSession(child: ChildWorkspace): StudentDetailRecord | null {
     return child.sessions[0] ?? null;
   }
   protected todayAttendance(child: ChildWorkspace): StudentDetailRecord | null {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = this.preferences.today();
     return child.workspace.attendance.find((row) => row['attendance_date'] === today) ?? null;
   }
   protected duration(record: StudentDetailRecord): string {
@@ -236,24 +199,27 @@ export class ParentDashboardPage implements OnInit, OnDestroy {
       Math.round(
         (new Date(String(record['check_out_at'])).getTime() -
           new Date(String(record['check_in_at'])).getTime()) /
-          60000,
+        60000,
       ),
     );
     return `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, '0')}m`;
   }
   protected recordDate(value: unknown): string {
     if (!value) return '—';
-    return new Intl.DateTimeFormat('en-IN', {
+    return new Intl.DateTimeFormat(this.preferences.locale(), {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
-    }).format(new Date(String(value)));
+      timeZone: 'UTC',
+    }).format(new Date(`${String(value).slice(0, 10)}T00:00:00Z`));
   }
   protected recordTime(value: unknown): string {
     if (!value) return '—';
-    return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(
-      new Date(String(value)),
-    );
+    return new Intl.DateTimeFormat(this.preferences.locale(), {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: this.preferences.timezone(),
+    }).format(new Date(String(value)));
   }
   protected amount(value: unknown): number {
     return Number(value ?? 0);

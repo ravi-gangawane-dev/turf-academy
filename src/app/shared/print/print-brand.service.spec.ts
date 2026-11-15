@@ -64,6 +64,25 @@ describe('PrintBrandService', () => {
     });
   });
 
+  it('adds configured letterhead and footer text to the print brand', async () => {
+    const service = setup(async () => ({
+      academy_name: 'Turf Cricket Academy',
+      academy_code: 'TCA',
+      academy_logo_url: '',
+      currency_code: 'INR',
+      timezone: 'Asia/Kolkata',
+      print_registration_number: 'REG-42',
+      print_terms: 'Fees are due on the tenth.',
+      print_footer_note: 'Fees once paid are non-refundable.',
+    }));
+
+    await expect(service.load()).resolves.toMatchObject({
+      registrationNumber: 'REG-42',
+      terms: 'Fees are due on the tenth.',
+      footerNote: 'Fees once paid are non-refundable.',
+    });
+  });
+
   it('falls back to cached preferences and bundled artwork when settings fail', async () => {
     const service = setup(async () => {
       throw new Error('Settings unavailable');

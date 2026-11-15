@@ -1,16 +1,15 @@
-import { SETTINGS_SECTIONS } from './settings-sections';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormControl, FormGroup, AbstractControl, Validators } from '@angular/forms';
-import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
-import { UserManagementService } from '../../core/auth/user-management.service';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StaffRole } from '../../core/auth/auth.model';
+import { UserManagementService } from '../../core/auth/user-management.service';
+import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { SettingsTabs } from '../../shared/settings-tabs/settings-tabs';
 
 @Component({
   selector: 'app-settings-navigation',
-  imports: [RouterLink, RouterLinkActive, ReactiveFormsModule, FormsModule, ModalFocus],
+  imports: [ReactiveFormsModule, FormsModule, ModalFocus, SettingsTabs, ModalBackdrop],
   templateUrl: './settings-navigation.html',
   styleUrl: './settings-navigation.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,7 +17,6 @@ import { StaffRole } from '../../core/auth/auth.model';
 export class SettingsNavigation {
   protected readonly dialog = inject(InteractionDialogService);
   protected readonly activePanel = signal<'summary' | 'open simple dialog' | string>('summary');
-  protected readonly sections = SETTINGS_SECTIONS;
 
   form = new FormGroup({
     fullName: new FormControl<string>('', { nonNullable: true }),

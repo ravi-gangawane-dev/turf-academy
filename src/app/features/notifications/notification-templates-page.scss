@@ -1,6 +1,6 @@
 .templates-page {
   display: grid;
-  gap: 1rem;
+  gap: var(--app-space-4);
 }
 
 .templates-page header,
@@ -8,7 +8,7 @@
 .dialog {
   background: #fff;
   border: 1px solid #dce5e0;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   padding: 1rem;
 }
 
@@ -29,10 +29,10 @@
 }
 
 .primary {
-  background: #277d47;
+  background: var(--app-primary);
   color: #fff;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   padding: 0.7rem 1rem;
 }
 
@@ -44,7 +44,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 0.75rem;
+  gap: var(--app-space-3);
   padding: 1rem;
 }
 
@@ -58,19 +58,19 @@
 
 .list-controls input,
 .list-controls select {
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 0.5rem 0.65rem;
   border: 1px solid #cad6d0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
 }
 
 .list-controls button {
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 0 1rem;
   border: 0;
-  border-radius: 8px;
-  background: #277d47;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-primary);
   color: #fff;
   font-weight: 700;
 }
@@ -94,9 +94,9 @@ td small {
 
 td span {
   background: #e7f5eb;
-  color: #226d3e;
+  color: var(--app-primary-dark);
   padding: 0.25rem 0.5rem;
-  border-radius: 99px;
+  border-radius: var(--app-radius-lg);
 }
 
 td span.inactive {
@@ -107,7 +107,7 @@ td span.inactive {
 .notice {
   padding: 0.75rem 1rem;
   background: #e8f6ed;
-  color: #176735;
+  color: var(--app-primary-dark);
 }
 
 .notice.error {
@@ -131,11 +131,11 @@ td span.inactive {
   padding: 0.7rem 1rem 0.85rem;
   overflow: hidden;
   border: 1px solid #edf0ef;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   background:
     radial-gradient(ellipse at 92% 85%, rgba(224, 249, 210, 0.55), transparent 30%),
     #fff;
-  box-shadow: 0 5px 15px rgba(24, 50, 37, 0.08);
+  box-shadow: var(--app-shadow);
 }
 
 .preview-birthday-profile {
@@ -161,7 +161,7 @@ td span.inactive {
   height: 100%;
   overflow: hidden;
   border-radius: 50%;
-  color: #147a45;
+  color: var(--app-primary-dark);
   font-size: 1.5rem;
   object-fit: cover;
 }
@@ -236,7 +236,7 @@ td span.inactive {
     gap: 0.7rem;
     min-height: 0;
     padding: 0.6rem 0.75rem 0.8rem;
-    border-radius: 12px;
+    border-radius: var(--app-radius-md);
   }
 
   .preview-birthday-profile {
@@ -277,10 +277,10 @@ td span.inactive {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: #07192f99;
+  background: var(--app-overlay);
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: var(--app-space-4);
   z-index: 100;
 }
 
@@ -291,7 +291,7 @@ td span.inactive {
 .dialog form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: var(--app-space-4);
 }
 
 .dialog label {
@@ -308,7 +308,7 @@ td span.inactive {
 .dialog select,
 .dialog textarea {
   border: 1px solid #cad6d0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   padding: 0.6rem;
 }
 
@@ -319,7 +319,7 @@ td span.inactive {
 .dialog footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
 }
 
 @media (max-width: 700px) {
@@ -347,7 +347,7 @@ td span.inactive {
 .template-preview {
   padding: 1rem;
   border: 1px solid #dce5e0;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #f7faf8;
 }
 
@@ -355,7 +355,7 @@ td span.inactive {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--app-space-4);
   margin-bottom: 0.75rem;
 }
 
@@ -372,10 +372,10 @@ td span.inactive {
 
 .preview-label {
   flex: none;
-  border-radius: 99px;
+  border-radius: var(--app-radius-lg);
   padding: 0.25rem 0.6rem;
   background: #e7f5eb;
-  color: #226d3e;
+  color: var(--app-primary-dark);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -384,10 +384,10 @@ td span.inactive {
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr);
   align-items: start;
-  gap: 0.75rem;
+  gap: var(--app-space-3);
   padding: 0.9rem;
   border: 1px solid #e6ece9;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #fff;
 }
 
@@ -396,9 +396,9 @@ td span.inactive {
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #e3f8ea;
-  color: #147a45;
+  color: var(--app-primary-dark);
 }
 
 .preview-copy {
@@ -426,7 +426,7 @@ td span.inactive {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
   white-space: nowrap;
 }
 
@@ -438,7 +438,7 @@ td span.inactive {
   height: 36px;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }

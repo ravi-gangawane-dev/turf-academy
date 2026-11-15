@@ -1,16 +1,13 @@
-<div class="student-form-page">
-  <app-page-hero
-    [title]="
+<div class="student-form-page entity-form-page">
+  <app-page-hero [title]="
       parentChildEdit() ? 'Complete Child Profile' : editing() ? 'Edit Student' : 'Add Student'
-    "
-    [subtitle]="
+    " [subtitle]="
       parentChildEdit()
         ? 'Add the missing personal details to complete your child profile.'
         : editing()
           ? 'Update student information and enrollment details.'
           : 'Register a new student to the academy.'
-    "
-    [breadcrumbs]="[
+    " [breadcrumbs]="[
       {
         label: 'Dashboard',
         icon: 'pi-home',
@@ -23,150 +20,101 @@
       {
         label: parentChildEdit() ? 'Complete Profile' : editing() ? 'Edit Student' : 'Add Student',
       },
-    ]"
-  />
-  
+    ]" />
+
   <form [formGroup]="form" (ngSubmit)="save()">
     <main>
-      <section class="card personal">
-        <h2><i aria-hidden="true" class="pi pi-user"></i>Personal information</h2>
-        <div class="fields">
-          <label
-            >First name *<input formControlName="firstName" placeholder="Enter first name" /></label
-          ><label
-            >Last name *<input formControlName="lastName" placeholder="Enter last name" /></label
-          ><label>Date of birth *<input type="date" formControlName="dateOfBirth" /></label
-          ><label
-            >Gender *<select formControlName="gender">
+      <div class="form-top-row">
+        <section class="card personal">
+          <h2><i aria-hidden="true" class="pi pi-user"></i>Personal information</h2>
+          <div class="fields"><label>First name *<input formControlName="firstName"
+                placeholder="Enter first name" /></label>
+            <label>Last name *<input formControlName="lastName" placeholder="Enter last name" /></label>
+            <label>Phone number *<input formControlName="mobile" maxlength="10"
+                placeholder="Enter 10 digit mobile number" /></label>
+            <label>Email address<input type="email" formControlName="email" placeholder="Enter email address" /></label>
+          </div><app-address-fields [form]="form.controls.address" [columns]="4" />
+        </section>
+        <section class="card photo">
+          <h2><i aria-hidden="true" class="pi pi-image"></i>Student photo</h2>
+          <app-profile-photo-upload class="fill-card" label="Student" [photoUrl]="photoUrl()"
+            [selected]="photoPending()" [saving]="loading() || photoSaving()" (fileSelected)="selectPhoto($event)"
+            [saveAction]="editing() ? savePhotoAction : undefined" />
+        </section>
+      </div>
+      <section class="card role-information">
+        <h2><i aria-hidden="true" class="pi pi-id-card"></i>Student information</h2>
+        <div class="fields"><label>Date of birth *<input type="date" formControlName="dateOfBirth" /></label>
+          <label>Gender *<select formControlName="gender">
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
-            </select></label
-          >
-          <label
-            >Blood group<select formControlName="bloodGroup">
+            </select></label>
+          <label>Blood group<select formControlName="bloodGroup">
               <option value="">Select blood group</option>
               <option>A+</option>
               <option>B+</option>
               <option>O+</option>
               <option>AB+</option>
-            </select></label
-          ><label
-            >Phone number *<input
-              formControlName="mobile"
-              maxlength="10"
-              placeholder="Enter 10 digit mobile number" /></label
-          ><label
-            >Email address<input
-              type="email"
-              formControlName="email"
-              placeholder="Enter email address" /></label
-          ><label
-            >Nationality<select formControlName="nationality">
+            </select></label>
+          <label>Nationality<select formControlName="nationality">
               <option>Indian</option>
               <option>Other</option>
-            </select></label
-          >
-          <label
-            >Aadhaar number<input
-              formControlName="aadhaar"
-              placeholder="Enter Aadhaar number" /></label>
+            </select></label>
+          <label>Aadhaar number<input formControlName="aadhaar" placeholder="Enter Aadhaar number" /></label>
         </div>
-        <app-address-fields [form]="form.controls.address" />
       </section>
       @if (!parentChildEdit()) {
-        <section class="card program">
-          <h2><i aria-hidden="true" class="pi pi-graduation-cap"></i>Program information</h2>
-          <div class="fields">
-            <label
-              >Batch / program *<select formControlName="program">
-                <option value="">Select batch / program</option>
-                @for (batch of filters().batches; track batch.id) {
-                  <option [value]="batch.id">{{ batch.name }}</option>
-                }
-              </select></label
-            ><label
-              >Program type *<select formControlName="skillLevel">
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
-              </select></label
-            ><label
-              >Coach<select formControlName="coach">
-                <option value="">Select coach</option>
-                @for (coach of filters().coaches; track coach.id) {
-                  <option [value]="coach.id">{{ coach.name }}</option>
-                }
-              </select></label
-            ><label>Joining date *<input type="date" formControlName="joiningDate" /></label>
-          </div>
-        </section>
+      <section class="card program">
+        <h2><i aria-hidden="true" class="pi pi-graduation-cap"></i>Program information</h2>
+        <div class="fields">
+          <label>Batch / program *<select formControlName="program">
+              <option value="">Select batch / program</option>
+              @for (batch of filters().batches; track batch.id) {
+              <option [value]="batch.id">{{ batch.name }}</option>
+              }
+            </select></label><label>Program type *<select formControlName="skillLevel">
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select></label><label>Coach<select formControlName="coach">
+              <option value="">Select coach</option>
+              @for (coach of filters().coaches; track coach.id) {
+              <option [value]="coach.id">{{ coach.name }}</option>
+              }
+            </select></label><label>Joining date *<input type="date" formControlName="joiningDate" /></label>
+        </div>
+      </section>
+      }
+      @if (!parentChildEdit()) {
+      <section class="card guardian">
+        <h2><i aria-hidden="true" class="pi pi-user"></i>Guardian information</h2>
+        <div class="fields">
+          <label>Guardian name *<input formControlName="parentName"
+              placeholder="Enter guardian full name" /></label><label>Relationship *<select formControlName="relation">
+              <option>Father</option>
+              <option>Mother</option>
+              <option>Guardian</option>
+            </select></label><label>Guardian phone *<input formControlName="whatsapp" maxlength="10"
+              placeholder="Enter phone number" /></label><label>Guardian email<input type="email"
+              formControlName="guardianEmail" placeholder="Enter email address" /></label>
+        </div>
+      </section>
       }
       <footer>
-        <button type="button" (click)="cancel()">Cancel</button
-        ><button class="primary" [disabled]="loading() || photoSaving()">
-          <i aria-hidden="true" class="pi pi-check"></i
-          >{{
-            loading()
-              ? 'Saving...'
-              : parentChildEdit()
-                ? 'Save child profile'
-                : editing()
-                  ? 'Update student'
-                  : 'Save student'
+        <button type="button" (click)="cancel()">Cancel</button><button type="submit" class="primary"
+          [disabled]="loading() || photoSaving()">
+          <i aria-hidden="true" class="pi pi-check"></i>{{
+          loading()
+          ? 'Saving...'
+          : parentChildEdit()
+          ? 'Save child profile'
+          : editing()
+          ? 'Update student'
+          : 'Save student'
           }}
         </button>
       </footer>
     </main>
-    <aside [class.photo-only]="parentChildEdit()">
-      <section class="card photo">
-        <h2><i aria-hidden="true" class="pi pi-image"></i>Student photo</h2>
-        <label class="upload" [class.has-photo]="photoUrl()">
-          @if (photoUrl()) {
-            <img [src]="photoUrl()" alt="Student profile" />
-          } @else {
-            <i aria-hidden="true" class="pi pi-camera"></i>
-          }
-          <strong>{{ photoUrl() ? 'Change student photo' : 'Upload student photo' }}</strong
-          ><small>JPG, PNG up to 2MB</small><b>Choose file</b
-          ><input type="file" accept="image/png,image/jpeg" [disabled]="loading() || photoSaving()" (change)="selectPhoto($event)"
-        /></label>
-        @if (photoMessage()) {
-          <p class="photo-message" role="status">{{ photoMessage() }}</p>
-        }
-        @if (editing() && photoPending()) {
-          <button class="primary save-photo" type="button" [disabled]="loading() || photoSaving()" (click)="savePhoto()">
-            <i class="pi" [class.pi-upload]="!photoSaving()" [class.pi-spinner]="photoSaving()" [class.pi-spin]="photoSaving()" aria-hidden="true"></i>
-            {{ photoSaving() ? 'Uploading...' : 'Save photo' }}
-          </button>
-        }
-      </section>
-      @if (!parentChildEdit()) {
-        <section class="card guardian">
-          <h2><i aria-hidden="true" class="pi pi-user"></i>Guardian quick info</h2>
-          <label
-            >Guardian name *<input
-              formControlName="parentName"
-              placeholder="Enter guardian full name" /></label
-          ><label
-            >Relationship *<select formControlName="relation">
-              <option>Father</option>
-              <option>Mother</option>
-              <option>Guardian</option>
-            </select></label
-          ><label
-            >Guardian phone *<input
-              formControlName="whatsapp"
-              maxlength="10"
-              placeholder="Enter phone number" /></label
-          ><label
-            >Guardian email<input
-              type="email"
-              formControlName="guardianEmail"
-              placeholder="Enter email address"
-          /></label>
-        </section>
-      }
-    </aside>
   </form>
 </div>

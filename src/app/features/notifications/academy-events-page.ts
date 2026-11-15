@@ -1,32 +1,25 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth/auth.service';
 import { AcademyEventRecord, AcademyEventsService } from '../../core/supabase/domain-services';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 import { NotificationSectionNav } from '../../shared/notification-section-nav/notification-section-nav';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { ToastService } from '../../shared/toast/toast.service';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 
 @Component({
   selector: 'app-academy-events-page',
-  imports: [TableTools, ColumnFilter, SortableHeader,
-    PageHero,
-    DatePipe,
-    ModalFocus,
-    NotificationSectionNav,
-    ReactiveFormsModule,
-    FormsModule,
-    Pagination,
-    StatusBadge,
-  ],
+  imports: [TableTools, ColumnFilter, SortableHeader, PageHero, AcademyDatePipe, ModalFocus, NotificationSectionNav, ReactiveFormsModule, FormsModule, StatusBadge, ModalBackdrop, DataTable],
   templateUrl: './academy-events-page.html',
   styleUrl: './academy-events-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

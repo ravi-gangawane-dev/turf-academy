@@ -1,9 +1,10 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,7 +25,7 @@ type ChildTab = 'overview' | 'attendance' | 'fees' | 'documents' | 'medical';
 
 @Component({
   selector: 'app-parent-child-profile-page',
-  imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, AddressFields],
+  imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, AcademyDatePipe, AddressFields],
   templateUrl: './parent-child-profile-page.html',
   styleUrl: './parent-child-profile-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

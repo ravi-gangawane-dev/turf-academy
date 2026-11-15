@@ -1,4 +1,5 @@
-import { DatePipe } from '@angular/common';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BatchActivityRecord, BatchWorkspace, BatchWorkspaceService, WorkspaceBatch } from '../../core/supabase/batch-workspace.service';
@@ -10,7 +11,7 @@ type DetailTab = 'overview' | 'students' | 'coaches' | 'schedule' | 'capacity' |
 @Component({
   selector: 'app-batch-details-page',
   standalone: true,
-  imports: [RouterLink, DatePipe, AsyncState, StatusBadge],
+  imports: [RouterLink, AcademyDatePipe, AsyncState, StatusBadge],
   templateUrl:'./batch-details-page.html',
   styleUrl:'./batch-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

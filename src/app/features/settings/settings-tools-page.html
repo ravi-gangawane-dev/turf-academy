@@ -61,7 +61,7 @@
     <p>Choose the academy interface colors on this device.</p>
     <div class="themes">
       @for (choice of themes; track choice.id) {
-      <button [class.active]="theme() === choice.id" [attr.aria-pressed]="theme() === choice.id"
+      <button type="button" [class.active]="theme() === choice.id" [attr.aria-pressed]="theme() === choice.id"
         (click)="setTheme(choice.id)">
         {{ choice.label }}
       </button>
@@ -78,7 +78,7 @@
       Uploaded files, login accounts, QR tokens and audit history are not included. Use the
       database provider's backup tools for a complete backup and restore.
     </p>
-    <button (click)="exportData()" [disabled]="busy()">
+    <button type="button" (click)="exportData()" [disabled]="busy()">
       {{ busy() ? 'Preparing export…' : 'Download academy data' }}
     </button>
     <p role="status" aria-live="polite">{{ progress() }}</p>

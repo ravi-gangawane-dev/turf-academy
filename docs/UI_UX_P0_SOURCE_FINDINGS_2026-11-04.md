@@ -1,5 +1,7 @@
 # P0 dialog and theme source review — 2026-11-04
 
+> **Current state (2026-11-15).** The findings table below is the original 2026-11-04 evidence and is kept for history; several of the rows it lists (photo editor keyboard lifecycle, busy guards, crop affordances, repeated global imports) have since been addressed. For the present state of the code, and the checks that back it, see §12 (“Fix log”) of [UI_ARCHITECTURE_AUDIT_2026-11-14.md](./UI_ARCHITECTURE_AUDIT_2026-11-14.md). Authenticated browser acceptance is still pending for the dialog work.
+
 This is source evidence, not authenticated browser acceptance. No application code was changed during this review.
 
 Follow-up: the findings below were subsequently corrected at the user's request. See the tracker section “Corrections and verification” for implementation and test results. The table preserves the original findings; authenticated browser acceptance remains pending.

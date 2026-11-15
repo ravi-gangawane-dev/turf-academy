@@ -15,6 +15,7 @@ const coach: CoachDetailRecord = {
   experience_years: 7,
   qualification: 'Level 3',
   biography: 'Trains the U-10 squad.',
+  address: { line1: '12 Main Road', line2: 'Near Ground', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   photo_path: null,
   photo_url: 'https://cdn.example.com/aarav.png',
   status: 'active',
@@ -57,6 +58,7 @@ const validForm = {
   primarySpecialization: 'Cricket',
   additionalSpecializations: 'Football, Athletics',
   biography: 'Junior squad coach.',
+  address: { line1: ' 4 Academy Road ', line2: ' ', city: ' Pune ', state: ' Maharashtra ', pinCode: '411002' },
 };
 
 describe('CoachFormPage', () => {
@@ -85,6 +87,7 @@ describe('CoachFormPage', () => {
     expect(value.lastName).toBe('Sharma');
     expect(value.primarySpecialization).toBe('Cricket');
     expect(value.additionalSpecializations).toBe('Football');
+    expect(value.address).toEqual(coach.address);
     expect(page['photoUrl']()).toBe('https://cdn.example.com/aarav.png');
   });
 
@@ -121,6 +124,7 @@ describe('CoachFormPage', () => {
         experience_years: 4,
         qualification: 'Level 2',
         biography: 'Junior squad coach.',
+        address: { line1: '4 Academy Road', line2: '', city: 'Pune', state: 'Maharashtra', pinCode: '411002' },
         status: 'active',
       },
       ['Cricket', 'Football', ' Athletics'],

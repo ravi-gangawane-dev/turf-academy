@@ -1,3 +1,4 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
@@ -5,7 +6,7 @@ import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -38,7 +39,7 @@ type DetailTab = 'overview' | 'documents' | 'attendance' | 'payments' | 'medical
 
 @Component({
   selector: 'app-student-details-page',
-  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, PageHero, DataTable, SummaryMetricCard, PrintIdCardDialog, AddressFields],
+  imports: [TableTools, ColumnFilter, SortableHeader, AsyncState, StatusBadge, AcademyMoneyPipe, AcademyDatePipe, PageHero, DataTable, SummaryMetricCard, PrintIdCardDialog, AddressFields],
   templateUrl: './student-details-page.html',
   styleUrl: './student-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

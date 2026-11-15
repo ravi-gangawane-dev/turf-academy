@@ -8,9 +8,9 @@
 }
 
 .eyebrow {
-  margin: 0 0 5px !important;
-  color: var(--app-primary-dark) !important;
-  font-size: 12px !important;
+  margin: 0 0 5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-meta);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .12em;
@@ -21,10 +21,10 @@
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--app-space-2);
   max-width: 100%;
   color: var(--app-muted);
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 .notifications-page .available-channels>span:first-child {
@@ -38,7 +38,7 @@
 .notifications-page .available-channels>strong {
   padding: 6px 11px;
   border: 1px solid var(--app-border);
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-card, #fff);
   color: var(--app-text, #24332b);
   font-weight: 650;
@@ -49,7 +49,7 @@
 .notifications-page .available-channels .channel-unavailable {
   padding: 6px 10px;
   border: 1px solid var(--app-border);
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-card, #fff);
   white-space: nowrap;
 }
@@ -57,18 +57,18 @@
 .notification-metrics {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--app-space-3-5);
   margin-bottom: 18px;
 }
 
 .notification-metrics article {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: var(--app-space-3);
   min-width: 0;
   padding: 17px;
   border: 1px solid var(--app-border);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: white;
 }
 
@@ -80,19 +80,19 @@
 
 .notification-metrics small {
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .notification-metrics strong {
   margin-top: 3px;
-  font-size: 22px;
+  font-size: var(--app-fs-stat);
 }
 
 .notification-metrics p {
   overflow: hidden;
   margin: 3px 0 0;
   color: #84928a;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -103,7 +103,7 @@
   place-items: center;
   width: 42px;
   height: 42px;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
 }
 
 .summary-icon.all {
@@ -112,7 +112,7 @@
 }
 
 .summary-icon.delivered {
-  color: #147a45;
+  color: var(--app-primary-dark);
   background: #e3f8ea;
 }
 
@@ -129,7 +129,7 @@
 .notification-card {
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: white;
 }
 
@@ -137,33 +137,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: var(--app-space-4-5);
   padding: 18px 20px;
   border-bottom: 1px solid var(--app-border);
 }
 
 .inbox-header h2 {
   margin: 0 0 4px;
-  font-size: 15px;
+  font-size: var(--app-fs-body);
 }
 
 .inbox-header p {
   margin: 0;
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .inbox-header .app-select {
   min-width: 170px;
-  min-height: 38px;
-  font-size: 12px;
+  min-height: var(--app-control-sm);
+  font-size: var(--app-fs-meta);
 }
 
 .notification-row {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr) 145px 34px;
   align-items: center;
-  gap: 13px;
+  gap: var(--app-space-3);
   min-height: 82px;
   padding: 14px 20px;
   border-bottom: 1px solid #edf1ef;
@@ -182,8 +182,8 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  color: #147a45;
+  border-radius: var(--app-radius-md);
+  color: var(--app-primary-dark);
   background: #e3f8ea;
 }
 
@@ -209,26 +209,26 @@
 .event-copy>div {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 
 .event-copy strong {
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .event-copy p {
   margin: 5px 0 0;
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .event-copy small {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--app-space-1);
   margin-top: 6px;
   color: #b33b36;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .event-meta {
@@ -242,7 +242,7 @@
 
 .event-meta strong {
   color: #53645b;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   text-transform: capitalize;
 }
 
@@ -254,7 +254,7 @@
 .event-meta time {
   margin-top: 6px;
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .retry-button {
@@ -263,7 +263,7 @@
   width: 32px;
   height: 32px;
   border: 1px solid #ecc9c7;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   color: #bd3c38;
   background: white;
 }
@@ -289,18 +289,18 @@
   border-radius: 50%;
   color: #668177;
   background: #edf4f0;
-  font-size: 21px;
+  font-size: var(--app-fs-h2);
 }
 
 .notification-empty h2 {
   margin: 15px 0 6px;
-  font-size: 15px;
+  font-size: var(--app-fs-body);
 }
 
 .notification-empty p {
   margin: 0;
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .notification-empty button {
@@ -309,7 +309,7 @@
   color: var(--app-primary);
   background: none;
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 @media (max-width: 950px) {
@@ -354,7 +354,7 @@
   .event-copy>div {
     align-items: flex-start;
     flex-direction: column;
-    gap: 5px;
+    gap: var(--app-space-1);
   }
 }
 
@@ -366,7 +366,7 @@
 
 .summary-scope {
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 app-notification-entity-filter {
@@ -377,19 +377,19 @@ app-notification-entity-filter {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 12px;
+  gap: var(--app-space-3);
   padding: 16px;
   margin-bottom: 16px;
   border: 1px solid var(--app-border);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: var(--app-card, white);
 
   label {
     display: grid;
-    gap: 6px;
+    gap: var(--app-space-1-5);
     flex: 1 1 140px;
     min-width: 0;
-    font-size: 12px;
+    font-size: var(--app-fs-meta);
     font-weight: 600;
   }
 
@@ -403,10 +403,10 @@ app-notification-entity-filter {
     box-sizing: border-box;
     min-width: 0;
     width: 100%;
-    min-height: 44px;
+    min-height: var(--app-control-lg);
     padding: 8px 12px;
     border: 1px solid var(--app-border);
-    border-radius: 8px;
+    border-radius: var(--app-radius-sm);
     background: var(--app-card, white);
     color: var(--app-text);
     font: inherit;
@@ -454,13 +454,13 @@ app-notification-entity-filter {
     display: grid;
     grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(140px, 1fr)) auto;
     align-items: end;
-    gap: 12px;
+    gap: var(--app-space-3);
   }
 
   .filter-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--app-space-2);
   }
 
   .filter-actions button {
@@ -471,7 +471,7 @@ app-notification-entity-filter {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: var(--app-space-2);
   }
 
   .clear-filters {
@@ -482,16 +482,16 @@ app-notification-entity-filter {
   .filter-count {
     min-width: 20px;
     padding: 2px 5px;
-    border-radius: 12px;
+    border-radius: var(--app-radius-md);
     background: #e3f8ea;
-    color: #147a45;
-    font-size: 11px;
+    color: var(--app-primary-dark);
+    font-size: var(--app-fs-caption);
   }
 
   .filter-advanced {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: var(--app-space-4);
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid var(--app-border);
@@ -555,18 +555,18 @@ app-notification-entity-filter {
 .available-channels {
   flex-wrap: wrap;
   margin: 0;
-  gap: 10px;
+  gap: var(--app-space-2-5);
 }
 
 .available-channels>span {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--app-space-2);
 }
 
 .available-channels strong {
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-primary-soft);
   color: var(--app-primary-dark);
 }
@@ -574,7 +574,7 @@ app-notification-entity-filter {
 .channel-unavailable {
   padding: 5px 10px;
   border: 1px solid var(--app-border);
-  border-radius: 20px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-card);
 }
 
@@ -601,9 +601,9 @@ app-notification-entity-filter {
 }
 
 .notifications-page .notification-action-whatsapp {
-  color: #147a45;
+  color: var(--app-primary-dark);
   background: #e3f8ea;
-  border: 1px solid #b8e6c8;
+  border: 1px solid var(--app-primary-soft);
 }
 
 .notifications-page .notification-action-whatsapp:hover:not(:disabled) {

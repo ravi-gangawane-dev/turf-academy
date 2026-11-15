@@ -1,0 +1,401 @@
+@use '../student-shared' as student-shared;
+
+/* medical */
+.medical-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: var(--app-space-3-5);
+  margin-top: 10px;
+}
+
+.medical-main {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--app-space-3);
+}
+
+.med-panel,
+.health-summary,
+.medical-actions,
+.medical-history {
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: white;
+}
+
+.med-panel {
+  padding: 14px;
+}
+
+.med-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.med-panel h2,
+.medical-sidebar h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  margin: 0;
+  font-size: var(--app-fs-meta);
+}
+
+.med-panel h2>i,
+.medical-sidebar h2>i {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: #e8f5eb;
+}
+
+.med-panel header button {
+  min-height: 27px;
+  padding: 0 9px;
+  border: 1px solid var(--app-primary-soft);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: white;
+  font-size: var(--app-fs-meta);
+}
+
+.med-panel header button i {
+  margin-right: 5px;
+}
+
+.medical-details {
+  grid-column: span 4;
+}
+
+.allergies-card {
+  grid-column: span 2;
+}
+
+.condition-card,
+.contact-card,
+.insurance-card {
+  grid-column: span 2;
+}
+
+.notes-card,
+.vaccination-card {
+  grid-column: span 3;
+}
+
+.medical-details dl {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 13px 16px;
+  margin: 0;
+}
+
+.med-panel dt {
+  color: #5d687e;
+  font-size: var(--app-fs-meta);
+}
+
+.med-panel dd {
+  margin: 4px 0 0;
+  color: #17223c;
+  font-size: var(--app-fs-meta);
+}
+
+.health-tag {
+  padding: 4px 7px;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: #e7f5eb;
+  font-size: var(--app-fs-meta);
+}
+
+.allergies-card ul {
+  padding: 0;
+  list-style: none;
+}
+
+.allergies-card li {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  margin: 12px 0;
+  font-size: var(--app-fs-meta);
+}
+
+.allergies-card li>i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--app-primary-soft);
+}
+
+.allergies-card li b {
+  margin-left: auto;
+  padding: 4px 7px;
+  border-radius: var(--app-radius-sm);
+  color: #586479;
+  background: #f0f2f5;
+  font-size: var(--app-fs-meta);
+}
+
+.allergies-card>p,
+.insurance-card>p,
+.notes-card>p {
+  padding: 11px;
+  color: #365c47;
+  background: #edf7f0;
+  font-size: var(--app-fs-meta);
+  line-height: 1.6;
+}
+
+.allergies-card>p i,
+.insurance-card>p i {
+  margin-right: 7px;
+  color: var(--app-primary-dark);
+}
+
+.condition-card>div {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  min-height: 120px;
+  text-align: center;
+}
+
+.condition-card>div>i {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--app-primary-dark);
+  background: #e6f5eb;
+  font-size: var(--app-fs-h2);
+}
+
+.condition-card div strong {
+  margin-top: 10px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-meta);
+}
+
+.condition-card div p {
+  max-width: 220px;
+  color: #5a667b;
+  font-size: var(--app-fs-meta);
+  line-height: 1.5;
+}
+
+.contact-card dl,
+.insurance-card dl {
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: var(--app-space-2-5);
+  margin: 0;
+}
+
+.vaccination-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vaccination-card th,
+.vaccination-card td {
+  padding: 6px;
+  text-align: left;
+  font-size: var(--app-fs-meta);
+}
+
+.vaccination-card th {
+  color: #59657b;
+}
+
+.vaccination-card td b {
+  padding: 4px 6px;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: #e7f5eb;
+}
+
+.medical-sidebar {
+  display: grid;
+  align-content: start;
+  gap: var(--app-space-3);
+}
+
+.health-summary,
+.medical-actions,
+.medical-history {
+  padding: 16px;
+}
+
+.health-summary {
+  text-align: center;
+}
+
+.health-summary h2 {
+  text-align: left;
+}
+
+.health-summary>div {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  margin: 25px auto 10px;
+  border: 3px solid var(--app-primary-dark);
+  border-radius: 50%;
+  color: var(--app-primary-dark);
+  background: #edf8f1;
+  font-size: var(--app-fs-h1);
+}
+
+.health-summary>strong {
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-meta);
+}
+
+.health-summary>p {
+  color: #526078;
+  font-size: var(--app-fs-meta);
+  line-height: 1.6;
+}
+
+.medical-actions button {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  margin-top: 5px;
+  padding: 0 10px;
+  border: 1px solid #dce3df;
+  border-radius: var(--app-radius-sm);
+  color: #1b2842;
+  background: white;
+  text-align: left;
+  font-size: var(--app-fs-meta);
+}
+
+.medical-history>div {
+  position: relative;
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 5px 8px;
+  margin-top: 16px;
+}
+
+.medical-history>div>i {
+  grid-row: span 2;
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  border: 2px solid var(--app-primary-dark);
+  border-radius: 50%;
+}
+
+.medical-history>div>i::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 47px;
+  margin: 7px 0 0 1px;
+  background: #82a68e;
+}
+
+.medical-history>div strong {
+  font-size: var(--app-fs-meta);
+}
+
+.medical-history>div span {
+  font-size: var(--app-fs-meta);
+}
+
+.medical-history>div span small {
+  display: block;
+  margin-top: 4px;
+  color: #647086;
+}
+
+.medical-history>button {
+  float: right;
+  margin-top: 20px;
+  border: 0;
+  color: #17223c;
+  background: none;
+  font-size: var(--app-fs-meta);
+}
+
+.students-page:has(.medical-workspace)>.detail-page-heading>span,
+.students-page:has(.medical-workspace)>.detail-page-heading h1,
+.students-page:has(.medical-workspace)>.detail-page-heading p,
+.students-page:has(.medical-workspace)>.detail-breadcrumb strong {
+  font-size: 0;
+}
+
+.students-page:has(.medical-workspace)>.detail-page-heading>span::after {
+  content: '05.8';
+  font-size: var(--app-fs-stat);
+}
+
+.students-page:has(.medical-workspace)>.detail-page-heading h1::after {
+  content: 'Medical Information';
+  font-size: var(--app-fs-stat);
+}
+
+.students-page:has(.medical-workspace)>.detail-page-heading p::after {
+  content: 'View and manage student medical details and health records.';
+  font-size: var(--app-fs-meta);
+}
+
+.students-page:has(.medical-workspace)>.detail-breadcrumb strong::after {
+  content: 'Medical Information';
+  font-size: var(--app-fs-meta);
+}
+
+@media (max-width: 1050px) {
+  .medical-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .medical-sidebar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .medical-main {
+    grid-template-columns: 1fr;
+  }
+
+  .medical-details,
+  .allergies-card,
+  .condition-card,
+  .contact-card,
+  .insurance-card,
+  .notes-card,
+  .vaccination-card {
+    grid-column: auto;
+  }
+
+  .medical-details dl {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .medical-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .vaccination-card {
+    overflow-x: hidden;
+  }
+
+  .vaccination-card th:nth-child(4),
+  .vaccination-card td:nth-child(4) {
+    display: none;
+  }
+}

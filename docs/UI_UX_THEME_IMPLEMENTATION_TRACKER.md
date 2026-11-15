@@ -1,5 +1,7 @@
 # UI/UX and Theme Consistency — Implementation Tracker
 
+> **Current state (2026-11-15).** This tracker dates from 2026-11-04 and describes the starting baseline. The work it planned has since been carried out and is recorded, row by row with evidence and checks, in §12 (“Fix log”) of [UI_ARCHITECTURE_AUDIT_2026-11-14.md](./UI_ARCHITECTURE_AUDIT_2026-11-14.md). Read §12 for what the code actually looks like now; treat the status tables below as history. Anything still outstanding is listed at the end of that audit.
+
 ## Scope and authorization
 
 - User approved starting P0 after creating this tracker.

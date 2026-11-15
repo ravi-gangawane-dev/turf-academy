@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { API_CONFIG } from '../config/api.config';
+import { AcademyPreferencesService } from '../supabase/academy-preferences.service';
 import {
   AttendanceRecord,
   Batch,
@@ -16,9 +17,7 @@ import {
   Student,
   StudentRegistration,
 } from '../models/academy.model';
-const today = () => new Date().toISOString().slice(0, 10);
-const nowTime = () =>
-  new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date());
+
 
 
 
@@ -26,6 +25,7 @@ const nowTime = () =>
 @Injectable({ providedIn: 'root' })
 export class AcademyStore {
   private readonly config = inject(API_CONFIG);
+  private readonly preferences = inject(AcademyPreferencesService);
   private sequence = 100;
   private readonly parentsState = signal<readonly Parent[]>(this.config.useMockApi ? [
     {
@@ -491,7 +491,7 @@ export class AcademyStore {
           (item) =>
             item.studentId === enrollment.studentId &&
             item.batchId === enrollment.batchId &&
-            item.businessDate === today(),
+            item.businessDate === this.preferences.today(),
         ),
       })),
   );
@@ -520,7 +520,7 @@ export class AcademyStore {
             ? 'Paid'
             : paidPaise > 0
               ? 'Partial'
-              : new Date(charge.dueDate) < new Date(today())
+              : new Date(charge.dueDate) < new Date(this.preferences.today())
                 ? 'Overdue'
                 : 'Pending',
       };
@@ -537,7 +537,7 @@ export class AcademyStore {
     if (!student || !enrollment || !batch)
       throw new Error('No active enrolled student matches this QR code.');
     const attendance = this.attendance().find(
-      (item) => item.studentId === studentId && item.businessDate === today(),
+      (item) => item.studentId === studentId && item.businessDate === this.preferences.today(),
     );
     return { student, enrollment, batch, attendance };
   }
@@ -619,7 +619,7 @@ export class AcademyStore {
           { key: 'student', label: 'Student' },
           { key: 'date', label: 'Paid at' },
           { key: 'mode', label: 'Mode' },
-          { key: 'amount', label: 'Amount (₹)' },
+          { key: 'amount', label: `Amount (${this.preferences.currency()})` },
         ],
         rows: payments.map((item) => ({
           receipt: item.receiptNumber,
@@ -631,7 +631,7 @@ export class AcademyStore {
         })),
         summary: [
           { label: 'Payments', value: String(payments.length) },
-          { label: 'Collected', value: `₹${(total / 100).toLocaleString('en-IN')}` },
+          { label: 'Collected', value: this.preferences.money(total / 100) },
         ],
       };
     }
@@ -653,9 +653,9 @@ export class AcademyStore {
         { key: 'student', label: 'Student' },
         { key: 'period', label: 'Period' },
         { key: 'dueDate', label: 'Due date' },
-        { key: 'charge', label: 'Charge (₹)' },
-        { key: 'paid', label: 'Paid (₹)' },
-        { key: 'balance', label: 'Balance (₹)' },
+        { key: 'charge', label: `Charge (${this.preferences.currency()})` },
+        { key: 'paid', label: `Paid (${this.preferences.currency()})` },
+        { key: 'balance', label: `Balance (${this.preferences.currency()})` },
         { key: 'status', label: 'Status' },
       ],
       rows: charges.map((item) => ({
@@ -669,8 +669,8 @@ export class AcademyStore {
       })),
       summary: [
         { label: 'Charges', value: String(charges.length) },
-        { label: 'Collected', value: `₹${(collected / 100).toLocaleString('en-IN')}` },
-        { label: 'Outstanding', value: `₹${(outstanding / 100).toLocaleString('en-IN')}` },
+        { label: 'Collected', value: this.preferences.money(collected / 100) },
+        { label: 'Outstanding', value: this.preferences.money(outstanding / 100) },
       ],
     };
   }
@@ -989,7 +989,7 @@ export class AcademyStore {
       throw new Error('Student does not have an active enrollment in this batch.');
     if (
       this.attendance().some(
-        (item) => item.studentId === studentId && item.businessDate === today(),
+        (item) => item.studentId === studentId && item.businessDate === this.preferences.today(),
       )
     )
       throw new Error('Student is already checked in today.');
@@ -999,8 +999,8 @@ export class AcademyStore {
         id: this.id('attendance'),
         studentId,
         batchId,
-        businessDate: today(),
-        checkInAt: nowTime(),
+        businessDate: this.preferences.today(),
+        checkInAt: this.nowTime(),
         status: 'present',
       },
     ]);
@@ -1014,7 +1014,7 @@ export class AcademyStore {
     if (record.checkOutAt) throw new Error('Student is already checked out.');
     this.attendanceState.update((items) =>
       items.map((item) =>
-        item.id === attendanceId ? { ...item, checkOutAt: nowTime(), status: 'checked-out' } : item,
+        item.id === attendanceId ? { ...item, checkOutAt: this.nowTime(), status: 'checked-out' } : item,
       ),
     );
     this.queueAttendanceNotification(record.studentId, 'check-out');
@@ -1023,7 +1023,7 @@ export class AcademyStore {
   addPendingCheckIn(operationId: string, studentId: string, batchId: string): void {
     if (
       this.attendance().some(
-        (item) => item.studentId === studentId && item.businessDate === today(),
+        (item) => item.studentId === studentId && item.businessDate === this.preferences.today(),
       )
     )
       throw new Error('Student already has an attendance record today.');
@@ -1033,8 +1033,8 @@ export class AcademyStore {
         id: `local-${operationId}`,
         studentId,
         batchId,
-        businessDate: today(),
-        checkInAt: nowTime(),
+        businessDate: this.preferences.today(),
+        checkInAt: this.nowTime(),
         status: 'present',
         syncState: 'pending',
       },
@@ -1047,7 +1047,7 @@ export class AcademyStore {
     this.attendanceState.update((items) =>
       items.map((item) =>
         item.id === attendanceId
-          ? { ...item, checkOutAt: nowTime(), status: 'checked-out', syncState: 'pending' }
+          ? { ...item, checkOutAt: this.nowTime(), status: 'checked-out', syncState: 'pending' }
           : item,
       ),
     );
@@ -1184,5 +1184,9 @@ export class AcademyStore {
       },
       ...items,
     ]);
+  }
+
+  private nowTime(): string {
+    return new Date().toISOString();
   }
 }

@@ -65,11 +65,13 @@ const idCard: PrintIdCardDocument = {
 };
 
 function setup(
-  document: PrintDocument | null = receipt,
+  document: PrintDocument | readonly PrintDocument[] | null = receipt,
   options: { open?: boolean; preparing?: boolean; error?: string } = {},
 ) {
+  const documents = document ? (Array.isArray(document) ? [...document] : [document]) : [];
   const service = {
-    preview: signal<PrintDocument | null>(document),
+    preview: signal<PrintDocument | null>(documents[0] ?? null),
+    previewBatch: signal<readonly PrintDocument[]>(documents),
     previewOpen: signal(options.open ?? document !== null),
     preparing: signal(options.preparing ?? false),
     error: signal(options.error ?? ''),
@@ -188,6 +190,38 @@ describe('PrintPreview', () => {
 
     expect(element.querySelectorAll('.preview-field select')).toHaveLength(0);
     expect(element.textContent).toContain('ID cards print on fixed A4 portrait paper');
+  });
+
+  it('previews a batch as one job with every sheet and a batch title', () => {
+    const second: PrintReceiptDocument = {
+      ...receipt,
+      receiptNumber: 'RCP-43',
+      studentName: 'Diya Sharma',
+    };
+    const { fixture } = setup([receipt, second]);
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.textContent).toContain('2 payment receipts');
+    expect(element.textContent).toContain('Check the 2 documents');
+    expect(element.textContent).toContain('Remembered for Payment receipt prints');
+    expect(element.querySelectorAll('.preview-paper')).toHaveLength(2);
+    expect(element.querySelectorAll('.print-sheet--receipt')).toHaveLength(2);
+  });
+
+  it('previews a batch of ID cards on the fixed duplex sheet', () => {
+    const second: PrintIdCardDocument = {
+      ...idCard,
+      cardNumber: 'ID-STU-TCA1002',
+      holderId: 's2',
+      fullName: 'Diya Sharma',
+    };
+    const { fixture } = setup([idCard, second]);
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.textContent).toContain('2 ID cards');
+    expect(element.querySelectorAll('.preview-field select')).toHaveLength(0);
+    expect(element.querySelectorAll('.preview-paper')).toHaveLength(2);
+    expect(element.querySelectorAll('.print-sheet--id-card')).toHaveLength(2);
   });
 
   it('prints and saves the previewed document through the shared service', async () => {

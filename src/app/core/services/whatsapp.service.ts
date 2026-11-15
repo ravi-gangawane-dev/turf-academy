@@ -10,6 +10,7 @@ export interface AttendanceWhatsApp {
   readonly timestamp: string;
   readonly academyName?: string;
   readonly timezone?: string;
+  readonly locale?: string;
 }
 
 /**
@@ -26,8 +27,9 @@ export class WhatsappService {
     const date = new Date(data.timestamp);
     if (Number.isNaN(date.getTime())) throw new Error('Attendance time is not valid.');
     const timeZone = data.timezone ?? 'Asia/Kolkata';
-    const dateText = new Intl.DateTimeFormat('en-IN', { timeZone, dateStyle: 'medium' }).format(date);
-    const timeText = new Intl.DateTimeFormat('en-IN', { timeZone, timeStyle: 'short' }).format(date);
+    const locale = data.locale ?? 'en-IN';
+    const dateText = new Intl.DateTimeFormat(locale, { timeZone, dateStyle: 'medium' }).format(date);
+    const timeText = new Intl.DateTimeFormat(locale, { timeZone, timeStyle: 'short' }).format(date);
     const actionText = data.action === 'check_in' ? 'checked in at' : 'checked out from';
     return [
       data.parentName ? `Hello ${data.parentName.trim()},` : 'Dear Parent,',

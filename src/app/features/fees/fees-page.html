@@ -1,42 +1,40 @@
 <div class="app-list-page charges-page">
 
-  <app-page-hero title="Monthly Charges" subtitle="Manage monthly charges for fee plans and batches." [breadcrumbs]="[{label: 'Dashboard', icon: 'pi-home', route: '/dashboard'}, {label: 'Monthly Charges'}]" actionLabel="Add Monthly Charge" (action)="openChargeDialog()"></app-page-hero>
+  <app-page-hero title="Monthly Charges" subtitle="Manage monthly charges for fee plans and batches."
+    [breadcrumbs]="[{label: 'Dashboard', icon: 'pi-home', route: '/dashboard'}, {label: 'Monthly Charges'}]"
+    actionLabel="Add Monthly Charge" (action)="openChargeDialog()"></app-page-hero>
   <app-fee-view-navigation />
   @if (error()) {
-    <div class="notice error" role="alert">{{ error() }}</div>
+  <div class="notice error" role="alert">{{ error() }}</div>
   }
   @if (receiptNumber()) {
-    <div class="notice receipt" role="status">
-      <strong>Receipt {{ receiptNumber() }}</strong><a routerLink="/payments/receipts">View receipts</a>
-    </div>
+  <div class="notice receipt" role="status">
+    <strong>Receipt {{ receiptNumber() }}</strong><a routerLink="/payments/receipts">View receipts</a>
+  </div>
   }
-  <section class="metrics">
-    @for (metric of metricCards(); track metric.label) {
-    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
-      [tone]="metric.tone" />
-    }
-  </section>
-  <app-data-table
-    class="charges-card"
-    [total]="total()"
-    [page]="page()"
-    [pageSize]="pageSize()"
-    itemLabel="records"
-    (pageChange)="changePage($event)"
+  <app-summary-cards [cards]="metricCards()" />
+  <app-data-table class="charges-card" [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="records"
+    (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)">
 
-    (pageSizeChange)="setPageSize($event)"
->
-    
     <div table-content class="table-wrap">
-      <app-fee-charge-table [showTools]="true" [total]="total()" [sortBy]="sortBy()" [sortDirection]="sortDirection()" (sortChanged)="sortColumn($event)" (resetFilters)="columns.reset()" [rows]="sharedChargeRows()" [loading]="loading()" [filterValues]="columns.values()" (filterChanged)="columns.set($event.key, $event.value)" (details)="openStatementFromTable($event)" (student)="openStudentFromTable($event)" (invoice)="printInvoiceFromTable($event)" (pay)="selectedChargeId.set($event.id)">
+      <app-fee-charge-table [showTools]="true" [total]="total()" [sortBy]="sortBy()" [sortDirection]="sortDirection()"
+        (sortChanged)="sortColumn($event)" (resetFilters)="columns.reset()" [rows]="sharedChargeRows()"
+        [loading]="loading()" [filterValues]="columns.values()" (filterChanged)="columns.set($event.key, $event.value)"
+        (details)="openStatementFromTable($event)" (student)="openStudentFromTable($event)"
+        (invoice)="printInvoiceFromTable($event)" (pay)="selectedChargeId.set($event.id)">
         <div table-actions class="charge-status-filter" aria-label="Fee status filters">
           <span>Status</span>
           <button type="button" [class.active]="statusFilter() === 'all'" (click)="setStatusFilter('all')">All</button>
-          <button type="button" [class.active]="statusFilter() === 'pending'" (click)="setStatusFilter('pending')">Pending</button>
-          <button type="button" [class.active]="statusFilter() === 'partial'" (click)="setStatusFilter('partial')">Partial</button>
-          <button type="button" [class.active]="statusFilter() === 'paid'" (click)="setStatusFilter('paid')">Paid</button>
-          <button type="button" [class.active]="statusFilter() === 'overdue'" (click)="setStatusFilter('overdue')">Overdue</button>
-          <button type="button" [class.active]="statusFilter() === 'waived'" (click)="setStatusFilter('waived')">Waived</button>
+          <button type="button" [class.active]="statusFilter() === 'pending'"
+            (click)="setStatusFilter('pending')">Pending</button>
+          <button type="button" [class.active]="statusFilter() === 'partial'"
+            (click)="setStatusFilter('partial')">Partial</button>
+          <button type="button" [class.active]="statusFilter() === 'paid'"
+            (click)="setStatusFilter('paid')">Paid</button>
+          <button type="button" [class.active]="statusFilter() === 'overdue'"
+            (click)="setStatusFilter('overdue')">Overdue</button>
+          <button type="button" [class.active]="statusFilter() === 'waived'"
+            (click)="setStatusFilter('waived')">Waived</button>
         </div>
       </app-fee-charge-table>
     </div>
@@ -44,84 +42,88 @@
 </div>
 
 @if (selectedChargeId()) {
-  <div class="dialog-backdrop">
-    <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="selectedChargeId.set('')" role="dialog" aria-modal="true" aria-labelledby="payment-title">
-      <header>
-        <h2 id="payment-title">Record Payment</h2>
-        <button aria-label="Close" [disabled]="submitting()" (click)="selectedChargeId.set('')">
-          <i class="pi pi-times"></i>
-        </button>
-      </header>
-      <app-payment-record-dialog [charges]="paymentDialogCharges()" [saving]="submitting()" (submitted)="submitSharedPayment($event)" />
-    </section>
-  </div>
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="selectedChargeId.set('')">
+  <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="selectedChargeId.set('')"
+    role="dialog" aria-modal="true" aria-labelledby="payment-title">
+    <header>
+      <h2 id="payment-title">Record Payment</h2>
+      <button type="button" aria-label="Close" [disabled]="submitting()" (click)="selectedChargeId.set('')">
+        <i class="pi pi-times"></i>
+      </button>
+    </header>
+    <app-payment-record-dialog [charges]="paymentDialogCharges()" [saving]="submitting()"
+      (submitted)="submitSharedPayment($event)" />
+  </section>
+</div>
 }
 @if (chargeDialogOpen()) {
-  <div class="dialog-backdrop">
-    <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="chargeDialogOpen.set(false)" role="dialog" aria-modal="true" aria-labelledby="charge-title">
-      <header>
-        <h2 id="charge-title">Add Monthly Charge</h2>
-        <button aria-label="Close" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">
-          <i class="pi pi-times"></i>
-        </button>
-      </header>
-      <form [formGroup]="chargeForm" (ngSubmit)="addCharge()">
-        @if (error()) { <p role="alert">{{ error() }}</p> }
-        @if (optionsLoading()) { <app-async-state title="Loading enrollments…" /> }
-        @if (chargeForm.touched && chargeForm.invalid) { <p role="alert">Select an enrollment, month and due date, and enter a positive amount.</p> }
-        <label
-          >Student enrollment<select
-            formControlName="enrollmentId"
-            (change)="enrollmentChanged(chargeForm.controls.enrollmentId.value)"
-          >
-            <option value="">Select student</option>
-            @for (row of enrollmentOptions(); track row.id) {
-              <option [value]="row.id">{{ row.studentName }} · {{ row.batchName }}</option>
-            }
-          </select></label
-        ><label>Month<input type="month" formControlName="period" (change)="chargePeriodChanged()" /></label
-        ><label>Due date<input type="date" formControlName="dueDate" /></label
-        ><label
-          >Monthly charge ({{preferences.currency()}})<input type="number" min="0.01" step="0.01" formControlName="amountRupees"
-        /></label>
-        <footer>
-          <button type="button" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">Cancel</button
-          ><button class="primary" type="submit" [disabled]="submitting() || optionsLoading()">{{ submitting() ? 'Saving…' : 'Add Charge' }}</button>
-        </footer>
-      </form>
-    </section>
-  </div>
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="chargeDialogOpen.set(false)">
+  <section class="dialog" appModalFocus [modalBusy]="submitting()" (modalDismiss)="chargeDialogOpen.set(false)"
+    role="dialog" aria-modal="true" aria-labelledby="charge-title">
+    <header>
+      <h2 id="charge-title">Add Monthly Charge</h2>
+      <button type="button" aria-label="Close" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">
+        <i class="pi pi-times"></i>
+      </button>
+    </header>
+    <form [formGroup]="chargeForm" (ngSubmit)="addCharge()">
+      @if (error()) { <p role="alert">{{ error() }}</p> }
+      @if (optionsLoading()) { <app-async-state title="Loading enrollments…" /> }
+      @if (chargeForm.touched && chargeForm.invalid) { <p role="alert">Select an enrollment, month and due date, and
+        enter a positive amount.</p> }
+      <label>Student enrollment<select formControlName="enrollmentId"
+          (change)="enrollmentChanged(chargeForm.controls.enrollmentId.value)">
+          <option value="">Select student</option>
+          @for (row of enrollmentOptions(); track row.id) {
+          <option [value]="row.id">{{ row.studentName }} · {{ row.batchName }}</option>
+          }
+        </select></label><label>Month<input type="month" formControlName="period"
+          (change)="chargePeriodChanged()" /></label><label>Due date<input type="date"
+          formControlName="dueDate" /></label><label>Monthly charge ({{preferences.currency()}})<input type="number"
+          min="0.01" step="0.01" formControlName="amountRupees" /></label>
+      <footer>
+        <button type="button" [disabled]="submitting()" (click)="chargeDialogOpen.set(false)">Cancel</button><button
+          class="primary" type="submit" [disabled]="submitting() || optionsLoading()">{{ submitting() ? 'Saving…' : 'Add
+          Charge' }}</button>
+      </footer>
+    </form>
+  </section>
+</div>
 }
 @if (statementDialogOpen()) {
-  <div class="dialog-backdrop">
-    <section class="dialog" appModalFocus [modalBusy]="statementLoading()" (modalDismiss)="statementDialogOpen.set(false)" role="dialog" aria-modal="true" aria-labelledby="statement-title">
-      <header>
-        <h2 id="statement-title">Fee Statement — {{ statementStudent()?.studentName }}</h2>
-        <button aria-label="Close" [disabled]="statementLoading()" (click)="statementDialogOpen.set(false)">
-          <i class="pi pi-times"></i>
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="statementDialogOpen.set(false)">
+  <section class="dialog" appModalFocus [modalBusy]="statementLoading()" (modalDismiss)="statementDialogOpen.set(false)"
+    role="dialog" aria-modal="true" aria-labelledby="statement-title">
+    <header>
+      <h2 id="statement-title">Fee Statement — {{ statementStudent()?.studentName }}</h2>
+      <button type="button" aria-label="Close" [disabled]="statementLoading()" (click)="statementDialogOpen.set(false)">
+        <i class="pi pi-times"></i>
+      </button>
+    </header>
+    <form [formGroup]="statementForm" (ngSubmit)="printStatement('print')">
+      @if (error()) { <p role="alert">{{ error() }}</p> }
+      @if (statementForm.touched && statementForm.invalid) { <p role="alert">Choose a start date on or before the end
+        date.</p> }
+      <label>From date<input type="date" formControlName="fromDate"
+          [max]="statementForm.controls.toDate.value" /></label>
+      <label>To date<input type="date" formControlName="toDate" [min]="statementForm.controls.fromDate.value" /></label>
+      <p class="hint">The ledger includes charges, payments and refunds in this period. Earlier activity appears in the
+        opening balance.</p>
+      <footer>
+        <button type="button" [disabled]="statementLoading()" (click)="statementDialogOpen.set(false)">Cancel</button>
+        <button type="button" [disabled]="statementLoading()" (click)="printStatement('preview')">
+          <i class="pi pi-eye" aria-hidden="true"></i>
+          {{ statementLoading() ? 'Preparing…' : 'Preview' }}
         </button>
-      </header>
-      <form [formGroup]="statementForm" (ngSubmit)="printStatement('print')">
-        @if (error()) { <p role="alert">{{ error() }}</p> }
-        @if (statementForm.touched && statementForm.invalid) { <p role="alert">Choose a start date on or before the end date.</p> }
-        <label>From date<input type="date" formControlName="fromDate" [max]="statementForm.controls.toDate.value" /></label>
-        <label>To date<input type="date" formControlName="toDate" [min]="statementForm.controls.fromDate.value" /></label>
-        <p class="hint">The ledger includes charges, payments and refunds in this period. Earlier activity appears in the opening balance.</p>
-        <footer>
-          <button type="button" [disabled]="statementLoading()" (click)="statementDialogOpen.set(false)">Cancel</button>
-          <button type="button" [disabled]="statementLoading()" (click)="printStatement('preview')">
-            <i class="pi pi-eye" aria-hidden="true"></i>
-            {{ statementLoading() ? 'Preparing…' : 'Preview' }}
-          </button>
-          <button type="button" [disabled]="statementLoading()" (click)="printStatement('pdf')">
-            <i class="pi pi-file-pdf" aria-hidden="true"></i>
-            {{ statementLoading() ? 'Preparing…' : 'Download PDF' }}
-          </button>
-          <button class="primary" type="submit" [disabled]="statementLoading()">
-            {{ statementLoading() ? 'Preparing…' : 'Print' }}
-          </button>
-        </footer>
-      </form>
-    </section>
-  </div>
+        <button type="button" [disabled]="statementLoading()" (click)="printStatement('pdf')">
+          <i class="pi pi-file-pdf" aria-hidden="true"></i>
+          {{ statementLoading() ? 'Preparing…' : 'Download PDF' }}
+        </button>
+        <button class="primary" type="submit" [disabled]="statementLoading()">
+          {{ statementLoading() ? 'Preparing…' : 'Print' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>
 }

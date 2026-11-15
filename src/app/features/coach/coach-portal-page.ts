@@ -1,9 +1,11 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
+import { DataTable } from '../../shared/data-table/data-table';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { AcademySupport } from '../../shared/academy-support';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -51,10 +53,10 @@ type CoachView =
 
 @Component({
   selector: 'app-coach-portal-page',
-  imports: [TableTools, AcademySupport, AttendanceViewNavigation,
+  imports: [TableTools, DataTable, AcademySupport, AttendanceViewNavigation,
     AsyncState,
     CalendarLayout,
-    DatePipe,
+    AcademyDatePipe,
     FilterBar,
     NgTemplateOutlet,
     PageHero,
@@ -490,7 +492,7 @@ export class CoachPortalPage implements OnInit, OnDestroy {
   });
   protected readonly scheduleRange = computed(() => {
     const days = this.scheduleDays();
-    const format = new Intl.DateTimeFormat('en-IN', {
+    const format = new Intl.DateTimeFormat(this.academyPreferences.locale(), {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -545,8 +547,9 @@ export class CoachPortalPage implements OnInit, OnDestroy {
       if (this.reloadTimer) clearTimeout(this.reloadTimer);
       this.reloadTimer = setTimeout(() => void this.reloadRealtimePanel(panel, coachId, batchIds), 200);
     });
-    if ((this.view() === 'students' || this.view() === 'attendance')) void this.loadStudentPage();
-    else void this.loadStudentsPanel(batchIds, batches);
+    void this.loadStudentsPanel(batchIds, batches).then(() => {
+      if (this.view() === 'students' || this.view() === 'attendance') void this.loadStudentPage();
+    });
     if (this.view() === 'history') void this.loadAttendancePage();
     else void this.loadAttendancePanel(batchIds);
     void this.loadSessionsPanel(batchIds);
@@ -562,7 +565,7 @@ export class CoachPortalPage implements OnInit, OnDestroy {
     try {
       const students = await this.portal.loadStudents(batchIds, batches);
       this.patchData({ students });
-      if (!this.selectedStudentId()) this.selectedStudentId.set(students[0]?.id ?? '');
+      if (this.view() !== 'students' && !this.selectedStudentId()) this.selectedStudentId.set(students[0]?.id ?? '');
     } catch (error) { this.studentsError.set(error instanceof Error ? error.message : 'Students could not be loaded.'); }
     finally { this.studentsLoading.set(false); }
   }
@@ -749,13 +752,16 @@ export class CoachPortalPage implements OnInit, OnDestroy {
     if (!value) return '—';
     const text = String(value);
     if (text.includes('T'))
-      return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(
-        new Date(text),
-      );
+      return new Intl.DateTimeFormat(this.academyPreferences.locale(), {
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZone: this.academyPreferences.timezone(),
+      }).format(new Date(text));
     const [h, m] = text.split(':').map(Number);
-    return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(
-      new Date(2000, 0, 1, h, m),
-    );
+    return new Intl.DateTimeFormat(this.academyPreferences.locale(), {
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(new Date(2000, 0, 1, h, m));
   }
   protected age(student: CoachStudent): number {
     const birth = new Date(student.date_of_birth);

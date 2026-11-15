@@ -40,6 +40,7 @@ const coachRecord: CoachDetailRecord = {
   experience_years: 8,
   qualification: 'BCCI Level 2',
   biography: null,
+  address: { line1: '12 Main Road', line2: '', city: 'Pune', state: 'Maharashtra', pinCode: '411001' },
   photo_path: null,
   photo_url: null,
   status: 'active',

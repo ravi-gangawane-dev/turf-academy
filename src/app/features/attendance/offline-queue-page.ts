@@ -4,8 +4,9 @@ import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { AcademyFacade } from '../../core/state/academy.facade';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 import { SortableHeader, TableSortDirection } from '../../shared/sortable-header/sortable-header';
@@ -27,13 +28,14 @@ type QueueSortKey = 'student' | 'type' | 'date' | 'time' | 'status' | 'reason';
 
 @Component({
   selector: 'app-offline-queue-page',
-  imports: [AttendanceViewNavigation, TableTools, PageHero, AsyncState, Pagination, SummaryMetricCard, SortableHeader],
+  imports: [AttendanceViewNavigation, TableTools, PageHero, AsyncState, SummaryMetricCard, SortableHeader, DataTable],
   templateUrl: './offline-queue-page.html',
   styleUrl: './offline-queue-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OfflineQueuePage {
   protected readonly store = inject(AcademyFacade);
+  private readonly preferences = inject(AcademyPreferencesService);
   private readonly toast = inject(ToastService);
   protected readonly message = signal('');
   private readonly toastFeedback = effect(() => { const message = this.message(); if (message) this.toast.show(message, /failed|conflict|offline/i.test(message) ? 'warning' : 'success'); });
@@ -55,8 +57,14 @@ export class OfflineQueuePage {
         studentName: student?.name ?? operation.studentId,
         studentCode: student?.id ?? operation.studentId,
         type: operation.kind === 'check-in' ? 'Check In' : 'Check Out',
-        date: created.toLocaleDateString('en-IN'),
-        time: created.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        date: created.toLocaleDateString(this.preferences.locale(), {
+          timeZone: this.preferences.timezone(),
+        }),
+        time: created.toLocaleTimeString(this.preferences.locale(), {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: this.preferences.timezone(),
+        }),
         status: operation.status,
         failureReason: operation.failureReason ?? '',
         createdAt: created.getTime(),
@@ -115,7 +123,13 @@ export class OfflineQueuePage {
   }
   protected setPageSize(size: number): void { this.pageSize.set(size); this.page.set(1); }
   protected initials(name: string): string { return name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); }
-  protected formatDate(value: string | null): string { return value ? new Date(value).toLocaleString('en-IN') : 'Not yet'; }
+  protected formatDate(value: string | null): string {
+    return value
+      ? new Date(value).toLocaleString(this.preferences.locale(), {
+          timeZone: this.preferences.timezone(),
+        })
+      : 'Not yet';
+  }
   protected async sync(): Promise<void> { await this.store.attendanceOutbox.retry(); this.localTime.set(new Date()); this.message.set(this.store.attendanceOutbox.operations().length ? 'Some records still need attention.' : 'All queued attendance records are synchronized.'); }
   protected async retry(id: string): Promise<void> { await this.store.attendanceOutbox.retry(id); }
   protected async discard(id: string): Promise<void> { await this.store.attendanceOutbox.discard(id); }

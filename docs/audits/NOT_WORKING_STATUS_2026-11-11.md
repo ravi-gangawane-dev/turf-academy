@@ -1,6 +1,6 @@
 # Not-Working Issue Register
 
-**Status snapshot:** 4 November 2026 P0/P1/P2 audit, reconciled with the 10 November 2026 feature-health report. Updated 12 November 2026 after the printable profile sheets and the print paper/orientation setup.  
+**Status snapshot:** 4 November 2026 P0/P1/P2 audit, reconciled with the 10 November 2026 feature-health report. Updated 14 November 2026 after the configurable print letterhead/footer settings and batch printing.  
 **Recreated:** 11 November 2026 in `docs/audits/` because the earlier copies under `test-results/print-audit/` were removed when a Playwright run cleared `test-results/`.
 
 **Status keys:** Working / Partial / Missing / Needs Improvement.
@@ -10,9 +10,9 @@
 | Group | Partial | Missing | Needs Improvement | Total |
 |---|---:|---:|---:|---:|
 | P1 audit items | 2 | 0 | 0 | 2 |
-| P2 audit items | 2 | 6 | 0 | 8 |
+| P2 audit items | 1 | 5 | 0 | 6 |
 | Other confirmed limitations (10 Nov report) | — | — | — | 5 |
-| **Total not Working** | **4** | **6** | **0** | **15** |
+| **Total not Working** | **3** | **5** | **0** | **13** |
 
 All P0 items are Working/Resolved.
 
@@ -39,12 +39,14 @@ All P0 items are Working/Resolved.
 - **P2-1 Student/parent/coach profile sheets** — added a shared `profile-sheet` print document with A4 portrait styling (`@page profile-page`). Student, parent and coach details pages now offer **Profile sheet** beside the existing ID-card action and open the sheet in the shared preview destination. Every value comes from the live record: student sheets include personal/contact/guardian/enrollment/attendance sections, an optional medical section (only when the record is returned), a completeness checklist and the actual `student_documents` rows grouped by document type; parent sheets include contact, address, account and linked-student sections with a profile checklist; coach sheets include contact, employment, specialisation, assigned-batch and biography sections with a profile checklist. References are derived from the real academy id (`PRF-STU-…`, `PRF-PAR-…`, `PRF-COA-…`). The checklist states what the academy has recorded; it is labelled in the sheet as a record-completeness view rather than a compliance requirement. The app still has no document-upload screen, so student sheets list documents that already exist in `student_documents` (up to 200 rows, with a note when the total is higher). Verified with 53 focused tests across 7 files, ESLint clean, and a development build.
 - **P2-2 Paper size and orientation selector** — the shared print preview now offers **Paper size** (A4, A5, Letter) and **Orientation** (portrait, landscape) controls. The choice is remembered per document type in local storage (`academy-print-page-setup`) and applied to subsequent direct prints as well, through a one-run `@page` override that is removed when the browser print dialog closes. The override also sets the matching content height so explicit page footers still reach the paper edge, reproduces the existing per-document margins, and leaves the preview paper width in step with the chosen sheet; **Use default** clears the remembered choice. CR80 ID cards stay fixed on A4 portrait because the card and crop geometry is physical, and the preview says so instead of showing an unusable selector. Verified with 42 focused tests across 4 files (helpers, preference service, preview, print service), ESLint clean, and a development build.
 
+**Resolved on 14 November 2026:**
+- **P2-3 Configurable letterhead/footer** — Settings has a new **Print & Documents** section (`/settings/print`) with three optional fields: **Registration number** (60 characters), **Terms and conditions** (1,200 characters, used in invoice and statement notes) and **Footer note** (200 characters, printed on every document footer). Empty values keep the existing template wording, so no academy is forced to change its stationery. The values flow through the shared print brand into every print template (matrix, register, roster, enrollment confirmation, statement, table, invoice, receipt, refund and profile sheet). Saves write the base settings first and the print columns in a separate update, so an unmigrated database still saves everything else and only raises a clear “apply the print settings migration” error when print values were entered. Added `supabase/migrations/202611120001_print_document_settings.sql` (nullable columns plus length checks, validated against PGlite). Verified with 125 focused print tests, 9 settings-page tests, 3 settings-service tests, ESLint clean, and a development build. The migration is **not applied remotely** yet, so the three fields will not persist on the hosted database until it is.
+- **P2-4 Print queue / batch print** — the shared print pipeline now accepts several live documents in one job instead of a single document. Student List rows have a selection checkbox, a header select-all for the current page and a **Print ID cards (n)** action; the fee Payments list has the same controls with a **Print receipts (n)** action. Selection resets whenever the list reloads (filter, page, sort or search), so a batch always matches what is on screen and is never built from stale rows. Each card keeps its existing duplex CR80 sheet and each receipt keeps its page, with a page break between documents; the preview stacks every sheet and the browser print dialog receives one job. Suggested file names are `ID-cards-batch-N` and `Receipts-batch-N`; a single-document print keeps its existing reference-based name. Every value comes from the selected live rows, and the audit trail records one entry per document. Verified with the full shared print suite (125 tests), a focused Student List selection test, ESLint clean, and a development build. Payments-page tests remain limited by the pre-existing `payments-page.spec.ts` `queryParamMap` mock failure, which is untouched.
+
 ## 3. P2 — not Working
 
 | # | Area | Issue | Status | Remaining problem |
 |---|---|---|---|---|
-| 3 | Print/export | Configurable letterhead/footer | Partial | Logo, name and contact come from settings; address, registration number, terms and custom footer text are not configurable. |
-| 4 | Print/export | Print queue / batch print | Missing | No multi-select or batch print across cards/receipts; only 2-up CR80 for one holder. |
 | 5 | Print/export | Localisation | Partial | Timezone/currency used in places; labels are not translated and coverage is not systematic. |
 | 10 | RBAC | Create user with temporary password | Missing | Invitation-only; no direct create-with-password UI or Edge action. |
 | 11 | RBAC | Delete user | Missing | No hard delete; status/suspend only. Policy should be explicit. |
@@ -75,6 +77,7 @@ All P0 items are Working/Resolved.
 | Area | Gap | Why it is not verified |
 |---|---|---|
 | Database | `202611040001_user_access_guard.sql` and `202611040002_role_catalog.sql` not applied remotely | Remote migration history is inconsistent; decision was to leave the remote database unchanged pending manual review. Deployed code uses the compiled role fallback. |
+| Database | `202611120001_print_document_settings.sql` not applied remotely | The print letterhead/footer fields exist locally only. Until it is applied, those three settings save as base settings and report a migration error when a value is entered. |
 | Database/API | Live PostgREST, RLS and session-disable checks | Require staging credentials and a controlled account. |
 | Email | Invitation delivery and mailbox acceptance | Requires custom SMTP/provider credentials and a non-team mailbox. |
 | Deployment | `admin-manage-users` `link` action | Implemented and unit-tested locally; the deployed function is still version 13, so the browser fallback returns `invite_link_failed` until the updated function is deployed. Edge type-checking with `deno check` is unavailable because Deno is not installed locally. |
@@ -92,4 +95,4 @@ All P0 items are Working/Resolved.
 1. Fix provider delivery for invitations and notifications, then verify with real credentials.
 2. Review and apply the two RBAC migrations, then run staging RLS/session-disable checks.
 3. Complete the four-role live acceptance and the unverified workflows.
-4. Address the remaining P2 print/export and RBAC follow-ups: batch print, configurable letterhead/footer, and localisation.
+4. Address the remaining P2 print/export and RBAC follow-ups: localisation.

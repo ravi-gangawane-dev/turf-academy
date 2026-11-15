@@ -1,8 +1,10 @@
 import { AttendanceViewNavigation } from './attendance-view-navigation';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { WhatsappService, AttendanceWhatsApp } from '../../core/services/whatsapp.service';
 import { NotificationTemplatesService } from '../../core/supabase/domain-services';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,12 +18,12 @@ import { RouterLink } from '@angular/router';
 import { AcademyFacade } from '../../core/state/academy.facade';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { ToastService } from '../../shared/toast/toast.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { SummaryCards } from '../../shared/summary-cards/summary-cards';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
 
 @Component({
   selector: 'app-attendance-page',
-  imports: [AttendanceViewNavigation, PageHero, StatusBadge, RouterLink, AsyncState, SummaryMetricCard],
+  imports: [AttendanceViewNavigation, PageHero, StatusBadge, RouterLink, AsyncState, SummaryCards, AcademyDatePipe],
   templateUrl: './attendance-page.html',
   styleUrl: './attendance-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +37,7 @@ export class AttendancePage implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly whatsapp = inject(WhatsappService);
   private readonly notificationTemplates = inject(NotificationTemplatesService);
+  private readonly preferences = inject(AcademyPreferencesService);
   protected readonly error = signal<string | null>(null);
   protected readonly message = signal<string | null>(null);
   protected readonly whatsappData = signal<AttendanceWhatsApp | null>(null);
@@ -66,11 +69,11 @@ export class AttendancePage implements OnInit {
   protected readonly metricCards = computed(() => {
     const metrics = this.metrics();
     return [
-      { label: 'Total Students', value: metrics.total, icon: 'pi-users', detail: 'Active enrollments', tone: 'green' },
-      { label: 'Present Today', value: metrics.present, icon: 'pi-check-circle', detail: `${metrics.rate}%`, tone: 'green' },
-      { label: 'Absent / Unmarked', value: metrics.absent, icon: 'pi-user-minus', detail: `${this.percentage(metrics.absent)}%`, tone: 'orange' },
-      { label: 'Late Today', value: metrics.late, icon: 'pi-clock', detail: `${metrics.late}%`, tone: 'purple' },
-      { label: 'Checked Out', value: metrics.checkedOut, icon: 'pi-sign-out', detail: 'Students checked out today', tone: 'blue' },
+      { label: 'Total Students', value: metrics.total, icon: 'pi-users', hint: 'Active enrollments', tone: 'green' },
+      { label: 'Present Today', value: metrics.present, icon: 'pi-check-circle', hint: `${metrics.rate}%`, tone: 'green' },
+      { label: 'Absent / Unmarked', value: metrics.absent, icon: 'pi-user-minus', hint: `${this.percentage(metrics.absent)}%`, tone: 'orange' },
+      { label: 'Late Today', value: metrics.late, icon: 'pi-clock', hint: `${metrics.late}%`, tone: 'purple' },
+      { label: 'Checked Out', value: metrics.checkedOut, icon: 'pi-sign-out', hint: 'Students checked out today', tone: 'blue' },
     ] as const;
   });
   protected readonly recent = computed(() => {
@@ -100,7 +103,7 @@ export class AttendancePage implements OnInit {
     if (parent) {
       const studentRow = this.store.activeEnrollmentRows().find((r) => r.studentId === studentId);
       if (studentRow) {
-        const timestamp = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date());
+        const timestamp = new Date().toISOString();
         this.whatsappData.set({
           studentName: studentRow.studentName,
           batchName: studentRow.batchName,
@@ -129,8 +132,8 @@ export class AttendancePage implements OnInit {
         const studentRow = this.store.activeEnrollmentRows().find((r) => r.studentId === record.studentId);
         if (studentRow) {
           const timestamp = record.checkOutAt
-            ? new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date())
-            : new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date());
+            ? new Date(record.checkOutAt).toISOString()
+            : new Date().toISOString();
           this.whatsappData.set({
             studentName: studentRow.studentName,
             batchName: studentRow.batchName,
@@ -193,8 +196,9 @@ export class AttendancePage implements OnInit {
       parentPhone,
       batchName: this.whatsappData()?.batchName ?? studentName,
       timestamp,
-      academyName: 'Turf Cricket Academy',
-      timezone: 'Asia/Kolkata',
+      academyName: this.preferences.value().academy_name,
+      timezone: this.preferences.timezone(),
+      locale: this.preferences.locale(),
     };
     void this.confirmAndOpenWhatsApp(data, templateKey);
   }
@@ -246,13 +250,14 @@ export class AttendancePage implements OnInit {
 
   private renderAttendanceTemplate(body: string, data: AttendanceWhatsApp): string {
     const date = new Date(data.timestamp);
-    const timeZone = data.timezone ?? 'Asia/Kolkata';
+    const timeZone = data.timezone ?? this.preferences.timezone();
+    const locale = data.locale ?? this.preferences.locale();
     const sessionDate = Number.isNaN(date.getTime())
       ? data.timestamp
-      : new Intl.DateTimeFormat('en-IN', { timeZone, dateStyle: 'medium' }).format(date);
+      : new Intl.DateTimeFormat(locale, { timeZone, dateStyle: 'medium' }).format(date);
     const eventTime = Number.isNaN(date.getTime())
       ? data.timestamp
-      : new Intl.DateTimeFormat('en-IN', { timeZone, timeStyle: 'short' }).format(date);
+      : new Intl.DateTimeFormat(locale, { timeZone, timeStyle: 'short' }).format(date);
 
     return body.replace(/\{([a-z0-9_]+)\}/g, (placeholder, key: string) => {
       const replacements: Record<string, string> = {
@@ -281,8 +286,9 @@ export class AttendancePage implements OnInit {
         parentPhone,
         batchName,
         timestamp,
-        academyName: 'Turf Cricket Academy',
-        timezone: 'Asia/Kolkata',
+        academyName: this.preferences.value().academy_name,
+        timezone: this.preferences.timezone(),
+        locale: this.preferences.locale(),
       },
       templateKey,
     );

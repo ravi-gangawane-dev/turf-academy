@@ -31,7 +31,7 @@
   <app-fee-view-navigation />
   @if (error()) {
   <div class="notice error" role="alert">
-    {{ error() }} <button (click)="ngOnInit()">Retry</button>
+    {{ error() }} <button type="button" (click)="ngOnInit()">Retry</button>
   </div>
   }
   @if (view === 'pending' || view === 'summary') {
@@ -53,6 +53,8 @@
   </div>
   }
   <section class="fee-list-card" aria-label="Fee records">
+    <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()"
+      (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)">
     <button type="button" (click)="columns.reset()">Reset column filters</button>
     @if (view === 'pending' || view === 'summary') {
     <section class="table-wrap">
@@ -98,7 +100,7 @@
                 (changed)="columns.set('status',$event)" /></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody [attr.aria-busy]="loading()">
           @if (loading()) {
           @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
           <tr class="skeleton-row" aria-hidden="true">
@@ -111,7 +113,7 @@
           @for (row of visibleRows(); track row['id']) {
           <tr>
             <td>{{ student(row) }}</td>
-            <td>{{ text(row, 'charge_month') | date: 'MMM yyyy' }}</td>
+            <td>{{ text(row, 'charge_month') | academyDate: 'MMM yyyy' }}</td>
             <td>{{ amount(row, 'base_amount') / 100 | academyMoney }}</td>
             <td>{{ amount(row, 'discount_amount') / 100 | academyMoney }}</td>
             <td>{{ amount(row, 'late_fee_amount') / 100 | academyMoney }}</td>
@@ -170,7 +172,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody [attr.aria-busy]="loading()">
           @if (loading()) {
           @for (skeleton of [1, 2, 3, 4, 5]; track skeleton) {
           <tr class="skeleton-row" aria-hidden="true">
@@ -201,17 +203,18 @@
               }}
               } @else {
               {{
-              row.valid_from ? (row.valid_from | date: 'dd MMM yyyy') : 'Any start date'
+              row.valid_from ? (row.valid_from | academyDate: 'dd MMM yyyy') : 'Any start date'
               }}
               to
-              {{ row.valid_till ? (row.valid_till | date: 'dd MMM yyyy') : 'No end date' }}
+              {{ row.valid_till ? (row.valid_till | academyDate: 'dd MMM yyyy') : 'No end date' }}
               }
             </td>
             <td><app-status-badge [status]="text(row, 'status')" /></td>
             <td>
-              <div class="row-actions"><button class="app-button icon" (click)="open(row)" aria-label="Edit">
-                  <i class="pi pi-pencil"></i></button><button class="app-button icon danger" (click)="remove(row)"
-                  [disabled]="saving()" aria-label="Delete">
+              <div class="row-actions"><button type="button" class="app-button icon" (click)="open(row)"
+                  aria-label="Edit">
+                  <i class="pi pi-pencil"></i></button><button type="button" class="app-button icon danger"
+                  (click)="remove(row)" [disabled]="saving()" aria-label="Delete">
                   <i class="pi pi-trash"></i>
                 </button></div>
             </td>
@@ -231,12 +234,11 @@
       </table>
     </section>
     }
-    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="changePage($event)"
-      (pageSizeChange)="setPageSize($event)" />
+    </app-data-table>
   </section>
 </div>
 @if (dialogOpen()) {
-<div class="dialog-backdrop">
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="close()">
   <section class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="close()"
     aria-labelledby="fee-dialog-title" role="dialog" aria-modal="true">
     <h2 id="fee-dialog-title">
@@ -265,8 +267,8 @@
       <p class="notice error form-error" role="alert">{{ error() }}</p>
       }
       <footer>
-        <button type="button" (click)="close()" [disabled]="saving()">Cancel</button><button class="primary"
-          [disabled]="saving()">
+        <button type="button" (click)="close()" [disabled]="saving()">Cancel</button><button type="submit"
+          class="primary" [disabled]="saving()">
           {{ saving() ? 'Saving…' : 'Save' }}
         </button>
       </footer>

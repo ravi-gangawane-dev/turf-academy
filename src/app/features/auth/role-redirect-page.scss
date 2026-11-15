@@ -12,7 +12,7 @@
   width: min(760px, 100%);
   min-height: 440px;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--app-radius-lg);
   background: #fff;
   box-shadow: 0 16px 45px rgba(4, 42, 27, 0.18);
 }
@@ -34,14 +34,14 @@
 }
 
 .visual strong {
-  font-size: 22px;
+  font-size: var(--app-fs-stat);
   line-height: 1.05;
   text-transform: uppercase;
 }
 
 .visual small {
   margin-top: 35px;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -55,26 +55,26 @@
 
 .card>i {
   align-self: center;
-  color: #139c4e;
+  color: var(--app-primary);
   font-size: 42px;
 }
 
 .card h1 {
   margin: 20px 0 5px;
   text-align: center;
-  font-size: 24px;
+  font-size: var(--app-fs-stat);
 }
 
 .card p {
   text-align: center;
   color: #687a71;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 .bar {
   height: 5px;
   margin: 18px 0 25px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #dfe9e4;
 }
 
@@ -83,7 +83,7 @@
   width: 72%;
   height: 100%;
   border-radius: inherit;
-  background: #16a857;
+  background: var(--app-primary);
   animation: progress 1.3s ease-in-out infinite;
 }
 
@@ -94,12 +94,12 @@ ul {
   padding: 0;
   list-style: none;
   color: #66786f;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 li i {
   margin-right: 10px;
-  color: #15a456;
+  color: var(--app-primary);
 }
 
 @keyframes progress {

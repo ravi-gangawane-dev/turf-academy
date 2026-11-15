@@ -51,7 +51,7 @@ describe('Batch directory', () => {
   fixture.detectChanges();
   await fixture.whenStable();
   fixture.detectChanges();
-  expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+  expect(fixture.nativeElement.querySelectorAll('app-summary-cards app-summary-metric-card')).toHaveLength(5);
   expect(fixture.nativeElement.textContent).toContain('Available places');
   expect(fixture.nativeElement.textContent).toContain('18');
  });

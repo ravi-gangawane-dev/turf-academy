@@ -24,7 +24,7 @@
 }
 
 .statement-summary .kv .strong {
-  color: #0f6b3f;
+  color: var(--app-primary-dark);
   font-weight: 700;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .statement-table .line--payment td {
-  color: #14532d;
+  color: var(--app-primary-dark);
 }
 
 .statement-table .line--refund td {

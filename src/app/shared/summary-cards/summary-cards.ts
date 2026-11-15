@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { SummaryMetricCard } from '../summary-metric-card/summary-metric-card';
+import { SummaryMetricCard, SummaryMetricTone } from '../summary-metric-card/summary-metric-card';
 
 export interface SummaryCard {
   readonly label: string;
@@ -7,7 +7,7 @@ export interface SummaryCard {
   readonly hint?: string;
   readonly icon: string;
   readonly route?: string;
-  readonly tone?: 'green' | 'blue' | 'orange' | 'purple';
+  readonly tone?: SummaryMetricTone;
 }
 
 @Component({

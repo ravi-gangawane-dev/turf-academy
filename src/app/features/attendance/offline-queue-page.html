@@ -29,73 +29,76 @@
       <section class="pending-records">
         <header>
           <h2>Queued Attendance Records ({{ rows().length }})</h2>
-          <button [disabled]="store.attendanceOutbox.syncing() || !store.attendanceOutbox.online()" (click)="sync()">
+          <button type="button" [disabled]="store.attendanceOutbox.syncing() || !store.attendanceOutbox.online()"
+            (click)="sync()">
             <i class="pi pi-sync"></i> Sync Now
           </button>
         </header>
-        <div class="table-wrap">
-          <app-table-tools title="Offline queue" [table]="exportTable1" [total]="rows().length"
-            [exportColumns]="exportColumns" [exportRows]="exportRows" [exportReference]="exportReference"
-            [exportSubtitle]="rows().length + ' queued attendance records'"></app-table-tools>
-          <table #exportTable1 class="academy-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th><app-sortable-header sortKey="student" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Student</app-sortable-header></th>
-                <th><app-sortable-header sortKey="type" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Type</app-sortable-header></th>
-                <th><app-sortable-header sortKey="date" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Date</app-sortable-header></th>
-                <th><app-sortable-header sortKey="time" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Time</app-sortable-header></th>
-                <th><app-sortable-header sortKey="status" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Status</app-sortable-header></th>
-                <th><app-sortable-header sortKey="reason" [activeSort]="sortKey()" [direction]="sortDirection()"
-                    (sortChange)="setSort($event)">Reason</app-sortable-header></th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of pagedRows(); track row.id; let index = $index) {
-              <tr>
-                <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
-                <td [attr.data-export-value]="row.studentName + ' (' + row.studentCode + ')'">
-                  <div class="student">
-                    <span>{{ initials(row.studentName) }}</span>
-                    <div>
-                      <b>{{ row.studentName }}</b><small>{{ row.studentCode }}</small>
+        <app-data-table [total]="rows().length" [page]="page()" [pageSize]="pageSize()" itemLabel="queue records"
+          (pageChange)="page.set($event)" (pageSizeChange)="setPageSize($event)">
+          <div class="table-wrap">
+            <app-table-tools title="Offline queue" [table]="exportTable1" [total]="rows().length"
+              [exportColumns]="exportColumns" [exportRows]="exportRows" [exportReference]="exportReference"
+              [exportSubtitle]="rows().length + ' queued attendance records'"></app-table-tools>
+            <table #exportTable1 class="academy-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><app-sortable-header sortKey="student" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Student</app-sortable-header></th>
+                  <th><app-sortable-header sortKey="type" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Type</app-sortable-header></th>
+                  <th><app-sortable-header sortKey="date" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Date</app-sortable-header></th>
+                  <th><app-sortable-header sortKey="time" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Time</app-sortable-header></th>
+                  <th><app-sortable-header sortKey="status" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Status</app-sortable-header></th>
+                  <th><app-sortable-header sortKey="reason" [activeSort]="sortKey()" [direction]="sortDirection()"
+                      (sortChange)="setSort($event)">Reason</app-sortable-header></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of pagedRows(); track row.id; let index = $index) {
+                <tr>
+                  <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
+                  <td [attr.data-export-value]="row.studentName + ' (' + row.studentCode + ')'">
+                    <div class="student">
+                      <span>{{ initials(row.studentName) }}</span>
+                      <div>
+                        <b>{{ row.studentName }}</b><small>{{ row.studentCode }}</small>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td>
-                  <em [class.out]="row.type === 'Check Out'">{{ row.type }}</em>
-                </td>
-                <td>{{ row.date }}</td>
-                <td>{{ row.time }}</td>
-                <td>
-                  <strong>{{ row.status }}</strong>
-                </td>
-                <td>{{ row.failureReason || '—' }}</td>
-                <td>
-                  <div class="row-actions"><button class="app-button small secondary" (click)="retry(row.id)"
-                      [disabled]="!store.attendanceOutbox.online()">
-                      Retry</button><button class="app-button small danger" (click)="discard(row.id)">Remove</button>
-                  </div>
-                </td>
-              </tr>
-              } @empty {
-              <tr>
-                <td colspan="8">
-                  <app-async-state kind="empty" title="No queued attendance records." />
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <app-pagination [total]="rows().length" [page]="page()" [pageSize]="pageSize()" itemLabel="queue records"
-          (pageChange)="page.set($event)" (pageSizeChange)="setPageSize($event)" />
+                  </td>
+                  <td>
+                    <em [class.out]="row.type === 'Check Out'">{{ row.type }}</em>
+                  </td>
+                  <td>{{ row.date }}</td>
+                  <td>{{ row.time }}</td>
+                  <td>
+                    <strong>{{ row.status }}</strong>
+                  </td>
+                  <td>{{ row.failureReason || '—' }}</td>
+                  <td>
+                    <div class="row-actions"><button type="button" class="app-button small secondary"
+                        (click)="retry(row.id)" [disabled]="!store.attendanceOutbox.online()">
+                        Retry</button><button type="button" class="app-button small danger"
+                        (click)="discard(row.id)">Remove</button>
+                    </div>
+                  </td>
+                </tr>
+                } @empty {
+                <tr>
+                  <td colspan="8">
+                    <app-async-state kind="empty" title="No queued attendance records." />
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </app-data-table>
       </section>
       <div class="queue-bottom">
         <section>
@@ -110,9 +113,9 @@
         <section>
           <h2>Actions</h2>
           <div class="queue-actions">
-            <button (click)="sync()" [disabled]="!store.attendanceOutbox.online()">
+            <button type="button" (click)="sync()" [disabled]="!store.attendanceOutbox.online()">
               <i class="pi pi-sync"></i><span><b>Sync Now</b><small>Retry eligible
-                  records</small></span></button><button class="clear" (click)="clear()"
+                  records</small></span></button><button type="button" class="clear" (click)="clear()"
               [disabled]="!store.attendanceOutbox.operations().length">
               <i class="pi pi-trash"></i><span><b>Clear Queue</b><small>Remove local queue
                   records</small></span></button>

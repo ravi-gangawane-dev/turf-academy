@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   OnInit,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PaymentMode } from '../../core/models/academy.model';
@@ -17,9 +19,10 @@ import { createColumnFilters } from '../../shared/column-filter/column-filter';
 import { DataTable } from '../../shared/data-table/data-table';
 import { FeeChargeTable, FeeChargeTableRow } from '../../shared/fee-charge-table/fee-charge-table';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ListQueryState } from '../../shared/list-query';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { PaymentRecordDialog, PaymentRecordDialogValue } from '../../shared/payment-record-dialog/payment-record-dialog';
 import {
   PrintDestination,
@@ -27,7 +30,7 @@ import {
   PrintStatementDocument,
 } from '../../shared/print/print-document.models';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { SummaryCards } from '../../shared/summary-cards/summary-cards';
 import { ToastService } from '../../shared/toast/toast.service';
 import { FeeViewNavigation } from './fee-view-navigation';
 
@@ -63,15 +66,15 @@ interface ChargeListRow {
     ReactiveFormsModule,
     RouterLink,
     DataTable,
-    SummaryMetricCard,
+    SummaryCards,
     PaymentRecordDialog,
-    FeeChargeTable,
-  ],
+    FeeChargeTable, ModalBackdrop],
   templateUrl: './fees-page.html',
   styleUrl: './fees-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeesPage implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly columns = createColumnFilters(() => this.resetPage());
   protected readonly sharedChargeRows = computed<readonly FeeChargeTableRow[]>(() => this.pagedRows().map(row => ({
     id: row.id, studentId: row.studentId, studentName: row.studentName, batchName: row.batchName,
@@ -161,7 +164,7 @@ export class FeesPage implements OnInit {
   private periodLabel(value: unknown): string {
     const month = String(value ?? '').slice(0, 7);
     if (!month) return '—';
-    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString('en-GB', {
+    return new Date(`${month}-01T00:00:00Z`).toLocaleDateString(this.preferences.locale(), {
       month: 'long',
       year: 'numeric',
       timeZone: 'UTC',
@@ -269,11 +272,16 @@ export class FeesPage implements OnInit {
     this.page.set(1);
     void this.loadCharges(false);
   }
-  protected readonly sortBy = signal<string>('dueDate');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   protected readonly total = signal(0);
+  protected readonly listQuery = new ListQueryState<string>({
+    sortBy: 'dueDate',
+    sortDirection: 'desc',
+    total: this.total,
+  });
+  protected readonly sortBy = this.listQuery.sortBy;
+  protected readonly sortDirection = this.listQuery.sortDirection;
+  protected readonly page = this.listQuery.page;
+  protected readonly pageSize = this.listQuery.pageSize;
   protected readonly batchOptions = signal<
     readonly { readonly id: string; readonly name: string }[]
   >([]);
@@ -309,18 +317,16 @@ export class FeesPage implements OnInit {
     id: row.id ?? '', studentName: row.studentName, period: row.period, balanceMinor: row.balancePaise,
   })));
   protected readonly pagedRows = computed(() => this.rows());
-  protected readonly pageCount = computed(() =>
-    Math.max(1, Math.ceil(this.total() / this.pageSize())),
-  );
+  protected readonly pageCount = this.listQuery.pageCount;
   protected readonly metrics = signal({ students: 0, total: 0, discount: 0, late: 0, paid: 0, pending: 0, overdue: 0 });
   protected readonly metricCards = computed(() => {
     const metrics = this.metrics();
     return [
-      { label: 'Total Students', value: metrics.students, icon: 'pi-users', detail: 'With monthly charges', tone: 'green' },
-      { label: 'Total Monthly Collection', value: this.preferences.money(metrics.total / 100), icon: 'pi-wallet', detail: 'Expected collection', tone: 'blue' },
-      { label: 'Pending Collection', value: this.preferences.money(metrics.pending / 100), icon: 'pi-clock', detail: 'Open balances', tone: 'orange' },
-      { label: 'Overdue', value: this.preferences.money(metrics.overdue / 100), icon: 'pi-exclamation-circle', detail: 'Past due date', tone: 'red' },
-      { label: 'Collected', value: this.preferences.money(metrics.paid / 100), icon: 'pi-check-circle', detail: 'Recorded payments', tone: 'green' },
+      { label: 'Total Students', value: metrics.students, icon: 'pi-users', hint: 'With monthly charges', tone: 'green' },
+      { label: 'Total Monthly Collection', value: this.preferences.money(metrics.total / 100), icon: 'pi-wallet', hint: 'Expected collection', tone: 'blue' },
+      { label: 'Pending Collection', value: this.preferences.money(metrics.pending / 100), icon: 'pi-clock', hint: 'Open balances', tone: 'orange' },
+      { label: 'Overdue', value: this.preferences.money(metrics.overdue / 100), icon: 'pi-exclamation-circle', hint: 'Past due date', tone: 'red' },
+      { label: 'Collected', value: this.preferences.money(metrics.paid / 100), icon: 'pi-check-circle', hint: 'Recorded payments', tone: 'green' },
     ] as const;
   });
   protected changeSortBy(event: Event): void {
@@ -333,17 +339,16 @@ export class FeesPage implements OnInit {
   protected sortColumn(value: string): void {
     if (!value.startsWith('cf_') && !['dueDate', 'student', 'period', 'amount', 'balance', 'status'].includes(value)) return;
     const key = value as 'dueDate' | 'student' | 'period' | 'amount' | 'balance' | 'status';
-    this.sortDirection.set(this.sortBy() === key ? (this.sortDirection() === 'asc' ? 'desc' : 'asc') : 'asc');
-    this.sortBy.set(key);
+    this.listQuery.sortByColumn(key);
     this.resetPage();
   }
   protected changeSortDirection(event: Event): void {
-    this.sortDirection.set((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
+    this.listQuery.setSortDirection((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
     this.resetPage();
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParamMap.subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const status = params.get('status');
       if (status && ['all', 'pending', 'partial', 'paid', 'overdue', 'waived'].includes(status)) {
         this.statusFilter.set(status);
@@ -463,12 +468,11 @@ export class FeesPage implements OnInit {
     } finally { this.submitting.set(false); }
   }
   protected changePage(value: number): void {
-    this.page.set(Math.min(this.pageCount(), Math.max(1, value)));
+    this.listQuery.setPage(value);
     void this.loadCharges(false);
   }
   protected setPageSize(size: number): void {
-    this.pageSize.set(size);
-    this.page.set(1);
+    this.listQuery.setPageSize(size);
     void this.loadCharges(false);
   }
   protected resetPage(): void {

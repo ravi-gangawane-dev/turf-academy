@@ -17,7 +17,7 @@
   <ol aria-label="Recent academy changes">
     @for (event of events(); track event.id) {
     <li><strong>{{ label(event) }}</strong>
-      <time [attr.datetime]="event.occurred_at">{{ event.occurred_at | date:'MMM d, y, h:mm a' }}</time>
+      <time [attr.datetime]="event.occurred_at">{{ event.occurred_at | academyDate:'MMM d, y, h:mm a' }}</time>
     </li>
     }
   </ol>

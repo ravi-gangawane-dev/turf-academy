@@ -14,7 +14,7 @@ select {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  min-height: 44px;
+  min-height: var(--app-control-lg);
   padding: 0.5rem;
   border: 1px solid #ccd6d0;
   border-radius: 0.5rem;
@@ -24,7 +24,7 @@ select {
 input:focus-visible,
 select:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--app-primary, #287a48);
+  outline: 2px solid var(--app-primary, var(--app-primary));
   outline-offset: 2px;
 }
 small {

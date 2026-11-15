@@ -15,8 +15,8 @@ import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/co
 import { DataTable } from '../../shared/data-table/data-table';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ListQueryState } from '../../shared/list-query';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
@@ -40,19 +40,20 @@ export class CoachesPage implements OnInit {
   protected readonly loadingCoaches = signal(true);
   protected readonly query = signal('');
   protected readonly statusFilter = signal('all');
-  protected readonly sortBy = signal('name');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  protected readonly listQuery = new ListQueryState<string>({ sortBy: 'name', total: this.total });
+  protected readonly sortBy = this.listQuery.sortBy;
+  protected readonly sortDirection = this.listQuery.sortDirection;
+  protected readonly page = this.listQuery.page;
+  protected readonly pageSize = this.listQuery.pageSize;
   protected readonly message = signal('');
   protected readonly error = signal('');
-  protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
+  protected readonly pageCount = this.listQuery.pageCount;
   protected readonly coaches = computed(() => this.apiCoaches());
   protected readonly coachMetrics = signal({ total: 0, active: 0, inactive: 0, specializations: 0, experienced: 0 });
   protected filterChanged(): void { this.page.set(1); void this.loadCoaches(); }
   protected changeSortBy(event: Event): void { this.sortBy.set((event.target as HTMLSelectElement).value); this.filterChanged(); }
-  protected sortColumn(key: string): void { this.sortDirection.set(this.sortBy() === key ? (this.sortDirection() === 'asc' ? 'desc' : 'asc') : 'asc'); this.sortBy.set(key); this.filterChanged(); }
-  protected changeSortDirection(event: Event): void { this.sortDirection.set((event.target as HTMLSelectElement).value === 'desc' ? 'desc' : 'asc'); this.filterChanged(); }
+  protected sortColumn(key: string): void { this.listQuery.sortByColumn(key); this.filterChanged(); }
+  protected changeSortDirection(event: Event): void { this.listQuery.setSortDirection((event.target as HTMLSelectElement).value === 'desc' ? 'desc' : 'asc'); this.filterChanged(); }
 
   ngOnInit(): void {
     void this.loadCoaches();
@@ -131,11 +132,11 @@ export class CoachesPage implements OnInit {
     }
   }
   protected changePage(value: number): void {
-    this.page.set(Math.min(this.pageCount(), Math.max(1, value)));
+    this.listQuery.setPage(value);
     void this.loadCoaches();
   }
   protected setPageSize(size: number): void {
-    this.pageSize.set(size);
+    this.listQuery.setPageSize(size);
     this.filterChanged();
   }
   protected openDashboard(): void {

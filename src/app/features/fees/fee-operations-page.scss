@@ -4,7 +4,7 @@
 }
 .fee-operations {
   display: grid;
-  gap: 20px;
+  gap: var(--app-space-5);
   color: var(--app-text, #14221b);
   min-width: 0;
 }
@@ -18,39 +18,39 @@
 }
 .adjustment-type-filter a {
   border: 1px solid var(--app-border, #d8e1db);
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   padding: .4rem .75rem;
   background: #fff;
   color: #33503f;
   text-decoration: none;
 }
 .adjustment-type-filter a.active, .adjustment-type-filter a:hover {
-  border-color: #267d46;
+  border-color: var(--app-primary);
   background: #e8f6ed;
-  color: #176536;
+  color: var(--app-primary-dark);
 }
 .fee-list-card {
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--app-border, #dce5e0);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
-  box-shadow: 0 2px 10px rgb(20 57 38 / 3%);
+  box-shadow: var(--app-shadow);
 }
 .filters {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 12px;
+  gap: var(--app-space-3);
   padding: 16px 20px;
   border-bottom: 1px solid var(--app-border, #dce5e0);
 }
 .filters label {
   display: grid;
-  gap: 6px;
+  gap: var(--app-space-1-5);
   flex: 0 1 180px;
   min-width: 0;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 600;
   color: var(--app-muted, #64746b);
 }
@@ -67,11 +67,11 @@
   box-sizing: border-box;
   padding: 0 12px;
   border: 1px solid var(--app-border, #dce5e0);
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: var(--app-text, #14221b);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--app-fs-body);
 }
 .filters > button {
   margin-left: auto;
@@ -80,11 +80,11 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 44px;
+  gap: var(--app-space-2);
+  min-height: var(--app-control-lg);
   padding: 0 16px;
   border: 1px solid var(--app-border, #dce5e0);
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: var(--app-text, #14221b);
   font: inherit;
@@ -100,18 +100,18 @@ button:disabled {
   cursor: default;
 }
 .primary {
-  background: var(--app-primary, #16864b);
-  border-color: var(--app-primary, #16864b);
+  background: var(--app-primary, var(--app-primary));
+  border-color: var(--app-primary, var(--app-primary));
   color: #fff;
 }
 .primary:hover:not(:disabled) {
-  background: #126c3d;
+  background: var(--app-primary-dark);
   color: #fff;
 }
 input:focus-visible,
 select:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--app-primary, #16864b);
+  outline: 2px solid var(--app-primary, var(--app-primary));
   outline-offset: 2px;
 }
 .table-wrap {
@@ -132,12 +132,12 @@ td {
 th {
   background: #f6f8f7;
   color: #64746b;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 700;
   white-space: nowrap;
 }
 td {
-  font-size: 14px;
+  font-size: var(--app-fs-body);
 }
 td:first-child {
   font-weight: 600;
@@ -163,9 +163,9 @@ td:last-child {
 }
 td button {
   width: 36px;
-  min-height: 36px;
+  min-height: var(--app-control-sm);
   padding: 0;
-  color: var(--app-primary, #16864b);
+  color: var(--app-primary, var(--app-primary));
   background: #edf7f1;
   border: 0;
 }
@@ -182,7 +182,7 @@ td button + button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   min-height: 220px;
   padding: 32px 20px;
   text-align: center;
@@ -196,18 +196,18 @@ td button + button {
   height: 48px;
   margin-bottom: 4px;
   border-radius: 50%;
-  color: var(--app-primary, #16864b);
+  color: var(--app-primary, var(--app-primary));
   background: #edf7f1;
-  font-size: 21px;
+  font-size: var(--app-fs-h2);
 }
 .empty-state strong {
-  font-size: 15px;
+  font-size: var(--app-fs-body);
   color: #253c30;
 }
 .empty-state p {
   margin: 0;
   color: #718078;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   font-weight: 400;
 }
 app-pagination {
@@ -217,36 +217,36 @@ app-pagination {
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--app-space-4);
 }
 .metrics article {
   display: grid;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   min-width: 0;
   padding: 20px;
   border: 1px solid var(--app-border, #dce5e0);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
-  box-shadow: 0 2px 10px rgb(20 57 38 / 3%);
+  box-shadow: var(--app-shadow);
 }
 .metrics small {
   color: #64746b;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 .metrics strong {
-  font-size: 24px;
+  font-size: var(--app-fs-stat);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 .notice {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--app-space-3);
   margin: 0;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #e8f6ed;
-  color: #176735;
+  color: var(--app-primary-dark);
 }
 .notice.error {
   background: #ffeded;
@@ -258,8 +258,8 @@ app-pagination {
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: 16px;
-  background: #07192f99;
+  padding: var(--app-space-4);
+  background: var(--app-overlay);
 }
 .dialog {
   width: min(560px, 100%);
@@ -267,30 +267,32 @@ app-pagination {
   overflow-y: auto;
   box-sizing: border-box;
   padding: 24px;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+  border-radius: var(--app-radius-md);
+  background: var(--app-card);
+  box-shadow: var(--app-shadow-lg);
 }
 .dialog h2 {
-  margin: 0 0 24px;
-  font-size: 21px;
+  margin: 0 0 var(--app-space-5);
+  color: var(--app-text);
+  font-size: var(--app-fs-h3);
+  font-weight: 700;
 }
 .dialog form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: var(--app-space-4-5);
 }
 .dialog label {
   display: grid;
-  gap: 7px;
-  font-size: 13px;
+  gap: var(--app-space-2);
+  font-size: var(--app-fs-label);
   font-weight: 600;
 }
 .dialog footer {
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding-top: 18px;
   border-top: 1px solid #e8eeea;
 }
@@ -320,13 +322,13 @@ app-pagination {
     padding: 14px 16px;
   }
   .metrics {
-    gap: 12px;
+    gap: var(--app-space-3);
   }
   .metrics article {
     padding: 16px;
   }
   .metrics strong {
-    font-size: 20px;
+    font-size: var(--app-fs-h2);
   }
   .dialog {
     padding: 20px;

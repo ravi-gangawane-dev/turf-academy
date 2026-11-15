@@ -9,21 +9,17 @@
   </app-page-hero>
   @if (error()) {
   <div class="notice error" role="alert">
-    {{ error() }} <button (click)="ngOnInit()">Retry</button>
+    {{ error() }} <button type="button" (click)="ngOnInit()">Retry</button>
   </div>
   }
-  <section class="metrics">
-    @for (metric of metricCards(); track metric.label) {
-    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
-      [tone]="metric.tone" />
-    }
-  </section>
+  <app-summary-cards [cards]="metricCards()" />
   @if (view === 'new') {
-  <div class="dialog-backdrop payment-record-backdrop">
-    <section class="payment-form app-card payment-record-modal">
+  <div class="dialog-backdrop payment-record-backdrop" appModalBackdrop (dismiss)="closePaymentView()">
+    <section class="payment-form app-card payment-record-modal" appModalFocus [modalBusy]="saving()"
+      (modalDismiss)="closePaymentView()" aria-labelledby="record-dialog-title-new">
       <header class="payment-record-header">
         <div>
-          <h2>Record payment</h2>
+          <h2 id="record-dialog-title-new">Record payment</h2>
           <p>Apply a payment to an outstanding charge and generate its receipt.</p>
         </div>
         <a href="/payments" aria-label="Close record payment dialog" title="Close">
@@ -46,10 +42,17 @@
           <a routerLink="/payments/partial" [class.active]="view === 'partial'">Partially paid</a>
           <a routerLink="/payments/full" [class.active]="view === 'full'">Fully paid</a>
         </div>
+        <button type="button" class="batch-print-button" [disabled]="!selectedCount() || printingReceipts()"
+          (click)="printSelectedReceipts()" title="Preview receipts for the ticked payments"
+          aria-label="Print receipts for selected payments">
+          <i [class]="printingReceipts() ? 'pi pi-spin pi-spinner' : 'pi pi-receipt'" aria-hidden="true"></i>
+          Print receipts ({{ selectedCount() }})
+        </button>
       </app-table-tools>
       <table #exportTable1 class="academy-table">
         <thead>
           <tr>
+            <th></th>
             <th><app-sortable-header sortKey="receipt" [activeSort]="sortBy()" [direction]="sortDirection()"
                 (sortChange)="sortColumn($event)">Receipt</app-sortable-header></th>
             <th><app-sortable-header sortKey="student" [activeSort]="sortBy()" [direction]="sortDirection()"
@@ -65,6 +68,8 @@
             <th>Action</th>
           </tr>
           <tr class="column-filters">
+            <th><input type="checkbox" [checked]="allOnPageSelected()" (change)="togglePageSelection($event)"
+                aria-label="Select all payments with receipts on this page" /></th>
             <th><app-column-filter label="receipt" type="search" [value]="columns.values()['receipt'] || ''"
                 (changed)="columns.set('receipt',$event)" /></th>
             <th><app-column-filter label="student" type="search" [value]="columns.values()['student'] || ''"
@@ -80,40 +85,46 @@
             <th><button type="button" (click)="columns.reset()">Reset</button></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody [attr.aria-busy]="loading()">
           @for (row of pageRows(); track row.id) {
-          <tr>
+          <tr [class.is-selected]="isSelected(row.id)">
+            <td class="select-cell">
+              <input type="checkbox" [checked]="isSelected(row.id)" [disabled]="!row.receiptNumber"
+                (change)="toggleSelected(row.id)"
+                [attr.aria-label]="'Select receipt ' + (row.receiptNumber || row.id) + ' for batch printing'" />
+            </td>
             <td>{{ row.receiptNumber || '—' }}</td>
             <td>
               <strong>{{ row.studentName }}</strong><small>{{ row.studentCode }}</small>
             </td>
-            <td>{{ row.paidAt | date: 'medium' }}</td>
+            <td>{{ row.paidAt | academyDate: 'medium' }}</td>
             <td>{{ row.mode | titlecase }}</td>
             <td>
               <app-status-badge [status]="$any(row.status)" />
             </td>
             <td>{{ row.amountPaise / 100 | academyMoney }}</td>
             <td>
-              <button [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'preview')" title="Preview receipt" class="app-button icon"
-                aria-label="Preview receipt">
+              <button type="button" [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'preview')"
+                title="Preview receipt" class="app-button icon" aria-label="Preview receipt">
                 <i class="pi pi-eye"></i>
               </button>
-              <button [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'print')" title="Print receipt" class="app-button icon"
-                aria-label="Print receipt">
+              <button type="button" [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'print')"
+                title="Print receipt" class="app-button icon" aria-label="Print receipt">
                 <i class="pi pi-print"></i>
               </button>
-              <button [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'pdf')" title="Download receipt PDF" class="app-button icon"
-                aria-label="Download receipt PDF">
+              <button type="button" [disabled]="!row.receiptNumber" (click)="printReceipt(row, 'pdf')"
+                title="Download receipt PDF" class="app-button icon" aria-label="Download receipt PDF">
                 <i class="pi pi-file-pdf"></i>
               </button>
               @if (row.status === 'refunded' || row.status === 'partially_refunded') {
-              <button [disabled]="!row.receiptNumber" (click)="openRefundReceipt(row)" title="Refund receipt" class="app-button icon"
-                aria-label="Open refund receipt">
+              <button type="button" [disabled]="!row.receiptNumber" (click)="openRefundReceipt(row)"
+                title="Refund receipt" class="app-button icon" aria-label="Open refund receipt">
                 <i class="pi pi-undo"></i>
               </button>
               }
               @if (canRefund() && row.status !== 'refunded') {
-              <button (click)="openRefund(row)" title="Refund payment" aria-label="Refund payment" class="app-button icon">
+              <button type="button" (click)="openRefund(row)" title="Refund payment" aria-label="Refund payment"
+                class="app-button icon">
                 <i class="pi pi-replay"></i>
               </button>
               }
@@ -121,7 +132,7 @@
           </tr>
           } @empty {
           <tr>
-            <td colspan="7">
+            <td colspan="8">
               @if (!error()) { <app-async-state [kind]="loading() ? 'loading' : 'empty'"
                 [title]="loading() ? 'Loading payments...' : 'No payment records found.'" /> }
             </td>
@@ -145,7 +156,7 @@
           <i class="pi pi-undo"></i> Refund receipt
         </button>
         }
-        <button class="primary" [disabled]="row.status === 'refunded'" (click)="openRefund(row)">
+        <button type="button" class="primary" [disabled]="row.status === 'refunded'" (click)="openRefund(row)">
           {{ row.status === 'refunded' ? 'Refunded' : 'Refund' }}
         </button>
       </span>
@@ -157,7 +168,7 @@
   }
 </div>
 @if (refundPayment(); as payment) {
-<div class="dialog-backdrop">
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="refundPayment.set(null)">
   <section class="payment-form app-card refund-dialog" appModalFocus [modalBusy]="saving()"
     (modalDismiss)="refundPayment.set(null)" role="dialog" aria-modal="true" aria-labelledby="refund-title">
     <h2 id="refund-title">Refund {{ payment.receiptNumber }}</h2>
@@ -170,7 +181,7 @@
           formControlName="reason"></textarea></label>
       <div>
         <button type="button" [disabled]="saving()" (click)="refundPayment.set(null)">Cancel</button>
-        <button class="primary" [disabled]="saving()">
+        <button type="submit" class="primary" [disabled]="saving()">
           {{ saving() ? 'Refunding…' : 'Confirm refund' }}
         </button>
       </div>
@@ -179,7 +190,7 @@
 </div>
 }
 @if (refundReceiptPayment(); as payment) {
-<div class="dialog-backdrop">
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="closeRefundReceipt()">
   <section class="payment-form app-card refund-receipt-dialog" appModalFocus [modalBusy]="refundReceiptLoading()"
     (modalDismiss)="closeRefundReceipt()" role="dialog" aria-modal="true" aria-labelledby="refund-receipt-title">
     <h2 id="refund-receipt-title">Refund receipt · {{ payment.receiptNumber }}</h2>
@@ -194,7 +205,7 @@
     <div class="refund-row">
       <span>
         <strong>{{ record.refundReceiptNumber }}</strong>
-        <small>{{ record.refundedAt | date: 'dd MMM yyyy' }} · {{ record.refundAmount | academyMoney }} ·
+        <small>{{ record.refundedAt | academyDate: 'dd MMM yyyy' }} · {{ record.refundAmount | academyMoney }} ·
           {{ record.reason }}</small>
       </span>
       <span class="refund-row-actions">
@@ -218,11 +229,12 @@
 </div>
 }
 @if (recordDialogOpen()) {
-<div class="dialog-backdrop payment-record-backdrop">
-  <section class="payment-form app-card payment-record-modal">
+<div class="dialog-backdrop payment-record-backdrop" appModalBackdrop (dismiss)="recordDialogOpen.set(false)">
+  <section class="payment-form app-card payment-record-modal" appModalFocus [modalBusy]="saving()"
+    (modalDismiss)="recordDialogOpen.set(false)" aria-labelledby="record-dialog-title">
     <header class="payment-record-header">
       <div>
-        <h2>Record payment</h2>
+        <h2 id="record-dialog-title">Record payment</h2>
         <p>Apply a payment to an outstanding charge and generate its receipt.</p>
       </div>
       <button type="button" (click)="recordDialogOpen.set(false)" aria-label="Close record payment dialog"

@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,22 +10,23 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { NotificationEntityFilter } from './notification-entity-filter';
 import { AuthService } from '../../core/auth/auth.service';
 import { WhatsappService } from '../../core/services/whatsapp.service';
 import { NotificationScope, NotificationsService } from '../../core/supabase/domain-services';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { DialogService } from '../../shared/dialog/dialog.service';
 import { DialogType } from '../../shared/dialog/models/dialog-config.model';
+import { ListQueryState } from '../../shared/list-query';
 import { NotificationSectionNav } from '../../shared/notification-section-nav/notification-section-nav';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { Pagination } from '../../shared/pagination/pagination';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { SummaryCards } from '../../shared/summary-cards/summary-cards';
+import { NotificationEntityFilter } from './notification-entity-filter';
 import {
   NotificationQuery,
   notificationQueryParams,
@@ -58,19 +59,7 @@ interface AdminNotification {
 
 @Component({
   selector: 'app-notifications-page',
-  imports: [
-    TableTools,
-    ColumnFilter,
-    SortableHeader,
-    PageHero,
-    AsyncState,
-    StatusBadge,
-    DatePipe,
-    Pagination,
-    SummaryMetricCard,
-    NotificationSectionNav,
-    NotificationEntityFilter,
-  ],
+  imports: [TableTools, ColumnFilter, SortableHeader, PageHero, AsyncState, StatusBadge, SummaryCards, AcademyDatePipe, NotificationSectionNav, NotificationEntityFilter, DataTable],
   templateUrl: './notifications-page.html',
   styleUrl: './notifications-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -283,25 +272,26 @@ export class NotificationsPage implements OnInit, OnDestroy {
     this.page.set(1);
     void this.reload();
   }
-  protected readonly sortBy = signal<
-    'createdAt' | 'subject' | 'recipient' | 'status' | 'channel' | 'templateKey'
-  >('createdAt');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('desc');
-  protected readonly loading = signal(true);
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   protected readonly total = signal(0);
+  protected readonly listQuery = new ListQueryState<
+    'createdAt' | 'subject' | 'recipient' | 'status' | 'channel' | 'templateKey'
+  >({ sortBy: 'createdAt', sortDirection: 'desc', total: this.total });
+  protected readonly sortBy = this.listQuery.sortBy;
+  protected readonly sortDirection = this.listQuery.sortDirection;
+  protected readonly loading = signal(true);
+  protected readonly page = this.listQuery.page;
+  protected readonly pageSize = this.listQuery.pageSize;
   protected readonly error = signal('');
   protected readonly rows = this.records.asReadonly();
   protected readonly counts = signal({ all: 0, delivered: 0, pending: 0, failed: 0, sent: 0 });
   protected readonly metricCards = computed(() => {
     const counts = this.counts();
     return [
-      { label: 'Total alerts', value: counts.all, icon: 'pi-send', detail: 'Matching notification records', tone: 'blue' },
-      { label: 'Delivered', value: counts.delivered, icon: 'pi-check-circle', detail: 'Reached the recipient', tone: 'green' },
-      { label: 'In progress', value: counts.pending, icon: 'pi-clock', detail: 'Queued or processing', tone: 'orange' },
-      { label: 'Failed', value: counts.failed, icon: 'pi-exclamation-circle', detail: 'Needs attention', tone: 'red' },
-      { label: 'Sent', value: counts.sent, icon: 'pi-send', detail: 'Sent, awaiting delivery confirmation', tone: 'green' },
+      { label: 'Total alerts', value: counts.all, icon: 'pi-send', hint: 'Matching notification records', tone: 'blue' },
+      { label: 'Delivered', value: counts.delivered, icon: 'pi-check-circle', hint: 'Reached the recipient', tone: 'green' },
+      { label: 'In progress', value: counts.pending, icon: 'pi-clock', hint: 'Queued or processing', tone: 'orange' },
+      { label: 'Failed', value: counts.failed, icon: 'pi-exclamation-circle', hint: 'Needs attention', tone: 'red' },
+      { label: 'Sent', value: counts.sent, icon: 'pi-send', hint: 'Sent, awaiting delivery confirmation', tone: 'green' },
     ] as const;
   });
   private requestSequence = 0;
@@ -319,11 +309,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
   protected sortColumn(key: string): void {
     if (!['createdAt', 'subject', 'recipient', 'status', 'channel', 'templateKey'].includes(key))
       return;
-    this.sortDirection.set(
-      this.sortBy() === key && this.sortDirection() === 'asc' ? 'desc' : 'asc',
-    );
-    this.sortBy.set(key as ReturnType<typeof this.sortBy>);
-    this.page.set(1);
+    this.listQuery.sortByColumn(key as ReturnType<typeof this.listQuery.sortBy>);
     void this.reload();
   }
   private searchTimer?: ReturnType<typeof setTimeout>;
@@ -345,7 +331,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
       if (
         this.initialized &&
         JSON.stringify(notificationQueryParams(query)) ===
-          JSON.stringify(notificationQueryParams(this.currentQuery()))
+        JSON.stringify(notificationQueryParams(this.currentQuery()))
       )
         return;
       this.initialized = true;
@@ -439,11 +425,11 @@ export class NotificationsPage implements OnInit, OnDestroy {
     void this.reload();
   }
   protected setPageSize(size: number): void {
-    this.pageSize.set(size);
-    this.changePage(1);
+    this.listQuery.setPageSize(size);
+    void this.reload();
   }
   protected changePage(value: number): void {
-    this.page.set(value);
+    this.listQuery.setPage(value);
     void this.reload();
   }
   protected setSearch(value: string, field: 'search' | 'studentName' = 'search'): void {

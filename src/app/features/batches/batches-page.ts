@@ -1,277 +1,309 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ServerListService } from '../../core/supabase/server-list.service';
-import { EnrollmentRecord } from '../../core/supabase/enrollment.models';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { AsyncState } from '../../shared/async-state/async-state';
-import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe } from '@angular/common';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-import { BatchWorkspaceService, BatchRosterRecord, emptyBatchWorkspace, WorkspaceBatch, WaitlistRow, WaitlistQuery } from '../../core/supabase/batch-workspace.service';
-import { Pagination } from '../../shared/pagination/pagination';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { BatchRosterRecord, BatchWorkspaceService, emptyBatchWorkspace, WaitlistQuery, WaitlistRow, WorkspaceBatch } from '../../core/supabase/batch-workspace.service';
 import { BatchesService, EnrollmentsService } from '../../core/supabase/domain-services';
+import { EnrollmentRecord } from '../../core/supabase/enrollment.models';
+import { ServerListService } from '../../core/supabase/server-list.service';
+import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
 import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
-import { DataTable } from '../../shared/data-table/data-table';
-import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
-import { SortableHeader } from '../../shared/sortable-header/sortable-header';
-import { ToastService } from '../../shared/toast/toast.service';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
+import { ColumnFilter } from '../../shared/column-filter/column-filter';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { PrintBatchRosterDocument, PrintDestination } from '../../shared/print/print-document.models';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
-@Component({selector:'app-batches-page',imports: [TableTools, StatusBadge, PageHero, AsyncState, ReactiveFormsModule,FormsModule,RouterLink,AcademyMoneyPipe,DatePipe,DataTable,SummaryMetricCard,SortableHeader,Pagination,ModalFocus],templateUrl:'./batches-page.html',styleUrl:'./batches-page.scss',changeDetection:ChangeDetectionStrategy.OnPush})
+import { SectionTab, SectionTabs } from '../../shared/section-tabs/section-tabs';
+import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { SummaryCards } from '../../shared/summary-cards/summary-cards';
+import { ToastService } from '../../shared/toast/toast.service';
+@Component({ selector: 'app-batches-page', imports: [TableTools, StatusBadge, PageHero, AsyncState, ReactiveFormsModule, FormsModule, RouterLink, AcademyMoneyPipe, AcademyDatePipe, DataTable, SummaryCards, SortableHeader, ModalFocus, SectionTabs, ColumnFilter, ModalBackdrop], templateUrl: './batches-page.html', styleUrl: './batches-page.scss', changeDetection: ChangeDetectionStrategy.OnPush })
 export class BatchesPage implements OnInit, OnDestroy {
- private readonly preferences=inject(AcademyPreferencesService);
- private readonly lists=inject(ServerListService);
- private requestId=0;
- protected readonly total=signal(0);
- private readonly api=inject(BatchWorkspaceService);
- private readonly enrollments=inject(EnrollmentsService);
- private readonly fb=inject(FormBuilder);
- private readonly router=inject(Router);
- private readonly route=inject(ActivatedRoute);
- private readonly dialogs=inject(InteractionDialogService);
- private readonly toast=inject(ToastService);
- private readonly rosterService=inject(BatchesService);
- private readonly printDocuments=inject(PrintDocumentService);
- protected readonly rosterOpen=signal(false);
- protected readonly rosterBatch=signal<WorkspaceBatch|null>(null);
- protected readonly rosterLoading=signal(false);
- protected readonly rosterError=signal('');
- protected readonly rosterIncludeMedical=signal(false);
- protected canPrintMedical():boolean{return this.auth.hasPermission('students:read');}
- protected readonly auth=inject(AuthService);
- protected readonly workspace=signal(emptyBatchWorkspace());
- protected readonly loading=signal(true);protected readonly saving=signal(false);
- protected readonly error=signal('');protected readonly message=signal('');
- protected readonly editing=signal<string|null>(null);
- protected readonly days=signal<number[]>([1,3,5]);
- protected readonly dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
- protected view=String(this.route.snapshot.queryParamMap.get('view') ?? this.route.snapshot.data['batchView'] ?? this.router.url.split('?')[0].split('/')[2] ?? 'list');
- private viewSubscription?: Subscription;
- protected readonly query=signal('');protected readonly status=signal('all');
- protected readonly sortBy=signal('name');protected readonly sortDirection=signal<'asc'|'desc'>('asc');
- protected readonly coachFilter=signal(this.route.snapshot.queryParamMap.get('coach')??'');
- protected readonly batchFilter=signal(this.route.snapshot.queryParamMap.get('batch')??'');
- protected readonly page=signal(1);
- protected readonly pageSize=signal(DEFAULT_PAGE_SIZE);
- protected setPageSize(size:number):void{this.pageSize.set(size);this.filterChanged();}
- protected get today():string{return this.preferences.today();}
- private draftId='';
- protected readonly form=this.fb.nonNullable.group({
-  name:['',[Validators.required,Validators.minLength(2)]],code:['',Validators.required],age_group:[''],skill_level:[''],
-  capacity:[20,[Validators.required,Validators.min(1)]],waitlist_capacity:[0,[Validators.required,Validators.min(0)]],
-  start_date:[this.today,Validators.required],end_date:[''],start_time:['06:00',Validators.required],end_time:['08:00',Validators.required],
-  fee_plan_id:['',Validators.required],status:['active',Validators.required],description:[''],primaryCoach:['']
- });
- protected readonly assignment=this.fb.nonNullable.group({batch:['',Validators.required],coach:[this.coachFilter(),Validators.required],role:['primary',Validators.required]});
- protected readonly allocation=this.fb.nonNullable.group({student:['',Validators.required],batch:['',Validators.required],start:[this.today,Validators.required],action:['enroll',Validators.required]});
- protected readonly pageRows=signal<readonly (WorkspaceBatch & {active_count:number;waiting_count:number})[]>([]);
- protected readonly pageAllocations=signal<readonly (EnrollmentRecord & {student:{full_name:string};batch:{name:string}})[]>([]);
- protected columnFilters={student:'',batch:'',schedule:'',coach:'',capacity:'',columnStatus:'',fee:'',start:''};
- private columnTimer?:ReturnType<typeof setTimeout>;
- protected scheduleColumnFilters():void{
-  clearTimeout(this.columnTimer);++this.requestId;this.page.set(1);
-  this.columnTimer=setTimeout(()=>void this.load(),250);
- }
- protected resetColumnFilters():void{
-  this.columnFilters={student:'',batch:'',schedule:'',coach:'',capacity:'',columnStatus:'',fee:'',start:''};
-  this.query.set('');this.status.set('all');this.coachFilter.set('');this.batchFilter.set('');this.filterChanged();
- }
- protected filterChanged():void{this.page.set(1);void this.load();if(this.waitingBatchId!==this.batchFilter()){this.waitingBatchId=this.batchFilter();this.waitingPage.set(1);void this.loadWaiting();}}
- protected changeSortBy(event:Event):void{this.sortBy.set((event.target as HTMLSelectElement).value);this.filterChanged();}
- protected sortColumn(key:string):void{this.sortDirection.set(this.sortBy()===key?(this.sortDirection()==='asc'?'desc':'asc'):'asc');this.sortBy.set(key);this.filterChanged();}
- protected changeSortDirection(event:Event):void{this.sortDirection.set((event.target as HTMLSelectElement).value==='desc'?'desc':'asc');this.filterChanged();}
- protected changePage(page:number):void{this.page.set(page);void this.load();}
- protected readonly waiting=signal<WaitlistRow[]>([]);
- protected readonly waitingTotal=signal(0);
- protected readonly waitingPage=signal(1);
- protected readonly waitingPageSize=signal(DEFAULT_PAGE_SIZE);
- protected readonly waitingLoading=signal(false);
- protected readonly waitingError=signal('');
- protected waitingFilters={student:'',batch:'',date:''};
- protected waitingSort:WaitlistQuery['sortBy']='created_at';
- protected waitingDirection:WaitlistQuery['sortDirection']='asc';
- private waitingRequest=0;
- private waitingTimer?:ReturnType<typeof setTimeout>;
- private waitingPending?:Promise<void>;
- private waitingKey='';
- private waitingBatchId=this.batchFilter();
- ngOnDestroy():void{clearTimeout(this.waitingTimer);clearTimeout(this.columnTimer);++this.waitingRequest;++this.requestId;this.viewSubscription?.unsubscribe();}
- protected scheduleWaitingFilters():void{
-  clearTimeout(this.waitingTimer);++this.waitingRequest;this.waitingKey='';
-  this.waitingPage.set(1);this.waitingLoading.set(true);this.waitingError.set('');
-  this.waitingTimer=setTimeout(()=>void this.loadWaiting(),250);
- }
- protected sortWaiting(key:WaitlistQuery['sortBy']):void{
-  this.waitingDirection=this.waitingSort===key&&this.waitingDirection==='asc'?'desc':'asc';
-  this.waitingSort=key;this.waitingPage.set(1);void this.loadWaiting();
- }
- protected resetWaiting():void{this.waitingFilters={student:'',batch:'',date:''};this.waitingSort='created_at';this.waitingDirection='asc';this.waitingPage.set(1);void this.loadWaiting();}
- protected changeWaitingPage(page:number):void{this.waitingPage.set(page);void this.loadWaiting();}
- protected changeWaitingSize(size:number):void{this.waitingPageSize.set(size);this.waitingPage.set(1);void this.loadWaiting();}
- protected loadWaiting():Promise<void>{
-  clearTimeout(this.waitingTimer);
-  if(!['capacity','student-allocation'].includes(this.view))return Promise.resolve();
-  const query:WaitlistQuery={student:this.waitingFilters.student.trim(),batch:this.waitingFilters.batch.trim(),date:this.waitingFilters.date,batchId:this.batchFilter(),sortBy:this.waitingSort,sortDirection:this.waitingDirection};
-  const key=JSON.stringify([this.waitingPage(),this.waitingPageSize(),query]);
-  if(this.waitingPending&&this.waitingKey===key)return this.waitingPending;
-  this.waitingKey=key;
-  const load=this.fetchWaiting(query);this.waitingPending=load;
-  void load.finally(()=>{if(this.waitingPending===load)this.waitingPending=undefined;});
-  return load;
- }
- private async fetchWaiting(query:WaitlistQuery):Promise<void>{
-  const request=++this.waitingRequest;this.waitingLoading.set(true);this.waitingError.set('');this.waiting.set([]);
-  try{const result=await this.api.waitlistPage(this.waitingPage(),this.waitingPageSize(),query);
-   if(request!==this.waitingRequest)return;
-   this.waiting.set(result.rows);this.waitingTotal.set(result.total);this.waitingPage.set(result.page);
-  }catch(e){if(request===this.waitingRequest){this.waiting.set([]);this.waitingTotal.set(0);this.waitingError.set(this.errorText(e));}}
-  finally{if(request===this.waitingRequest)this.waitingLoading.set(false);}
- }
- private readonly metricTotals=signal({batches:0,active:0,capacity:0,waiting:0});
- protected readonly metrics=computed(()=>({
-  ...this.metricTotals(),
-  available:Math.max(0,this.metricTotals().capacity-this.metricTotals().active),
- }));
- protected readonly metricCards=computed(()=>{
-  const metrics=this.metrics();
-  return [
-   {label:'Batches',value:metrics.batches,icon:'pi-calendar',detail:'All registered batches',tone:'green'},
-   {label:'Active enrollments',value:metrics.active,icon:'pi-users',detail:'Currently enrolled students',tone:'blue'},
-   {label:'Active batch capacity',value:metrics.capacity,icon:'pi-chart-bar',detail:'Total available places',tone:'purple'},
-   {label:'Waiting students',value:metrics.waiting,icon:'pi-clock',detail:'Awaiting a place',tone:'orange'},
-   {label:'Available places',value:metrics.available,icon:'pi-user-plus',detail:'Capacity minus active enrollments',tone:'green'},
-  ] as const;
- });
- async ngOnInit():Promise<void>{
-  this.viewSubscription=this.route.queryParamMap.subscribe(params=>{
-   const next=String(params.get('view') ?? this.route.snapshot.data['batchView'] ?? this.view);
-   if(next===this.view)return;
-   this.view=next;this.page.set(1);this.waitingPage.set(1);this.waitingKey='';
-   void this.load();void this.loadWaiting();
-  });
-  await Promise.all([this.load(),this.loadWaiting()]);
- }
- protected async load():Promise<void>{
-  clearTimeout(this.columnTimer);
-  const request=++this.requestId;this.loading.set(true);this.error.set('');
-  try{
-   const result=await this.lists.page<WorkspaceBatch & EnrollmentRecord & {active_count:number;waiting_count:number;student:{full_name:string};batch:{name:string}},ReturnType<typeof this.metrics>,ReturnType<typeof emptyBatchWorkspace>>(
-    this.view==='student-allocation'?'allocations':'batches',this.page(),this.pageSize(),{...Object.fromEntries(Object.entries(this.columnFilters).map(([key,value])=>[key,String(value??'').trim()])),search:this.query(),status:this.status(),batchId:this.batchFilter(),coachId:this.coachFilter(),view:this.view,omitWaitlist:'true',sortBy:this.sortBy(),sortDirection:this.sortDirection()});
-   if(request!==this.requestId)return;
-   this.workspace.set({...emptyBatchWorkspace(),...result.options});
-   this.total.set(result.total);this.page.set(result.page);this.metricTotals.set(result.metrics);
-   this.pageRows.set(this.view==='student-allocation'?[]:result.rows);
-   this.pageAllocations.set(this.view==='student-allocation'?result.rows:[]);
-  }catch(e){if(request===this.requestId){this.error.set(this.errorText(e));this.pageRows.set([]);this.pageAllocations.set([]);this.total.set(0);}}
-  finally{if(request===this.requestId)this.loading.set(false);}
- }
- protected activeCount(id:string):number{return this.pageRows().find(b=>b.id===id)?.active_count??0;}
- protected waitingCount(id:string):number{return this.pageRows().find(b=>b.id===id)?.waiting_count??0;}
- protected studentName(id:string):string{return this.pageAllocations().find(e=>e.student_id===id)?.student?.full_name??this.workspace().students.find(s=>s.id===id)?.full_name??'Unknown student';}
- protected batchName(id:string):string{return this.workspace().batches.find(b=>b.id===id)?.name??'Unknown batch';}
- protected coachName(id:string):string{return this.workspace().coaches.find(c=>c.id===id)?.full_name??'Unknown coach';}
- protected fee(b:WorkspaceBatch):number{return Number(this.workspace().plans.find(p=>p.id===b.fee_plan_id)?.monthly_fee??0);}
- protected schedule(b:WorkspaceBatch):string{return b.batch_days.map(d=>this.dayNames[d.day_of_week]).join(', ');}
- protected hasSessionToday(b:WorkspaceBatch):boolean{return b.status==='active'&&(!b.start_date||b.start_date<=this.today)&&(!b.end_date||b.end_date>=this.today)&&b.batch_days.some(d=>d.day_of_week===new Date(this.today+'T12:00:00Z').getUTCDay());}
- protected edit(b?:WorkspaceBatch):void{
-  this.draftId=b?.id??crypto.randomUUID();this.editing.set(b?.id??'');this.error.set('');this.days.set(b?.batch_days.map(d=>d.day_of_week)??[1,3,5]);
-  this.form.reset({name:b?.name??'',code:b?.code??'',age_group:b?.age_group??'',skill_level:b?.skill_level??'',capacity:b?.capacity??20,waitlist_capacity:b?.waitlist_capacity??0,start_date:b?.start_date??this.today,end_date:b?.end_date??'',start_time:b?.start_time?.slice(0,5)??'06:00',end_time:b?.end_time?.slice(0,5)??'08:00',fee_plan_id:b?.fee_plan_id??'',status:b?.status??'active',description:b?.description??'',primaryCoach:b?.batch_coaches.find(c=>c.is_primary)?.coach_id??''});
- }
- protected toggleDay(day:number):void{this.days.update(days=>days.includes(day)?days.filter(d=>d!==day):[...days,day].sort());}
- protected async save():Promise<void>{
-  if(this.form.invalid||!this.days().length){this.form.markAllAsTouched();this.error.set('Complete the required fields and select training days.');return;}
-  const {primaryCoach,...value}=this.form.getRawValue();
-  if(value.end_time<=value.start_time||(value.end_date&&value.end_date<value.start_date)){this.error.set('End time and end date must follow their start.');return;}
-  const existing=this.pageRows().find(b=>b.id===this.editing());
-  const coaches=(existing?.batch_coaches??[]).filter(c=>!c.is_primary&&c.coach_id!==primaryCoach);
-  if(primaryCoach)coaches.push({coach_id:primaryCoach,is_primary:true});
-  await this.mutate(async()=>{await this.api.save({...value,id:this.draftId},this.days(),coaches);this.editing.set(null);},'Batch saved.');
- }
- protected async remove(b:WorkspaceBatch):Promise<void>{if(await this.dialogs.confirm('Delete '+b.name+'? Batches with enrollment history must be kept.','Delete batch','Delete'))await this.mutate(()=>this.api.remove(b.id),'Batch deleted.');}
- protected async assign():Promise<void>{if(this.assignment.invalid){this.assignment.markAllAsTouched();return;}const v=this.assignment.getRawValue();await this.mutate(()=>this.api.assign(v.batch,v.coach,v.role),'Coach assignment saved.');}
- protected async unassign(batch:string,coach:string):Promise<void>{await this.mutate(()=>this.api.assign(batch,coach,'remove'),'Coach unassigned.');}
- protected async allocate():Promise<void>{
-  if(this.allocation.invalid){this.allocation.markAllAsTouched();return;}const v=this.allocation.getRawValue();
-  await this.mutate(async()=>{
-   if(v.action==='waitlist'){await this.api.waitlist(v.batch,v.student,'add',v.start);return;}
-   const existing=await this.api.activeEnrollment(v.student);
-   if(existing){if(existing.batch_id===v.batch)throw new Error('Student is already allocated to this batch.');if(existing.status==='paused')throw new Error('Reactivate the enrollment before transferring.');await this.enrollments.transfer(existing.id,v.batch,v.start,'Transferred from batch allocation');}
-   else{const batch=this.workspace().batches.find(b=>b.id===v.batch);if(!batch?.fee_plan_id)throw new Error('Select a fee plan for this batch first.');await this.enrollments.create(v.student,v.batch,batch.fee_plan_id,v.start);}
-  },v.action==='waitlist'?'Student added to waiting list.':'Student allocation saved.');
- }
- protected async cancelEnrollment(id:string):Promise<void>{if(await this.dialogs.confirm('Cancel this enrollment and remove the student from the batch?','Remove allocation','Remove'))await this.mutate(()=>this.enrollments.changeStatus(id,'cancelled','Removed from batch allocation'),'Enrollment cancelled.');}
- protected async waitAction(batch:string,student:string,action:string):Promise<void>{await this.mutate(()=>this.api.waitlist(batch,student,action,this.today),action==='promote'?'Student enrolled.':'Waiting list entry removed.');}
- protected openRoster(batch:WorkspaceBatch):void{
-  this.rosterBatch.set(batch);
-  this.rosterIncludeMedical.set(false);
-  this.rosterError.set('');
-  this.rosterOpen.set(true);
- }
- protected closeRoster():void{
-  if(this.rosterLoading())return;
-  this.rosterOpen.set(false);
- }
- protected onRosterMedicalChange(event:Event):void{
-  this.rosterIncludeMedical.set((event.target as HTMLInputElement).checked);
- }
- protected async printRoster(destination:PrintDestination='print'):Promise<void>{
-  const batch=this.rosterBatch();
-  if(!batch||this.rosterLoading())return;
-  const includeMedical=this.rosterIncludeMedical()&&this.canPrintMedical();
-  this.rosterLoading.set(true);this.rosterError.set('');
-  try{
-   const record=await this.rosterService.roster(batch.id,includeMedical);
-   await this.printDocuments.printBatchRoster(this.rosterInput(record,includeMedical),destination);
-   this.rosterOpen.set(false);
-  }catch(e){
-   this.rosterError.set(this.errorText(e));
-  }finally{
-   this.rosterLoading.set(false);
-  }
- }
- private rosterInput(record:BatchRosterRecord,includeMedical:boolean):Omit<PrintBatchRosterDocument,'kind'|'brand'>{
-  const batch=record.batch;
-  const days=[...batch.batch_days].sort((left,right)=>left.day_of_week-right.day_of_week);
-  return {
-   rosterNumber:'RST-'+((batch.code||batch.id.slice(0,8)).toUpperCase().replace(/[^A-Z0-9]+/g,'')||'BATCH'),
-   issuedAt:new Date().toISOString(),
-   batchName:batch.name,
-   batchCode:batch.code,
-   batchStatus:batch.status,
-   ageGroup:batch.age_group??undefined,
-   skillLevel:batch.skill_level??undefined,
-   schedule:days.length?days.map(day=>this.dayNames[day.day_of_week]).join(', '):'Not scheduled',
-   batchTime:batch.start_time&&batch.end_time?`${batch.start_time.slice(0,5)} – ${batch.end_time.slice(0,5)}`:undefined,
-   batchDates:batch.start_date?`${batch.start_date} – ${batch.end_date??'Ongoing'}`:undefined,
-   coaches:record.coaches,
-   capacity:batch.capacity,
-   enrolled:record.rows.length,
-   includeMedical,
-   rows:record.rows.map(row=>({
-    studentId:row.studentId,
-    studentCode:row.studentCode,
-    studentName:row.studentName,
-    dateOfBirth:row.dateOfBirth??undefined,
-    status:row.status,
-    guardians:row.guardians.map(guardian=>({
-     name:guardian.name,
-     relation:guardian.relation??undefined,
-     phone:guardian.phone,
-     whatsapp:guardian.whatsapp??undefined,
-     isPrimary:guardian.isPrimary,
-     canPickUp:guardian.canPickUp,
-    })),
-    medical:includeMedical?(row.medical??undefined):undefined,
-   })),
-  };
- }
- private async mutate(action:()=>Promise<unknown>,success:string):Promise<void>{if(this.saving())return;this.saving.set(true);this.error.set('');this.message.set('');try{await action();this.toast.success(success);this.waitingKey='';await Promise.all([this.load(),this.loadWaiting()]);}catch(e){this.toast.error(this.errorText(e));}finally{this.saving.set(false);}}
- private errorText(e:unknown):string{return e instanceof Error?e.message:'The operation failed. Please retry.';}
+    private readonly preferences = inject(AcademyPreferencesService);
+    private readonly lists = inject(ServerListService);
+    private requestId = 0;
+    protected readonly total = signal(0);
+    private readonly api = inject(BatchWorkspaceService);
+    private readonly enrollments = inject(EnrollmentsService);
+    private readonly fb = inject(FormBuilder);
+    private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
+    private readonly dialogs = inject(InteractionDialogService);
+    private readonly toast = inject(ToastService);
+    private readonly rosterService = inject(BatchesService);
+    private readonly printDocuments = inject(PrintDocumentService);
+    protected readonly rosterOpen = signal(false);
+    protected readonly rosterBatch = signal<WorkspaceBatch | null>(null);
+    protected readonly rosterLoading = signal(false);
+    protected readonly rosterError = signal('');
+    protected readonly rosterIncludeMedical = signal(false);
+    protected canPrintMedical(): boolean { return this.auth.hasPermission('students:read'); }
+    protected readonly auth = inject(AuthService);
+    protected readonly workspace = signal(emptyBatchWorkspace());
+    protected readonly loading = signal(true); protected readonly saving = signal(false);
+    protected get showBatchTable(): boolean { return this.view !== 'student-allocation' && this.view !== 'waiting-list'; }
+    protected readonly error = signal(''); protected readonly message = signal('');
+    protected readonly editing = signal<string | null>(null);
+    protected readonly days = signal<number[]>([1, 3, 5]);
+    protected readonly dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    protected view = String(this.route.snapshot.queryParamMap.get('view') ?? this.route.snapshot.data['batchView'] ?? this.router.url.split('?')[0].split('/')[2] ?? 'list');
+    protected get activeBatchTab(): string {
+        const map: Record<string, string> = {
+            list: '/batches',
+            'coach-assignment': '/batches/coach-assignment',
+            'student-allocation': '/batches/student-allocation',
+            schedule: '/batches/schedule',
+            capacity: '/batches/capacity',
+            'waiting-list': '/batches/waiting-list',
+        };
+        return map[this.view] ?? '/batches';
+    }
+    protected readonly batchTabs: readonly SectionTab[] = [
+        { label: 'All batches', path: '/batches' },
+        { label: 'Coach assignment', path: '/batches/coach-assignment' },
+        { label: 'Student allocation', path: '/batches/student-allocation' },
+        { label: 'Schedule', path: '/batches/schedule' },
+        { label: 'Capacity', path: '/batches/capacity' },
+        { label: 'Waiting list', path: '/batches/waiting-list' },
+    ];
+    private viewSubscription?: Subscription;
+    protected readonly query = signal(''); protected readonly status = signal('all');
+    protected readonly sortBy = signal('name'); protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
+    protected readonly coachFilter = signal(this.route.snapshot.queryParamMap.get('coach') ?? '');
+    protected readonly batchFilter = signal(this.route.snapshot.queryParamMap.get('batch') ?? '');
+    protected readonly page = signal(1);
+    protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+    protected setPageSize(size: number): void { this.pageSize.set(size); this.filterChanged(); }
+    protected get today(): string { return this.preferences.today(); }
+    private draftId = '';
+    protected readonly form = this.fb.nonNullable.group({
+        name: ['', [Validators.required, Validators.minLength(2)]], code: ['', Validators.required], age_group: [''], skill_level: [''],
+        capacity: [20, [Validators.required, Validators.min(1)]], waitlist_capacity: [0, [Validators.required, Validators.min(0)]],
+        start_date: [this.today, Validators.required], end_date: [''], start_time: ['06:00', Validators.required], end_time: ['08:00', Validators.required],
+        fee_plan_id: ['', Validators.required], status: ['active', Validators.required], description: [''], primaryCoach: ['']
+    });
+    protected readonly assignment = this.fb.nonNullable.group({ batch: ['', Validators.required], coach: [this.coachFilter(), Validators.required], role: ['primary', Validators.required] });
+    protected readonly allocation = this.fb.nonNullable.group({ student: ['', Validators.required], batch: ['', Validators.required], start: [this.today, Validators.required], action: ['enroll', Validators.required] });
+    protected readonly pageRows = signal<readonly (WorkspaceBatch & { active_count: number; waiting_count: number })[]>([]);
+    protected readonly pageAllocations = signal<readonly (EnrollmentRecord & { student: { full_name: string }; batch: { name: string } })[]>([]);
+    protected columnFilters = { student: '', batch: '', schedule: '', coach: '', capacity: '', columnStatus: '', fee: '', start: '' };
+    private columnTimer?: ReturnType<typeof setTimeout>;
+    protected setColumnFilter(key: keyof typeof this.columnFilters, value: string): void {
+        this.columnFilters[key] = value;
+        this.scheduleColumnFilters();
+    }
+    protected scheduleColumnFilters(): void {
+        clearTimeout(this.columnTimer); ++this.requestId; this.page.set(1);
+        this.columnTimer = setTimeout(() => void this.load(), 250);
+    }
+    protected resetColumnFilters(): void {
+        this.columnFilters = { student: '', batch: '', schedule: '', coach: '', capacity: '', columnStatus: '', fee: '', start: '' };
+        this.query.set(''); this.status.set('all'); this.coachFilter.set(''); this.batchFilter.set(''); this.filterChanged();
+    }
+    protected filterChanged(): void { this.page.set(1); void this.load(); if (this.waitingBatchId !== this.batchFilter()) { this.waitingBatchId = this.batchFilter(); this.waitingPage.set(1); void this.loadWaiting(); } }
+    protected changeSortBy(event: Event): void { this.sortBy.set((event.target as HTMLSelectElement).value); this.filterChanged(); }
+    protected sortColumn(key: string): void { this.sortDirection.set(this.sortBy() === key ? (this.sortDirection() === 'asc' ? 'desc' : 'asc') : 'asc'); this.sortBy.set(key); this.filterChanged(); }
+    protected changeSortDirection(event: Event): void { this.sortDirection.set((event.target as HTMLSelectElement).value === 'desc' ? 'desc' : 'asc'); this.filterChanged(); }
+    protected changePage(page: number): void { this.page.set(page); void this.load(); }
+    protected readonly waiting = signal<WaitlistRow[]>([]);
+    protected readonly waitingTotal = signal(0);
+    protected readonly waitingPage = signal(1);
+    protected readonly waitingPageSize = signal(DEFAULT_PAGE_SIZE);
+    protected readonly waitingLoading = signal(false);
+    protected readonly waitingError = signal('');
+    protected waitingFilters = { student: '', batch: '', date: '' };
+    protected waitingSort: WaitlistQuery['sortBy'] = 'created_at';
+    protected waitingDirection: WaitlistQuery['sortDirection'] = 'asc';
+    private waitingRequest = 0;
+    private waitingTimer?: ReturnType<typeof setTimeout>;
+    private waitingPending?: Promise<void>;
+    private waitingKey = '';
+    private waitingBatchId = this.batchFilter();
+    ngOnDestroy(): void { clearTimeout(this.waitingTimer); clearTimeout(this.columnTimer); ++this.waitingRequest; ++this.requestId; this.viewSubscription?.unsubscribe(); }
+    protected setWaitingFilter(key: keyof typeof this.waitingFilters, value: string): void {
+        this.waitingFilters[key] = value;
+        this.scheduleWaitingFilters();
+    }
+    protected scheduleWaitingFilters(): void {
+        clearTimeout(this.waitingTimer); ++this.waitingRequest; this.waitingKey = '';
+        this.waitingPage.set(1); this.waitingLoading.set(true); this.waitingError.set('');
+        this.waitingTimer = setTimeout(() => void this.loadWaiting(), 250);
+    }
+    protected sortWaiting(key: WaitlistQuery['sortBy']): void {
+        this.waitingDirection = this.waitingSort === key && this.waitingDirection === 'asc' ? 'desc' : 'asc';
+        this.waitingSort = key; this.waitingPage.set(1); void this.loadWaiting();
+    }
+    protected resetWaiting(): void { this.waitingFilters = { student: '', batch: '', date: '' }; this.waitingSort = 'created_at'; this.waitingDirection = 'asc'; this.waitingPage.set(1); void this.loadWaiting(); }
+    protected changeWaitingPage(page: number): void { this.waitingPage.set(page); void this.loadWaiting(); }
+    protected changeWaitingSize(size: number): void { this.waitingPageSize.set(size); this.waitingPage.set(1); void this.loadWaiting(); }
+    protected loadWaiting(): Promise<void> {
+        clearTimeout(this.waitingTimer);
+        if (this.view !== 'waiting-list') return Promise.resolve();
+        const query: WaitlistQuery = { student: this.waitingFilters.student.trim(), batch: this.waitingFilters.batch.trim(), date: this.waitingFilters.date, batchId: this.batchFilter(), sortBy: this.waitingSort, sortDirection: this.waitingDirection };
+        const key = JSON.stringify([this.waitingPage(), this.waitingPageSize(), query]);
+        if (this.waitingPending && this.waitingKey === key) return this.waitingPending;
+        this.waitingKey = key;
+        const load = this.fetchWaiting(query); this.waitingPending = load;
+        void load.finally(() => { if (this.waitingPending === load) this.waitingPending = undefined; });
+        return load;
+    }
+    private async fetchWaiting(query: WaitlistQuery): Promise<void> {
+        const request = ++this.waitingRequest; this.waitingLoading.set(true); this.waitingError.set(''); this.waiting.set([]);
+        try {
+            const result = await this.api.waitlistPage(this.waitingPage(), this.waitingPageSize(), query);
+            if (request !== this.waitingRequest) return;
+            this.waiting.set(result.rows); this.waitingTotal.set(result.total); this.waitingPage.set(result.page);
+        } catch (e) { if (request === this.waitingRequest) { this.waiting.set([]); this.waitingTotal.set(0); this.waitingError.set(this.errorText(e)); } }
+        finally { if (request === this.waitingRequest) this.waitingLoading.set(false); }
+    }
+    private readonly metricTotals = signal({ batches: 0, active: 0, capacity: 0, waiting: 0 });
+    protected readonly metrics = computed(() => ({
+        ...this.metricTotals(),
+        available: Math.max(0, this.metricTotals().capacity - this.metricTotals().active),
+    }));
+    protected readonly metricCards = computed(() => {
+        const metrics = this.metrics();
+        return [
+            { label: 'Batches', value: metrics.batches, icon: 'pi-calendar', hint: 'All registered batches', tone: 'green' },
+            { label: 'Active enrollments', value: metrics.active, icon: 'pi-users', hint: 'Currently enrolled students', tone: 'blue' },
+            { label: 'Active batch capacity', value: metrics.capacity, icon: 'pi-chart-bar', hint: 'Total available places', tone: 'purple' },
+            { label: 'Waiting students', value: metrics.waiting, icon: 'pi-clock', hint: 'Awaiting a place', tone: 'orange' },
+            { label: 'Available places', value: metrics.available, icon: 'pi-user-plus', hint: 'Capacity minus active enrollments', tone: 'green' },
+        ] as const;
+    });
+    async ngOnInit(): Promise<void> {
+        this.viewSubscription = this.route.queryParamMap.subscribe(params => {
+            const next = String(params.get('view') ?? this.route.snapshot.data['batchView'] ?? this.view);
+            if (next === this.view) return;
+            this.view = next; this.page.set(1); this.waitingPage.set(1); this.waitingKey = '';
+            void this.load(); void this.loadWaiting();
+        });
+        await Promise.all([this.load(), this.loadWaiting()]);
+    }
+    protected async load(): Promise<void> {
+        clearTimeout(this.columnTimer);
+        const request = ++this.requestId; this.loading.set(true); this.error.set('');
+        try {
+            const result = await this.lists.page<WorkspaceBatch & EnrollmentRecord & { active_count: number; waiting_count: number; student: { full_name: string }; batch: { name: string } }, ReturnType<typeof this.metrics>, ReturnType<typeof emptyBatchWorkspace>>(
+                this.view === 'student-allocation' ? 'allocations' : 'batches', this.page(), this.pageSize(), { ...Object.fromEntries(Object.entries(this.columnFilters).map(([key, value]) => [key, String(value ?? '').trim()])), search: this.query(), status: this.status(), batchId: this.batchFilter(), coachId: this.coachFilter(), view: this.view, omitWaitlist: 'true', sortBy: this.sortBy(), sortDirection: this.sortDirection() });
+            if (request !== this.requestId) return;
+            this.workspace.set({ ...emptyBatchWorkspace(), ...result.options });
+            this.total.set(result.total); this.page.set(result.page); this.metricTotals.set(result.metrics);
+            this.pageRows.set(this.view === 'student-allocation' ? [] : result.rows);
+            this.pageAllocations.set(this.view === 'student-allocation' ? result.rows : []);
+        } catch (e) { if (request === this.requestId) { this.error.set(this.errorText(e)); this.pageRows.set([]); this.pageAllocations.set([]); this.total.set(0); } }
+        finally { if (request === this.requestId) this.loading.set(false); }
+    }
+    protected activeCount(id: string): number { return this.pageRows().find(b => b.id === id)?.active_count ?? 0; }
+    protected waitingCount(id: string): number { return this.pageRows().find(b => b.id === id)?.waiting_count ?? 0; }
+    protected studentName(id: string): string { return this.pageAllocations().find(e => e.student_id === id)?.student?.full_name ?? this.workspace().students.find(s => s.id === id)?.full_name ?? 'Unknown student'; }
+    protected batchName(id: string): string { return this.workspace().batches.find(b => b.id === id)?.name ?? 'Unknown batch'; }
+    protected coachName(id: string): string { return this.workspace().coaches.find(c => c.id === id)?.full_name ?? 'Unknown coach'; }
+    protected fee(b: WorkspaceBatch): number { return Number(this.workspace().plans.find(p => p.id === b.fee_plan_id)?.monthly_fee ?? 0); }
+    protected schedule(b: WorkspaceBatch): string { return b.batch_days.map(d => this.dayNames[d.day_of_week]).join(', '); }
+    protected hasSessionToday(b: WorkspaceBatch): boolean { return b.status === 'active' && (!b.start_date || b.start_date <= this.today) && (!b.end_date || b.end_date >= this.today) && b.batch_days.some(d => d.day_of_week === new Date(this.today + 'T12:00:00Z').getUTCDay()); }
+    protected edit(b?: WorkspaceBatch): void {
+        this.draftId = b?.id ?? crypto.randomUUID(); this.editing.set(b?.id ?? ''); this.error.set(''); this.days.set(b?.batch_days.map(d => d.day_of_week) ?? [1, 3, 5]);
+        this.form.reset({ name: b?.name ?? '', code: b?.code ?? '', age_group: b?.age_group ?? '', skill_level: b?.skill_level ?? '', capacity: b?.capacity ?? 20, waitlist_capacity: b?.waitlist_capacity ?? 0, start_date: b?.start_date ?? this.today, end_date: b?.end_date ?? '', start_time: b?.start_time?.slice(0, 5) ?? '06:00', end_time: b?.end_time?.slice(0, 5) ?? '08:00', fee_plan_id: b?.fee_plan_id ?? '', status: b?.status ?? 'active', description: b?.description ?? '', primaryCoach: b?.batch_coaches.find(c => c.is_primary)?.coach_id ?? '' });
+    }
+    protected toggleDay(day: number): void { this.days.update(days => days.includes(day) ? days.filter(d => d !== day) : [...days, day].sort()); }
+    protected async save(): Promise<void> {
+        if (this.form.invalid || !this.days().length) { this.form.markAllAsTouched(); this.error.set('Complete the required fields and select training days.'); return; }
+        const { primaryCoach, ...value } = this.form.getRawValue();
+        if (value.end_time <= value.start_time || (value.end_date && value.end_date < value.start_date)) { this.error.set('End time and end date must follow their start.'); return; }
+        const existing = this.pageRows().find(b => b.id === this.editing());
+        const coaches = (existing?.batch_coaches ?? []).filter(c => !c.is_primary && c.coach_id !== primaryCoach);
+        if (primaryCoach) coaches.push({ coach_id: primaryCoach, is_primary: true });
+        await this.mutate(async () => { await this.api.save({ ...value, id: this.draftId }, this.days(), coaches); this.editing.set(null); }, 'Batch saved.');
+    }
+    protected async remove(b: WorkspaceBatch): Promise<void> { if (await this.dialogs.confirm('Delete ' + b.name + '? Batches with enrollment history must be kept.', 'Delete batch', 'Delete')) await this.mutate(() => this.api.remove(b.id), 'Batch deleted.'); }
+    protected async assign(): Promise<void> { if (this.assignment.invalid) { this.assignment.markAllAsTouched(); return; } const v = this.assignment.getRawValue(); await this.mutate(() => this.api.assign(v.batch, v.coach, v.role), 'Coach assignment saved.'); }
+    protected async unassign(batch: string, coach: string): Promise<void> { await this.mutate(() => this.api.assign(batch, coach, 'remove'), 'Coach unassigned.'); }
+    protected async allocate(): Promise<void> {
+        if (this.allocation.invalid) { this.allocation.markAllAsTouched(); return; } const v = this.allocation.getRawValue();
+        await this.mutate(async () => {
+            if (v.action === 'waitlist') { await this.api.waitlist(v.batch, v.student, 'add', v.start); return; }
+            const existing = await this.api.activeEnrollment(v.student);
+            if (existing) { if (existing.batch_id === v.batch) throw new Error('Student is already allocated to this batch.'); if (existing.status === 'paused') throw new Error('Reactivate the enrollment before transferring.'); await this.enrollments.transfer(existing.id, v.batch, v.start, 'Transferred from batch allocation'); }
+            else { const batch = this.workspace().batches.find(b => b.id === v.batch); if (!batch?.fee_plan_id) throw new Error('Select a fee plan for this batch first.'); await this.enrollments.create(v.student, v.batch, batch.fee_plan_id, v.start); }
+        }, v.action === 'waitlist' ? 'Student added to waiting list.' : 'Student allocation saved.');
+    }
+    protected async cancelEnrollment(id: string): Promise<void> { if (await this.dialogs.confirm('Cancel this enrollment and remove the student from the batch?', 'Remove allocation', 'Remove')) await this.mutate(() => this.enrollments.changeStatus(id, 'cancelled', 'Removed from batch allocation'), 'Enrollment cancelled.'); }
+    protected async waitAction(batch: string, student: string, action: string): Promise<void> { await this.mutate(() => this.api.waitlist(batch, student, action, this.today), action === 'promote' ? 'Student enrolled.' : 'Waiting list entry removed.'); }
+    protected openRoster(batch: WorkspaceBatch): void {
+        this.rosterBatch.set(batch);
+        this.rosterIncludeMedical.set(false);
+        this.rosterError.set('');
+        this.rosterOpen.set(true);
+    }
+    protected closeRoster(): void {
+        if (this.rosterLoading()) return;
+        this.rosterOpen.set(false);
+    }
+    protected onRosterMedicalChange(event: Event): void {
+        this.rosterIncludeMedical.set((event.target as HTMLInputElement).checked);
+    }
+    protected async printRoster(destination: PrintDestination = 'print'): Promise<void> {
+        const batch = this.rosterBatch();
+        if (!batch || this.rosterLoading()) return;
+        const includeMedical = this.rosterIncludeMedical() && this.canPrintMedical();
+        this.rosterLoading.set(true); this.rosterError.set('');
+        try {
+            const record = await this.rosterService.roster(batch.id, includeMedical);
+            await this.printDocuments.printBatchRoster(this.rosterInput(record, includeMedical), destination);
+            this.rosterOpen.set(false);
+        } catch (e) {
+            this.rosterError.set(this.errorText(e));
+        } finally {
+            this.rosterLoading.set(false);
+        }
+    }
+    private rosterInput(record: BatchRosterRecord, includeMedical: boolean): Omit<PrintBatchRosterDocument, 'kind' | 'brand'> {
+        const batch = record.batch;
+        const days = [...batch.batch_days].sort((left, right) => left.day_of_week - right.day_of_week);
+        return {
+            rosterNumber: 'RST-' + ((batch.code || batch.id.slice(0, 8)).toUpperCase().replace(/[^A-Z0-9]+/g, '') || 'BATCH'),
+            issuedAt: new Date().toISOString(),
+            batchName: batch.name,
+            batchCode: batch.code,
+            batchStatus: batch.status,
+            ageGroup: batch.age_group ?? undefined,
+            skillLevel: batch.skill_level ?? undefined,
+            schedule: days.length ? days.map(day => this.dayNames[day.day_of_week]).join(', ') : 'Not scheduled',
+            batchTime: batch.start_time && batch.end_time ? `${batch.start_time.slice(0, 5)} – ${batch.end_time.slice(0, 5)}` : undefined,
+            batchDates: batch.start_date ? `${batch.start_date} – ${batch.end_date ?? 'Ongoing'}` : undefined,
+            coaches: record.coaches,
+            capacity: batch.capacity,
+            enrolled: record.rows.length,
+            includeMedical,
+            rows: record.rows.map(row => ({
+                studentId: row.studentId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+                dateOfBirth: row.dateOfBirth ?? undefined,
+                status: row.status,
+                guardians: row.guardians.map(guardian => ({
+                    name: guardian.name,
+                    relation: guardian.relation ?? undefined,
+                    phone: guardian.phone,
+                    whatsapp: guardian.whatsapp ?? undefined,
+                    isPrimary: guardian.isPrimary,
+                    canPickUp: guardian.canPickUp,
+                })),
+                medical: includeMedical ? (row.medical ?? undefined) : undefined,
+            })),
+        };
+    }
+    private async mutate(action: () => Promise<unknown>, success: string): Promise<void> { if (this.saving()) return; this.saving.set(true); this.error.set(''); this.message.set(''); try { await action(); this.toast.success(success); this.waitingKey = ''; await Promise.all([this.load(), this.loadWaiting()]); } catch (e) { this.toast.error(this.errorText(e)); } finally { this.saving.set(false); } }
+    private errorText(e: unknown): string { return e instanceof Error ? e.message : 'The operation failed. Please retry.'; }
 }

@@ -1,24 +1,39 @@
-<div class="coach-form-page">
+<div class="coach-form-page entity-form-page">
   <app-page-hero [title]="editing() ? 'Edit Coach' : 'Add Coach'"
     [subtitle]="editing() ? 'Update coach information and professional details.' : 'Register a new coach with the academy.'"
     [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Coaches', route: '/coaches' }, { label: editing() ? 'Edit Coach' : 'Add Coach' }]" />
   <form [formGroup]="form" (ngSubmit)="save()">
     <main>
-      <section class="card personal">
-        <h2><i class="pi pi-user"></i>Personal information</h2>
-        <div class="fields">
-          <label>Employee code *<input formControlName="employeeCode"
-              placeholder="Enter employee code" /></label><label>First name *<input formControlName="firstName"
-              placeholder="Enter first name" /></label><label>Last name *<input formControlName="lastName"
-              placeholder="Enter last name" /></label><label>Status *<select formControlName="status">
+      <div class="form-top-row">
+        <section class="card personal">
+          <h2><i aria-hidden="true" class="pi pi-user"></i>Personal information</h2>
+          <div class="fields"><label>First name *<input formControlName="firstName"
+                placeholder="Enter first name" /></label>
+            <label>Last name *<input formControlName="lastName" placeholder="Enter last name" /></label>
+            <label>Phone number *<input formControlName="phone" maxlength="10"
+                placeholder="Enter 10 digit mobile number" /></label>
+            <label>Email address<input type="email" formControlName="email" placeholder="Enter email address" /></label>
+          </div><app-address-fields [form]="form.controls.address" [columns]="4" />
+        </section>
+        <section class="card photo">
+          <h2><i class="pi pi-image"></i>Coach photo</h2><app-profile-photo-upload class="fill-card" label="Coach"
+            [photoUrl]="photoUrl()" [selected]="photoSelected()" [saving]="loading()"
+            (fileSelected)="selectPhoto($event)" [saveAction]="editing() ? savePhotoAction : undefined" />
+        </section>
+      </div>
+      <section class="card role-information">
+        <h2><i aria-hidden="true" class="pi pi-id-card"></i>Coach information</h2>
+        <div class="fields"><label>Employee code *<input formControlName="employeeCode"
+              placeholder="Enter employee code" /></label>
+          <label>Status *<select formControlName="status">
+              <option value="" disabled>Select status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select></label>
-          <label>Phone number *<input formControlName="phone" maxlength="10"
-              placeholder="Enter 10 digit mobile number" /></label><label>Email address<input type="email"
-              formControlName="email" placeholder="Enter email address" /></label><label>Date of birth<input type="date"
-              formControlName="dateOfBirth" /></label><label>Experience (years) *<input type="number" min="0" step="0.5"
-              formControlName="experienceYears" /></label>
+          <label>Date of birth<input type="date" formControlName="dateOfBirth"
+              placeholder="Select date of birth" /></label>
+          <label>Experience (years) *<input type="number" min="0" step="0.5" formControlName="experienceYears"
+              placeholder="Enter years of experience" /></label>
         </div>
       </section>
       <section class="card professional">
@@ -27,24 +42,13 @@
               placeholder="Enter highest qualification" /></label><label>Primary specialization *<input
               formControlName="primarySpecialization" placeholder="e.g. Batting" /></label><label>Additional
             specializations<input formControlName="additionalSpecializations"
-              placeholder="Bowling, Fitness" /></label><label>Biography<input formControlName="biography"
+              placeholder="e.g. Bowling, Fitness" /></label><label>Biography<input formControlName="biography"
               placeholder="Short professional biography" /></label></div>
       </section>
-      <footer><button type="button" (click)="cancel()">Cancel</button><button class="primary" [disabled]="loading()"><i
-            class="pi pi-check"></i>{{ loading() ? 'Saving...' : editing() ? 'Update coach' : 'Save coach' }}</button>
+      <footer><button type="button" (click)="cancel()">Cancel</button><button type="submit" class="primary"
+          [disabled]="loading()"><i class="pi pi-check"></i>{{ loading() ? 'Saving...' : editing() ? 'Update coach' :
+          'Save coach' }}</button>
       </footer>
     </main>
-    <aside>
-      <section class="card photo">
-        <h2><i class="pi pi-image"></i>Coach photo</h2><app-profile-photo-upload label="Coach" [photoUrl]="photoUrl()"
-          [selected]="photoSelected()" [saving]="loading()" (fileSelected)="selectPhoto($event)"
-          [saveAction]="editing() ? savePhotoAction : undefined" />
-      </section>
-      <section class="card help">
-        <h2><i class="pi pi-info-circle"></i>Coach profile</h2>
-        <p>Qualifications and specializations are shown on the coach details page.</p>
-        <p>Assigned batches are loaded directly from Supabase.</p>
-      </section>
-    </aside>
   </form>
 </div>

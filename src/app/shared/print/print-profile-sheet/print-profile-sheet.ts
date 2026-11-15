@@ -58,6 +58,6 @@ export class PrintProfileSheet {
   });
 
   protected formatDay(value: string | null | undefined): string {
-    return printDateOnly(value);
+    return printDateOnly(value, this.sheet().brand.currencyCode);
   }
 }

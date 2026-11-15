@@ -10,22 +10,6 @@
   />
   <app-attendance-view-navigation />
 
-  <nav class="view-tabs" role="tablist" aria-label="Attendance views">
-    @for (item of tabs; track item.id) {
-      <button
-        type="button"
-        role="tab"
-        [id]="'attendance-tab-' + item.id"
-        [attr.aria-selected]="tab() === item.id"
-        [class.active]="tab() === item.id"
-        (click)="select(item.id)"
-      >
-        <i class="pi" [class]="'pi ' + item.icon" aria-hidden="true"></i>
-        {{ item.label }}
-      </button>
-    }
-  </nav>
-
   <div role="tabpanel" [attr.aria-labelledby]="'attendance-tab-' + tab()">
     @if (tab() === 'history') {
       <app-attendance-history-page />

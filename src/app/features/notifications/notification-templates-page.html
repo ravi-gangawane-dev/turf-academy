@@ -8,79 +8,80 @@
   <div class="notice error" role="alert">{{ error() }} <button type="button" (click)="reload()"
       [disabled]="loading()">Try again</button></div>
   }
-  
-  <section class="card table-wrap">
 
-    <app-table-tools title="Notification templates" [table]="exportTable1" [total]="total()"></app-table-tools>
-    <table #exportTable1 class="academy-table">
-      <thead>
-        <tr>
-          <th><app-sortable-header sortKey="name" [activeSort]="sortBy" [direction]="sortDirection"
-              (sortChange)="changeSort($event)">Name</app-sortable-header></th>
-          <th><app-sortable-header sortKey="templateKey" [activeSort]="sortBy" [direction]="sortDirection"
-              (sortChange)="changeSort($event)">Key</app-sortable-header></th>
-          <th><app-sortable-header sortKey="channel" [activeSort]="sortBy" [direction]="sortDirection"
-              (sortChange)="changeSort($event)">Channel</app-sortable-header></th>
-          <th><app-sortable-header sortKey="body" [activeSort]="sortBy" [direction]="sortDirection"
-              (sortChange)="changeSort($event)">Message</app-sortable-header></th>
-          <th><app-sortable-header sortKey="status" [activeSort]="sortBy" [direction]="sortDirection"
-              (sortChange)="changeSort($event)">Status</app-sortable-header></th>
-          <th>Actions</th>
-        </tr>
-        <tr class="column-filters">
-          <th><app-column-filter label="name" [value]="columns.values()['name'] || ''"
-              (changed)="columns.set('name',$event)" /></th>
-          <th><app-column-filter label="key" [value]="columns.values()['templateKey'] || ''"
-              (changed)="columns.set('templateKey',$event)" /></th>
-          <th><app-column-filter label="channel" [value]="columns.values()['channel'] || ''"
-              (changed)="columns.set('channel',$event)" /></th>
-          <th><app-column-filter label="message" [value]="columns.values()['body'] || ''"
-              (changed)="columns.set('body',$event)" /></th>
-          <th><app-column-filter label="status" [value]="columns.values()['status'] || ''"
-              (changed)="columns.set('status',$event)" /></th>
-          <th><button type="button" (click)="columns.reset()">Reset</button></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of rows(); track row.id) {
-        <tr>
-          <td>
-            <strong>{{ row.name }}</strong><small>{{ row.subject }}</small>
-          </td>
-          <td>
-            <code>{{ row.templateKey }}</code>
-          </td>
-          <td>{{ row.channel }}</td>
-          <td>{{ row.body }}</td>
-          <td><app-status-badge [status]="row.status" /></td>
-          <td>
-            <div class="actions" role="group" aria-label="Actions for {{ row.name }}">
-              <button type="button" class="app-button icon" (click)="open(row)" aria-label="Edit {{ row.name }}"
-                title="Edit template">
-                <i class="pi pi-pencil" aria-hidden="true"></i>
-              </button>
-              <button type="button" (click)="toggle(row)" class="app-button icon"
-                [class.danger]="row.status === 'active'"
-                [attr.title]="row.status === 'active' ? 'Disable' : 'Activate'"
-                [attr.aria-label]="row.status === 'active' ? 'Disable' : 'Activate'">
-                <i class="pi pi-power-off" aria-hidden="true"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="6">{{ loading() ? 'Loading templates…' : 'No templates configured.' }}</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="templates"
-      (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)" />
+  <section class="card table-wrap">
+    <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="templates"
+      (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)">
+
+      <app-table-tools title="Notification templates" [table]="exportTable1" [total]="total()"></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th><app-sortable-header sortKey="name" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="changeSort($event)">Name</app-sortable-header></th>
+            <th><app-sortable-header sortKey="templateKey" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="changeSort($event)">Key</app-sortable-header></th>
+            <th><app-sortable-header sortKey="channel" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="changeSort($event)">Channel</app-sortable-header></th>
+            <th><app-sortable-header sortKey="body" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="changeSort($event)">Message</app-sortable-header></th>
+            <th><app-sortable-header sortKey="status" [activeSort]="sortBy" [direction]="sortDirection"
+                (sortChange)="changeSort($event)">Status</app-sortable-header></th>
+            <th>Actions</th>
+          </tr>
+          <tr class="column-filters">
+            <th><app-column-filter label="name" [value]="columns.values()['name'] || ''"
+                (changed)="columns.set('name',$event)" /></th>
+            <th><app-column-filter label="key" [value]="columns.values()['templateKey'] || ''"
+                (changed)="columns.set('templateKey',$event)" /></th>
+            <th><app-column-filter label="channel" [value]="columns.values()['channel'] || ''"
+                (changed)="columns.set('channel',$event)" /></th>
+            <th><app-column-filter label="message" [value]="columns.values()['body'] || ''"
+                (changed)="columns.set('body',$event)" /></th>
+            <th><app-column-filter label="status" [value]="columns.values()['status'] || ''"
+                (changed)="columns.set('status',$event)" /></th>
+            <th><button type="button" (click)="columns.reset()">Reset</button></th>
+          </tr>
+        </thead>
+        <tbody [attr.aria-busy]="loading()">
+          @for (row of rows(); track row.id) {
+          <tr>
+            <td>
+              <strong>{{ row.name }}</strong><small>{{ row.subject }}</small>
+            </td>
+            <td>
+              <code>{{ row.templateKey }}</code>
+            </td>
+            <td>{{ row.channel }}</td>
+            <td>{{ row.body }}</td>
+            <td><app-status-badge [status]="row.status" /></td>
+            <td>
+              <div class="actions" role="group" aria-label="Actions for {{ row.name }}">
+                <button type="button" class="app-button icon" (click)="open(row)" aria-label="Edit {{ row.name }}"
+                  title="Edit template">
+                  <i class="pi pi-pencil" aria-hidden="true"></i>
+                </button>
+                <button type="button" (click)="toggle(row)" class="app-button icon"
+                  [class.danger]="row.status === 'active'"
+                  [attr.title]="row.status === 'active' ? 'Disable' : 'Activate'"
+                  [attr.aria-label]="row.status === 'active' ? 'Disable' : 'Activate'">
+                  <i class="pi pi-power-off" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="6">{{ loading() ? 'Loading templates…' : 'No templates configured.' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </app-data-table>
   </section>
 </div>
 @if (dialogOpen()) {
-<div class="dialog-backdrop">
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="dialogOpen.set(false)">
   <section class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="dialogOpen.set(false)" role="dialog"
     aria-modal="true" aria-labelledby="template-title">
     <h2 id="template-title">{{ editingId() ? 'Edit' : 'Create' }} template</h2>
@@ -167,7 +168,7 @@
         }
       </section>
       <footer>
-        <button type="button" (click)="dialogOpen.set(false)">Cancel</button><button class="primary"
+        <button type="button" (click)="dialogOpen.set(false)">Cancel</button><button type="submit" class="primary"
           [disabled]="saving()">
           {{ saving() ? 'Saving…' : 'Save template' }}
         </button>

@@ -6,4 +6,12 @@
   :host {
     display: block;
   }
+
+  .print-document-item {
+    break-after: page;
+  }
+
+  .print-document-item:last-child {
+    break-after: auto;
+  }
 }

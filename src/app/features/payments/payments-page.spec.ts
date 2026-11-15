@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, Router } from '@angular/router';
-import { PaymentsPage } from './payments-page';
-import { ToastService } from '../../shared/toast/toast.service';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { FeesService, PaymentsService } from '../../core/supabase/domain-services';
 import { StorageService } from '../../core/supabase/storage.service';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { ToastService } from '../../shared/toast/toast.service';
+import { PaymentsPage } from './payments-page';
 async function setup() {
   const api = {
     record: vi.fn().mockRejectedValueOnce(new Error('Connection lost')).mockResolvedValue({}),
@@ -44,7 +45,10 @@ async function setup() {
       provideRouter([]),
       {
         provide: ActivatedRoute,
-        useValue: { snapshot: { data: { paymentView: 'partial' }, queryParamMap: new Map() }, queryParamMap: { subscribe: (callback: (params: URLSearchParams) => void) => { callback(new URLSearchParams()); return { unsubscribe() {} }; } } },
+        useValue: {
+          snapshot: { data: { paymentView: 'partial' }, queryParamMap: convertToParamMap({}) },
+          queryParamMap: of(convertToParamMap({})),
+        },
       },
       { provide: PaymentsService, useValue: api },
       { provide: FeesService, useValue: { charges: async () => [] } },
@@ -61,7 +65,7 @@ describe('Payment workflows', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelectorAll('app-summary-cards app-summary-metric-card')).toHaveLength(5);
     expect(fixture.nativeElement.textContent).toContain('Open charges');
   });
   it('closes the URL-driven payment form only after a successful retry', async () => {

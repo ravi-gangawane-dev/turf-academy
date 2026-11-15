@@ -1,30 +1,34 @@
-import { TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { LOCAL_KEYS, LocalStore } from '../../core/state/local-store';
 import { AuthService } from '../../core/auth/auth.service';
+import { addressFromDatabase, addressValue, createAddressForm } from '../../core/models/address.model';
 import { WhatsappService } from '../../core/services/whatsapp.service';
 import { AcademyBackupService } from '../../core/supabase/academy-backup.service';
 import { AcademySettingsService } from '../../core/supabase/domain-services';
+import { AddressFields } from '../../shared/address-fields/address-fields';
 import { DialogService } from '../../shared/dialog/dialog.service';
 import { DialogType } from '../../shared/dialog/models/dialog-config.model';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { PrintBrandService } from '../../shared/print/print-brand.service';
+import { SettingsTabs } from '../../shared/settings-tabs/settings-tabs';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SETTINGS_SECTIONS } from './settings-sections';
 import { UsersSettingsPanel } from './users-settings-panel';
-import { createAddressForm, addressFromDatabase, addressValue } from '../../core/models/address.model';
-import { AddressFields } from '../../shared/address-fields/address-fields';
 
 @Component({
   selector: 'app-academy-settings-page',
-  imports: [ReactiveFormsModule, TitleCasePipe, PageHero, RouterLink, UsersSettingsPanel, AddressFields],
+  imports: [ReactiveFormsModule, PageHero, SettingsTabs, RouterLink, UsersSettingsPanel, AddressFields],
   templateUrl: './academy-settings-page.html',
   styleUrl: './academy-settings-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AcademySettingsPage implements OnInit {
-  protected readonly settingsDirectory = SETTINGS_SECTIONS;
+  protected readonly settingsDirectory = SETTINGS_SECTIONS.filter(
+    (section) => !environment.production || !('internal' in section && section.internal),
+  );
 
   protected readonly themes = [
     { id: 'forest', label: 'Forest', description: 'Classic academy green' },
@@ -84,12 +88,13 @@ export class AcademySettingsPage implements OnInit {
 
   protected readonly auth = inject(AuthService);
 
+  private readonly local = inject(LocalStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute, { optional: true });
 
   ngOnInit(): void {
     let theme = document.documentElement.dataset['academyTheme'] || 'forest';
-    try { theme = localStorage.getItem('academy-theme') || theme; } catch { /* Device storage may be unavailable. */ }
+    theme = this.local.read(LOCAL_KEYS.theme) || theme;
     this.deviceTheme.set(this.themes.some(choice => choice.id === theme) ? theme : 'forest');
     const section = this.route?.snapshot.data['settingsSection'];
     if (section && this.sections.includes(section)) this.activeSection.set(section);
@@ -189,12 +194,11 @@ export class AcademySettingsPage implements OnInit {
     if (!this.themes.some(choice => choice.id === theme)) return;
     this.deviceTheme.set(theme);
     document.documentElement.dataset['academyTheme'] = theme;
-    try {
-      localStorage.setItem('academy-theme', theme);
-      this.toast.success('Appearance saved for this device.');
-    } catch {
-      this.toast.success('Appearance applied for this session.');
-    }
+    this.toast.success(
+      this.local.write(LOCAL_KEYS.theme, theme)
+        ? 'Appearance saved for this device.'
+        : 'Appearance applied for this session.',
+    );
   }
 
   protected setActiveSection(section: string) {

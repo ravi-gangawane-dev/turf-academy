@@ -22,7 +22,7 @@
         <tbody>@for(payment of store.payments();track payment.id){<tr>
             <td>{{payment.receiptNumber}}</td>
             <td>{{payment.studentId}}</td>
-            <td>{{payment.paidAt|date:'mediumDate'}}</td>
+            <td>{{payment.paidAt| academyDate:'mediumDate'}}</td>
             <td>{{payment.mode|titlecase}}</td>
             <td>{{payment.amountPaise/100|academyMoney:'symbol':'1.2-2'}}</td>
           </tr>}@empty{<tr>
@@ -63,7 +63,7 @@
   </section>}
   @else if(isSettings){<section class="module-card settings">
     <h2>{{title}}</h2>
-    <p>This settings surface is ready for the administration API.</p><button disabled
+    <p>This settings surface is ready for the administration API.</p><button type="button" disabled
       title="The settings backend is not configured">Save changes</button>
   </section>}
   @else if(isLibrary){<section class="module-card library">
@@ -78,6 +78,7 @@
   @else{<section class="module-card unavailable"><i class="pi pi-server"></i>
     <h2>Screen ready for integration</h2>
     <p>The route and responsive interface are available. Completing this operation requires its server endpoint and
-      authorization policy.</p><button disabled title="Backend endpoint is not configured">Action unavailable</button>
+      authorization policy.</p><button type="button" disabled title="Backend endpoint is not configured">Action
+      unavailable</button>
   </section>}
 </div>

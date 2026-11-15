@@ -1,7 +1,20 @@
 import { FormBuilder } from '@angular/forms';
-import { addressFromDatabase, createAddressForm, formatAddress } from './address.model';
+import { addressFromDatabase, addressLines, createAddressForm, formatAddress } from './address.model';
 
 describe('Address model', () => {
+  it('renders serialized and legacy embedded addresses as readable lines', () => {
+    const address = { line1: 'KFG', line2: 'Pirangut', city: 'Pune', state: 'Maharashtra', pinCode: '412115' };
+    const expected = ['KFG', 'Pirangut', 'Pune, Maharashtra', '412115'];
+    expect(addressLines(address)).toEqual(expected);
+    expect(addressLines(JSON.stringify(address))).toEqual(expected);
+    expect(addressLines({ line1: JSON.stringify(address), city: '', state: '', pinCode: '' })).toEqual(expected);
+  });
+
+  it('keeps plain-text addresses and omits missing fields', () => {
+    expect(addressLines('12 Academy Road')).toEqual(['12 Academy Road']);
+    expect(addressLines({ city: ' Pune ', pin_code: '411001' })).toEqual(['Pune', '411001']);
+    expect(addressLines(null)).toEqual([]);
+  });
   it('normalizes legacy address keys to the canonical shape', () => {
     expect(addressFromDatabase({
       line1: '',

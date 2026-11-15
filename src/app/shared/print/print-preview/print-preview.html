@@ -6,7 +6,13 @@
       <div>
         <p class="preview-kicker">Print preview · {{ paperLabel() }}</p>
         <h2 id="print-preview-title">{{ title() }}</h2>
-        <p class="preview-hint">Check the document, then print it or save it as a PDF.</p>
+        <p class="preview-hint">
+          @if (documents().length > 1) {
+            Check the {{ documents().length }} documents, then print them or save them as one PDF.
+          } @else {
+            Check the document, then print it or save it as a PDF.
+          }
+        </p>
       </div>
       <button type="button" class="preview-close" (click)="close()" [disabled]="busy()"
         aria-label="Close preview" title="Close">
@@ -39,7 +45,7 @@
       </button>
       }
       <p class="preview-setup-note">
-        Remembered for {{ title() }} prints in this browser and applied to the browser print dialog.
+        Remembered for {{ setupLabel() }} prints in this browser and applied to the browser print dialog.
       </p>
       } @else {
       <p class="preview-setup-note">
@@ -66,7 +72,8 @@
           <h3>Preparing document…</h3>
           <p>Loading academy branding and the latest records.</p>
         </div>
-      } @else if (document(); as document) {
+      } @else if (documents().length) {
+        @for (document of documents(); track $index) {
         <div class="preview-paper" [class.preview-paper--a5]="setup().size === 'a5'"
           [class.preview-paper--letter]="setup().size === 'letter'"
           [class.preview-paper--landscape]="setup().orientation === 'landscape'"
@@ -74,6 +81,7 @@
           [attr.data-kind]="document.kind">
           <app-print-document-body [document]="document" />
         </div>
+        }
       }
     </div>
 

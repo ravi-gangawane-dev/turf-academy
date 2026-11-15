@@ -17,7 +17,7 @@ nav {
 }
 
 nav a {
-  color: #34794b;
+  color: var(--app-primary);
   text-decoration: none;
 }
 
@@ -25,13 +25,13 @@ header,
 section {
   background: #fff;
   border: 1px solid #dce5e1;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   padding: 1.5rem;
   margin-bottom: 1rem;
 }
 
 header p {
-  color: #438653;
+  color: var(--app-primary);
   font-weight: 700;
   margin: 0 0 0.35rem;
 }
@@ -45,18 +45,18 @@ h3 {
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  gap: var(--app-space-4);
   margin-top: 1rem;
 }
 
 article {
   border: 1px solid #e2e9e6;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   padding: 1rem;
 }
 
 article i {
-  color: #438653;
+  color: var(--app-primary);
   font-size: 1.4rem;
 }
 
@@ -76,19 +76,19 @@ header span {
 .family-hint code {
   background: #f2f6f3;
   border: 1px solid #e2e9e6;
-  border-radius: 5px;
+  border-radius: var(--app-radius-sm);
   padding: 1px 5px;
   font-size: 0.8rem;
 }
 
 .recipe {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--app-space-5);
 }
 
 .family {
   border: 1px solid #e2e9e6;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   padding: 1rem;
 }
 
@@ -110,13 +110,13 @@ header span {
 .families li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 
 .swatch {
   width: 14px;
   height: 14px;
-  border-radius: 4px;
+  border-radius: var(--app-radius-sm);
   display: inline-block;
   border: 1px solid rgba(0, 0, 0, 0.08);
   flex: none;

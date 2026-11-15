@@ -4,49 +4,64 @@
     (breadcrumbSelected)="breadcrumb($event)" />
   @if (error()) { <app-async-state kind="error" title="Parent details request failed" [message]="error()" /> }
   @if (parent(); as item) {
-  <div class="profile-grid">
-    <section class="profile-card">
-      <div class="avatar">@if (item.photo_url) { <img [src]="item.photo_url" alt="Parent profile" /> } @else { {{
+  <div class="profile-grid entity-detail-summary">
+    <section class="profile-card detail-summary-card">
+      <div class="avatar detail-summary-photo">@if (item.photo_url) { <img [src]="item.photo_url"
+          alt="Parent profile" /> } @else { {{
         initials(item.full_name) }} }</div>
-      <div class="identity">
+      <div class="identity detail-summary-identity">
         <div class="title">
           <h2 class="profile-name">{{ item.full_name }}</h2><app-status-badge [status]="$any(item.status)" />
         </div>
-        <h2>{{ item.relation || 'Guardian' }}</h2>
-        <div class="facts">
+
+        <div class="detail-summary-facts common-facts">
           <div><i aria-hidden="true" class="pi pi-id-card"></i><span>Parent ID<strong>{{ item.id }}</strong></span>
           </div>
           <div><i aria-hidden="true" class="pi pi-phone"></i><span>Phone<strong>{{ item.phone }}</strong></span></div>
-          <div><i aria-hidden="true" class="pi pi-whatsapp"></i><span>WhatsApp<strong>{{ item.whatsapp || item.phone
-                }}</strong></span></div>
           <div><i aria-hidden="true" class="pi pi-envelope"></i><span>Email<strong>{{ item.email || 'Not provided'
                 }}</strong></span></div>
-          <div><i aria-hidden="true" class="pi pi-briefcase"></i><span>Occupation<strong>{{ item.occupation || 'Not
-                provided' }}</strong></span></div>
-          <div><i aria-hidden="true" class="pi pi-comments"></i><span>Preferred contact<strong>{{ preference()
-                }}</strong></span></div>
+          <div class="address-fact"><i aria-hidden="true" class="pi pi-map-marker"></i><span>Address
+              <app-address-fields [value]="item.address" [inline]="true" /></span></div>
         </div>
-        <app-address-fields [value]="item.address" />
+        <section class="role-details" aria-label="parent details">
+          <h3>Parent details</h3>
+          <div class="detail-summary-facts">
+            <div><i aria-hidden="true" class="pi pi-heart"></i><span>Relationship<strong>{{ item.relation || 'Guardian'
+                  }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-whatsapp"></i><span>WhatsApp<strong>{{ item.whatsapp || item.phone
+                  }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-briefcase"></i><span>Occupation<strong>{{ item.occupation || 'Not
+                  provided' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-comments"></i><span>Preferred contact<strong>{{ preference()
+                  }}</strong></span></div>
+          </div>
+        </section>
       </div>
     </section>
-    <aside class="quick-card">
-      <h2>Quick actions</h2><button (click)="edit()"><i aria-hidden="true" class="pi pi-pencil"></i>Edit
-        parent</button><button (click)="selectTab('compose')"><i aria-hidden="true" class="pi pi-comment"></i>Send
-        message</button><button (click)="selectTab('payments')"><i aria-hidden="true" class="pi pi-wallet"></i>Payment
-        history</button><button (click)="openIdCard()"><i aria-hidden="true" class="pi pi-id-card"></i>Guardian
-        card</button><button (click)="printProfileSheet()" [disabled]="profileLoading()"><i aria-hidden="true"
-          class="pi pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Profile sheet' }}</button><button
-        (click)="list()"><i aria-hidden="true" class="pi pi-arrow-left"></i>Back to
-        parents</button>
+    <aside class="quick-card detail-summary-actions">
+      <h2>Quick actions</h2>
+      <button type="button" (click)="edit()"><i aria-hidden="true" class="pi pi-pencil"></i>Edit parent</button>
+      <button type="button" (click)="openIdCard()"><i aria-hidden="true" class="pi pi-id-card"></i>Parent ID
+        card</button>
+      <button type="button" (click)="printProfileSheet()" [disabled]="profileLoading()"><i aria-hidden="true"
+          class="pi           pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Parent profile sheet'
+        }}</button>
+      <button type="button" (click)="selectTab('compose')"><i aria-hidden="true" class="pi pi-comment"></i>Send
+        message</button>
+
+      <button type="button" (click)="selectTab('payments')"><i aria-hidden="true" class="pi pi-wallet"></i>Payment
+        history</button>
+      <button type="button" (click)="selectTab('children')"><i aria-hidden="true" class="pi pi-users"></i>View linked
+        students</button>
     </aside>
   </div>
   <app-print-id-card-dialog [open]="idCardOpen()" [card]="idCard()" [busy]="idCardLoading()" [error]="idCardError()"
     (prepare)="printIdCard($event)" (retry)="retryIdCard()" (closed)="closeIdCard()" />
-  <nav class="tabs"><button [class.active]="tab()==='children'" (click)="selectTab('children')"><i aria-hidden="true"
-        class="pi pi-users"></i>Linked students</button><button [class.active]="tab()==='activity'"
-      (click)="selectTab('activity')"><i aria-hidden="true" class="pi pi-history"></i>Activity</button><button
-      [class.active]="tab()==='notifications'" (click)="selectTab('notifications')"><i aria-hidden="true"
-        class="pi pi-bell"></i>Notifications</button></nav>
+  <nav class="tabs"><button type="button" [class.active]="tab()==='children'" (click)="selectTab('children')"><i
+        aria-hidden="true" class="pi pi-users"></i>Linked students</button><button type="button"
+      [class.active]="tab()==='activity'" (click)="selectTab('activity')"><i aria-hidden="true"
+        class="pi pi-history"></i>Activity</button><button type="button" [class.active]="tab()==='notifications'"
+      (click)="selectTab('notifications')"><i aria-hidden="true" class="pi pi-bell"></i>Notifications</button></nav>
   @if(tab()!=='children'){
   <section class="detail-panel">
     @if(panelLoading()){<app-async-state title="Loading details..." />}
@@ -61,31 +76,33 @@
           </select></label>
         <label>Subject<input formControlName="subject" maxlength="120"></label><label>Message<textarea
             formControlName="body" maxlength="1600" rows="5"></textarea></label>
-        <button class="primary" [disabled]="compose.invalid">{{sending()?'Saving?':'Queue message'}}</button>
+        <button type="submit" class="primary" [disabled]="compose.invalid">{{sending()?'Saving?':'Queue
+          message'}}</button>
       </fieldset>
     </form>
     }
     @if(tab()==='activity' && !panelLoading() && !error()){
-    <h2>Parent and linked student activity</h2><app-table-tools title="Parent activity" [table]="exportTable1"
-      [total]="total()"></app-table-tools>
-    <table #exportTable1 class="academy-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Record</th>
-          <th>Action</th>
-          <th>By</th>
-        </tr>
-      </thead>
-      <tbody>@for(event of activities();track event.id){<tr>
-          <td>{{event.created_at|date:'medium'}}</td>
-          <td>{{event.table_name}}</td>
-          <td>{{event.action}}</td>
-          <td>{{event.actor}}</td>
-        </tr>}@empty{<tr>
-          <td colspan="4"><app-async-state kind="empty" title="No activity recorded." /></td>
-        </tr>}</tbody>
-    </table>
+    <div class="table-wrap">
+      <app-table-tools title="Parent activity" [table]="exportTable1" [total]="total()"></app-table-tools>
+      <table #exportTable1 class="academy-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Record</th>
+            <th>Action</th>
+            <th>By</th>
+          </tr>
+        </thead>
+        <tbody>@for(event of activities();track event.id){<tr>
+            <td>{{event.created_at| academyDate:'medium'}}</td>
+            <td>{{event.table_name}}</td>
+            <td>{{event.action}}</td>
+            <td>{{event.actor}}</td>
+          </tr>}@empty{<tr>
+            <td colspan="4"><app-async-state kind="empty" title="No activity recorded." /></td>
+          </tr>}</tbody>
+      </table>
+    </div>
     }
     @if(tab()==='payments' && !panelLoading() && !error()){
     <h2>Payment history for linked students</h2><app-table-tools title="Payment history" [table]="exportTable2"
@@ -100,7 +117,7 @@
         </tr>
       </thead>
       <tbody>@for(payment of transactions();track payment.id){<tr>
-          <td>{{payment.paid_at|date:'mediumDate'}}</td>
+          <td>{{payment.paid_at| academyDate:'mediumDate'}}</td>
           <td>{{payment.amount|academyMoney}}</td>
           <td><app-status-badge [status]="payment.status" /></td>
           <td><a routerLink="/payments/receipts" [queryParams]="{student:payment.student_id}">View student receipts</a>
@@ -111,11 +128,37 @@
     </table>
     }
     @if(tab()==='notifications' && !panelLoading() && !error()){
-    <h2>Notifications</h2><button (click)="selectTab('compose')">New message</button>@for(notice of notices();track
-    notice.id){<article><strong>{{notice.subject||'Notification'}}</strong>
-      <p>{{notice.body}}</p><small>{{notice.channel}} &middot; <app-status-badge [status]="notice.status" /> &middot;
-        {{notice.created_at|date:'medium'}}</small>
-    </article>}@empty{<app-async-state kind="empty" title="No notifications." />}
+    <div class="table-wrap">
+      <app-table-tools title="Notifications" [table]="exportTable3" [total]="total()">
+        <button type="button" (click)="selectTab('compose')">New message</button>
+      </app-table-tools>
+      <table #exportTable3 class="academy-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Channel</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(notice of notices(); track notice.id) {
+          <tr>
+            <td>{{ notice.subject || 'Notification' }}</td>
+            <td>{{ notice.body }}</td>
+            <td>{{ notice.channel }}</td>
+            <td><app-status-badge [status]="notice.status" /></td>
+            <td>{{ notice.created_at | academyDate:'medium' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5"><app-async-state kind="empty" title="No notifications." /></td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
     }
     @if(tab()!=='compose' && !panelLoading() && !error()){<app-pagination [total]="total()" [page]="page()"
       [pageSize]="pageSize()" itemLabel="records" (pageChange)="selectTab(tab(), $event)"
@@ -131,7 +174,7 @@
         </div>
       </header>
       @if (item.student_parents.length) {
-      <div class="student-list">@for (link of item.student_parents; track link.student.id) { <button
+      <div class="student-list">@for (link of item.student_parents; track link.student.id) { <button type="button"
           (click)="openStudent(link.student.id)"><span class="student-avatar">{{ initials(link.student.full_name)
             }}</span><span><strong>{{ link.student.full_name }}</strong><small>{{ link.student.student_code }} · {{
               link.student.status }}</small></span>@if (link.is_primary) { <b>Primary</b> }<i aria-hidden="true"

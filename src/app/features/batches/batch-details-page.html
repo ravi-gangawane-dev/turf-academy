@@ -71,7 +71,7 @@
 </section> }
 @if (activeTab() === 'activity') { <section class="card">
   <h2>Activity</h2>@if(activity().length){<ul class="activity">@for(event of activity();track event.id){<li><strong>{{
-        event.event_type }}</strong><span>{{ event.student_name }} · {{ event.effective_on | date:'dd MMM yyyy'
+        event.event_type }}</strong><span>{{ event.student_name }} · {{ event.effective_on | academyDate:'dd MMM yyyy'
         }}</span>@if(event.reason){<small>{{ event.reason }}</small>}</li>}</ul>}@else{<app-async-state kind="empty"
     title="No batch activity"
     message="Enrollment history will appear here as students are added, transferred, or removed." />}

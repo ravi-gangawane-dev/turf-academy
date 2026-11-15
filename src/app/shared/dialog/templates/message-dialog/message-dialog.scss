@@ -1,63 +1,63 @@
 .message-row {
   display: flex;
-  gap: 0.75rem;
   align-items: flex-start;
+  gap: var(--app-space-3);
 }
 
 .message-icon {
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   flex: 0 0 auto;
-  border-radius: 999px;
-  background: #eef4f0;
-  color: #277d47;
-  font-size: 1.1rem;
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface-muted);
+  color: var(--app-primary);
+  font-size: var(--app-fs-h3);
 }
 
 .success .message-icon {
-  background: #eaf5ee;
-  color: #277d47;
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
 }
 
 .warning .message-icon {
-  background: #fdf4e3;
-  color: #b47710;
+  background: color-mix(in srgb, var(--app-warning) 12%, var(--app-card));
+  color: var(--app-warning);
 }
 
 .error .message-icon {
-  background: #fdecec;
-  color: #c0392b;
+  background: var(--app-danger-bg);
+  color: var(--app-danger);
 }
 
 .loading .message-icon {
-  background: #eef2f7;
-  color: #3d78a8;
+  background: color-mix(in srgb, var(--app-info) 12%, var(--app-card));
+  color: var(--app-info);
 }
 
 .dialog-message {
   margin: 0;
-  color: #42584c;
-  font-size: 0.9rem;
-  line-height: 1.55;
+  color: var(--app-text);
+  font-size: var(--app-fs-body);
+  line-height: var(--app-line-height);
   white-space: pre-line;
 }
 
 .loading-line {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  color: #52615a;
+  gap: var(--app-space-2);
+  margin: var(--app-space-2) 0 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
 }
 
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid #cfdcd5;
-  border-top-color: #277d47;
+  border: 2px solid var(--app-border);
+  border-top-color: var(--app-primary);
   border-radius: 50%;
   animation: dialog-spin 0.9s linear infinite;
 }

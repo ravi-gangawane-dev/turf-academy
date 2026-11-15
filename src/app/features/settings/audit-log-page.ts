@@ -1,11 +1,5 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { SortableHeader } from '../../shared/sortable-header/sortable-header';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { DataRequestError } from '../../core/supabase/data-error';
-import { DatePipe } from '@angular/common';
-import { Pagination } from '../../shared/pagination/pagination';
-import { AsyncState } from '../../shared/async-state/async-state';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,8 +9,16 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { DataRequestError } from '../../core/supabase/data-error';
 import { DatabaseService } from '../../core/supabase/database.service';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter } from '../../shared/column-filter/column-filter';
+import { DataTable } from '../../shared/data-table/data-table';
+import { TableTools } from '../../shared/data-table/table-tools';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
+import { SettingsTabs } from '../../shared/settings-tabs/settings-tabs';
+import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 interface AuditEvent {
   id: number;
   action: string;
@@ -43,19 +45,10 @@ const emptyFilters = (): AuditFilters => ({
 
 @Component({
   selector: 'app-audit-log-page',
-  imports: [TableTools,
-    SortableHeader,
-    PageHero,
-    Pagination,
-    AsyncState,
-    DatePipe,
-    FormsModule,
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [TableTools, SortableHeader, PageHero, SettingsTabs, AsyncState, AcademyDatePipe, FormsModule, ColumnFilter, DataTable, ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl:'./audit-log-page.html',
-  styleUrl:'./audit-log-page.scss',
+  templateUrl: './audit-log-page.html',
+  styleUrl: './audit-log-page.scss',
 })
 export class AuditLogPage implements OnInit, OnDestroy {
   private readonly db = inject(DatabaseService);
@@ -81,6 +74,10 @@ export class AuditLogPage implements OnInit, OnDestroy {
   private cancelFilterTimer(): void {
     if (this.filterTimer) clearTimeout(this.filterTimer);
     this.filterTimer = undefined;
+  }
+  protected setFilter(key: keyof typeof this.filters, value: string): void {
+    this.filters[key] = value;
+    this.scheduleFilters();
   }
   protected scheduleFilters(): void {
     this.cancelFilterTimer();

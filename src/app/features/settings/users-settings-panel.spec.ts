@@ -29,39 +29,39 @@ describe('UsersSettingsPanel invitation', () => {
   });
   function setup() {
     const api = {
-      list: vi.fn().mockResolvedValue({users:[],total:0,page:1,pageSize:5}),
+      list: vi.fn().mockResolvedValue({ users: [], total: 0, page: 1, pageSize: 5 }),
       invite: vi.fn().mockResolvedValue(undefined),
-      audit: vi.fn().mockResolvedValue({rows:[],total:0,page:1,pageSize:5}),
+      audit: vi.fn().mockResolvedValue({ rows: [], total: 0, page: 1, pageSize: 5 }),
     };
-    TestBed.configureTestingModule({providers:[provideRouter([]),{provide:UserManagementService,useValue:api},{provide:RoleCatalogService,useValue:roleCatalogStub()}]});
-    const fixture=TestBed.createComponent(UsersSettingsPanel);
+    TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: UserManagementService, useValue: api }, { provide: RoleCatalogService, useValue: roleCatalogStub() }] });
+    const fixture = TestBed.createComponent(UsersSettingsPanel);
     const toast = vi.spyOn(TestBed.inject(ToastService), 'error').mockImplementation(() => undefined);
-    const page=fixture.componentInstance;
+    const page = fixture.componentInstance;
     page['inviteOpen'].set(true);
-    page['form'].patchValue({fullName:' Ravi ',email:'RAVI@example.com',phone:'1234567890',role:'admin'});
+    page['form'].patchValue({ fullName: ' Ravi ', email: 'RAVI@example.com', phone: '1234567890', role: 'admin' });
     fixture.detectChanges();
-    return {fixture,page,api,toast};
+    return { fixture, page, api, toast };
   }
-  it('reports server failures, keeps the dialog open, and preserves the form', async()=>{
-    const {page,api,toast}=setup(); api.invite.mockRejectedValue(new Error('Email delivery is unavailable.'));
+  it('reports server failures, keeps the dialog open, and preserves the form', async () => {
+    const { page, api, toast } = setup(); api.invite.mockRejectedValue(new Error('Email delivery is unavailable.'));
     await page['invite']();
     expect(toast).toHaveBeenCalledWith('Email delivery is unavailable.');
     expect(page['inviteOpen']()).toBe(true);
     expect(page['saving']()).toBe(false);
-    expect(page['form'].getRawValue()).toMatchObject({fullName:'Ravi',email:'ravi@example.com',phone:'1234567890',role:'admin'});
+    expect(page['form'].getRawValue()).toMatchObject({ fullName: 'Ravi', email: 'ravi@example.com', phone: '1234567890', role: 'admin' });
   });
-  it('normalizes details, submits once, and closes only after success',async()=>{
-    const {page,api}=setup(); let done!:()=>void;
-    api.invite.mockImplementation(()=>new Promise<void>(resolve=>done=resolve));
-    const first=page['invite'](); await page['invite']();
+  it('normalizes details, submits once, and closes only after success', async () => {
+    const { page, api } = setup(); let done!: () => void;
+    api.invite.mockImplementation(() => new Promise<void>(resolve => done = resolve));
+    const first = page['invite'](); await page['invite']();
     expect(api.invite).toHaveBeenCalledTimes(1);
-    expect(api.invite).toHaveBeenCalledWith({fullName:'Ravi',email:'ravi@example.com',phone:'1234567890',role:'admin'});
+    expect(api.invite).toHaveBeenCalledWith({ fullName: 'Ravi', email: 'ravi@example.com', phone: '1234567890', role: 'admin' });
     expect(page['inviteOpen']()).toBe(true);
     done(); await first;
     expect(page['inviteOpen']()).toBe(false);
   });
   it('submits by clicking Send Invitation and reports failures via toast', async () => {
-    const {fixture,page,api,toast}=setup();
+    const { fixture, page, api, toast } = setup();
     api.invite.mockRejectedValue(new Error('Invitation delivery failed.'));
     const button = fixture.nativeElement.querySelector('.dialog footer button.primary') as HTMLButtonElement;
     expect(button.disabled).toBe(false);
@@ -72,17 +72,21 @@ describe('UsersSettingsPanel invitation', () => {
     expect(page['inviteOpen']()).toBe(true);
   });
   it('shows invitation state and resends a pending invitation from the row', async () => {
-    const user = { id:'u1', full_name:'Ravi', email:'ravi@example.com', phone:null, role:'coach', status:'active', created_at:'2026-01-01',
-      invitation:{ id:'inv-1', email:'ravi@example.com', role:'coach', status:'pending', invited_at:'2026-01-01', expires_at:'2026-01-08' } };
-    const api = { list:vi.fn().mockResolvedValue({users:[user],total:1,page:1,pageSize:5}), invite:vi.fn(), resend:vi.fn().mockResolvedValue(undefined), revoke:vi.fn().mockResolvedValue(undefined), audit:vi.fn().mockResolvedValue({rows:[],total:0,page:1,pageSize:5}) };
-    TestBed.configureTestingModule({providers:[provideRouter([]),{provide:UserManagementService,useValue:api},{provide:RoleCatalogService,useValue:roleCatalogStub()}]});
+    const user = {
+      id: 'u1', full_name: 'Ravi', email: 'ravi@example.com', phone: null, role: 'coach', status: 'active', created_at: '2026-01-01',
+      invitation: { id: 'inv-1', email: 'ravi@example.com', role: 'coach', status: 'pending', invited_at: '2026-01-01', expires_at: '2026-01-08' }
+    };
+    const api = { list: vi.fn().mockResolvedValue({ users: [user], total: 1, page: 1, pageSize: 5 }), invite: vi.fn(), resend: vi.fn().mockResolvedValue(undefined), revoke: vi.fn().mockResolvedValue(undefined), audit: vi.fn().mockResolvedValue({ rows: [], total: 0, page: 1, pageSize: 5 }) };
+    TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: UserManagementService, useValue: api }, { provide: RoleCatalogService, useValue: roleCatalogStub() }] });
     const toast = vi.spyOn(TestBed.inject(ToastService), 'success').mockImplementation(() => undefined);
     const fixture = TestBed.createComponent(UsersSettingsPanel);
     fixture.detectChanges();
     await fixture.whenStable(); fixture.detectChanges();
     const actions = fixture.nativeElement.querySelectorAll('.row-actions button.app-button');
     expect(actions.length).toBe(3);
-    expect(fixture.nativeElement.querySelector('.status-chip').textContent).toContain('pending');
+    expect(fixture.nativeElement.querySelector('app-status-badge').textContent).toContain('pending');
+    expect(fixture.nativeElement.querySelector('.user-avatar').textContent).toBe('R');
+    expect(fixture.nativeElement.querySelector('.user-identity strong').textContent).toBe('Ravi');
     actions[0].click();
     await fixture.whenStable(); fixture.detectChanges();
     expect(api.resend).toHaveBeenCalledWith('ravi@example.com');

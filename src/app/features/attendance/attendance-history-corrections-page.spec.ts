@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { signal } from '@angular/core';
 import { AttendanceHistoryCorrectionsPage } from './attendance-history-corrections-page';
@@ -44,48 +44,28 @@ async function setup(url = '/attendance/history') {
   return { harness, attendance };
 }
 
-const tabButton = (root: HTMLElement, label: string) =>
-  [...root.querySelectorAll<HTMLButtonElement>('.view-tabs button')].find((button) =>
-    button.textContent?.includes(label),
-  )!;
-
 describe('Attendance history and corrections page', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
     vi.restoreAllMocks();
   });
 
-  it('opens on the history tab with a single heading and two tabs', async () => {
+  it('opens on the history view with a single heading', async () => {
     const { harness } = await setup();
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('h1')?.textContent).toContain('Attendance History & Corrections');
-    expect(root.querySelectorAll('.view-tabs button').length).toBe(2);
     expect(root.querySelector('app-attendance-history-page')).not.toBeNull();
     expect(root.querySelector('app-attendance-correction-page')).toBeNull();
-    expect(tabButton(root, 'Attendance History').getAttribute('aria-selected')).toBe('true');
+    expect(root.querySelector('.view-tabs')).toBeNull();
   });
 
-  it('switches to the corrections queue and records the tab in the URL', async () => {
-    const { harness } = await setup();
-    const root = harness.routeNativeElement as HTMLElement;
-
-    tabButton(root, 'Attendance Corrections').click();
-    await harness.fixture.whenStable();
-    harness.detectChanges();
-
-    expect(root.querySelector('app-attendance-correction-page')).not.toBeNull();
-    expect(root.querySelector('app-attendance-history-page')).toBeNull();
-    expect(tabButton(root, 'Attendance Corrections').getAttribute('aria-selected')).toBe('true');
-    expect(TestBed.inject(Router).url).toContain('tab=corrections');
-  });
-
-  it('keeps the old correction route pointing at the corrections tab', async () => {
+  it('keeps the old correction route pointing at the corrections view', async () => {
     const { harness } = await setup('/attendance/correction');
     const root = harness.routeNativeElement as HTMLElement;
 
     expect(root.querySelector('app-attendance-correction-page')).not.toBeNull();
-    expect(tabButton(root, 'Attendance Corrections').getAttribute('aria-selected')).toBe('true');
+    expect(root.querySelector('app-attendance-history-page')).toBeNull();
   });
 
   it('shows the correction form beside the records', async () => {
@@ -103,7 +83,7 @@ describe('Attendance history and corrections page', () => {
     expect(root.querySelector('app-table-tools .table-filters')).not.toBeNull();
   });
 
-  it('shows the correction queue on the corrections tab', async () => {
+  it('shows the correction queue on the corrections route', async () => {
     const { harness } = await setup('/attendance/correction');
     await harness.fixture.whenStable();
     harness.detectChanges();
@@ -114,4 +94,4 @@ describe('Attendance history and corrections page', () => {
     );
     expect(root.querySelector('.correction-form')).toBeNull();
   });
-});
+});

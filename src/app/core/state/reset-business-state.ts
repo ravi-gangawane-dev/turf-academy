@@ -1,12 +1,13 @@
 import { environment } from '../../../environments/environment';
+import { LOCAL_KEYS, localStore } from './local-store';
 
 /** One-time removal of stale business state after the approved test-data reset. */
 export async function clearResetBusinessState(): Promise<void> {
   if (environment.useMockApi || !environment.supabaseUrl.includes('ttuigbkaluozglzgepsh')) return;
-  const marker = 'turf-academy-data-reset-2026-10-28';
+  const marker = LOCAL_KEYS.dataResetMarker;
   try {
-    if (localStorage.getItem(marker) === 'complete') return;
-    localStorage.removeItem('parent-selected-child');
+    if (localStore.read(marker) === 'complete') return;
+    localStore.remove(LOCAL_KEYS.parentSelectedChild);
     sessionStorage.removeItem('turf-academy-session');
     if (globalThis.indexedDB) {
       await Promise.all(['turf-academy-offline', 'turf-academy-coach-offline'].map(name =>
@@ -18,7 +19,7 @@ export async function clearResetBusinessState(): Promise<void> {
         }),
       ));
     }
-    localStorage.setItem(marker, 'complete');
+    localStore.write(marker, 'complete');
   } catch {
     // Retry on next load; online-only attendance cannot replay these legacy queues.
     console.warn('Academy data cleanup will retry on the next page load.');

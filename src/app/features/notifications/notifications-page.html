@@ -14,19 +14,11 @@
   @if (deliveryMessage()) {
   <p role="status">{{ deliveryMessage() }}</p>
   }
-  <p class="summary-scope">
-    Summary matches active filters across every page. Total includes manual activity; delivery
-    counts exclude manual activity, whose delivery remains unknown.
-  </p>
+
   @if (loading()) {
   <p role="status">Updating notification summary...</p>
   } @else if (!error()) {
-  <section class="notification-metrics" aria-label="Notification summary">
-    @for (metric of metricCards(); track metric.label) {
-    <app-summary-metric-card [label]="metric.label" [value]="metric.value" [icon]="metric.icon" [hint]="metric.detail"
-      [tone]="metric.tone" />
-    }
-  </section>
+  <app-summary-cards [cards]="metricCards()" ariaLabel="Notification summary" />
   }
   <section class="notification-filters" aria-label="Filter notifications">
     <div class="filter-main">
@@ -92,163 +84,165 @@
     @if (categoryFilter() !== 'all') { <p>Type preset: {{ categoryFilter() }}</p> }
   </section>
   <section class="notification-card">
-    <div class="table-wrap">
-      <app-table-tools title="Notifications" [table]="exportTable1" [total]="total()"></app-table-tools>
-      <table #exportTable1 class="academy-table column-list-table">
-        <thead>
-          <tr>
-            <th>
-              <app-sortable-header sortKey="subject" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Message</app-sortable-header>
-            </th>
-            <th>
-              <app-sortable-header sortKey="recipient" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Recipient</app-sortable-header>
-            </th>
-            <th>
-              <app-sortable-header sortKey="channel" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Channel</app-sortable-header>
-            </th>
-            <th>
-              <app-sortable-header sortKey="templateKey" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Type</app-sortable-header>
-            </th>
-            <th>
-              <app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Status</app-sortable-header>
-            </th>
-            <th>
-              <app-sortable-header sortKey="createdAt" [activeSort]="sortBy()" [direction]="sortDirection()"
-                (sortChange)="sortColumn($event)">Date</app-sortable-header>
-            </th>
-            <th>Student</th>
-            <th>Actions</th>
-          </tr>
-          <tr class="column-filters">
-            <th>
-              <app-column-filter label="message" type="search" [value]="columns.values()['subject'] || ''"
-                (changed)="columns.set('subject', $event)" />
-            </th>
-            <th>
-              <app-column-filter label="recipient" type="search" [value]="columns.values()['recipient'] || ''"
-                (changed)="columns.set('recipient', $event)" />
-            </th>
-            <th>
-              <app-column-filter label="channel" type="search" [value]="columns.values()['channel'] || ''"
-                (changed)="columns.set('channel', $event)" />
-            </th>
-            <th>
-              <app-column-filter label="type" type="search" [value]="columns.values()['templateKey'] || ''"
-                (changed)="columns.set('templateKey', $event)" />
-            </th>
-            <th>
-              <app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
-                (changed)="columns.set('status', $event)" />
-            </th>
-            <th>
-              <app-column-filter label="date" type="date" [value]="columns.values()['createdAt'] || ''"
-                (changed)="columns.set('createdAt', $event)" />
-            </th>
-            <th><span class="sr-only">Use Student name above</span></th>
-            <th><button type="button" (click)="clearFilters()">Reset</button></th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (error()) {
-          <tr>
-            <td colspan="8">
-              <app-async-state kind="error" title="Notifications unavailable" [message]="error()"
-                actionLabel="Try again" (action)="reload()" />
-            </td>
-          </tr>
-          } @else if (loading()) {
-          <tr>
-            <td colspan="8">Loading notifications...</td>
-          </tr>
-          } @else {
-          @for (row of rows(); track row.id) {
-          <tr class="notification-table-row">
-            <td>
-              <strong>{{ row.subject }}</strong><small class="message-preview">{{ row.body }}</small>
-              @if (row.failureReason) {
-              <small>{{ row.failureReason }}</small>
-              }
-            </td>
-            <td>{{ row.recipient }}</td>
-            <td>{{ row.channel }}</td>
-            <td>{{ row.templateKey }}</td>
-            <td>
-              @if (row.manualState) {
-              <strong>Manual: {{ row.manualState.replaceAll('_', ' ') }}</strong>
-              <small>Delivery unknown</small>
-              } @else {
-              <app-status-badge [status]="$any(row.status)" />
-              }
-              @if (row.readAt) {
-              <small>Inbox read {{ row.readAt | date: 'MMM d, h:mm a' }}</small>
-              }
-            </td>
-            <td>{{ row.createdAt | date: 'MMM d, h:mm a' }}</td>
-            <td>{{ row.studentName || 'Not linked' }}</td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="app-button icon" aria-label="View details" title="View details"
-                  (click)="viewNotification(row)"><i class="pi pi-eye" aria-hidden="true"></i></button>
-                <button type="button" class="app-button icon" aria-label="Copy message" title="Copy message"
-                  (click)="copyNotification(row)"><i class="pi pi-copy" aria-hidden="true"></i></button>
-                @if (canOpenManual(row)) {
-                <button type="button" class="app-button icon"
-                  [attr.aria-label]="row.manualState ? 'Reopen WhatsApp' : 'Manual WhatsApp'"
-                  [title]="row.manualState ? 'Reopen WhatsApp' : 'Manual WhatsApp'" [disabled]="!!delivering()"
-                  (click)="manualAction(row, 'request')">
-                  <i class="pi pi-whatsapp" aria-hidden="true"></i>
-                </button>
+    <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="notifications"
+      (pageChange)="changePage($event)" (pageSizeChange)="setPageSize($event)">
+      <div class="table-wrap">
+        <app-table-tools title="Notifications" [table]="exportTable1" [total]="total()"></app-table-tools>
+        <table #exportTable1 class="academy-table column-list-table">
+          <thead>
+            <tr>
+              <th>
+                <app-sortable-header sortKey="subject" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Message</app-sortable-header>
+              </th>
+              <th>
+                <app-sortable-header sortKey="recipient" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Recipient</app-sortable-header>
+              </th>
+              <th>
+                <app-sortable-header sortKey="channel" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Channel</app-sortable-header>
+              </th>
+              <th>
+                <app-sortable-header sortKey="templateKey" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Type</app-sortable-header>
+              </th>
+              <th>
+                <app-sortable-header sortKey="status" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Status</app-sortable-header>
+              </th>
+              <th>
+                <app-sortable-header sortKey="createdAt" [activeSort]="sortBy()" [direction]="sortDirection()"
+                  (sortChange)="sortColumn($event)">Date</app-sortable-header>
+              </th>
+              <th>Student</th>
+              <th>Actions</th>
+            </tr>
+            <tr class="column-filters">
+              <th>
+                <app-column-filter label="message" type="search" [value]="columns.values()['subject'] || ''"
+                  (changed)="columns.set('subject', $event)" />
+              </th>
+              <th>
+                <app-column-filter label="recipient" type="search" [value]="columns.values()['recipient'] || ''"
+                  (changed)="columns.set('recipient', $event)" />
+              </th>
+              <th>
+                <app-column-filter label="channel" type="search" [value]="columns.values()['channel'] || ''"
+                  (changed)="columns.set('channel', $event)" />
+              </th>
+              <th>
+                <app-column-filter label="type" type="search" [value]="columns.values()['templateKey'] || ''"
+                  (changed)="columns.set('templateKey', $event)" />
+              </th>
+              <th>
+                <app-column-filter label="status" type="search" [value]="columns.values()['status'] || ''"
+                  (changed)="columns.set('status', $event)" />
+              </th>
+              <th>
+                <app-column-filter label="date" type="date" [value]="columns.values()['createdAt'] || ''"
+                  (changed)="columns.set('createdAt', $event)" />
+              </th>
+              <th><span class="sr-only">Use Student name above</span></th>
+              <th><button type="button" (click)="clearFilters()">Reset</button></th>
+            </tr>
+          </thead>
+          <tbody [attr.aria-busy]="loading()">
+            @if (error()) {
+            <tr>
+              <td colspan="8">
+                <app-async-state kind="error" title="Notifications unavailable" [message]="error()"
+                  actionLabel="Try again" (action)="reload()" />
+              </td>
+            </tr>
+            } @else if (loading()) {
+            <tr>
+              <td colspan="8">Loading notifications...</td>
+            </tr>
+            } @else {
+            @for (row of rows(); track row.id) {
+            <tr class="notification-table-row">
+              <td>
+                <strong>{{ row.subject }}</strong><small class="message-preview">{{ row.body }}</small>
+                @if (row.failureReason) {
+                <small>{{ row.failureReason }}</small>
                 }
-                @if (row.manualState === 'launch_requested') {
-                <button type="button" class="app-button icon" aria-label="Confirm sent" title="Confirm sent"
-                  [disabled]="!!delivering()" (click)="manualAction(row, 'confirm')">
-                  <i class="pi pi-check" aria-hidden="true"></i>
-                </button>
-                <button type="button" class="app-button icon" aria-label="Cancel activity" title="Cancel activity"
-                  [disabled]="!!delivering()" (click)="manualAction(row, 'cancel')">
-                  <i class="pi pi-times" aria-hidden="true"></i>
-                </button>
+              </td>
+              <td>{{ row.recipient }}</td>
+              <td>{{ row.channel }}</td>
+              <td>{{ row.templateKey }}</td>
+              <td>
+                @if (row.manualState) {
+                <strong>Manual: {{ row.manualState.replaceAll('_', ' ') }}</strong>
+                <small>Delivery unknown</small>
+                } @else {
+                <app-status-badge [status]="$any(row.status)" />
                 }
-                <button type="button" class="app-button icon"
-                  [attr.aria-label]="historyLoading() === row.id ? 'Loading history' : 'View history'"
-                  title="View history" [disabled]="!!historyLoading()" (click)="viewHistory(row)">
-                  <i [class]="historyLoading() === row.id ? 'pi pi-spinner pi-spin' : 'pi pi-history'"
-                    aria-hidden="true"></i>
-                </button>
-                @if (row.channel !== 'in_app' && !(row.uncertain || (row.claimed && !row.providerId)) && (row.providerId
-                || canSend(row))) {
-                <button type="button" class="app-button icon"
-                  [attr.aria-label]="row.providerId ? 'Refresh delivery status' : row.status === 'failed' ? 'Retry failed message' : 'Send queued message'"
-                  [title]="row.providerId ? 'Refresh delivery status' : row.status === 'failed' ? 'Retry failed message' : 'Send queued message'"
-                  [disabled]="!!delivering() || !providerChannels().includes(row.channel)" (click)="delivery(row)">
-                  <i [class]="row.providerId ? 'pi pi-sync' : row.status === 'failed' ? 'pi pi-refresh' : 'pi pi-send'"
-                    aria-hidden="true"></i>
-                </button>
+                @if (row.readAt) {
+                <small>Inbox read {{ row.readAt | academyDate: 'MMM d, h:mm a' }}</small>
                 }
-              </div>
-              @if (row.channel !== 'in_app' && (row.uncertain || (row.claimed && !row.providerId))) {
-              <small>Delivery outcome needs reconciliation.</small>
-              }
-            </td>
-          </tr>
-          } @empty {
-          <tr>
-            <td colspan="8">
-              <app-async-state kind="empty" title="No notifications found"
-                message="No delivery records match these filters." />
-            </td>
-          </tr>
-          }
-          }
-        </tbody>
-      </table>
-    </div>
-    <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageSizeChange)="setPageSize($event)"
-      itemLabel="notifications" (pageChange)="changePage($event)" />
+              </td>
+              <td>{{ row.createdAt | academyDate: 'MMM d, h:mm a' }}</td>
+              <td>{{ row.studentName || 'Not linked' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="app-button icon" aria-label="View details" title="View details"
+                    (click)="viewNotification(row)"><i class="pi pi-eye" aria-hidden="true"></i></button>
+                  <button type="button" class="app-button icon" aria-label="Copy message" title="Copy message"
+                    (click)="copyNotification(row)"><i class="pi pi-copy" aria-hidden="true"></i></button>
+                  @if (canOpenManual(row)) {
+                  <button type="button" class="app-button icon"
+                    [attr.aria-label]="row.manualState ? 'Reopen WhatsApp' : 'Manual WhatsApp'"
+                    [title]="row.manualState ? 'Reopen WhatsApp' : 'Manual WhatsApp'" [disabled]="!!delivering()"
+                    (click)="manualAction(row, 'request')">
+                    <i class="pi pi-whatsapp" aria-hidden="true"></i>
+                  </button>
+                  }
+                  @if (row.manualState === 'launch_requested') {
+                  <button type="button" class="app-button icon" aria-label="Confirm sent" title="Confirm sent"
+                    [disabled]="!!delivering()" (click)="manualAction(row, 'confirm')">
+                    <i class="pi pi-check" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" class="app-button icon" aria-label="Cancel activity" title="Cancel activity"
+                    [disabled]="!!delivering()" (click)="manualAction(row, 'cancel')">
+                    <i class="pi pi-times" aria-hidden="true"></i>
+                  </button>
+                  }
+                  <button type="button" class="app-button icon"
+                    [attr.aria-label]="historyLoading() === row.id ? 'Loading history' : 'View history'"
+                    title="View history" [disabled]="!!historyLoading()" (click)="viewHistory(row)">
+                    <i [class]="historyLoading() === row.id ? 'pi pi-spinner pi-spin' : 'pi pi-history'"
+                      aria-hidden="true"></i>
+                  </button>
+                  @if (row.channel !== 'in_app' && !(row.uncertain || (row.claimed && !row.providerId)) &&
+                  (row.providerId
+                  || canSend(row))) {
+                  <button type="button" class="app-button icon"
+                    [attr.aria-label]="row.providerId ? 'Refresh delivery status' : row.status === 'failed' ? 'Retry failed message' : 'Send queued message'"
+                    [title]="row.providerId ? 'Refresh delivery status' : row.status === 'failed' ? 'Retry failed message' : 'Send queued message'"
+                    [disabled]="!!delivering() || !providerChannels().includes(row.channel)" (click)="delivery(row)">
+                    <i [class]="row.providerId ? 'pi pi-sync' : row.status === 'failed' ? 'pi pi-refresh' : 'pi pi-send'"
+                      aria-hidden="true"></i>
+                  </button>
+                  }
+                </div>
+                @if (row.channel !== 'in_app' && (row.uncertain || (row.claimed && !row.providerId))) {
+                <small>Delivery outcome needs reconciliation.</small>
+                }
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="8">
+                <app-async-state kind="empty" title="No notifications found"
+                  message="No delivery records match these filters." />
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+    </app-data-table>
   </section>
 </div>

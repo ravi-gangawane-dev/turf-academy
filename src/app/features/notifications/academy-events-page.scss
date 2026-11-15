@@ -1,13 +1,13 @@
 .academy-events-page {
   display: grid;
-  gap: 1rem;
+  gap: var(--app-space-4);
 }
 
 .notice {
   padding: 0.75rem 1rem;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #e8f6ed;
-  color: #176735;
+  color: var(--app-primary-dark);
 }
 
 .notice.error {
@@ -20,7 +20,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: var(--app-card, #fff);
 }
 
@@ -46,7 +46,7 @@
   display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
   white-space: nowrap;
 }
 
@@ -58,10 +58,10 @@
   width: max-content;
   max-width: 160px;
   padding: 5px 8px;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   color: #fff;
   background: #24332b;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 600;
   line-height: 1.2;
   opacity: 0;
@@ -74,10 +74,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 0.75rem;
+  gap: var(--app-space-3);
   padding: 1rem;
   border: 1px solid #dce5e0;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
 }
 
@@ -91,18 +91,18 @@
 
 .list-controls input,
 .list-controls select {
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 0.5rem 0.65rem;
   border: 1px solid #cad6d0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   font: inherit;
 }
 
 .list-controls button {
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 0 1rem;
-  border-color: #277d47;
-  background: #277d47;
+  border-color: var(--app-primary);
+  background: var(--app-primary);
   color: #fff;
   font-weight: 700;
 }
@@ -111,7 +111,7 @@
 .event-empty,
 .dialog {
   border: 1px solid #dce5e0;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   background: #fff;
   padding: 1rem;
 }
@@ -120,7 +120,7 @@
   display: grid;
   grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   align-items: center;
-  gap: 1rem;
+  gap: var(--app-space-4);
 }
 
 .date-block {
@@ -128,9 +128,9 @@
   justify-items: center;
   gap: 0.1rem;
   padding: 0.5rem;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #edf6ef;
-  color: #277d47;
+  color: var(--app-primary);
 }
 
 .date-block span,
@@ -153,7 +153,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
 }
 
 .event-heading h2 {
@@ -175,12 +175,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
 }
 
 button {
   border: 1px solid #cad6d0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   padding: 0.55rem 0.8rem;
   color: #34443b;
@@ -193,8 +193,8 @@ button:disabled {
 }
 
 button.primary {
-  border-color: #277d47;
-  background: #277d47;
+  border-color: var(--app-primary);
+  background: var(--app-primary);
   color: #fff;
 }
 
@@ -207,7 +207,7 @@ button.primary {
 }
 
 .event-empty>i {
-  color: #277d47;
+  color: var(--app-primary);
   font-size: 1.5rem;
 }
 
@@ -228,8 +228,8 @@ button.primary {
   display: grid;
   place-items: center;
   overflow: auto;
-  padding: 1rem;
-  background: #07192f99;
+  padding: var(--app-space-4);
+  background: var(--app-overlay);
 }
 
 .dialog {
@@ -238,6 +238,9 @@ button.primary {
 
 .dialog h2 {
   margin: 0;
+  color: var(--app-text);
+  font-size: var(--app-fs-h3);
+  font-weight: 700;
 }
 
 .dialog>p {
@@ -246,7 +249,7 @@ button.primary {
 
 .dialog form {
   display: grid;
-  gap: 1rem;
+  gap: var(--app-space-4);
 }
 
 .dialog label {
@@ -260,7 +263,7 @@ button.primary {
 .dialog textarea {
   width: 100%;
   border: 1px solid #cad6d0;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   padding: 0.65rem;
   font: inherit;
 }
@@ -274,21 +277,16 @@ button.primary {
   font-weight: 400;
 }
 
-.field-error {
-  color: #a32b2b;
-  font-weight: 400;
-}
-
 .dialog footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
 }
 
 @media (max-width: 650px) {
   .event-card {
     grid-template-columns: 3.75rem minmax(0, 1fr);
-    gap: 0.75rem;
+    gap: var(--app-space-3);
   }
 
   .event-actions {

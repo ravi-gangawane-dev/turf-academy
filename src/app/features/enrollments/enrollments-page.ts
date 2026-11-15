@@ -1,4 +1,5 @@
-import { CommonModule, DatePipe, formatDate, TitleCasePipe } from '@angular/common';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+import { formatDate, TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,6 +12,7 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { EnrollmentsService } from '../../core/supabase/domain-services';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { isoDatePlusDays, utcDateOnly } from '../../core/localisation/academy-locale';
 import {
   EnrollmentBatch, EnrollmentConfirmationRecord, EnrollmentHistoryFilters,
   EnrollmentHistoryRow, EnrollmentPlan, EnrollmentRecord, EnrollmentStudent, EnrollmentWorkspace
@@ -35,10 +37,10 @@ import {
   PrintEnrollmentTerm,
 } from '../../shared/print/print-document.models';
 import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { printDateOnly } from '../../shared/print/print-format';
 import { EnrollmentMetrics } from './enrollment-metrics';
 type EnrollmentListRow = EnrollmentRecord & { student?: EnrollmentStudent; batch?: EnrollmentBatch; plan?: EnrollmentPlan };
 
-const today = () => new Date().toLocaleDateString('en-CA');
 function dateRange(control: AbstractControl) {
   const from = control.get('startDate')?.value,
     to = control.get('dueDate')?.value;
@@ -52,7 +54,7 @@ type View = 'list' | 'new' | 'transfer' | 'pause' | 'cancel' | 'history';
     TableTools,
     RouterLink,
     AcademyMoneyPipe,
-    DatePipe,
+    AcademyDatePipe,
     TitleCasePipe,
     RouterModule,
     ColumnFilter,
@@ -63,7 +65,6 @@ type View = 'list' | 'new' | 'transfer' | 'pause' | 'cancel' | 'history';
     EnrollmentMetrics,
     StatusBadge,
     SortableHeader,
-    CommonModule,
     ModalFocus
   ],
   templateUrl: './enrollments-page.html',
@@ -152,7 +153,7 @@ export class EnrollmentsPage implements OnInit {
       studentId: ['', Validators.required],
       batchId: ['', Validators.required],
       feePlanId: ['', Validators.required],
-      startDate: [today(), Validators.required],
+      startDate: [this.preferences.today(), Validators.required],
       dueDate: [''],
       notes: ['', Validators.maxLength(1000)],
     },
@@ -190,8 +191,8 @@ export class EnrollmentsPage implements OnInit {
   protected readonly metrics = computed(() => {
     if (this.view === 'list') return this.listMetrics();
     const rows = this.rows(),
-      end = new Date();
-    end.setDate(end.getDate() + 30);
+      today = this.preferences.today(),
+      end = isoDatePlusDays(today, 30);
     return {
       total: rows.length,
       active: rows.filter((r) => r.status === 'active').length,
@@ -201,8 +202,8 @@ export class EnrollmentsPage implements OnInit {
         (r) =>
           r.status === 'active' &&
           r.valid_till &&
-          r.valid_till >= today() &&
-          r.valid_till <= end.toLocaleDateString('en-CA'),
+          r.valid_till >= today &&
+          r.valid_till <= end,
       ).length,
     };
   });
@@ -319,7 +320,7 @@ export class EnrollmentsPage implements OnInit {
         return;
       }
       await this.save(
-        () => this.api.transfer(row.id, value.batchId, today(), value.reason.trim()),
+        () => this.api.transfer(row.id, value.batchId, this.preferences.today(), value.reason.trim()),
         'Student transferred successfully.',
         'transferred',
         value.reason.trim(),
@@ -502,7 +503,7 @@ export class EnrollmentsPage implements OnInit {
       issuedAt: new Date().toISOString(),
       action,
       effectiveOn:
-        action === 'created' ? enrollment.valid_from : today(),
+        action === 'created' ? enrollment.valid_from : this.preferences.today(),
       studentName: record.student.full_name,
       studentCode: record.student.student_code,
       studentDateOfBirth: record.student.date_of_birth,
@@ -533,16 +534,7 @@ export class EnrollmentsPage implements OnInit {
 
   /** Date-only values must be pinned to UTC or a positive timezone shifts them a day back. */
   private printDate(value: string): string {
-    const day = String(value ?? '').slice(0, 10);
-    if (!day) return '—';
-    const date = new Date(`${day}T00:00:00Z`);
-    if (Number.isNaN(date.getTime())) return day;
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    }).format(date);
+    return printDateOnly(value);
   }
 
   protected changePage(page: number): void { this.page.set(page); void this.reload(); }
@@ -635,7 +627,7 @@ export class EnrollmentsPage implements OnInit {
       batch: row.batch?.name ?? 'Batch unavailable',
       plan: row.plan?.name ?? 'Plan unavailable',
       fee: row.monthly_fee,
-      validity: `${formatDate(row.valid_from, 'dd MMM yyyy', 'en-US')} – ${row.valid_till ? formatDate(row.valid_till, 'dd MMM yyyy', 'en-US') : 'No end date'}`,
+      validity: `${formatDate(utcDateOnly(row.valid_from), 'dd MMM yyyy', this.preferences.locale(), 'UTC')} – ${row.valid_till ? formatDate(utcDateOnly(row.valid_till), 'dd MMM yyyy', this.preferences.locale(), 'UTC') : 'No end date'}`,
       status: row.status,
     }));
   };
@@ -643,8 +635,8 @@ export class EnrollmentsPage implements OnInit {
   protected readonly exportHistory = async (): Promise<readonly ExportRow[]> => {
     const rows = await this.api.exportHistory(this.historyQuery());
     return rows.map((row) => ({
-      recordedAt: formatDate(row.created_at, 'dd MMM yyyy, HH:mm', 'en-US'),
-      effectiveOn: formatDate(row.effective_on, 'dd MMM yyyy', 'en-US'),
+      recordedAt: formatDate(row.created_at, 'dd MMM yyyy, HH:mm', this.preferences.locale(), this.preferences.timezone()),
+      effectiveOn: formatDate(row.effective_on, 'dd MMM yyyy', this.preferences.locale(), 'UTC'),
       student: `${row.enrollment.student.full_name} (${row.enrollment.student.student_code})`,
       action: this.displayAction(row),
       batch: `${row.from_batch?.name ?? '—'} → ${row.to_batch?.name ?? '—'}`,

@@ -79,9 +79,9 @@ export class ProfilePhotoUpload implements OnDestroy {
 
   private accept(file: File): void {
     if (this.saving || this.processing()) return;
-    if (file.size > 2 * 1024 * 1024 || !['image/jpeg', 'image/png'].includes(file.type)) {
-      this.error.set('Choose a JPG or PNG image up to 2 MB.');
-      this.toast.error('Choose a JPG or PNG image up to 2 MB.');
+    if (file.size > 2 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      this.error.set('Choose a JPG, PNG or WebP image up to 2 MB.');
+      this.toast.error('Choose a JPG, PNG or WebP image up to 2 MB.');
       return;
     }
 

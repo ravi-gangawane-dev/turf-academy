@@ -51,18 +51,21 @@ export const SETTINGS_SECTIONS = [
     "label": "Dialog Playground",
     "icon": "pi-comment",
     "description": "Preview and explore application dialogs.",
-    "path": "/settings/dialog-playground"
+    "path": "/settings/dialog-playground",
+    "internal": true
   },
   {
     "label": "Design System",
     "icon": "pi-objects-column",
     "description": "Explore shared components and visual styles.",
-    "path": "/design/Foundations/overview"
+    "path": "/design/Foundations/overview",
+    "internal": true
   },
   {
     "label": "Developer Handoff",
     "icon": "pi-code",
     "description": "Browse implementation guidance and resources.",
-    "path": "/handoff/overview"
+    "path": "/handoff/overview",
+    "internal": true
   }
 ] as const;

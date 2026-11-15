@@ -8,6 +8,7 @@ import { ParentsService } from '../../core/supabase/domain-services';
 import { StorageService } from '../../core/supabase/storage.service';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { StudentListService } from '../students/student-list.service';
+import { LOCAL_KEYS, LocalStore } from '../../core/state/local-store';
 import {
   ParentCoachLinkRecord,
   ParentPortalData,
@@ -28,11 +29,12 @@ export class ParentPortalService {
   private readonly students = inject(StudentListService);
   private readonly supabase = inject(SupabaseClientService);
   private readonly storage = inject(StorageService);
-  readonly selectedChildId = signal(localStorage.getItem('parent-selected-child') ?? '');
+  private readonly local = inject(LocalStore);
+  readonly selectedChildId = signal(this.local.read(LOCAL_KEYS.parentSelectedChild) ?? '');
 
   selectChild(id: string): void {
     this.selectedChildId.set(id);
-    localStorage.setItem('parent-selected-child', id);
+    this.local.write(LOCAL_KEYS.parentSelectedChild, id);
   }
 
   /** Exactly one receipt, scoped to the selected child, for the receipt screen. */

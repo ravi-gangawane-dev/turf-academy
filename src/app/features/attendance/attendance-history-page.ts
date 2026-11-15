@@ -1,3 +1,4 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import {
   ChangeDetectionStrategy,
@@ -11,7 +12,7 @@ import {
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+
 import { AcademyFacade } from '../../core/state/academy.facade';
 import {
   AttendanceMatrixRecord,
@@ -27,7 +28,8 @@ import { attendanceTimestamp } from '../../core/supabase/attendance-timestamp';
 import { AuthService } from '../../core/auth/auth.service';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
-import { Pagination } from '../../shared/pagination/pagination';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
+import { DataTable } from '../../shared/data-table/data-table';
 import {
   PrintAttendanceMatrixDocument,
   PrintAttendanceRegisterDocument,
@@ -55,7 +57,7 @@ interface ActiveFilter {
 @Component({
   selector: 'app-attendance-history-page',
   standalone: true,
-  imports: [TableTools, FormsModule, DatePipe, Pagination, AsyncState, ModalFocus],
+  imports: [TableTools, FormsModule, AcademyDatePipe, AsyncState, ModalFocus, ModalBackdrop, DataTable],
   templateUrl: './attendance-history-page.html',
   styleUrl: './attendance-history-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -44,7 +44,7 @@
         }
         <div class="contact-row">
           <i class="pi pi-map-marker" aria-hidden="true"></i>
-          <span>{{ location() }}</span>
+          <span class="contact-address">{{ location() }}</span>
         </div>
         @if (joinedDate()) {
         <div class="contact-row">
@@ -258,7 +258,7 @@
               <h4>{{ section.title }}</h4>
               <div class="details-grid">
                 @if (section.title === 'Address Information') {
-                <app-address-fields [value]="profileAddress()" />
+                <app-address-fields [value]="profileAddress()" [inline]="true" />
                 } @else {
                 @for (field of section.fields; track field.label) {
                 <div class="detail">

@@ -1,18 +1,12 @@
 <section class="app-settings-page">
-  <app-page-hero [title]="pageInfo().label" [subtitle]="pageInfo().description" [breadcrumbs]="breadcrumbs()"></app-page-hero>
+  <app-page-hero [title]="pageInfo().label" [subtitle]="pageInfo().description"
+    [breadcrumbs]="breadcrumbs()"></app-page-hero>
 
-  <div class="settings-tabs">
-    @for (section of sections; track section) {
-    <button class="tab-button" [class.active]="activeSection() === section" (click)="setActiveSection(section)"
-      [attr.aria-pressed]="activeSection() === section">
-      {{ section === 'users' ? 'Users & Roles' : section === 'tools' ? 'Tools & Data' : section === 'print' ? 'Print & Documents' : (section | titlecase) }}
-    </button>
-    }
-  </div>
+  <app-settings-tabs />
 
   <div class="settings-content">
     @if (activeSection() === 'users') {
-      <app-users-settings-panel />
+    <app-users-settings-panel />
     } @else {
     <form [formGroup]="form" class="settings-form" (ngSubmit)="save()">
       @switch (activeSection()) {
@@ -37,7 +31,8 @@
         <div class="form-grid">
           <div class="form-group">
             <label for="settings-academyName">Academy Name</label>
-            <input id="settings-academyName" formControlName="academyName" type="text" placeholder="Turf Cricket Academy" class="form-control" />
+            <input id="settings-academyName" formControlName="academyName" type="text"
+              placeholder="Turf Cricket Academy" class="form-control" />
 
             @if (form.controls.academyName.errors && (form.controls.academyName.touched ||
             form.controls.academyName.dirty)) {
@@ -47,7 +42,8 @@
 
           <div class="form-group">
             <label for="settings-academyCode">Academy Code</label>
-            <input id="settings-academyCode" formControlName="academyCode" type="text" placeholder="TCM" class="form-control" maxlength="10" />
+            <input id="settings-academyCode" formControlName="academyCode" type="text" placeholder="TCM"
+              class="form-control" maxlength="10" />
             @if (form.controls.academyCode.errors && (form.controls.academyCode.touched ||
             form.controls.academyCode.dirty)) {
             <small class="error-text">Code must be 2-10 uppercase letters</small>
@@ -56,8 +52,8 @@
 
           <div class="form-group">
             <label for="settings-academyLogo">Academy Logo URL</label>
-            <input id="settings-academyLogo" formControlName="academyLogo" type="text" placeholder="https://example.com/logo.png"
-              class="form-control" />
+            <input id="settings-academyLogo" formControlName="academyLogo" type="text"
+              placeholder="https://example.com/logo.png" class="form-control" />
             @if (form.controls.academyLogo.errors && (form.controls.academyLogo.touched ||
             form.controls.academyLogo.dirty)) {
             <small class="error-text">Maximum 500 characters</small>
@@ -66,8 +62,8 @@
 
           <div class="form-group">
             <label for="settings-academyDescription">Academy Description</label>
-            <textarea id="settings-academyDescription" formControlName="academyDescription" rows="3" class="form-control"
-              placeholder="Turf Cricket Academy - Excellence in Cricket Training"></textarea>
+            <textarea id="settings-academyDescription" formControlName="academyDescription" rows="3"
+              class="form-control" placeholder="Turf Cricket Academy - Excellence in Cricket Training"></textarea>
             @if (form.controls.academyDescription.errors && (form.controls.academyDescription.touched ||
             form.controls.academyDescription.dirty)) {
             <small class="error-text">Maximum 500 characters</small>
@@ -78,8 +74,8 @@
         <div class="form-grid">
           <div class="form-group">
             <label for="settings-contactEmail">Contact Email</label>
-            <input id="settings-contactEmail" formControlName="contactEmail" type="email" placeholder="contact@turfcricket.academy"
-              class="form-control" />
+            <input id="settings-contactEmail" formControlName="contactEmail" type="email"
+              placeholder="contact@turfcricket.academy" class="form-control" />
             @if (form.controls.contactEmail.errors && (form.controls.contactEmail.touched ||
             form.controls.contactEmail.dirty)) {
             <small class="error-text">Valid email required</small>
@@ -88,8 +84,8 @@
 
           <div class="form-group">
             <label for="settings-contactPhone">Contact Phone</label>
-            <input id="settings-contactPhone" formControlName="contactPhone" type="tel" placeholder="+91 98765 43210" class="form-control"
-              maxlength="30" />
+            <input id="settings-contactPhone" formControlName="contactPhone" type="tel" placeholder="+91 98765 43210"
+              class="form-control" maxlength="30" />
             @if (form.controls.contactPhone.errors && (form.controls.contactPhone.touched ||
             form.controls.contactPhone.dirty)) {
             <small class="error-text">Maximum 30 characters</small>
@@ -97,7 +93,7 @@
           </div>
 
           <div class="form-group">
-            <label>Academy address</label>
+            <span class="group-label">Academy address</span>
             <app-address-fields [form]="form.controls.address" />
           </div>
         </div>
@@ -119,8 +115,8 @@
 
           <div class="form-group">
             <label for="settings-currencyCode">Currency Code</label>
-            <input id="settings-currencyCode" formControlName="currencyCode" type="text" placeholder="INR" class="form-control" maxlength="3"
-              inputmode="text" />
+            <input id="settings-currencyCode" formControlName="currencyCode" type="text" placeholder="INR"
+              class="form-control" maxlength="3" inputmode="text" />
             @if (form.controls.currencyCode.errors && (form.controls.currencyCode.touched ||
             form.controls.currencyCode.dirty)) {
             <small class="error-text">3-letter currency code required (e.g., INR, USD)</small>
@@ -129,8 +125,8 @@
 
           <div class="form-group">
             <label for="settings-attendanceGraceMinutes">Attendance Grace Minutes</label>
-            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0" max="180" step="1"
-              class="form-control" />
+            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0"
+              max="180" step="1" class="form-control" />
             @if (form.controls.attendanceGraceMinutes.errors && (form.controls.attendanceGraceMinutes.touched ||
             form.controls.attendanceGraceMinutes.dirty)) {
             <small class="error-text">Must be between 0 and 180 minutes</small>
@@ -139,7 +135,8 @@
 
           <div class="form-group">
             <label for="settings-feeDueDay">Fee Due Day</label>
-            <input id="settings-feeDueDay" formControlName="feeDueDay" type="number" min="1" max="28" step="1" class="form-control" />
+            <input id="settings-feeDueDay" formControlName="feeDueDay" type="number" min="1" max="28" step="1"
+              class="form-control" />
             @if (form.controls.feeDueDay.errors && (form.controls.feeDueDay.touched || form.controls.feeDueDay.dirty)) {
             <small class="error-text">Must be between 1 and 28</small>
             }
@@ -159,8 +156,8 @@
             <p class="muted-text">
               Minutes after scheduled time before check-in is marked as late
             </p>
-            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0" max="180" step="1"
-              class="form-control" readonly />
+            <input id="settings-attendanceGraceMinutes" formControlName="attendanceGraceMinutes" type="number" min="0"
+              max="180" step="1" class="form-control" readonly />
             <small>
               Same as Operations settings (shared configuration)
             </small>
@@ -240,7 +237,8 @@
             <label for="settings-printFooterNote">Footer Note</label>
             <input id="settings-printFooterNote" formControlName="printFooterNote" type="text"
               placeholder="For example: Fees once paid are non-refundable" class="form-control" maxlength="200" />
-            <small class="muted-text">Printed alongside the page number on multi-page documents and under receipts.</small>
+            <small class="muted-text">Printed alongside the page number on multi-page documents and under
+              receipts.</small>
             @if (form.controls.printFooterNote.errors && (form.controls.printFooterNote.touched ||
             form.controls.printFooterNote.dirty)) {
             <small class="error-text">Maximum 200 characters</small>
@@ -251,8 +249,7 @@
         <div class="form-group">
           <label for="settings-printTerms">Invoice and Statement Terms</label>
           <textarea id="settings-printTerms" formControlName="printTerms" rows="4" class="form-control"
-            placeholder="Terms shown in the Notes section of invoices and statements"
-            maxlength="1200"></textarea>
+            placeholder="Terms shown in the Notes section of invoices and statements" maxlength="1200"></textarea>
           <small class="muted-text">
             Used when an invoice or statement has no record-specific notes. Leave blank to keep the standard text.
           </small>
@@ -288,10 +285,15 @@
           <span class="users-icon"><i class="pi pi-download" aria-hidden="true"></i></span>
           <div>
             <h3 id="data-export-title">Academy Data Export</h3>
-            <p class="muted-text">Download academy records as JSON, including student, attendance, and financial records.</p>
-            <p class="muted-text">Uploaded files, login accounts, QR tokens, and audit history are not included. Use your database provider's backup tools for a complete backup and restore. Store exported records securely.</p>
-            <button type="button" class="primary-button" (click)="exportData()" [disabled]="busy() || auth.role() !== 'admin'">
-              <i class="pi" [class.pi-download]="!busy()" [class.pi-spinner]="busy()" [class.pi-spin]="busy()" aria-hidden="true"></i>
+            <p class="muted-text">Download academy records as JSON, including student, attendance, and financial
+              records.</p>
+            <p class="muted-text">Uploaded files, login accounts, QR tokens, and audit history are not included. Use
+              your database provider's backup tools for a complete backup and restore. Store exported records securely.
+            </p>
+            <button type="button" class="primary-button" (click)="exportData()"
+              [disabled]="busy() || auth.role() !== 'admin'">
+              <i class="pi" [class.pi-download]="!busy()" [class.pi-spinner]="busy()" [class.pi-spin]="busy()"
+                aria-hidden="true"></i>
               {{ busy() ? 'Preparing export...' : 'Download academy data' }}
             </button>
             @if (progress()) { <p role="status" aria-live="polite">{{ progress() }}</p> }
@@ -304,7 +306,8 @@
       <footer class="settings-footer">
         <span class="muted-text">Changes apply when you save.</span>
         <button type="submit" class="primary-button" [disabled]="loading() || saving() || auth.role() !== 'admin'">
-          <i class="pi" [class.pi-save]="!saving()" [class.pi-spinner]="saving()" [class.pi-spin]="saving()" aria-hidden="true"></i>
+          <i class="pi" [class.pi-save]="!saving()" [class.pi-spinner]="saving()" [class.pi-spin]="saving()"
+            aria-hidden="true"></i>
           {{ saving() ? 'Saving...' : 'Save changes' }}
         </button>
       </footer>
@@ -324,6 +327,6 @@
 @if (error()) {
 <div class="error-state" role="alert">
   <p>Error: {{ error() }}</p>
-  <button class="secondary-button" (click)="load()">Retry</button>
+  <button type="button" class="secondary-button" (click)="load()">Retry</button>
 </div>
 }

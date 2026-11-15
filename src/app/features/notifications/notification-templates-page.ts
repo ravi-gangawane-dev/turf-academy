@@ -2,6 +2,7 @@ import { TableTools } from '../../shared/data-table/table-tools';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,7 +20,7 @@ import { DataRequestError } from '../../core/supabase/data-error';
 import { StorageService } from '../../core/supabase/storage.service';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { FormsModule } from '@angular/forms';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { SortableHeader } from '../../shared/sortable-header/sortable-header';
 import {
@@ -38,7 +39,7 @@ interface TemplateRow {
 }
 @Component({
   selector: 'app-notification-templates-page',
-  imports: [TableTools, ColumnFilter,PageHero, ModalFocus, ReactiveFormsModule, FormsModule, StatusBadge, NotificationSectionNav, Pagination, SortableHeader],
+  imports: [TableTools, ColumnFilter,PageHero, ModalFocus, ReactiveFormsModule, FormsModule, StatusBadge, NotificationSectionNav, SortableHeader, ModalBackdrop, DataTable],
   templateUrl: './notification-templates-page.html',
   styleUrl: './notification-templates-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

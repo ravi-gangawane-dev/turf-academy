@@ -4,7 +4,7 @@
 
 .batches-page {
   display: grid;
-  gap: 20px;
+  gap: var(--app-space-5);
   color: #18372c;
 }
 
@@ -14,7 +14,7 @@ nav,
 .days,
 .filters {
   display: flex;
-  gap: 12px;
+  gap: var(--app-space-3);
   align-items: center;
   flex-wrap: wrap;
 }
@@ -31,7 +31,7 @@ p {
 
 nav a,
 a {
-  color: #176c49;
+  color: var(--app-primary-dark);
 }
 
 button,
@@ -40,7 +40,7 @@ select,
 textarea {
   font: inherit;
   border: 1px solid #ccdcd3;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   padding: 10px;
   background: white;
   color: inherit;
@@ -48,7 +48,7 @@ textarea {
 
 button {
   cursor: pointer;
-  min-height: 42px;
+  min-height: var(--app-control-md);
 }
 
 button:disabled {
@@ -57,35 +57,35 @@ button:disabled {
 }
 
 .primary {
-  background: #176c49;
+  background: var(--app-primary-dark);
   color: white;
-  border-color: #176c49;
+  border-color: var(--app-primary-dark);
 }
 
 .metrics,
 .fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 16px;
+  gap: var(--app-space-4);
 }
 
 .metrics article,
 .card {
   background: white;
   border: 1px solid #dde7e1;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   padding: 20px;
 }
 
 .metrics strong {
   display: block;
-  font-size: 28px;
+  font-size: var(--app-fs-h1);
 }
 
 label {
   display: grid;
-  gap: 6px;
-  font-size: 14px;
+  gap: var(--app-space-1-5);
+  font-size: var(--app-fs-body);
 }
 
 .days {
@@ -106,14 +106,14 @@ fieldset {
 .error,
 .success {
   padding: 14px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff0ed;
   color: #982a1c;
 }
 
 .success {
   background: #e6f7ed;
-  color: #175c3b;
+  color: var(--app-primary-dark);
 }
 
 .table-wrap {
@@ -182,21 +182,21 @@ footer {
 }
 
 .batch-tabs {
-  gap: 6px;
+  gap: var(--app-space-1-5);
   border-bottom: 1px solid #dde7e1;
   padding-bottom: 8px;
 }
 
 .batch-tabs a {
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   text-decoration: none;
   font-weight: 500;
 }
 
 .batch-tabs a.active {
   background: #e5f5ec;
-  color: #12663e;
+  color: var(--app-primary-dark);
   font-weight: 700;
 }
 
@@ -206,14 +206,14 @@ footer {
 
 .batch-tabs a:focus-visible,
 .icon-action:focus-visible {
-  outline: 2px solid #16854e;
+  outline: 2px solid var(--app-primary);
   outline-offset: 2px;
 }
 
 .metrics .metric {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--app-space-3-5);
   padding: 18px;
   min-width: 0;
 }
@@ -226,7 +226,7 @@ footer {
   flex: 0 0 40px;
   border-radius: 50%;
   background: #e7f5ed;
-  color: #16854e;
+  color: var(--app-primary);
 }
 
 .metrics strong {
@@ -236,7 +236,7 @@ footer {
 }
 
 .metrics p {
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   color: #66788d;
   margin: 0;
 }
@@ -259,13 +259,13 @@ footer {
 .batch-directory {
   min-width: 1040px;
   color: #43516c;
-  font-size: 14px;
+  font-size: var(--app-fs-body);
 }
 
 .batch-directory th {
   background: #f8fafc;
   color: #172238;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -285,7 +285,7 @@ footer {
 }
 
 .batch-directory small {
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   margin: 4px 0 0;
 }
 
@@ -300,22 +300,22 @@ footer {
 
 .coach-list {
   display: grid;
-  gap: 6px;
+  gap: var(--app-space-1-5);
 }
 
 .coach-entry {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 
 .coach-role {
   display: inline-block;
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   background: #f0f5f2;
   color: #5c7166;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--app-radius-sm);
   margin-left: 4px;
 }
 
@@ -325,15 +325,15 @@ footer {
 
 .session-today {
   display: inline-block;
-  font-size: 12px;
-  color: #176c49;
+  font-size: var(--app-fs-meta);
+  color: var(--app-primary-dark);
   margin-top: 4px;
 }
 
 .row-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 4px;
+  gap: var(--app-space-1);
 }
 
 .batch-directory th:last-child {
@@ -345,7 +345,7 @@ footer {
   align-items: center;
   justify-content: center;
   width: 40px;
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 0;
   margin: 0;
   border: 0;
@@ -355,7 +355,7 @@ footer {
 
 .icon-action:hover {
   background: #e7f5ed;
-  color: #176c49;
+  color: var(--app-primary-dark);
 }
 
 .icon-action.danger:hover {
@@ -366,7 +366,7 @@ footer {
 @media (max-width: 600px) {
   .metrics .metric {
     padding: 14px;
-    gap: 10px;
+    gap: var(--app-space-2-5);
   }
 
   .metrics {
@@ -374,7 +374,7 @@ footer {
   }
 
   .batch-tabs {
-    gap: 4px;
+    gap: var(--app-space-1);
   }
 
   .batch-tabs a {
@@ -412,7 +412,7 @@ footer {
 
 .action-fields>button {
   height: 44px;
-  min-height: 44px;
+  min-height: var(--app-control-lg);
   padding: 0 24px;
   white-space: nowrap;
 }
@@ -420,11 +420,11 @@ footer {
 .batch-directory .coach-entry {
   min-height: 32px;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--app-space-2);
 }
 
 .batch-directory .coach-list {
-  gap: 2px;
+  gap: var(--app-space-half);
 }
 
 @media (max-width: 900px) {
@@ -445,7 +445,7 @@ footer {
   .batch-directory .unassign-action {
     width: 44px;
     height: 44px;
-    min-height: 44px;
+    min-height: var(--app-control-lg);
     flex-basis: 44px;
   }
 }
@@ -481,7 +481,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--app-space-3);
 }
 
 .batch-directory .column-filters th {
@@ -498,7 +498,7 @@ footer {
   box-sizing: border-box;
   width: 100%;
   min-width: 140px;
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding-right: 34px;
 }
 
@@ -543,8 +543,8 @@ footer {
   z-index: 130;
   display: grid;
   place-items: center;
-  padding: 20px;
-  background: rgb(7 25 47 / 54%);
+  padding: var(--app-space-4);
+  background: var(--app-overlay);
 }
 
 .roster-dialog {
@@ -552,61 +552,63 @@ footer {
   width: min(560px, 100%);
   max-height: calc(100vh - 40px);
   overflow: auto;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+  border-radius: var(--app-radius-md);
+  background: var(--app-card);
+  box-shadow: var(--app-shadow-lg);
 }
 
 .roster-dialog>header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 18px 22px;
-  border-bottom: 1px solid #e2e8e5;
+  gap: var(--app-space-4);
+  padding: var(--app-space-3) var(--app-space-5);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .roster-dialog h2 {
   margin: 2px 0 0;
-  font-size: 20px;
+  color: var(--app-text);
+  font-size: var(--app-fs-h3);
+  font-weight: 700;
 }
 
 .roster-kicker {
   margin: 0;
-  color: #0f6b3f;
-  font-size: 10.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .roster-dialog>header button {
-  min-height: 34px;
+  min-height: var(--app-control-sm);
   padding: 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: none;
   color: #5f6f66;
 }
 
 .roster-options {
   display: grid;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding: 18px 22px;
 }
 
 .roster-options p {
   margin: 0;
   color: #43516c;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   line-height: 1.5;
 }
 
 .roster-medical-toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 14px;
+  gap: var(--app-space-2-5);
+  font-size: var(--app-fs-body);
   font-weight: 600;
 }
 
@@ -620,7 +622,7 @@ footer {
 .roster-hint,
 .roster-restricted {
   color: #63796c;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 
 .roster-restricted {
@@ -630,10 +632,10 @@ footer {
 .roster-error {
   margin: 0 22px 16px;
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff0ed;
   color: #982a1c;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 .roster-error p {
@@ -644,7 +646,7 @@ footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   margin: 0;
   padding: 16px 22px;
   border-top: 1px solid #e2e8e5;
@@ -653,8 +655,8 @@ footer {
 .roster-dialog>footer button {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 42px;
+  gap: var(--app-space-2);
+  min-height: var(--app-control-md);
   padding: 0 16px;
 }
 

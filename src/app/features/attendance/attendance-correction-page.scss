@@ -1,6 +1,6 @@
 :host {
     display: block;
-    color: #10175e
+    color: var(--app-navy)
 }
 
 .correction-page>header {
@@ -10,14 +10,14 @@
 }
 
 .correction-page>header>span {
-    color: #08743c;
-    font-size: 25px;
+    color: var(--app-primary-dark);
+    font-size: var(--app-fs-stat);
     font-weight: 800
 }
 
 .correction-page h1 {
     margin: 0;
-    font-size: 27px
+    font-size: var(--app-fs-h1)
 }
 
 .correction-page>header label {
@@ -43,36 +43,36 @@
     height: 43px;
     padding: 0 40px;
     border: 1px solid #d9e2ec;
-    border-radius: 6px;
-    font-size: 12px
+    border-radius: var(--app-radius-sm);
+    font-size: var(--app-fs-meta)
 }
 
 .correction-page>nav {
     display: flex;
-    gap: 12px;
+    gap: var(--app-space-3);
     align-items: center;
     padding: 13px 0 18px;
-    color: #08743c;
-    font-size: 12px
+    color: var(--app-primary-dark);
+    font-size: var(--app-fs-meta)
 }
 
 .correction-page>nav b {
-    color: #10175e
+    color: var(--app-navy)
 }
 
 .page-info {
     padding: 14px 17px;
     margin-bottom: 14px;
     border: 1px solid #cfe3d6;
-    border-radius: 6px;
-    color: #075f32;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-primary-dark);
     background: #f7fbf8;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .page-info i {
     margin-right: 12px;
-    font-size: 17px
+    font-size: var(--app-fs-h3)
 }
 
 .correction-layout {
@@ -83,14 +83,14 @@
 
 .correction-layout main {
     display: grid;
-    gap: 12px;
+    gap: var(--app-space-3);
     padding: 0
 }
 
 .correction-card,
 .side-card {
     border: 1px solid #dce5ef;
-    border-radius: 7px;
+    border-radius: var(--app-radius-sm);
     background: #fff
 }
 
@@ -102,7 +102,7 @@
 .side-card h2 {
     margin: 0;
     padding: 14px 16px;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .student-search>div {
@@ -123,8 +123,8 @@
     height: 36px;
     padding: 0 35px 0 12px;
     border: 1px solid #d9e2ec;
-    border-radius: 5px;
-    font-size: 12px
+    border-radius: var(--app-radius-sm);
+    font-size: var(--app-fs-meta)
 }
 
 .student-search>div label i {
@@ -137,10 +137,10 @@
     height: 36px;
     padding: 0 17px;
     border: 1px solid #d9e2ec;
-    border-radius: 5px;
-    color: #10175e;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-navy);
     background: #fff;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .student-search>small {
@@ -150,14 +150,14 @@
 
 .student-search footer {
     display: flex;
-    gap: 12px;
+    gap: var(--app-space-3);
     padding: 0 16px 14px
 }
 
 .student-profile>div {
     display: grid;
     grid-template-columns: 100px 1fr 1fr;
-    gap: 18px;
+    gap: var(--app-space-4-5);
     padding: 4px 16px 18px
 }
 
@@ -166,33 +166,33 @@
     height: 105px;
     display: grid;
     place-items: center;
-    border-radius: 6px;
+    border-radius: var(--app-radius-sm);
     color: #fff;
     background: linear-gradient(#dfe9ed, #08743c);
-    font-size: 24px;
+    font-size: var(--app-fs-stat);
     font-weight: 800
 }
 
 .student-profile h3 {
     margin: 5px 0 12px;
-    font-size: 14px
+    font-size: var(--app-fs-body)
 }
 
 .student-profile h3 em {
     padding: 4px 8px;
-    border-radius: 4px;
-    color: #08743c;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-primary-dark);
     background: #e6f5ea;
-    font-size: 12px;
+    font-size: var(--app-fs-meta);
     font-style: normal
 }
 
 .student-profile dl {
     display: grid;
     grid-template-columns: 70px 1fr;
-    gap: 9px;
+    gap: var(--app-space-2);
     margin: 0;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .student-profile dd {
@@ -218,8 +218,8 @@
 
 .profile-facts b {
     padding: 4px 8px;
-    border-radius: 4px;
-    color: #08743c;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-primary-dark);
     background: #e5f5ea
 }
 
@@ -232,8 +232,8 @@
 
 .correction-grid label {
     display: grid;
-    gap: 7px;
-    font-size: 12px
+    gap: var(--app-space-2);
+    font-size: var(--app-fs-meta)
 }
 
 .correction-grid em {
@@ -247,10 +247,10 @@
     height: 36px;
     padding: 0 11px;
     border: 1px solid #d8e1eb;
-    border-radius: 5px;
-    color: #10175e;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-navy);
     background: #fff;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .correction-grid textarea {
@@ -270,7 +270,7 @@
     min-height: 78px;
     padding: 14px;
     border: 1px solid #dce5ef;
-    border-radius: 6px
+    border-radius: var(--app-radius-sm)
 }
 
 .attendance-state span {
@@ -280,17 +280,17 @@
 }
 
 .attendance-state i {
-    font-size: 20px
+    font-size: var(--app-fs-h2)
 }
 
 .attendance-state b {
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .attendance-state small {
     display: block;
     margin: 7px 0 0 30px;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .attendance-state.original {
@@ -298,7 +298,7 @@
 }
 
 .attendance-state.corrected {
-    color: #08743c
+    color: var(--app-primary-dark)
 }
 
 .correction-details footer {
@@ -314,30 +314,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--app-space-2);
     min-width: 110px;
     border: 1px solid #d8e1eb;
-    border-radius: 5px;
-    color: #10175e;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-navy);
     background: #fff;
     text-decoration: none;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .correction-details footer button {
     min-width: 270px;
-    border-color: #076534;
+    border-color: var(--app-primary-dark);
     color: #fff;
-    background: #076534
+    background: var(--app-primary-dark)
 }
 
 .approval-note {
     padding: 13px;
     border: 1px solid #c9daf5;
-    border-radius: 5px;
+    border-radius: var(--app-radius-sm);
     color: #183575;
     background: #f5f8ff;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .approval-note i {
@@ -357,18 +357,18 @@
 .month-summary>div {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: var(--app-space-2-5);
     padding: 4px 10px
 }
 
 .month-summary span {
     padding: 13px 4px;
     border: 1px solid #d4e5da;
-    border-radius: 6px;
-    color: #08743c;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-primary-dark);
     background: #f5faf6;
     text-align: center;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .month-summary span:nth-child(2) {
@@ -393,7 +393,7 @@
 }
 
 .month-summary b {
-    font-size: 17px
+    font-size: var(--app-fs-h3)
 }
 
 .recent-corrections {
@@ -410,16 +410,16 @@
     height: 29px;
     margin-right: 12px;
     border: 1px solid #dbe3ec;
-    color: #10175e;
+    color: var(--app-navy);
     background: #fff;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .recent-corrections article {
     display: grid;
     grid-template-columns: 30px 1fr 45px 90px;
     align-items: center;
-    gap: 8px;
+    gap: var(--app-space-2);
     padding: 9px 14px;
     border-top: 1px solid #e4eaf0
 }
@@ -431,23 +431,23 @@
     place-items: center;
     border-radius: 50%;
     color: #fff;
-    background: #08743c;
-    font-size: 12px
+    background: var(--app-primary-dark);
+    font-size: var(--app-fs-meta)
 }
 
 .recent-corrections article b,
 .recent-corrections article small {
     display: block;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .recent-corrections article em {
     padding: 4px;
-    border-radius: 4px;
-    color: #08743c;
+    border-radius: var(--app-radius-sm);
+    color: var(--app-primary-dark);
     background: #e5f5ea;
     text-align: center;
-    font-size: 12px;
+    font-size: var(--app-fs-meta);
     font-style: normal
 }
 
@@ -459,7 +459,7 @@
 .recent-corrections footer {
     padding: 14px;
     text-align: center;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .important {
@@ -471,7 +471,7 @@
 .important ul {
     margin: 0;
     padding: 0 28px;
-    font-size: 12px;
+    font-size: var(--app-fs-meta);
     line-height: 2
 }
 
@@ -482,7 +482,7 @@
 
 .help p {
     padding: 0 16px;
-    font-size: 12px;
+    font-size: var(--app-fs-meta);
     line-height: 1.7
 }
 
@@ -492,7 +492,7 @@
     border: 1px solid #ccdaeb;
     color: #11478b;
     background: #fff;
-    font-size: 12px
+    font-size: var(--app-fs-meta)
 }
 
 .correction-notice {
@@ -502,11 +502,11 @@
     z-index: 30;
     padding: 12px;
     border: 1px solid #b8ddc5;
-    color: #08743c;
+    color: var(--app-primary-dark);
     background: #f0faf3
 }
 
-@media(max-width:1050px) {
+@media (max-width:1050px) {
     .correction-layout {
         grid-template-columns: 1fr
     }
@@ -520,7 +520,7 @@
     }
 }
 
-@media(max-width:650px) {
+@media (max-width:650px) {
     .correction-page>header {
         flex-wrap: wrap
     }
@@ -561,7 +561,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 20px;
+    gap: var(--app-space-5);
     padding: 16px
 }
 
@@ -578,7 +578,7 @@
 .review-toolbar label,
 .resolution-reason {
     display: grid;
-    gap: 7px;
+    gap: var(--app-space-2);
     font-weight: 700
 }
 
@@ -587,7 +587,7 @@
     min-width: 180px;
     padding: 11px;
     border: 1px solid #d6e0da;
-    border-radius: 8px;
+    border-radius: var(--app-radius-sm);
     background: #fff
 }
 
@@ -632,9 +632,9 @@
 .review-actions button {
     padding: 8px 12px;
     border: 0;
-    border-radius: 7px;
+    border-radius: var(--app-radius-sm);
     color: #fff;
-    background: #168a4b;
+    background: var(--app-primary);
     font-weight: 700;
     cursor: pointer
 }
@@ -653,7 +653,7 @@
     resize: vertical
 }
 
-@media(max-width:760px) {
+@media (max-width:760px) {
     .review-toolbar {
         align-items: stretch;
         flex-direction: column

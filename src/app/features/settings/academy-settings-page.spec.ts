@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { AcademySettingsService } from '../../core/supabase/domain-services';
 import { DialogService } from '../../shared/dialog/dialog.service';
 import { AcademySettingsPage } from './academy-settings-page';
+import { PrintBrandService } from '../../shared/print/print-brand.service';
 import { ToastService } from '../../shared/toast/toast.service';
 
 describe('AcademySettingsPage WhatsApp test', () => {
@@ -16,16 +17,27 @@ describe('AcademySettingsPage WhatsApp test', () => {
         currency_code: 'INR',
         attendance_grace_minutes: 10,
         fee_due_day: 10,
+        address: {
+          line1: 'Sector 21',
+          city: 'Pune',
+          state: 'Maharashtra',
+          pinCode: '411014',
+        },
+        print_registration_number: 'REG-42',
+        print_terms: 'Fees are due on the tenth.',
+        print_footer_note: 'Fees once paid are non-refundable.',
       }),
       save: vi.fn().mockResolvedValue(undefined),
     };
     const toast = { error: vi.fn(), info: vi.fn(), success: vi.fn() };
+    const printBrand = { invalidate: vi.fn() };
     TestBed.configureTestingModule({
       imports: [AcademySettingsPage],
       providers: [
         provideRouter([]),
         { provide: AcademySettingsService, useValue: api },
         { provide: AuthService, useValue: { role: () => role } },
+        { provide: PrintBrandService, useValue: printBrand },
         { provide: ToastService, useValue: toast },
       ],
     });
@@ -36,7 +48,7 @@ describe('AcademySettingsPage WhatsApp test', () => {
     const dialogs = TestBed.inject(DialogService);
     const toastSpy = vi.spyOn(TestBed.inject(ToastService), 'error');
     const toastInfoSpy = vi.spyOn(TestBed.inject(ToastService), 'info');
-    return { fixture, state, open, dialogs, toast, toastSpy, toastInfoSpy, api };
+    return { fixture, state, open, dialogs, toast, toastSpy, toastInfoSpy, api, printBrand };
   }
 
   afterEach(() => {
@@ -135,5 +147,29 @@ describe('AcademySettingsPage WhatsApp test', () => {
     input.value = '9876543210';
     input.dispatchEvent(new Event('input'));
     expect(state['testRecipient']()).toBe('9876543210');
+  });
+
+  it('loads and saves print letterhead settings and refreshes the print brand', async () => {
+    const { state, api, printBrand } = setup();
+
+    await state['load']();
+
+    expect(state['form'].controls.printRegistrationNumber.value).toBe('REG-42');
+    expect(state['form'].controls.printTerms.value).toBe('Fees are due on the tenth.');
+    expect(state['form'].controls.printFooterNote.value).toBe(
+      'Fees once paid are non-refundable.',
+    );
+
+    state['form'].controls.printFooterNote.setValue('Updated printed footer');
+    await state['save']();
+
+    expect(api.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        print_registration_number: 'REG-42',
+        print_terms: 'Fees are due on the tenth.',
+        print_footer_note: 'Updated printed footer',
+      }),
+    );
+    expect(printBrand.invalidate).toHaveBeenCalledOnce();
   });
 });

@@ -1,20 +1,9 @@
-<nav class="settings-nav" aria-label="Settings sections">
-  <a routerLink="/settings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-    ariaCurrentWhenActive="page">
-    All settings
-  </a>
-  @for (section of sections; track section.path) {
-  <a [routerLink]="section.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-    ariaCurrentWhenActive="page">
-    {{ section.label }}
-  </a>
-  }
-</nav>
+<app-settings-tabs />
 
 
 
 @if (inviteOpen()) {
-<div class="dialog-backdrop" role="presentation" (click)="$event.target === $event.currentTarget && inviteOpen.set(false)">
+<div class="dialog-backdrop" appModalBackdrop (dismiss)="inviteOpen.set(false)">
   <form class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="inviteOpen.set(false)"
     aria-labelledby="invite-dialog-title" [formGroup]="form" (ngSubmit)="invite()">
     <header>
@@ -32,7 +21,8 @@
       </select></label>
     <footer>
       <button type="button" (click)="inviteOpen.set(false)">Cancel</button>
-      <button class="primary" [disabled]="saving()||form.invalid">{{saving()?'Sending…':'Send Invitation'}}</button>
+      <button type="submit" class="primary" [disabled]="saving()||form.invalid">{{saving()?'Sending…':'Send
+        Invitation'}}</button>
     </footer>
   </form>
 </div>

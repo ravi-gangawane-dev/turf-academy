@@ -99,7 +99,7 @@ describe('NotificationsPage',()=>{
     expect(fixture.nativeElement.textContent).toContain('delivered');
     expect(fixture.nativeElement.textContent).toContain('Notifications Management');
     expect(fixture.nativeElement.querySelector('a[href="/notifications/templates"]')).not.toBeNull();
-    expect(fixture.nativeElement.querySelectorAll('.notification-metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelectorAll('app-summary-cards app-summary-metric-card')).toHaveLength(5);
   });
   it('shows check-in and check-out attendance notifications in the activity feed',async()=>{
     const {fixture}=await setup(vi.fn().mockResolvedValue([

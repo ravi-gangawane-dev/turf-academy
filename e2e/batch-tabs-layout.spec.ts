@@ -7,7 +7,7 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const tab of ['', '/coach-assignment', '/student-allocation', '/schedule', '/capacity']) {
       await page.goto('/batches' + tab);
-      await expect(page.locator('.batch-tabs [aria-current="page"]')).toHaveCount(1);
+      await expect(page.locator('.section-tabs [aria-current="page"]')).toHaveCount(1);
       await expect(page.locator('.column-filters').first()).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(
         false,

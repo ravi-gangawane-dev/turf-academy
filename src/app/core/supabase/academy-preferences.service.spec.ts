@@ -7,6 +7,7 @@ describe('AcademyPreferencesService', () => {
   it('loads authoritative settings without requiring undeployed optional columns', async () => {
     const settings = { academy_name: 'API Academy', academy_code: 'TCM', academy_logo_url: null, currency_code: 'INR', timezone: 'Asia/Kolkata',
       attendance_grace_minutes: 7, fee_due_day: 5, notification_channels: ['in_app'] };
+    const expected = { ...settings, address: { line1: '', line2: '', city: '', state: '', pinCode: '' } };
     const query = { select: vi.fn(), eq: vi.fn(), single: vi.fn().mockResolvedValue({ data: settings, error: null }) };
     query.select.mockReturnValue(query); query.eq.mockReturnValue(query);
     TestBed.configureTestingModule({ providers: [
@@ -15,7 +16,7 @@ describe('AcademyPreferencesService', () => {
     ] });
     const service = TestBed.inject(AcademyPreferencesService);
     await service.load();
-    expect(service.value()).toEqual(settings);
+    expect(service.value()).toEqual(expected);
     expect(query.select).toHaveBeenCalledWith('academy_name,contact_email,contact_phone,address,currency_code,timezone,attendance_grace_minutes,fee_due_day,notification_channels');
   });
 });

@@ -10,7 +10,7 @@ import {
   PrintProfileSheetInput,
   PrintReceiptDocument,
 } from './print-document.models';
-import { PrintDocumentService, printFileName } from './print-document.service';
+import { PrintDocumentService, printBatchFileName, printFileName } from './print-document.service';
 import { PrintPageSetupService } from './print-page-setup.service';
 import { ToastService } from '../toast/toast.service';
 
@@ -210,6 +210,69 @@ describe('PrintDocumentService preview', () => {
       /^data:image\/png;base64,/,
     );
     expect(print).not.toHaveBeenCalled();
+  });
+
+  it('queues several ID cards as one preview with a shared brand load', async () => {
+    const { service, brandService } = setup();
+    const second: PrintIdCardInput = {
+      ...idCard,
+      cardNumber: 'ID-STU-TCA1002',
+      holderId: 's2',
+      fullName: 'Diya Sharma',
+      holderCode: 'TCA-1002',
+    };
+
+    await service.printIdCards([idCard, second], 'preview');
+
+    expect(brandService.load).toHaveBeenCalledOnce();
+    expect(service.previewBatch()).toHaveLength(2);
+    expect(service.preview()).toMatchObject({ kind: 'id-card', cardNumber: 'ID-STU-TCA1001' });
+    const [first, next] = service.previewBatch();
+    expect(first.kind === 'id-card' ? first.qrPayload : '').toBe('TCA:s1');
+    expect(next.kind === 'id-card' ? next.qrPayload : '').toBe('TCA:s2');
+    expect(print).not.toHaveBeenCalled();
+  });
+
+  it('prints a receipt batch once, page by page, and audits every receipt', async () => {
+    const originalTitle = globalThis.document.title;
+    let titleAtPrint = '';
+    print.mockImplementation(() => {
+      titleAtPrint = globalThis.document.title;
+    });
+    const { service, audit, brandService } = setup();
+    const second = { ...receipt, receiptNumber: 'RCP-43', studentName: 'Diya Sharma' };
+
+    await service.printReceipts([receipt, second], 'pdf');
+
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(brandService.load).toHaveBeenCalledOnce();
+    expect(titleAtPrint).toBe('Receipts-batch-2');
+    expect(globalThis.document.title).toBe(originalTitle);
+    expect(audit.recordInBackground).toHaveBeenCalledTimes(2);
+    expect(audit.recordInBackground).toHaveBeenNthCalledWith(1, {
+      action: 'download',
+      documentKind: 'receipt',
+      reference: 'RCP-42',
+      format: 'pdf',
+    });
+    expect(audit.recordInBackground).toHaveBeenNthCalledWith(2, {
+      action: 'download',
+      documentKind: 'receipt',
+      reference: 'RCP-43',
+      format: 'pdf',
+    });
+  });
+
+  it('prints every document queued in a batch preview', async () => {
+    const { service, audit } = setup();
+    const second = { ...receipt, receiptNumber: 'RCP-43' };
+    await service.printReceipts([receipt, second], 'preview');
+
+    await service.printPreviewed('print');
+
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(service.previewBatch()).toHaveLength(0);
+    expect(audit.recordInBackground).toHaveBeenCalledTimes(2);
   });
 
   it('namespaces guardian card payloads so they cannot match a student id', async () => {
@@ -416,6 +479,24 @@ describe('PrintDocumentService preview', () => {
         reference: 'payments/2026-11',
       }),
     ).toBe('Report-payments-2026-11');
+  });
+
+  it('names a batch by its document type and size', () => {
+    const receiptDocument = { ...receipt, kind: 'receipt' as const, brand };
+    const cardDocument = {
+      kind: 'id-card' as const,
+      brand,
+      ...idCard,
+      qrDataUrl: '',
+      qrPayload: 'TCA:s1',
+    };
+
+    expect(printBatchFileName([])).toBe('Document');
+    expect(printBatchFileName([receiptDocument])).toBe('Receipt-RCP-42');
+    expect(printBatchFileName([receiptDocument, receiptDocument])).toBe('Receipts-batch-2');
+    expect(printBatchFileName([cardDocument, cardDocument, cardDocument])).toBe(
+      'ID-cards-batch-3',
+    );
   });
 
   it('opens the preview shell while branding is still loading', async () => {

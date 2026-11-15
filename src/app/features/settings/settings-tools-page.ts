@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AcademyBackupService } from '../../core/supabase/academy-backup.service';
 import { ToastService } from '../../shared/toast/toast.service';
+import { LOCAL_KEYS, LocalStore } from '../../core/state/local-store';
 import { RoleCatalogService } from '../../core/auth/role-catalog.service';
 import { SettingsNavigation } from './settings-navigation';
 
@@ -17,6 +18,7 @@ import { SettingsNavigation } from './settings-navigation';
 export class SettingsToolsPage implements OnInit {
   private readonly backup = inject(AcademyBackupService);
   private readonly toast = inject(ToastService);
+  private readonly local = inject(LocalStore);
   protected readonly roleCatalog = inject(RoleCatalogService);
   protected readonly view = String(inject(ActivatedRoute).snapshot.data['settingsTool']);
   protected readonly roles = this.roleCatalog.roles;
@@ -45,11 +47,7 @@ export class SettingsToolsPage implements OnInit {
   ngOnInit() {
     if (this.view === 'permissions') void this.roleCatalog.load();
     let theme = document.documentElement.dataset['academyTheme'] || 'forest';
-    try {
-      theme = localStorage.getItem('academy-theme') || theme;
-    } catch {
-      /* Storage can be disabled by the browser. */
-    }
+    theme = this.local.read(LOCAL_KEYS.theme) || theme;
     this.theme.set(this.themes.some((choice) => choice.id === theme) ? theme : 'forest');
   }
   protected async reloadCatalog(): Promise<void> {
@@ -57,12 +55,11 @@ export class SettingsToolsPage implements OnInit {
   }
   protected setTheme(theme: string) {    this.theme.set(theme);
     document.documentElement.dataset['academyTheme'] = theme;
-    try {
-      localStorage.setItem('academy-theme', theme);
-      this.toast.success('Appearance saved.');
-    } catch {
-      this.toast.success('Appearance applied for this session.');
-    }
+    this.toast.success(
+      this.local.write(LOCAL_KEYS.theme, theme)
+        ? 'Appearance saved.'
+        : 'Appearance applied for this session.',
+    );
   }
   protected async exportData() {
     if (this.busy()) return;

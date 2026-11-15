@@ -1,4 +1,4 @@
-import { ApplicationRef, inject, Injectable, signal } from '@angular/core';
+import { ApplicationRef, computed, inject, Injectable, signal } from '@angular/core';
 import { ToastService } from '../toast/toast.service';
 import { PrintAuditService } from './print-audit.service';
 import { PrintBrandService } from './print-brand.service';
@@ -89,6 +89,15 @@ export function printFileName(document: PrintDocument): string {
   return reference ? `${label}-${reference}` : label;
 }
 
+/** File name for a print job; batches are numbered instead of using one reference. */
+export function printBatchFileName(documents: readonly PrintDocument[]): string {
+  const first = documents[0];
+  if (!first) return 'Document';
+  if (documents.length === 1) return printFileName(first);
+  const label = DOCUMENT_LABELS[first.kind];
+  return `${label}s-batch-${documents.length}`;
+}
+
 /**
  * Prepares a branded document and either prints it through the app-level host
  * or shows it in the on-screen preview. Branding always comes from Academy
@@ -102,9 +111,16 @@ export class PrintDocumentService {
   private readonly audit = inject(PrintAuditService);
   private readonly pageSetup = inject(PrintPageSetupService);
 
-  readonly document = signal<PrintDocument | null>(null);
-  /** Document currently shown in the on-screen preview, if any. */
-  readonly preview = signal<PrintDocument | null>(null);
+  private readonly previewDocuments = signal<readonly PrintDocument[]>([]);
+  private readonly printingDocuments = signal<readonly PrintDocument[]>([]);
+  /** First document in the on-screen preview, if any. */
+  readonly preview = computed(() => this.previewDocuments()[0] ?? null);
+  /** Every document in the on-screen preview, in print order. */
+  readonly previewBatch = this.previewDocuments.asReadonly();
+  /** First document handed to the browser print dialog, if any. */
+  readonly document = computed(() => this.printingDocuments()[0] ?? null);
+  /** Every document in the current print job, in print order. */
+  readonly documents = this.printingDocuments.asReadonly();
   /** True while branding, QR generation or image loading is still in progress. */
   readonly preparing = signal(false);
   /** Last preparation failure, shown by the preview and print dialogs. */
@@ -114,15 +130,38 @@ export class PrintDocumentService {
   private retryAction: (() => Promise<void>) | null = null;
 
   async printReceipt(data: ReceiptInput, destination: PrintDestination = 'print'): Promise<void> {
-    await this.run(async () => ({ ...data, kind: 'receipt', brand: await this.brand.load() }), destination);
+    await this.printReceipts([data], destination);
+  }
+
+  /** Print several live receipts as one browser print job, one receipt per page. */
+  async printReceipts(
+    receipts: readonly ReceiptInput[],
+    destination: PrintDestination = 'print',
+  ): Promise<void> {
+    if (!receipts.length) return;
+    await this.run(async () => {
+      const brand = await this.brand.load();
+      const documents: PrintDocument[] = receipts.map((data) => ({
+        ...data,
+        kind: 'receipt',
+        brand,
+      }));
+      return documents;
+    }, destination);
   }
 
   async printInvoice(data: InvoiceInput, destination: PrintDestination = 'print'): Promise<void> {
-    await this.run(async () => ({ ...data, kind: 'invoice', brand: await this.brand.load() }), destination);
+    await this.run(
+      async () => [{ ...data, kind: 'invoice', brand: await this.brand.load() }],
+      destination,
+    );
   }
 
   async printStatement(data: StatementInput, destination: PrintDestination = 'print'): Promise<void> {
-    await this.run(async () => ({ ...data, kind: 'statement', brand: await this.brand.load() }), destination);
+    await this.run(
+      async () => [{ ...data, kind: 'statement', brand: await this.brand.load() }],
+      destination,
+    );
   }
 
   async printRefundReceipt(
@@ -130,7 +169,7 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'refund-receipt', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'refund-receipt', brand: await this.brand.load() }],
       destination,
     );
   }
@@ -140,7 +179,7 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'attendance-register', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'attendance-register', brand: await this.brand.load() }],
       destination,
     );
   }
@@ -150,19 +189,33 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'attendance-matrix', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'attendance-matrix', brand: await this.brand.load() }],
       destination,
     );
   }
 
   async printIdCard(data: IdCardInput, destination: PrintDestination = 'print'): Promise<void> {
+    await this.printIdCards([data], destination);
+  }
+
+  /**
+   * Print several holders as one browser print job. Each holder keeps the
+   * existing duplex front/back sheet, and the sheets print in list order.
+   */
+  async printIdCards(
+    cards: readonly IdCardInput[],
+    destination: PrintDestination = 'print',
+  ): Promise<void> {
+    if (!cards.length) return;
     await this.run(async () => {
-      const qrPayload = idCardQrPayload(data.holderType, data.holderId);
-      const [brand, qrDataUrl] = await Promise.all([
-        this.brand.load(),
-        idCardQrDataUrl(qrPayload),
-      ]);
-      return { ...data, kind: 'id-card', brand, qrPayload, qrDataUrl };
+      const brand = await this.brand.load();
+      return Promise.all(
+        cards.map(async (data) => {
+          const qrPayload = idCardQrPayload(data.holderType, data.holderId);
+          const qrDataUrl = await idCardQrDataUrl(qrPayload);
+          return { ...data, kind: 'id-card' as const, brand, qrPayload, qrDataUrl };
+        }),
+      );
     }, destination);
   }
 
@@ -171,7 +224,7 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'enrollment-confirmation', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'enrollment-confirmation', brand: await this.brand.load() }],
       destination,
     );
   }
@@ -181,7 +234,7 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'batch-roster', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'batch-roster', brand: await this.brand.load() }],
       destination,
     );
   }
@@ -192,7 +245,7 @@ export class PrintDocumentService {
     destination: PrintDestination = 'print',
   ): Promise<void> {
     await this.run(
-      async () => ({ ...data, kind: 'profile-sheet', brand: await this.brand.load() }),
+      async () => [{ ...data, kind: 'profile-sheet', brand: await this.brand.load() }],
       destination,
     );
   }
@@ -200,18 +253,20 @@ export class PrintDocumentService {
   /** Print any exported table (reports, directories, queue) through the same pipeline. */
   async printTable(data: PrintTableInput, destination: PrintDestination = 'print'): Promise<void> {
     await this.run(
-      async () => ({
-        ...data,
-        kind: 'table',
-        brand: await this.brand.load(),
-        generatedAt: new Date().toISOString(),
-      }),
+      async () => [
+        {
+          ...data,
+          kind: 'table',
+          brand: await this.brand.load(),
+          generatedAt: new Date().toISOString(),
+        },
+      ],
       destination,
     );
   }
 
   private async run(
-    build: () => Promise<PrintDocument>,
+    build: () => Promise<readonly PrintDocument[]>,
     destination: PrintDestination,
   ): Promise<void> {
     this.preparing.set(true);
@@ -223,8 +278,8 @@ export class PrintDocumentService {
       this.retryAction = null;
     }
     try {
-      const document = await build();
-      await this.show(document, destination);
+      const documents = await build();
+      await this.show(documents, destination);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'The document could not be prepared.';
@@ -236,38 +291,45 @@ export class PrintDocumentService {
     }
   }
 
-  private async show(document: PrintDocument, destination: PrintDestination): Promise<void> {
+  private async show(
+    documents: readonly PrintDocument[],
+    destination: PrintDestination,
+  ): Promise<void> {
+    const first = documents[0];
+    if (!first) return;
     if (destination === 'preview') {
-      this.document.set(null);
-      this.preview.set(document);
+      this.printingDocuments.set([]);
+      this.previewDocuments.set(documents);
       this.appRef.tick();
       return;
     }
     this.previewOpen.set(false);
-    this.preview.set(null);
-    this.document.set(document);
+    this.previewDocuments.set([]);
+    this.printingDocuments.set(documents);
     this.appRef.tick();
     await this.waitForImages();
     const body = globalThis.document.body;
     const previousTitle = globalThis.document.title;
     body.classList.add('printing-document');
-    this.pageSetup.applyForPrint(document.kind);
-    globalThis.document.title = printFileName(document);
+    this.pageSetup.applyForPrint(first.kind);
+    globalThis.document.title = printBatchFileName(documents);
     try {
       globalThis.window.print();
     } finally {
       globalThis.document.title = previousTitle;
       body.classList.remove('printing-document');
       this.pageSetup.clearPrintSetup();
-      this.document.set(null);
+      this.printingDocuments.set([]);
       this.appRef.tick();
     }
-    this.audit.recordInBackground({
-      action: destination === 'pdf' ? 'download' : 'print',
-      documentKind: document.kind,
-      reference: documentReference(document),
-      format: destination === 'pdf' ? 'pdf' : 'print',
-    });
+    for (const document of documents) {
+      this.audit.recordInBackground({
+        action: destination === 'pdf' ? 'download' : 'print',
+        documentKind: document.kind,
+        reference: documentReference(document),
+        format: destination === 'pdf' ? 'pdf' : 'print',
+      });
+    }
     if (destination === 'pdf') {
       this.toast.info('Choose “Save as PDF” in the browser print dialog to download this document.');
     }
@@ -276,7 +338,7 @@ export class PrintDocumentService {
   /** Dismiss the on-screen preview without printing. */
   closePreview(): void {
     if (!this.preview() && !this.previewOpen()) return;
-    this.preview.set(null);
+    this.previewDocuments.set([]);
     this.previewOpen.set(false);
     this.error.set('');
     this.retryAction = null;
@@ -290,13 +352,13 @@ export class PrintDocumentService {
     await retry();
   }
 
-  /** Print the document that is currently in the preview. */
+  /** Print every document that is currently in the preview. */
   async printPreviewed(destination: Exclude<PrintDestination, 'preview'> = 'print'): Promise<void> {
-    const document = this.preview();
-    if (!document) return;
-    this.preview.set(null);
+    const documents = this.previewDocuments();
+    if (!documents.length) return;
+    this.previewDocuments.set([]);
     this.appRef.tick();
-    await this.show(document, destination);
+    await this.show(documents, destination);
   }
 
   /** Cross-origin logos may still be decoding when the dialog opens. */

@@ -1,0 +1,60 @@
+// Shared student-page presentation used by the student list and student details screens.
+// Extracted from students-page.scss so the details page does not compile the entire list stylesheet.
+@mixin page-base {
+@media (max-width: 1100px) {
+  .overview-right {
+    grid-column: 2;
+  }
+
+  .students-page:has(.profile-hero-grid) .performance-body {
+    grid-template-columns: 125px minmax(0, 1fr);
+    gap: var(--app-space-3-5);
+  }
+
+  .students-page:has(.profile-hero-grid) .detail-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .students-page:has(.profile-hero-grid) .detail-tabs {
+    gap: var(--app-space-half);
+    padding: 0;
+  }
+
+  .students-page:has(.profile-hero-grid) .overview-left,
+  .students-page:has(.profile-hero-grid) .overview-right {
+    grid-template-rows: auto;
+  }
+
+  .students-page:has(.profile-hero-grid) :is(.performance-card, .activity-card, .program-card, .guardian-card) {
+    padding: 16px;
+  }
+
+  .students-page:has(.profile-hero-grid) .performance-body {
+    grid-template-columns: 105px minmax(0, 1fr);
+  }
+
+  .students-page:has(.profile-hero-grid) .score-ring {
+    width: 96px;
+    height: 96px;
+  }
+
+  .students-page:has(.profile-hero-grid) .detail-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Column filters and sort controls must remain available on narrow screens. */
+.students-page .student-table.reference-table {
+  min-width: 1200px;
+  table-layout: auto;
+}
+
+.students-page .student-table.reference-table th,
+.students-page .student-table.reference-table td {
+  display: table-cell;
+  padding: 8px !important;
+}
+
+}

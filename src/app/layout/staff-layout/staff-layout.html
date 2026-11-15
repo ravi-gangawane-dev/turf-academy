@@ -1,9 +1,10 @@
 <div class="app-frame" [class.menu-open]="menuOpen()">
-  <button class="scrim" aria-label="Close navigation" (click)="toggleMenu()"></button>
+  <button type="button" class="scrim" aria-label="Close navigation" (click)="toggleMenu()"></button>
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-crest-box">
-        <img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="210" height="100" />
+        <img class="brand-logo" src="/branding/turf-cricket-academy-logo.png" alt="Turf Cricket Academy" width="210"
+          height="100" />
       </div>
       <div class="brand-details">
         <strong class="brand-name">Turf Academy</strong>
@@ -20,12 +21,13 @@
       }
       @if (item.route) {
       <a [routerLink]="itemRoute(item)" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' || item.route === '/coach/attendance' }" (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
-          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a>
+        [routerLinkActiveOptions]="{ exact: item.route === '/enrollments' || item.route === '/coach/attendance' }"
+        (click)="menuOpen.set(false)"><span class="nav-icon-wrap"><i class="pi"
+            [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ itemLabel(item) }}</span></a>
       } @else {
-      <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><span class="nav-icon-wrap"><i class="pi"
-          [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ item.label
-        }}</span><small>soon</small></span>
+      <span class="nav-disabled" [attr.aria-label]="item.label + ' coming next'"><span class="nav-icon-wrap"><i
+            class="pi" [class]="'pi ' + item.icon"></i></span><span class="nav-text">{{ item.label
+          }}</span><small>soon</small></span>
       }
       }
       }
@@ -55,7 +57,7 @@
 
   <div class="workspace">
     <header class="topbar">
-      <button class="menu-button" aria-label="Open navigation" (click)="toggleMenu()">
+      <button type="button" class="menu-button" aria-label="Open navigation" (click)="toggleMenu()">
         <i class="pi pi-bars"></i>
       </button>
       @if (auth.role() !== 'parent') {
@@ -63,13 +65,8 @@
         <label class="search">
           <i class="pi pi-search search-icon" aria-hidden="true"></i>
           <span class="sr-only">Search</span>
-          <input
-            aria-label="Search academy"
-            placeholder="Search students, parents, batches…"
-            [value]="globalSearch()"
-            (input)="globalSearch.set($any($event.target).value)"
-            (keydown.enter)="submitGlobalSearch()"
-          />
+          <input aria-label="Search academy" placeholder="Search students, parents, batches…" [value]="globalSearch()"
+            (input)="globalSearch.set($any($event.target).value)" (keydown.enter)="submitGlobalSearch()" />
           @if (globalSearch().trim()) {
           <button type="button" class="search-clear-btn" aria-label="Clear search" (click)="clearSearch($event)">
             <i class="pi pi-times"></i>
@@ -132,7 +129,7 @@
 
         <div class="top-divider"></div>
 
-        <button class="logout-button" aria-label="Sign out" title="Sign out" (click)="logout()">
+        <button type="button" class="logout-button" aria-label="Sign out" title="Sign out" (click)="logout()">
           <i class="pi pi-sign-out"></i>
         </button>
       </div>
@@ -154,13 +151,13 @@
     <div class="api-state pending-state" role="status">
       <i class="pi pi-sync" [class.pi-spin]="academy.attendanceOutbox.syncing()"></i>{{
       academy.attendanceOutbox.operations().length }} attendance changes need attention
-      <button (click)="academy.attendanceOutbox.retry()">Retry sync</button>
+      <button type="button" (click)="academy.attendanceOutbox.retry()">Retry sync</button>
     </div>
     }
     @if (academy.apiError()) {
     <div class="api-state error-state" role="alert">
       <i class="pi pi-exclamation-circle"></i>{{ academy.apiError()
-      }}<button (click)="academy.refresh()">Retry</button>
+      }}<button type="button" (click)="academy.refresh()">Retry</button>
     </div>
     }
     <main><router-outlet /></main>

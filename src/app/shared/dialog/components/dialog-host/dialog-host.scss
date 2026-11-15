@@ -8,21 +8,21 @@
   z-index: 1100;
   display: grid;
   place-items: center;
-  padding: 1rem;
-  background: rgba(7, 25, 47, 0.65);
+  padding: var(--app-space-4);
+  background: var(--app-overlay);
   animation: dialog-fade 0.15s ease-out;
 }
 
 .dialog-panel {
   width: min(520px, 100%);
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100vh - 2 * var(--app-space-4));
   display: flex;
   flex-direction: column;
-  background: #fff;
-  color: #1f3527;
-  border-radius: 14px;
-  border: 1px solid #dbe6e0;
-  box-shadow: 0 24px 70px rgba(8, 34, 22, 0.35);
+  background: var(--app-card);
+  color: var(--app-text);
+  border-radius: var(--app-radius-md);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-lg);
   overflow: hidden;
   animation: dialog-rise 0.18s ease-out;
 }
@@ -37,7 +37,7 @@
 
 .dialog-panel.size-full-screen {
   width: min(1100px, 100%);
-  height: calc(100vh - 2rem);
+  height: calc(100vh - 2 * var(--app-space-4));
   max-height: none;
 }
 
@@ -45,32 +45,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e4ede8;
-  background: #f7fbf8;
+  gap: var(--app-space-3);
+  padding: var(--app-space-3) var(--app-space-5);
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-muted);
 }
 
 .dialog-header h2 {
   margin: 0;
-  font-size: 1.05rem;
-  font-weight: 650;
-  color: #1d3b2a;
+  color: var(--app-text);
+  font-size: var(--app-fs-h3);
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .dialog-close {
   border: 0;
   background: transparent;
-  color: #52615a;
-  font-size: 1rem;
+  color: var(--app-muted);
+  font-size: var(--app-fs-h3);
+  line-height: 1;
   cursor: pointer;
-  padding: 0.35rem;
-  border-radius: 6px;
+  padding: var(--app-space-1);
+  border-radius: var(--app-radius-sm);
 }
 
 .dialog-close:hover:not(:disabled) {
-  background: #e9f2ec;
-  color: #1d3b2a;
+  background: var(--app-primary-soft);
+  color: var(--app-primary-dark);
 }
 
 .dialog-close:disabled {
@@ -79,67 +81,74 @@
 }
 
 .dialog-body {
-  padding: 1.1rem 1.25rem;
+  padding: var(--app-space-4) var(--app-space-5);
   overflow: auto;
+  color: var(--app-text);
+  font-size: var(--app-fs-body);
+  line-height: var(--app-line-height);
 }
 
 .dialog-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--app-space-3);
   flex-wrap: wrap;
-  padding: 0.85rem 1.25rem 1rem;
-  border-top: 1px solid #eef4f0;
-  background: #fbfdfb;
+  padding: var(--app-space-3) var(--app-space-5) var(--app-space-4);
+  border-top: 1px solid var(--app-border);
+  background: var(--app-card);
 }
 
 .dialog-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--app-space-2);
   margin-left: auto;
 }
 
 .dialog-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.05rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  justify-content: center;
+  gap: var(--app-space-2);
+  min-height: var(--app-control-md);
+  padding: 0 var(--app-space-4);
+  border-radius: var(--app-radius-sm);
+  border: 1px solid transparent;
+  font-size: var(--app-fs-body);
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid transparent;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .dialog-button.primary {
-  background: #277d47;
-  border-color: #277d47;
+  background: var(--app-primary);
+  border-color: var(--app-primary);
   color: #fff;
 }
 
 .dialog-button.primary:hover:not(:disabled) {
-  background: #1f6a3b;
+  background: var(--app-primary-dark);
+  border-color: var(--app-primary-dark);
 }
 
 .dialog-button.primary.danger {
-  background: #c0392b;
-  border-color: #c0392b;
+  background: var(--app-danger);
+  border-color: var(--app-danger);
 }
 
 .dialog-button.primary.danger:hover:not(:disabled) {
-  background: #a5301f;
+  background: color-mix(in srgb, var(--app-danger) 82%, #000);
+  border-color: color-mix(in srgb, var(--app-danger) 82%, #000);
 }
 
 .dialog-button.secondary {
-  background: #fff;
-  border-color: #c9d5cf;
-  color: #33503f;
+  background: var(--app-card);
+  border-color: var(--app-control-border);
+  color: var(--app-text);
 }
 
 .dialog-button.secondary:hover:not(:disabled) {
-  background: #f2f7f4;
+  background: var(--app-surface-muted);
 }
 
 .dialog-button:disabled {
@@ -149,19 +158,19 @@
 
 .dialog-button:focus-visible,
 .dialog-close:focus-visible {
-  outline: 2px solid #277d47;
+  outline: 2px solid var(--app-primary);
   outline-offset: 2px;
 }
 
 .preview-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  background: #eef4f0;
-  color: #33503f;
-  font-size: 0.72rem;
+  gap: var(--app-space-1);
+  padding: 4px var(--app-space-2);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface-muted);
+  color: var(--app-muted);
+  font-size: var(--app-fs-caption);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -215,7 +224,7 @@
     width: 100%;
     height: auto;
     max-height: 92vh;
-    border-radius: 14px 14px 0 0;
+    border-radius: var(--app-radius-md) var(--app-radius-md) 0 0;
   }
 
   .dialog-footer {

@@ -8,109 +8,90 @@
   <app-async-state kind="error" title="Could not load student" [message]="error()" actionLabel="Retry"
     (action)="retry()" />
   } @else if (data(); as workspace) {
-  <section class="profile-hero-grid">
-    <article class="profile-card">
-      <div class="student-photo">
+  <section class="profile-hero-grid entity-detail-summary">
+    <article class="profile-card detail-summary-card">
+      <div class="student-photo detail-summary-photo">
         @if (workspace.student.photoUrl) {
         <img [src]="workspace.student.photoUrl" [alt]="workspace.student.fullName" />
         } @else {
         <span>{{ initials(workspace.student.fullName) }}</span>
         }
       </div>
-      <div class="profile-content">
-        <header class="app-page-header">
+      <div class="profile-content detail-summary-identity">
+        <header class="detail-summary-heading">
           <div>
-            <h2 class="profile-name">
-              {{ workspace.student.fullName }}
-              <app-status-badge [status]="$any(workspace.student.status)" />
-            </h2>
-            <h2>
-              {{ related(workspace.enrollment, 'batch', 'name') || workspace.student.skillLevel }}
-            </h2>
+            <div class="title">
+              <h2 class="profile-name">{{ workspace.student.fullName }}</h2><app-status-badge
+                [status]="$any(workspace.student.status)" />
+            </div>
+
           </div>
-          @if (auth.hasPermission('students:write')) {
-          <button class="app-button" (click)="edit()">
-            <i class="pi pi-pencil"></i>Edit student
-          </button>
-          }
+
         </header>
-        <dl class="profile-facts">
-          <div>
-            <dt>Student ID</dt>
-            <dd>{{ workspace.student.studentCode }}</dd>
+        <div class="detail-summary-facts common-facts">
+          <div><i aria-hidden="true" class="pi pi-id-card"></i><span>Student ID<strong>{{ workspace.student.studentCode
+                }}</strong></span></div>
+          <div><i aria-hidden="true" class="pi pi-phone"></i><span>Phone<strong>{{ workspace.student.phone || '—'
+                }}</strong></span></div>
+          <div><i aria-hidden="true" class="pi pi-envelope"></i><span>Email<strong>{{ workspace.student.email || '—'
+                }}</strong></span></div>
+          <div class="address-detail"><i aria-hidden="true"
+              class="pi pi-map-marker"></i><span>Address<strong><app-address-fields [value]="workspace.student.address"
+                  [inline]="true" /></strong></span></div>
+        </div>
+        <section class="role-details" aria-label="student details">
+          <h3>Student details</h3>
+          <div class="detail-summary-facts">
+            <div><i aria-hidden="true" class="pi pi-users"></i><span>Batch / skill level<strong>{{
+                  related(workspace.enrollment, 'batch', 'name') || workspace.student.skillLevel }}</strong></span>
+            </div>
+            <div><i aria-hidden="true" class="pi pi-calendar"></i><span>Date of birth<strong>{{
+                  workspace.student.dateOfBirth | academyDate: 'dd MMM yyyy' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-user"></i><span>Gender<strong>{{ workspace.student.gender || '—'
+                  }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-heart"></i><span>Blood group<strong>{{ workspace.student.bloodGroup
+                  || '—' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-users"></i><span>Guardian<strong>{{ workspace.student.parentName ||
+                  '—' }}</strong></span></div>
+            <div><i aria-hidden="true" class="pi pi-clock"></i><span>Joined on<strong>{{ workspace.student.joinedOn |
+                  academyDate: 'dd MMM yyyy' }}</strong></span></div>
           </div>
-          <div>
-            <dt>Date of birth</dt>
-            <dd>{{ workspace.student.dateOfBirth | date: 'dd MMM yyyy' }}</dd>
-          </div>
-          <div>
-            <dt>Gender</dt>
-            <dd>{{ workspace.student.gender || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Blood group</dt>
-            <dd>{{ workspace.student.bloodGroup || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Phone</dt>
-            <dd>{{ workspace.student.phone || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Email</dt>
-            <dd>{{ workspace.student.email || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Guardian</dt>
-            <dd>{{ workspace.student.parentName || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Joined on</dt>
-            <dd>{{ workspace.student.joinedOn | date: 'dd MMM yyyy' }}</dd>
-          </div>
-          <div class="address-detail">
-            <dt>Address</dt>
-            <dd><app-address-fields [value]="workspace.student.address" /></dd>
-          </div>
-        </dl>
+        </section>
       </div>
     </article>
-    <aside class="quick-actions-card">
+    <aside class="quick-actions-card detail-summary-actions">
       <h2>Quick actions</h2>
       @if (auth.hasPermission('students:write')) {
-      <button (click)="edit()"><i class="pi pi-pencil"></i>Edit student</button>
+      <button type="button" (click)="edit()">
+        <i class="pi pi-pencil"></i>Edit student
+      </button>
       }
-      <button (click)="markAttendance()">
+      <button type="button" (click)="openIdCard()"><i class="pi pi-id-card"></i>Student ID card</button>
+      <button type="button" (click)="printProfileSheet()" [disabled]="profileLoading()">
+        <i class="pi pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Student profile sheet' }}
+      </button>
+      <button type="button" (click)="sendMessage()"><i class="pi pi-comment"></i>Send message</button>
+      <button type="button" (click)="markAttendance()">
         <i class="pi pi-check-circle"></i>Mark attendance
       </button>
-      <button (click)="setTab('timeline')"><i class="pi pi-history"></i>View timeline</button>
       @if (auth.hasPermission('fees:write')) {
-      <button (click)="openPayments()"><i class="pi pi-wallet"></i>Payment history</button>
+      <button type="button" (click)="openPayments()"><i class="pi pi-wallet"></i>Payment history</button>
       }
-      <button (click)="sendMessage()"><i class="pi pi-comment"></i>Send message</button>
-      <button (click)="openIdCard()"><i class="pi pi-id-card"></i>ID card</button>
-      <button (click)="printProfileSheet()" [disabled]="profileLoading()">
-        <i class="pi pi-file"></i>{{ profileLoading() ? 'Preparing profile…' : 'Profile sheet' }}
-      </button>
-      <button (click)="backToStudents()"><i class="pi pi-arrow-left"></i>Back to students</button>
+
     </aside>
   </section>
   <app-print-id-card-dialog [open]="idCardOpen()" [card]="idCard()" [busy]="idCardLoading()" [error]="idCardError()"
     (prepare)="printIdCard($event)" (retry)="retryIdCard()" (closed)="closeIdCard()" />
-  <nav class="detail-tabs" aria-label="Student details sections">
+  <nav class="detail-tabs" role="tablist" aria-label="Student details sections">
     @for (
     tab of ['overview', 'documents', 'attendance', 'payments', 'medical', 'timeline'];
     track tab
     ) {
-    <button [class.active]="activeTab() === tab" (click)="setTab($any(tab))">{{ tab }}</button>
+    <button type="button" role="tab" [attr.aria-selected]="activeTab() === tab" [class.active]="activeTab() === tab"
+      (click)="setTab($any(tab))">{{ tab }}</button>
     }
   </nav>
 
-  @if(['documents','attendance','payments','timeline'].includes(activeTab())){
-  <button (click)="columns.reset()">Reset filters</button>
-  @if(tableLoading()){<app-async-state title="Loading records..." />}
-  @if(tableError()){<app-async-state kind="error" title="History unavailable" [message]="tableError()"
-    actionLabel="Retry" (action)="changeHistoryPage(activeTab(),1)" />}
-  }
   @if (activeTab() === 'overview') {
   <section class="live-overview">
     <article class="detail-card">
@@ -121,7 +102,7 @@
             timelineValue(event, 'detail') ||
             'Recorded
             activity'
-            }}</small></span><time>{{ timelineValue(event, 'date') | date: 'dd MMM yyyy, h:mm a' }}</time>
+            }}</small></span><time>{{ timelineValue(event, 'date') | academyDate: 'dd MMM yyyy, h:mm a' }}</time>
       </div>
       } @empty {
       <app-async-state kind="empty" title="No recent activity" message="Student activity will appear here." />
@@ -138,7 +119,7 @@
           <dt>Status</dt>
           <dd>{{ text(workspace.enrollment, 'status') || '—' }}</dd>
           <dt>Valid from</dt>
-          <dd>{{ (text(workspace.enrollment, 'valid_from') | date: 'dd MMM yyyy') || '—' }}</dd>
+          <dd>{{ (text(workspace.enrollment, 'valid_from') | academyDate: 'dd MMM yyyy') || '—' }}</dd>
         </dl>
       </article>
       <article class="detail-card">
@@ -210,7 +191,7 @@
               <strong>{{ text(row, 'file_name') }}</strong>
             </td>
             <td>{{ text(row, 'document_type') }}</td>
-            <td>{{ text(row, 'created_at') | date: 'dd MMM yyyy, h:mm a' }}</td>
+            <td>{{ text(row, 'created_at') | academyDate: 'dd MMM yyyy, h:mm a' }}</td>
             <td>{{ related(row, 'uploader', 'full_name') || '—' }}</td>
             <td>{{ fileSize(row['size_bytes']) }}</td>
           </tr>
@@ -275,13 +256,13 @@
         <tbody>
           @for (row of workspace.attendance; track text(row, 'id')) {
           <tr>
-            <td>{{ text(row, 'attendance_date') | date: 'dd MMM yyyy' }}</td>
+            <td>{{ text(row, 'attendance_date') | academyDate: 'dd MMM yyyy' }}</td>
             <td>{{ related(row, 'batch', 'name') || '—' }}</td>
             <td>
               <app-status-badge [status]="$any(text(row, 'status'))" />
             </td>
-            <td>{{ (text(row, 'check_in_at') | date: 'h:mm a') || '—' }}</td>
-            <td>{{ (text(row, 'check_out_at') | date: 'h:mm a') || '—' }}</td>
+            <td>{{ (text(row, 'check_in_at') | academyDate: 'h:mm a') || '—' }}</td>
+            <td>{{ (text(row, 'check_out_at') | academyDate: 'h:mm a') || '—' }}</td>
             <td>{{ related(row, 'recorder', 'full_name') || '—' }}</td>
           </tr>
           } @empty {
@@ -342,7 +323,7 @@
         <tbody>
           @for (row of workspace.payments; track text(row, 'id')) {
           <tr>
-            <td>{{ text(row, 'paid_at') | date: 'dd MMM yyyy, h:mm a' }}</td>
+            <td>{{ text(row, 'paid_at') | academyDate: 'dd MMM yyyy, h:mm a' }}</td>
             <td>{{ amount(row) | academyMoney }}</td>
             <td>{{ text(row, 'payment_mode') }}</td>
             <td>
@@ -415,7 +396,7 @@
           </tr>
         </thead>
         <tbody>@for(event of timeline();track event['id']){<tr>
-            <td>{{$any(event['date']) | date:'medium'}}</td>
+            <td>{{$any(event['date']) | academyDate:'medium'}}</td>
             <td>{{event['title']}}</td>
             <td>{{event['detail']}}</td>
           </tr>}@empty{<tr>

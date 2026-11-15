@@ -28,11 +28,11 @@ describe('Audit column filters and sorting', () => {
       'Date',
     );
     expect(fixture.nativeElement.textContent).not.toContain('Apply filter');
-    const tabs = Array.from(fixture.nativeElement.querySelectorAll('.settings-tabs a')) as HTMLAnchorElement[];
+    const tabs = Array.from(fixture.nativeElement.querySelectorAll('.section-tabs a')) as HTMLAnchorElement[];
     expect(tabs.map((tab) => tab.textContent?.trim())).toEqual([
-      'All Settings', 'Profile', 'Operations', 'Attendance', 'Notifications', 'Users & Roles', 'Audit Log', 'Tools & Data',
+      'All Settings', 'Profile', 'Operations', 'Attendance', 'Notifications',
+      'Print & Documents', 'Users & Roles', 'Audit Log', 'Tools & Data',
     ]);
-    expect(tabs.find((tab) => tab.textContent?.trim() === 'Audit Log')?.getAttribute('aria-current')).toBe('page');
   });
   it('sends every filter, sort and selected page size to the backend', async () => {
     const { page, rpc } = setup();

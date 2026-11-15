@@ -1,6 +1,7 @@
 @use '../students/student-form-page.scss';
-.parent-form-page { height: 100%; font-size: 12px; }
+.parent-form-page { height: 100%; font-size: var(--app-fs-meta); }
 .relationship .two { grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr); }
-.check { display: flex; align-items: center; gap: 8px; padding-top: 20px; }
+.check { display: flex; align-items: center; gap: var(--app-space-2); padding-top: 20px; }
 .check input { width: 18px; height: 18px; }
 .help p { margin: 10px 0; color: var(--app-muted); line-height: 1.55; }
+.field-help { color: var(--app-muted); font-size: var(--app-fs-meta); font-weight: 400; line-height: 1.5; }

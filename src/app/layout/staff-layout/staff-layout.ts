@@ -14,6 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from '../../core/auth/auth.service';
 import { AcademyFacade } from '../../core/state/academy.facade';
+import { LOCAL_KEYS, LocalStore } from '../../core/state/local-store';
 import { Permission } from '../../core/auth/permissions';
 import { NotificationsService, ParentsService } from '../../core/supabase/domain-services';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
@@ -40,6 +41,7 @@ export class StaffLayout implements OnInit {
   private readonly preferences = inject(AcademyPreferencesService);
   protected readonly auth = inject(AuthService);
   protected readonly academy = inject(AcademyFacade);
+  private readonly local = inject(LocalStore);
   protected readonly router = inject(Router);
   private readonly parents = inject(ParentsService);
   private readonly notifications = inject(NotificationsService);
@@ -237,7 +239,8 @@ export class StaffLayout implements OnInit {
     }
   }
   ngOnInit(): void {
-    try { const theme = localStorage.getItem('academy-theme'); if (theme && ['forest', 'blue', 'contrast'].includes(theme)) document.documentElement.dataset['academyTheme'] = theme; } catch {/* Default appearance remains usable without local storage. */ }
+    const theme = this.local.read(LOCAL_KEYS.theme);
+    if (theme && ['forest', 'blue', 'contrast'].includes(theme)) document.documentElement.dataset['academyTheme'] = theme;
     void this.preferences.load().catch(() => undefined);
     void this.loadProfilePhoto();
     this.router.events

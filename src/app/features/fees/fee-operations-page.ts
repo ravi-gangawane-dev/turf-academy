@@ -1,15 +1,17 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { FeeViewNavigation } from './fee-view-navigation';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { ServerListService } from '../../core/supabase/server-list.service';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { FormsModule } from '@angular/forms';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -52,18 +54,17 @@ interface Row {
   selector: 'app-fee-operations-page',
   imports: [FeeViewNavigation, TableTools,
     ColumnFilter,
-    Pagination,
+    DataTable,
     StatusBadge,
     FormsModule,
     PageHero,
     ModalFocus,
     AcademyMoneyPipe,
-    DatePipe,
+    AcademyDatePipe,
     TitleCasePipe,
     ReactiveFormsModule,
     SummaryMetricCard,
-    SortableHeader,
-  ],
+    SortableHeader, ModalBackdrop],
   templateUrl: './fee-operations-page.html',
   styleUrl: './fee-operations-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

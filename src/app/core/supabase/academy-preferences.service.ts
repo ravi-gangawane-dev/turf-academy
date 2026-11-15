@@ -1,8 +1,12 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, Injector, signal } from '@angular/core';
 import { API_CONFIG } from '../config/api.config';
 import { DataRequestError } from './data-error';
 import { DatabaseService } from './database.service';
 import { Address, addressFromDatabase } from '../models/address.model';
+import {
+  academyLocaleForCurrency,
+  DEFAULT_ACADEMY_TIMEZONE,
+} from '../localisation/academy-locale';
 
 export interface AcademyPreferences {
   academy_name: string;
@@ -23,8 +27,8 @@ export const FALLBACK_ACADEMY_LOGO = '/branding/turf-cricket-academy-logo.png';
 
 @Injectable({ providedIn: 'root' })
 export class AcademyPreferencesService {
-  private readonly db = inject(DatabaseService);
-  private readonly config = inject(API_CONFIG);
+  // Resolved on demand so formatting pipes can be used without constructing a database client.
+  private readonly injector = inject(Injector);
 
   readonly value = signal<AcademyPreferences>({
     academy_name: 'Turf Cricket Academy',
@@ -41,6 +45,11 @@ export class AcademyPreferencesService {
   });
 
   readonly currency = computed(() => this.value().currency_code);
+  readonly timezone = computed(
+    () => String(this.value().timezone ?? '').trim() || DEFAULT_ACADEMY_TIMEZONE,
+  );
+  /** English formatting locale that matches the saved currency conventions. */
+  readonly locale = computed(() => academyLocaleForCurrency(this.currency()));
   readonly logoUrl = computed(
     () => String(this.value().academy_logo_url ?? '').trim() || FALLBACK_ACADEMY_LOGO,
   );
@@ -48,9 +57,11 @@ export class AcademyPreferencesService {
   private pending?: Promise<void>;
 
   load(): Promise<void> {
-    if (this.config.useMockApi) return Promise.resolve();
+    const config = this.injector.get(API_CONFIG);
+    if (config.useMockApi) return Promise.resolve();
     return this.pending ??= (async () => {
-      const r = await this.db.client.from('academy_settings')
+      const db = this.injector.get(DatabaseService);
+      const r = await db.client.from('academy_settings')
         // academy_code is optional in older deployed schemas; keep preferences
         // readable until the contract migration is applied remotely.
         .select('academy_name,contact_email,contact_phone,address,currency_code,timezone,attendance_grace_minutes,fee_due_day,notification_channels')
@@ -71,7 +82,7 @@ export class AcademyPreferencesService {
 
   today(): string {
     return new Intl.DateTimeFormat('en-CA', {
-      timeZone: this.value().timezone,
+      timeZone: this.timezone(),
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
@@ -79,7 +90,7 @@ export class AcademyPreferencesService {
   }
 
   money(amount: number): string {
-    return new Intl.NumberFormat('en-IN', {
+    return new Intl.NumberFormat(this.locale(), {
       style: 'currency',
       currency: this.currency()
     }).format(amount);

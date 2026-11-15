@@ -43,7 +43,8 @@ export class PrintPreview {
   private readonly source = inject(PrintDocumentService);
   private readonly pageSetup = inject(PrintPageSetupService);
 
-  protected readonly document = this.source.preview;
+  protected readonly documents = this.source.previewBatch;
+  protected readonly document = computed(() => this.documents()[0] ?? null);
   protected readonly open = this.source.previewOpen;
   protected readonly preparing = this.source.preparing;
   protected readonly error = this.source.error;
@@ -56,11 +57,24 @@ export class PrintPreview {
   protected readonly orientations = PRINT_ORIENTATIONS;
 
   protected readonly title = computed(() => {
-    const document = this.document();
-    if (document?.kind === 'id-card') {
+    const documents = this.documents();
+    const document = documents[0];
+    if (!document) return 'Document';
+    if (documents.length > 1) {
+      if (document.kind === 'id-card') return `${documents.length} ID cards`;
+      if (document.kind === 'receipt') return `${documents.length} payment receipts`;
+      return `${documents.length} ${(TITLES[document.kind] ?? 'documents').toLowerCase()}`;
+    }
+    if (document.kind === 'id-card') {
       return document.holderType === 'coach' ? 'Coach ID card' : 'Student ID card';
     }
-    return TITLES[document?.kind ?? ''] ?? 'Document';
+    return TITLES[document.kind] ?? 'Document';
+  });
+  /** Remembered paper choice is labelled with the document type, not the batch size. */
+  protected readonly setupLabel = computed(() => {
+    const document = this.document();
+    if (!document) return 'this document';
+    return document.kind === 'id-card' ? 'ID cards' : TITLES[document.kind] ?? 'this document';
   });
   protected readonly setup = computed<PrintPageSetup>(() => {
     const document = this.document();

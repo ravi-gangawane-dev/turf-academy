@@ -82,6 +82,20 @@ function setup() {
 
 describe('Parent details shared pagination and states', () => {
   afterEach(() => TestBed.resetTestingModule());
+  it('shows common contact fields before the parent-specific fields', async () => {
+    const { fixture } = setup();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const facts = fixture.nativeElement.querySelector('.common-facts') as HTMLElement;
+    const factsText = facts.textContent ?? '';
+    expect(Array.from(facts.children).map(field => field.querySelector('span')?.firstChild?.textContent?.trim()))
+      .toEqual(['Parent ID', 'Phone', 'Email', 'Address']);
+    expect(fixture.nativeElement.querySelector('.role-details').textContent).toContain('Preferred contact');
+    expect(factsText).toContain('Kharadi, Pune, Maharashtra, 411001');
+  });
+
   it.each(['activity', 'payments', 'notifications'])('changes page size for %s', async tab => {
     const { fixture, activity, ledgerPage, page } = setup();
     fixture.detectChanges();
@@ -113,6 +127,41 @@ describe('Parent details shared pagination and states', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Please try again.');
     expect(fixture.nativeElement.textContent).not.toContain('No activity recorded');
+  });
+
+  it('renders notifications in a table', async () => {
+    const { fixture, page } = setup();
+    page.mockResolvedValue({
+      rows: [{
+        id: 'notice-1',
+        subject: 'Training update',
+        body: 'Practice starts at 5 PM.',
+        channel: 'in_app',
+        status: 'sent',
+        created_at: '2026-11-14T12:00:00Z',
+      }],
+      total: 1,
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await fixture.componentInstance['selectTab']('notifications');
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('.detail-panel table') as HTMLTableElement;
+    expect(Array.from(table.querySelectorAll('thead th')).map(header => header.textContent?.trim())).toEqual([
+      'Subject',
+      'Message',
+      'Channel',
+      'Status',
+      'Date',
+    ]);
+    expect(table.textContent).toContain('Training update');
+    expect(table.textContent).toContain('Practice starts at 5 PM.');
+    expect(table.textContent).toContain('in_app');
+    const toolbarButtons = Array.from(fixture.nativeElement.querySelectorAll(
+      'app-table-tools .table-tools-actions button',
+    )) as HTMLButtonElement[];
+    expect(toolbarButtons.map(button => button.textContent?.trim())).toEqual(['New message', 'Export']);
   });
 });
 

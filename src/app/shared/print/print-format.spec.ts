@@ -1,5 +1,6 @@
 import {
   amountInWords,
+  printDateOnly,
   printMoney,
   printProfileReference,
   printStatusLabel,
@@ -23,6 +24,12 @@ describe('print-format', () => {
   it('formats money with the document currency', () => {
     expect(printMoney(1250.5, 'INR')).toContain('1,250.50');
     expect(printMoney(0, 'USD')).toContain('0.00');
+  });
+
+  it('keeps date-only print values on the same day for every currency locale', () => {
+    expect(printDateOnly('2026-11-15', 'INR')).toBe('15 Nov 2026');
+    expect(printDateOnly('2026-11-15', 'USD')).toBe('Nov 15, 2026');
+    expect(printDateOnly('', 'USD')).toBe('—');
   });
 
   it('builds a stable profile sheet reference from the real academy code', () => {

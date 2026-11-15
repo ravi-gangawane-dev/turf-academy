@@ -1,6 +1,6 @@
 import { AttendanceViewNavigation } from './attendance-view-navigation';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AttendanceHistoryPage } from './attendance-history-page';
 import { AttendanceCorrectionPage } from './attendance-correction-page';
@@ -21,12 +21,6 @@ type Tab = 'history' | 'corrections';
 })
 export class AttendanceHistoryCorrectionsPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-
-  protected readonly tabs: readonly { id: Tab; label: string; icon: string }[] = [
-    { id: 'history', label: 'Attendance History', icon: 'pi-list' },
-    { id: 'corrections', label: 'Attendance Corrections', icon: 'pi-pencil' },
-  ];
 
   protected readonly tab = signal<Tab>(
     this.route.snapshot.data['tab'] === 'corrections' ||
@@ -35,14 +29,4 @@ export class AttendanceHistoryCorrectionsPage {
       : 'history',
   );
 
-  protected select(tab: Tab): void {
-    if (tab === this.tab()) return;
-    this.tab.set(tab);
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab: tab === 'corrections' ? 'corrections' : null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
 }

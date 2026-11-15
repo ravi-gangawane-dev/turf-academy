@@ -1,6 +1,7 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { AttendanceViewNavigation } from './attendance-view-navigation';
 import { PageHero } from '../../shared/page-hero/page-hero';
-import { DatePipe } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { attendanceTimestamp } from '../../core/supabase/attendance-timestamp';
@@ -20,11 +21,12 @@ import { ToastService } from '../../shared/toast/toast.service';
 import { AttendanceWhatsApp } from '../../core/services/whatsapp.service';
 
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 import { WhatsappAction } from '../../shared/whatsapp-action/whatsapp-action';
 
 @Component({
   selector: 'app-qr-attendance-page',
-  imports: [AttendanceViewNavigation, PageHero, DatePipe, FormsModule, RouterLink, WhatsappAction, ModalFocus],
+  imports: [AttendanceViewNavigation, PageHero, AcademyDatePipe, FormsModule, RouterLink, WhatsappAction, ModalFocus, ModalBackdrop],
   templateUrl: './qr-attendance-page.html',
   styleUrl: './qr-attendance-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -4,8 +4,8 @@
 }
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--app-space-3);
 }
 button {
   min-height: 100px;
@@ -13,13 +13,13 @@ button {
   display: grid;
   grid-template-columns: 45px 1fr auto;
   align-items: center;
-  gap: 2px 12px;
+  gap: var(--app-space-half) var(--app-space-3);
   border: 1px solid #dce6e1;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   color: #14221b;
   background: #fff;
   text-align: left;
-  box-shadow: 0 2px 8px rgba(13, 56, 39, 0.035);
+  box-shadow: var(--app-shadow);
 }
 button:disabled {
   opacity: 1;
@@ -34,13 +34,13 @@ button > i {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #078345;
+  color: var(--app-primary);
   background: #e6f7ed;
-  font-size: 18px;
+  font-size: var(--app-fs-h3);
 }
 button span {
   display: grid;
-  gap: 2px;
+  gap: var(--app-space-half);
   color: #66776f;
 }
 button small {
@@ -48,7 +48,7 @@ button small {
 }
 button strong {
   grid-column: 2;
-  font-size: 24px;
+  font-size: var(--app-fs-stat);
 }
 button em {
   grid-column: 3;

@@ -1,8 +1,4 @@
-import { TableTools } from '../../shared/data-table/table-tools';
-import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
-import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
-import { AsyncState } from '../../shared/async-state/async-state';
-import { DatePipe, formatDate } from '@angular/common';
+import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,34 +13,56 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { utcDateOnly } from '../../core/localisation/academy-locale';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+import { AsyncState } from '../../shared/async-state/async-state';
+import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { DataTable } from '../../shared/data-table/data-table';
-import { PageHero } from '../../shared/page-hero/page-hero';
-import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
-import { StudentListItem, StudentListService, StudentSummary } from './student-list.service';
-import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { ToastService } from '../../shared/toast/toast.service';
-import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
-import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { TableTools } from '../../shared/data-table/table-tools';
 import { ExportColumn, ExportRow } from '../../shared/export/export.models';
+import { InteractionDialogService } from '../../shared/interaction-dialog/interaction-dialog.service';
+import { ListQueryState } from '../../shared/list-query';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { idCardNumber } from '../../shared/print/id-card-qr';
+import { PrintIdCardInput } from '../../shared/print/print-document.models';
+import { PrintDocumentService } from '../../shared/print/print-document.service';
+import { printDateOnly } from '../../shared/print/print-format';
+import { SortableHeader } from '../../shared/sortable-header/sortable-header';
+import { StatusBadge } from '../../shared/status-badge/status-badge';
+import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
+import { ToastService } from '../../shared/toast/toast.service';
+import { StudentListItem, StudentListService, StudentSummary } from './student-list.service';
 
 @Component({
   selector: 'app-students-page',
-  imports: [TableTools, AsyncState, DatePipe, PageHero, DataTable, ColumnFilter, StatusBadge, SummaryMetricCard, SortableHeader],
+  imports: [TableTools, AsyncState, AcademyDatePipe, PageHero, DataTable, ColumnFilter, StatusBadge, SummaryMetricCard, SortableHeader],
   templateUrl: './students-page.html',
   styleUrl: './students-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentsPage implements OnInit {
   private requestSequence = 0;
-  protected readonly columns=createColumnFilters(()=>{this.page.set(1);void this.load();},()=>{++this.requestSequence;this.page.set(1);});
+  protected readonly columns = createColumnFilters(() => { this.page.set(1); void this.load(); }, () => { ++this.requestSequence; this.page.set(1); });
   private readonly router = inject(Router);
+  private readonly preferences = inject(AcademyPreferencesService);
   private readonly students = inject(StudentListService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialogs = inject(InteractionDialogService);
   private readonly toast = inject(ToastService);
+  private readonly printDocuments = inject(PrintDocumentService);
   protected readonly auth = inject(AuthService);
   private readonly searchChanges = new Subject<string>();
   protected readonly rows = signal<readonly StudentListItem[]>([]);
+  /** Student ids ticked for batch ID-card printing on the current page. */
+  protected readonly selection = signal<ReadonlySet<string>>(new Set());
+  protected readonly selectedCount = computed(
+    () => this.rows().filter((row) => this.selection().has(row.id)).length,
+  );
+  protected readonly allOnPageSelected = computed(
+    () => this.rows().length > 0 && this.rows().every((row) => this.selection().has(row.id)),
+  );
+  protected readonly printingCards = signal(false);
   protected readonly filters = signal({
     batches: [] as readonly { id: string; name: string }[],
     programs: [] as readonly { id: string; name: string }[],
@@ -68,14 +86,13 @@ export class StudentsPage implements OnInit {
   protected readonly program = signal('');
   protected readonly coach = signal('');
   protected readonly status = signal('');
-  protected readonly sortBy = signal<string>('name');
-  protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   protected readonly total = signal(0);
-  protected readonly pageCount = computed(() =>
-    Math.max(1, Math.ceil(this.total() / this.pageSize())),
-  );
+  protected readonly listQuery = new ListQueryState<string>({ sortBy: 'name', total: this.total });
+  protected readonly sortBy = this.listQuery.sortBy;
+  protected readonly sortDirection = this.listQuery.sortDirection;
+  protected readonly page = this.listQuery.page;
+  protected readonly pageSize = this.listQuery.pageSize;
+  protected readonly pageCount = this.listQuery.pageCount;
 
   ngOnInit(): void {
     const success = globalThis.history?.state?.['success'];
@@ -113,14 +130,11 @@ export class StudentsPage implements OnInit {
   protected sortColumn(value: string): void {
     if (!value.startsWith('cf_') && !['name', 'code', 'status', 'dateOfBirth', 'joinDate'].includes(value)) return;
     const key = value as 'name' | 'code' | 'status' | 'dateOfBirth' | 'joinDate';
-    this.sortDirection.set(this.sortBy() === key ? (this.sortDirection() === 'asc' ? 'desc' : 'asc') : 'asc');
-    this.sortBy.set(key);
-    this.page.set(1);
+    this.listQuery.sortByColumn(key);
     void this.load();
   }
   protected changeSortDirection(event: Event): void {
-    this.sortDirection.set((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
-    this.page.set(1);
+    this.listQuery.setSortDirection((event.target as HTMLSelectElement).value === 'asc' ? 'asc' : 'desc');
     void this.load();
   }
   protected resetFilters(): void {
@@ -128,13 +142,12 @@ export class StudentsPage implements OnInit {
   }
   protected goToPage(page: number): void {
     if (page >= 1 && page <= this.pageCount()) {
-      this.page.set(page);
+      this.listQuery.setPage(page);
       void this.load();
     }
   }
   protected setPageSize(size: string | number): void {
-    this.pageSize.set(Number(size));
-    this.page.set(1);
+    this.listQuery.setPageSize(Number(size));
     void this.load();
   }
   protected retry(): void {
@@ -164,6 +177,61 @@ export class StudentsPage implements OnInit {
   }
   protected hideBrokenImage(event: Event): void {
     (event.target as HTMLImageElement).style.display = 'none';
+  }
+  protected toggleSelected(id: string): void {
+    const next = new Set(this.selection());
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    this.selection.set(next);
+  }
+  protected isSelected(id: string): boolean {
+    return this.selection().has(id);
+  }
+  protected togglePageSelection(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.selection.set(checked ? new Set(this.rows().map((row) => row.id)) : new Set());
+  }
+  /** Preview every ticked student's ID card as one duplex-ready print job. */
+  protected async printSelectedCards(): Promise<void> {
+    if (this.printingCards()) return;
+    const cards = this.rows()
+      .filter((row) => this.selection().has(row.id))
+      .map((row) => this.idCard(row));
+    if (!cards.length) {
+      this.toast.info('Tick at least one student to print ID cards.');
+      return;
+    }
+    this.printingCards.set(true);
+    try {
+      await this.printDocuments.printIdCards(cards, 'preview');
+    } catch (error) {
+      this.toast.error(
+        error instanceof Error ? error.message : 'The ID cards could not be prepared.',
+      );
+    } finally {
+      this.printingCards.set(false);
+    }
+  }
+  /** Card data comes from the live list row; nothing is invented for missing fields. */
+  private idCard(row: StudentListItem): PrintIdCardInput {
+    return {
+      issuedAt: new Date().toISOString(),
+      cardNumber: idCardNumber('student', row.studentCode || row.id),
+      holderType: 'student',
+      holderId: row.id,
+      fullName: row.fullName,
+      holderCode: row.studentCode || row.id,
+      subtitle: row.batchName || 'No active batch',
+      photoUrl: row.photoUrl,
+      details: [
+        { label: 'Date of birth', value: printDateOnly(row.dateOfBirth) },
+        { label: 'Guardian', value: row.parentName || '—' },
+        { label: 'Guardian phone', value: row.parentPhone || '—' },
+        { label: 'Batch', value: row.batchName || 'Not assigned' },
+        { label: 'Joined', value: printDateOnly(row.joinDate) },
+      ],
+      validityNote: 'Valid while actively enrolled',
+    };
   }
   protected async deleteStudent(row: StudentListItem): Promise<void> {
     if (
@@ -225,19 +293,21 @@ export class StudentsPage implements OnInit {
       student: `${row.fullName} (${row.studentCode})`,
       batch: row.batchName || 'Not assigned',
       coach: row.coachName || 'Not assigned',
-      dateOfBirth: formatDate(row.dateOfBirth, 'dd MMM yyyy', 'en-US'),
+      dateOfBirth: formatDate(utcDateOnly(row.dateOfBirth), 'dd MMM yyyy', this.preferences.locale(), 'UTC'),
       phone: row.phone || '—',
       status: row.status,
       guardian: row.parentName || 'Not linked',
-      joinDate: formatDate(row.joinDate, 'dd MMM yyyy', 'en-US'),
+      joinDate: formatDate(utcDateOnly(row.joinDate), 'dd MMM yyyy', this.preferences.locale(), 'UTC'),
     };
   }
   private async load(): Promise<void> {
     const request = ++this.requestSequence;
+    this.selection.set(new Set());
     this.loading.set(true);
     this.error.set('');
     try {
-      const result = await this.students.getStudents({columns:this.columns.params(),
+      const result = await this.students.getStudents({
+        columns: this.columns.params(),
         search: this.searchText(),
         batchId: this.batch(),
         programId: this.program(),

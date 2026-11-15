@@ -9,7 +9,6 @@ import { PrintPreview } from './shared/print/print-preview/print-preview';
   selector: 'app-root',
   imports: [RouterOutlet, DialogHost, ToastHost, PrintDocumentHost, PrintPreview],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App { }

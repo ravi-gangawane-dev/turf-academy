@@ -1,3 +1,4 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { DEFAULT_PAGE_SIZE } from '../../shared/pagination/pagination.config';
 import { Pagination } from '../../shared/pagination/pagination';
@@ -8,7 +9,7 @@ import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ParentDetailRecord, ParentsService, PaymentsService, PaymentHistoryRecord, NotificationsService } from '../../core/supabase/domain-services';
-import { DatePipe } from '@angular/common';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ActivityEvent, StaffDetailsService } from '../../core/supabase/staff-details.service';
@@ -32,7 +33,7 @@ import { AddressFields } from '../../shared/address-fields/address-fields';
 
 @Component({
   selector: 'app-parent-details-page',
-  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, DatePipe, ReactiveFormsModule, RouterLink, PrintIdCardDialog, AddressFields],
+  imports: [TableTools, Pagination, AsyncState, StatusBadge, PageHero, AcademyMoneyPipe, AcademyDatePipe, ReactiveFormsModule, RouterLink, PrintIdCardDialog, AddressFields],
   templateUrl: './parent-details-page.html',
   styleUrl: './parent-details-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

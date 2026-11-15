@@ -6,6 +6,7 @@ import { roleGuard } from './core/auth/role.guard';
 import { notificationRedirect } from './features/notifications/notification-query';
 import { paymentRedirect } from './features/payments/payment-query';
 import { legacyBatchRouteGuard } from './features/batches/legacy-batch-route.guard';
+import { environment } from '../environments/environment';
 
 const designSystemPage = () => import('./features/system/design-system-page').then((m) => m.DesignSystemPage);
 const developerHandoffPage = () => import('./features/system/developer-handoff-page').then((m) => m.DeveloperHandoffPage);
@@ -20,6 +21,45 @@ const feeOperationsPage = () => import('./features/fees/fee-operations-page').th
 const reportsPage = () => import('./features/reports/reports-page').then((m) => m.ReportsPage);
 const notificationTemplatesPage = () => import('./features/notifications/notification-templates-page').then((m) => m.NotificationTemplatesPage);
 const academyEventsPage = () => import('./features/notifications/academy-events-page').then((m) => m.AcademyEventsPage);
+
+/** Internal design/developer screens: available while developing, absent from production builds. */
+const developerOnlyRoutes: Routes = environment.production
+  ? []
+  : [
+      {
+        path: 'settings/dialog-playground',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'], permission: 'settings:write' },
+        title: 'Dialog Playground · Turf Academy',
+        loadComponent: () => import('./features/settings/dialog-playground/dialog-playground.component').then((m) => m.DialogPlaygroundComponent),
+      },
+      {
+        path: 'design/:section/:view',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['admin'],
+          permission: 'settings:write',
+          section: 'Foundations',
+          title: 'Design System',
+          availability: 'library',
+          icon: 'pi-palette',
+        },
+        loadComponent: designSystemPage,
+      },
+      {
+        path: 'handoff/:view',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['admin'],
+          permission: 'settings:write',
+          section: 'Developer Handoff',
+          title: 'Developer Handoff',
+          availability: 'library',
+          icon: 'pi-code',
+        },
+        loadComponent: developerHandoffPage,
+      },
+    ];
 
 export const routes: Routes = [
   // Public entry points and authentication flows.
@@ -455,6 +495,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
       },
       {
+        path: 'batches/waiting-list',
+        canActivate: [legacyBatchRouteGuard],
+        data: { permission: 'batches:write', legacyView: 'waiting-list' },
+        title: 'Waiting List · Turf Academy',
+        loadComponent: () => import('./features/batches/batches-page').then((m) => m.BatchesPage),
+      },
+      {
         path: 'batches',
         data: { permission: 'batches:read', batchView: 'list' },
         title: 'Batches · Turf Academy',
@@ -788,40 +835,7 @@ export const routes: Routes = [
         data: { roles: ['admin'], permission: 'settings:write', settingsSection: 'tools' },
         loadComponent: academySettingsPage,
       },
-      {
-        path: 'settings/dialog-playground',
-        canActivate: [roleGuard],
-        data: { roles: ['admin'], permission: 'settings:write' },
-        title: 'Dialog Playground · Turf Academy',
-        loadComponent: () => import('./features/settings/dialog-playground/dialog-playground.component').then((m) => m.DialogPlaygroundComponent),
-      },
-      // Admin-only design and developer resources.
-      {
-        path: 'design/:section/:view',
-        canActivate: [roleGuard],
-        data: {
-          roles: ['admin'],
-          permission: 'settings:write',
-          section: 'Foundations',
-          title: 'Design System',
-          availability: 'library',
-          icon: 'pi-palette',
-        },
-        loadComponent: designSystemPage,
-      },
-      {
-        path: 'handoff/:view',
-        canActivate: [roleGuard],
-        data: {
-          roles: ['admin'],
-          permission: 'settings:write',
-          section: 'Developer Handoff',
-          title: 'Developer Handoff',
-          availability: 'library',
-          icon: 'pi-code',
-        },
-        loadComponent: developerHandoffPage,
-      },
+      ...developerOnlyRoutes,
     ],
   },
   { path: '**', redirectTo: 'dashboard' },

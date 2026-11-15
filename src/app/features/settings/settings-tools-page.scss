@@ -11,13 +11,13 @@
   background: var(--app-card);
   padding: 24px;
   border: 1px solid var(--app-border);
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
 }
 button {
   font: inherit;
   border: 1px solid var(--app-border);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   margin: 8px;
   background: var(--app-card);
   color: var(--app-text);
@@ -47,27 +47,27 @@ p {
 }
 .catalogue-source {
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 .role-description {
   display: block;
   margin-top: 4px;
   color: var(--app-muted);
   font-weight: 400;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 .permission-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--app-space-1-5);
 }
 .permission-chip {
   display: inline-flex;
   align-items: center;
   padding: 3px 9px;
   border: 1px solid var(--app-border);
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-primary-soft);
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 600;
 }

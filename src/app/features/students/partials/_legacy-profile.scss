@@ -1,0 +1,741 @@
+@use '../student-shared' as student-shared;
+
+/* legacy profile */
+:host {
+  display: block;
+}
+
+
+
+
+
+
+.students-page {
+  max-width: 1240px;
+  margin: auto;
+}
+
+.page-title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--app-space-5);
+  margin-bottom: 22px;
+}
+
+.page-title h1,
+.details-header h1 {
+  margin: 4px 0 6px;
+  font-size: var(--app-fs-h1);
+}
+
+.page-title p {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.breadcrumb {
+  color: #56675e;
+  font-size: var(--app-fs-meta);
+}
+
+.breadcrumb i {
+  margin: 0 5px;
+  font-size: var(--app-fs-meta);
+}
+
+.back-link {
+  padding: 0;
+  border: 0;
+  color: #52635a;
+  background: none;
+  font-size: var(--app-fs-meta);
+}
+
+.back-link i {
+  margin-right: 6px;
+}
+
+.directory-card,
+.student-form,
+.details-header,
+.profile-metrics article,
+.info-grid article,
+.timeline,
+.records-panel,
+.medical-card,
+.qr-workspace {
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: white;
+}
+
+.directory-tools {
+  display: flex;
+  gap: var(--app-space-2-5);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.directory-tools .app-select {
+  min-height: var(--app-control-sm);
+  font-size: var(--app-fs-meta);
+}
+
+.student-search {
+  position: relative;
+  margin-left: auto;
+  width: min(330px, 40%);
+}
+
+.student-search i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--app-muted);
+}
+
+.student-search input {
+  width: 100%;
+  min-height: var(--app-control-sm);
+  padding: 8px 12px 8px 34px;
+  border: 1px solid #d7dfdb;
+  border-radius: var(--app-radius-sm);
+  outline: none;
+  font-size: var(--app-fs-meta);
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.student-table th {
+  padding: 11px 14px;
+  color: #64746b;
+  background: #f8faf9;
+  text-align: left;
+  font-size: var(--app-fs-meta);
+  text-transform: uppercase;
+}
+
+.student-table td {
+  padding: 11px 14px;
+  border-top: 1px solid #edf1ef;
+  color: #3d4c44;
+  font-size: var(--app-fs-meta);
+}
+
+.student-link {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  padding: 0;
+  border: 0;
+  color: var(--app-text);
+  background: none;
+  text-align: left;
+}
+
+.student-link strong,
+.student-link small {
+  display: block;
+}
+
+.student-link strong {
+  font-size: var(--app-fs-meta);
+}
+
+.student-link small {
+  margin-top: 3px;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.mini-avatar,
+.avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--app-primary-dark);
+  background: #dcf5e5;
+  font-weight: 800;
+}
+
+.mini-avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--app-fs-meta);
+}
+
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  white-space: nowrap;
+}
+
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.table-footer button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--app-border);
+  color: #53645b;
+  background: white;
+}
+
+.table-footer .current {
+  color: white;
+  background: var(--app-primary-dark);
+}
+
+.student-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.student-form section {
+  padding: 22px;
+}
+
+.student-form section+section {
+  border-left: 1px solid var(--app-border);
+}
+
+.student-form h2,
+.info-grid h2,
+.records-panel h2,
+.medical-card h2,
+.qr-workspace h2 {
+  margin: 0 0 18px;
+  font-size: var(--app-fs-body);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-3-5);
+}
+
+.fields label {
+  display: grid;
+  gap: var(--app-space-1-5);
+  color: #46584e;
+  font-size: var(--app-fs-meta);
+  font-weight: 700;
+}
+
+.fields .wide {
+  grid-column: 1 / -1;
+}
+
+.upload-box {
+  min-height: 94px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  border: 1px dashed #b9c9c0;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-muted);
+  font-weight: 400;
+}
+
+.upload-box i {
+  margin-bottom: 6px;
+  color: var(--app-primary);
+  font-size: var(--app-fs-h3);
+}
+
+.upload-box small {
+  margin-top: 4px;
+  font-size: var(--app-fs-meta);
+}
+
+.student-form footer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--app-space-2);
+  padding: 14px 20px;
+  border-top: 1px solid var(--app-border);
+}
+
+.profile-photo {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  margin-top: 10px;
+}
+
+.details-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-4-5);
+  padding: 48px 20px 20px;
+}
+
+.details-header>.back-link {
+  position: absolute;
+  left: 20px;
+  top: 18px;
+}
+
+.student-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3-5);
+}
+
+.avatar.large {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  font-size: var(--app-fs-h3);
+}
+
+.student-identity>div>div {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2-5);
+}
+
+.student-identity h1 {
+  font-size: var(--app-fs-h2);
+}
+
+.student-identity p,
+.student-identity small {
+  display: block;
+  margin: 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.student-identity small {
+  margin-top: 7px;
+  font-size: var(--app-fs-meta);
+}
+
+.detail-actions {
+  margin-left: auto;
+  display: grid;
+  gap: var(--app-space-2);
+}
+
+.detail-actions button {
+  min-width: 135px;
+  min-height: var(--app-control-sm);
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  color: #34483d;
+  background: white;
+  text-align: left;
+  font-size: var(--app-fs-meta);
+}
+
+.detail-actions i {
+  width: 20px;
+  color: var(--app-primary);
+}
+
+.profile-tabs {
+  display: flex;
+  gap: var(--app-space-1);
+  margin-top: 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.profile-tabs button {
+  padding: 13px 17px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--app-muted);
+  background: transparent;
+  font-size: var(--app-fs-meta);
+  text-transform: capitalize;
+}
+
+.profile-tabs button.active {
+  border-color: var(--app-primary);
+  color: var(--app-primary-dark);
+  font-weight: 800;
+}
+
+.profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--app-space-3);
+  margin-top: 14px;
+}
+
+.profile-metrics article {
+  padding: 16px;
+}
+
+.profile-metrics small,
+.profile-metrics strong,
+.profile-metrics p {
+  display: block;
+}
+
+.profile-metrics small {
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.profile-metrics strong {
+  margin-top: 8px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-h2);
+}
+
+.profile-metrics strong.amber {
+  color: #b56c12;
+}
+
+.profile-metrics p {
+  margin: 5px 0 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-3);
+  margin-top: 12px;
+}
+
+.info-grid article {
+  padding: 20px;
+}
+
+.info-grid dl,
+.medical-card dl,
+.profile-preview dl {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: var(--app-space-3);
+  margin: 0;
+}
+
+.info-grid dt,
+.medical-card dt,
+.profile-preview dt {
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.info-grid dd,
+.medical-card dd,
+.profile-preview dd {
+  margin: 0;
+  font-size: var(--app-fs-meta);
+  font-weight: 600;
+}
+
+.timeline {
+  padding: 20px;
+  margin-top: 14px;
+}
+
+.timeline article {
+  display: grid;
+  grid-template-columns: 100px 34px 1fr;
+  align-items: start;
+  gap: var(--app-space-3);
+  min-height: 75px;
+}
+
+.timeline time {
+  padding-top: 8px;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.timeline article>i {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary);
+  background: #e6f6ec;
+}
+
+.timeline article>i::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  width: 1px;
+  height: 43px;
+  background: #dce5e0;
+}
+
+.timeline article:last-child i::after {
+  display: none;
+}
+
+.timeline strong {
+  font-size: var(--app-fs-meta);
+}
+
+.timeline p {
+  margin: 4px 0 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.records-panel,
+.medical-card {
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.records-panel>header,
+.medical-card>header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.records-panel h2,
+.medical-card h2 {
+  margin: 0;
+}
+
+.records-panel header p {
+  margin: 4px 0 0;
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.records-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.records-panel th,
+.records-panel td {
+  padding: 13px 18px;
+  border-bottom: 1px solid #edf1ef;
+  text-align: left;
+  font-size: var(--app-fs-meta);
+}
+
+.records-panel th {
+  color: var(--app-muted);
+  background: #f8faf9;
+  font-size: var(--app-fs-meta);
+}
+
+.medical-card dl {
+  padding: 20px;
+}
+
+.medical-card footer {
+  padding: 13px 18px;
+  color: var(--app-primary-dark);
+  background: #eff9f2;
+  font-size: var(--app-fs-meta);
+}
+
+.medical-card footer i {
+  margin-right: 7px;
+}
+
+.qr-workspace {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 0.8fr;
+  gap: 0;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.qr-workspace>div {
+  min-width: 0;
+  padding: 24px;
+}
+
+.qr-workspace>div+div {
+  border-left: 1px solid var(--app-border);
+}
+
+.qr-code {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+}
+
+.qr-code img {
+  width: 260px;
+  height: 260px;
+  max-width: 100%;
+}
+
+.qr-code small {
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.qr-info p {
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+  line-height: 1.6;
+}
+
+.qr-info ul {
+  padding: 0;
+  list-style: none;
+}
+
+.qr-info li {
+  margin: 11px 0;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-info li i {
+  margin-right: 8px;
+  color: var(--app-primary);
+}
+
+.profile-preview {
+  text-align: center;
+}
+
+.profile-preview>p {
+  margin: -24px -24px 18px;
+  padding: 13px;
+  border-bottom: 1px solid var(--app-border);
+  text-align: left;
+  font-size: var(--app-fs-meta);
+  font-weight: 800;
+}
+
+.profile-preview .avatar {
+  margin: auto;
+}
+
+.profile-preview h3 {
+  margin: 10px 0 3px;
+  font-size: var(--app-fs-label);
+}
+
+.profile-preview>small {
+  color: var(--app-muted);
+  font-size: var(--app-fs-meta);
+}
+
+.profile-preview dl {
+  grid-template-columns: 70px 1fr;
+  margin-top: 22px;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .profile-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .student-form {
+    grid-template-columns: 1fr;
+  }
+
+  .student-form section+section {
+    border-left: 0;
+    border-top: 1px solid var(--app-border);
+  }
+
+  .qr-workspace {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-preview {
+    grid-column: 1 / -1;
+    border-left: 0 !important;
+    border-top: 1px solid var(--app-border);
+  }
+}
+
+@media (max-width: 650px) {
+  .page-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .directory-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .student-search {
+    width: 100%;
+    margin: 0;
+  }
+
+  .fields,
+  .info-grid,
+  .profile-metrics,
+  .qr-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detail-actions {
+    width: 100%;
+    margin: 0;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-actions button {
+    min-width: 0;
+  }
+
+  .profile-tabs {
+    overflow-x: auto;
+  }
+
+  .profile-tabs button {
+    flex: 0 0 auto;
+  }
+
+  .qr-workspace>div+div {
+    border-left: 0;
+    border-top: 1px solid var(--app-border);
+  }
+
+  .profile-preview {
+    grid-column: auto;
+  }
+
+  .student-table th:nth-child(3),
+  .student-table td:nth-child(3),
+  .student-table th:nth-child(4),
+  .student-table td:nth-child(4),
+  .student-table th:nth-child(5),
+  .student-table td:nth-child(5) {
+    display: none;
+  }
+}

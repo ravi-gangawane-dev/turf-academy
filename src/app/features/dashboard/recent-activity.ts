@@ -1,5 +1,6 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { AsyncState } from '../../shared/async-state/async-state';
-import { DatePipe } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -25,7 +26,7 @@ const actions: Record<string, string> = {
 
 @Component({
   selector: 'app-recent-activity',
-  imports: [AsyncState, DatePipe, RouterLink],
+  imports: [AsyncState, AcademyDatePipe, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl:'./recent-activity.html',
   styleUrl:'./recent-activity.scss',

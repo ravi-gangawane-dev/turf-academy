@@ -6,7 +6,7 @@
   display: grid;
   /* Explicit zero floor: child tables must never size the outer page track. */
   grid-template-columns: minmax(0, 1fr);
-  gap: 20px;
+  gap: var(--app-space-5);
   padding-bottom: 24px;
 }
 
@@ -16,26 +16,26 @@
 
 .view-tabs {
   display: inline-flex;
-  gap: 5px;
+  gap: var(--app-space-1);
   padding: 5px;
   border: 1px solid #dfe8e2;
-  border-radius: 12px;
+  border-radius: var(--app-radius-md);
   background: #fff;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
-  box-shadow: 0 3px 12px rgba(22, 58, 37, 0.04);
+  box-shadow: var(--app-shadow);
 }
 
 .view-tabs button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 44px;
+  gap: var(--app-space-2);
+  min-height: var(--app-control-lg);
   padding: 10px 18px;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   background: transparent;
   color: #385546;
   font: inherit;
@@ -55,19 +55,19 @@
 }
 
 .view-tabs button.active {
-  background: #087a43;
+  background: var(--app-primary-dark);
   color: #fff;
-  box-shadow: 0 2px 5px rgba(8, 122, 67, 0.18);
+  box-shadow: var(--app-shadow);
 }
 
 .view-tabs button:focus-visible {
-  outline: 2px solid #076b38;
+  outline: 2px solid var(--app-primary-dark);
   outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
   .history-corrections-page {
-    gap: 14px;
+    gap: var(--app-space-3-5);
     padding-bottom: 16px;
   }
 

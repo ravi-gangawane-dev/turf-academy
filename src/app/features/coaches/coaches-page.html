@@ -1,12 +1,12 @@
 <div class="app-list-page coaches-page">
-  
+
   @if (error()) {
   <app-async-state kind="error" title="Could not load coaches" [message]="error()" />
   }
 
   <app-page-hero title="Coach List" subtitle="Manage and view all academy coaches."
-    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Coaches' }]" actionLabel="Add Coach"
-    actionIcon="pi-plus" (action)="create()" />
+    [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Coaches' }]"
+    actionLabel="Add Coach" actionIcon="pi-plus" (action)="create()" />
   <section class="coach-summary">
     <app-summary-metric-card label="Total coaches" [value]="coachMetrics().total" icon="pi-users"
       hint="All registered coaches" />
@@ -74,7 +74,7 @@
           <tr>
             <td>{{ (page() - 1) * pageSize() + i + 1 }}</td>
             <td>
-              <button class="coach-name" (click)="openCoachDetails(coach)">
+              <button type="button" class="coach-name" (click)="openCoachDetails(coach)">
                 <span>
                   @if (coach.photoDataUrl) {
                   <img [src]="coach.photoDataUrl" alt="" />
@@ -93,9 +93,10 @@
             </td>
             <td>
               <span class="row-actions">
-                <button class="app-button icon" (click)="openCoachDetails(coach)"><i class="pi pi-eye"></i></button><button
-                  class="app-button icon" (click)="edit(coach)"><i class="pi pi-pencil"></i></button><button class="app-button icon danger" (click)="deleteCoach(coach)"><i
-                    class="pi pi-trash"></i></button>
+                <button type="button" class="app-button icon" (click)="openCoachDetails(coach)"><i
+                    class="pi pi-eye"></i></button><button type="button" class="app-button icon"
+                  (click)="edit(coach)"><i class="pi pi-pencil"></i></button><button type="button"
+                  class="app-button icon danger" (click)="deleteCoach(coach)"><i class="pi pi-trash"></i></button>
               </span>
 
             </td>

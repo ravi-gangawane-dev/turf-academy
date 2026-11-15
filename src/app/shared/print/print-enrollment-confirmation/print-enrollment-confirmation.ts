@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { PrintEnrollmentConfirmationDocument } from '../print-document.models';
+import { printDateOnly, printMoney } from '../print-format';
 import { PrintPageFooter } from '../print-page-footer/print-page-footer';
 
 const ACTION_TITLES: Readonly<Record<PrintEnrollmentConfirmationDocument['action'], string>> = {
@@ -34,24 +35,10 @@ export class PrintEnrollmentConfirmation {
 
   /** Date-only values must be pinned to UTC or a positive timezone shifts them a day back. */
   protected formatDay(value: string | undefined): string {
-    const raw = String(value ?? '').slice(0, 10);
-    if (!raw) return '—';
-    const date = new Date(`${raw}T00:00:00Z`);
-    if (Number.isNaN(date.getTime())) return raw;
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    }).format(date);
+    return printDateOnly(value, this.confirmation().brand.currencyCode);
   }
 
   protected money(value: number): string {
-    const currency = this.confirmation().brand.currencyCode || 'INR';
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 2,
-    }).format(Number.isFinite(value) ? value : 0);
+    return printMoney(value, this.confirmation().brand.currencyCode || 'INR');
   }
 }

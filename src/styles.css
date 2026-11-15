@@ -1,17 +1,20 @@
 @import './app/shared/filter-bar/list-layout.css';
 @import './app/features/attendance/attendance-layout.css';
-@import './app/shared/data-table/table-theme.css';
 @import './app/shared/print/print-document.css';
 @import 'tailwindcss';
 @import 'primeicons/primeicons.css';
-@import './ui-base.css';
 @import './ui-foundations.css';
+@import './app/shared/data-table/table-theme.css';
 
 html[data-academy-theme='blue'] {
   --app-primary: #1769b2;
   --app-primary-dark: #104e86;
   --app-primary-soft: #eaf3ff;
   --app-sidebar: #102542;
+  --app-sidebar-text: #dbe7f5;
+  --app-sidebar-muted: #8aa4c4;
+  --app-sidebar-accent: #60a5fa;
+  --app-sidebar-accent-strong: #3b82f6;
   --app-bg: #f1f5fb;
 }
 
@@ -21,7 +24,12 @@ html[data-academy-theme='contrast'] {
   --app-primary-soft: #e0f2e8;
   --app-text: #06130c;
   --app-muted: #344c3c;
+  --app-navy: #10175e;
   --app-border: #52695a;
+  --app-sidebar-text: #ffffff;
+  --app-sidebar-muted: #d8e6dc;
+  --app-sidebar-accent: #7cf0b0;
+  --app-sidebar-accent-strong: #34d399;
   --app-bg: #edf1ee;
   --app-focus: 0 0 0 3px #005329;
 }
@@ -31,11 +39,18 @@ html[data-academy-theme='contrast'] {
   --app-primary-dark: #0c6838;
   --app-primary-soft: #e8f6ed;
   --app-sidebar: #003f35;
+  --app-sidebar-text: #dce8e2;
+  --app-sidebar-muted: #92b8a7;
+  --app-sidebar-accent: #34d399;
+  --app-sidebar-accent-strong: #10b981;
   --app-bg: #f4f7f6;
   --app-card: #ffffff;
   --app-border: #e2e8e5;
+  --app-table-border: #e2e8e5;
+  --app-table-radius: 12px;
   --app-text: #14221b;
   --app-muted: #64746b;
+  --app-navy: #4b5bd6;
   --app-danger: #c2413b;
   --app-warning: #b66a12;
   --app-info: #2878bc;
@@ -49,9 +64,15 @@ html[data-academy-theme='contrast'] {
   --app-space-4: 16px;
   --app-space-5: 20px;
   --app-space-6: 32px;
-  --app-radius-sm: 8px;
-  --app-radius-md: 14px;
-  --app-radius-lg: 16px;
+  /* 2px-offset step for dense chrome (badges, chips, tight lists) */
+  --app-space-half: 2px;
+  --app-space-1-5: 6px;
+  --app-space-2-5: 10px;
+  --app-space-3-5: 14px;
+  --app-space-4-5: 18px;
+  --app-radius-sm: 6px;
+  --app-radius-md: 10px;
+  --app-radius-lg: 14px;
   --app-shadow: 0 2px 8px rgba(7, 25, 47, 0.04);
   --app-focus: 0 0 0 3px rgba(22, 134, 75, 0.14);
   --app-font-xs: 13px;
@@ -61,6 +82,20 @@ html[data-academy-theme='contrast'] {
   --app-font-xl: 30px;
   --app-font-stat: 28px;
   --app-control-height: 44px;
+  --app-control-sm: 36px;
+  --app-control-md: 40px;
+  --app-control-lg: 44px;
+  /* One type scale for every surface, including overlays outside the routed main area. */
+  --app-fs-caption: 11px;
+  --app-fs-meta: 12px;
+  --app-fs-label: 13px;
+  --app-fs-body: 14px;
+  --app-fs-h3: 16px;
+  --app-fs-h2: 20px;
+  --app-fs-stat: 24px;
+  --app-fs-h1: 26px;
+  --app-overlay: rgb(7 25 47 / 60%);
+  --app-shadow-lg: 0 20px 60px rgb(0 0 0 / 22%);
   --app-control-border: #c6d4cc;
   --app-surface-muted: #f5f8f6;
   --app-success-bg: #edf8f1;
@@ -708,7 +743,6 @@ button {
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
 }
 
 .data-table th {
@@ -723,7 +757,6 @@ button {
 
 .data-table td {
   padding: 15px 18px;
-  border-top: 1px solid #edf1ef;
   font-size: 12px;
 }
 
@@ -803,8 +836,11 @@ button {
 }
 
 .field-error {
-  color: #c2413b;
-  font-size: 12px;
+  display: block;
+  margin-top: 5px;
+  color: var(--app-danger);
+  font-size: var(--app-fs-caption);
+  font-weight: 500;
 }
 
 .notice {
@@ -824,15 +860,29 @@ button {
 }
 
 .empty-state {
-  padding: 50px 20px;
+  min-height: 180px;
+  padding: var(--app-space-6) var(--app-space-5);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--app-space-2);
   color: var(--app-muted);
   text-align: center;
 }
 
 .empty-state i {
   display: block;
-  margin-bottom: 10px;
-  font-size: 26px;
+  margin: 0 0 2px;
+  color: var(--app-primary);
+  font-size: var(--app-fs-stat);
+}
+
+.empty-state strong {
+  color: var(--app-text);
+}
+
+.empty-state p {
+  margin: 0;
 }
 
 /* Projected PageHero controls retain their page bindings and fit the shared header. */
@@ -864,7 +914,6 @@ app-page-hero [hero-actions] select {
 .column-list-table td {
   padding: 14px;
   text-align: left;
-  border-bottom: 1px solid var(--app-border);
 }
 
 .column-list-table thead {

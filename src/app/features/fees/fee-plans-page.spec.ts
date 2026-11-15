@@ -13,7 +13,15 @@ describe('Fee plan dialog', () => {
       imports: [FeePlansPage],
       providers: [provideRouter([]),
         { provide: FeesService, useValue: { plans: async () => [] } },
-        { provide: AcademyPreferencesService, useValue: { currency: signal('USD'), load: async () => {} } },
+        {
+          provide: AcademyPreferencesService,
+          useValue: {
+            currency: signal('USD'),
+            locale: signal('en-US'),
+            timezone: signal('Asia/Kolkata'),
+            load: async () => {},
+          },
+        },
       ],
     });
     // jsdom has no layout; give visible controls a rectangle for the focus trap.

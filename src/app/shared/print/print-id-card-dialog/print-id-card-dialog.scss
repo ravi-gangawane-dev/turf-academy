@@ -12,29 +12,29 @@
   width: min(540px, 100%);
   max-height: calc(100vh - 40px);
   overflow: auto;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   background: #fff;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+  box-shadow: var(--app-shadow-lg);
 }
 
 .id-card-dialog > header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--app-space-4);
   padding: 18px 22px;
   border-bottom: 1px solid #e2e8e5;
 }
 
 .id-card-dialog h2 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: var(--app-fs-h2);
 }
 
 .id-card-kicker {
   margin: 0;
-  color: #0f6b3f;
-  font-size: 10.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -43,7 +43,7 @@
 .id-card-close {
   padding: 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: none;
   color: #5f6f66;
   cursor: pointer;
@@ -56,7 +56,7 @@
 .id-card-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--app-space-3);
   margin: 0;
   padding: 18px 22px;
 }
@@ -65,14 +65,14 @@
   min-width: 0;
   padding: 10px 12px;
   border: 1px solid #e2e8e5;
-  border-radius: 9px;
+  border-radius: var(--app-radius-md);
   background: #f7faf8;
 }
 
 .id-card-summary dt {
   margin: 0;
   color: #64746b;
-  font-size: 10.5px;
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -80,7 +80,7 @@
 
 .id-card-summary dd {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -89,7 +89,7 @@
   margin: 0;
   padding: 0 22px 18px;
   color: #64746b;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   line-height: 1.55;
 }
 
@@ -98,14 +98,14 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   margin: 0 22px 16px;
   padding: 10px 12px;
   border: 1px solid #e7b8b4;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fdf2f1;
   color: #8f2f28;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 .id-card-error p {
@@ -115,7 +115,7 @@
 .id-card-error button {
   padding: 6px 12px;
   border: 1px solid #c98b86;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: #8f2f28;
   font-weight: 700;
@@ -126,7 +126,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding: 16px 22px 20px;
   border-top: 1px solid #e2e8e5;
 }
@@ -134,21 +134,21 @@
 .id-card-dialog > footer button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 42px;
+  gap: var(--app-space-1-5);
+  min-height: var(--app-control-md);
   padding: 0 16px;
   border: 1px solid #d7dfdb;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: #33503f;
-  font-size: 13px;
+  font-size: var(--app-fs-label);
   font-weight: 700;
   cursor: pointer;
 }
 
 .id-card-dialog > footer button.primary {
-  border-color: #076b38;
-  background: #076b38;
+  border-color: var(--app-primary-dark);
+  background: var(--app-primary-dark);
   color: #fff;
 }
 

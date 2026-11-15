@@ -1,15 +1,16 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { TableTools } from '../../shared/data-table/table-tools';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AcademyFacade } from '../../core/state/academy.facade';
 import { SummaryMetricCard } from '../../shared/summary-metric-card/summary-metric-card';
 
-@Component({ selector: 'app-module-page', imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, DatePipe, TitleCasePipe, SummaryMetricCard], templateUrl: './module-page.html', styleUrl: './module-page.scss', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-module-page', imports: [TableTools, PageHero, AsyncState, StatusBadge, AcademyMoneyPipe, AcademyDatePipe, TitleCasePipe, SummaryMetricCard], templateUrl: './module-page.html', styleUrl: './module-page.scss', changeDetection: ChangeDetectionStrategy.OnPush })
 export class ModulePage {
   protected readonly store = inject(AcademyFacade);
   private readonly route = inject(ActivatedRoute);

@@ -1,26 +1,28 @@
 @if (form(); as addressForm) {
-<div class="address-fields" [formGroup]="addressForm">
+<div class="address-fields" [class.address-fields--four]="columns() === 4" [formGroup]="addressForm">
   <label class="address-field">
     <span>Address Line 1 <b>*</b></span>
-    <input formControlName="line1" autocomplete="address-line1" [readonly]="readOnly()" />
+    <input formControlName="line1" autocomplete="address-line1" placeholder="Enter address line 1"
+      [readonly]="readOnly()" />
     @if (addressForm.controls.line1.touched && addressForm.controls.line1.invalid) {
     <small>Enter address line 1.</small>
     }
   </label>
   <label class="address-field">
     <span>Address Line 2</span>
-    <input formControlName="line2" autocomplete="address-line2" [readonly]="readOnly()" />
+    <input formControlName="line2" autocomplete="address-line2" placeholder="Enter address line 2"
+      [readonly]="readOnly()" />
   </label>
   <label class="address-field">
     <span>City <b>*</b></span>
-    <input formControlName="city" autocomplete="address-level2" [readonly]="readOnly()" />
+    <input formControlName="city" autocomplete="address-level2" placeholder="Enter city" [readonly]="readOnly()" />
     @if (addressForm.controls.city.touched && addressForm.controls.city.invalid) {
     <small>Enter a city.</small>
     }
   </label>
   <label class="address-field">
     <span>State <b>*</b></span>
-    <input formControlName="state" autocomplete="address-level1" [readonly]="readOnly()" />
+    <input formControlName="state" autocomplete="address-level1" placeholder="Enter state" [readonly]="readOnly()" />
     @if (addressForm.controls.state.touched && addressForm.controls.state.invalid) {
     <small>Enter a state.</small>
     }
@@ -28,14 +30,17 @@
   <label class="address-field">
     <span>PIN Code <b>*</b></span>
     <input formControlName="pinCode" inputmode="numeric" autocomplete="postal-code" maxlength="6"
-      [readonly]="readOnly()" />
+      placeholder="Enter 6-digit PIN code" [readonly]="readOnly()" />
     @if (addressForm.controls.pinCode.touched && addressForm.controls.pinCode.invalid) {
     <small>Enter a 6-digit PIN code.</small>
     }
   </label>
 </div>
 } @else {
-<div class="address-display">
+@if (inline()) {
+<div class="address-inline">{{ formattedAddress() }}</div>
+} @else {
+<div class="address-display" [class.address-display--four]="columns() === 4">
   @for (field of fields(); track field.label) {
   <div class="address-detail">
     <span>{{ field.label }}</span>
@@ -43,4 +48,5 @@
   </div>
   }
 </div>
+}
 }

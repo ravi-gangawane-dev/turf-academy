@@ -1,4 +1,4 @@
-<div class="parent-form-page">
+<div class="parent-form-page entity-form-page">
   <app-page-hero [title]="editing() ? 'Edit Parent' : 'Add Parent'"
     [subtitle]="editing() ? 'Update parent information and student relationship.' : 'Register a parent and link their student.'"
     [breadcrumbs]="[{ label: 'Dashboard', icon: 'pi-home', route: '/dashboard' }, { label: 'Parents', route: '/parents' }, { label: editing() ? 'Edit Parent' : 'Add Parent' }]"
@@ -6,55 +6,55 @@
 
   <form [formGroup]="form" (ngSubmit)="save()">
     <main>
-      <section class="card personal">
-        <h2><i class="pi pi-users"></i>Parent information</h2>
-        <div class="fields">
-          <label>First name *<input formControlName="firstName" placeholder="Enter first name" /></label>
-          <label>Last name *<input formControlName="lastName" placeholder="Enter last name" /></label>
-          <label>Relationship *<select formControlName="relation">
+      <div class="form-top-row">
+        <section class="card personal">
+          <h2><i aria-hidden="true" class="pi pi-user"></i>Personal information</h2>
+          <div class="fields"><label>First name *<input formControlName="firstName"
+                placeholder="Enter first name" /></label>
+            <label>Last name *<input formControlName="lastName" placeholder="Enter last name" /></label>
+            <label>Phone number *<input formControlName="phone" maxlength="10"
+                placeholder="Enter 10 digit mobile number" /></label>
+            <label>Email address<input type="email" formControlName="email" placeholder="Enter email address" /></label>
+          </div><app-address-fields [form]="form.controls.address" [columns]="4" />
+        </section>
+        <section class="card photo">
+          <h2><i class="pi pi-image"></i>Parent photo</h2><app-profile-photo-upload class="fill-card" label="Parent"
+            [photoUrl]="photoUrl()" [selected]="photoSelected()" [saving]="loading()"
+            (fileSelected)="selectPhoto($event)" [saveAction]="savePhotoAction" />
+        </section>
+      </div>
+      <section class="card role-information">
+        <h2><i aria-hidden="true" class="pi pi-id-card"></i>Parent information</h2>
+        <div class="fields"><label>Relationship *<select formControlName="relation">
               <option>Father</option>
               <option>Mother</option>
               <option>Guardian</option>
             </select></label>
           <label>Occupation<input formControlName="occupation" placeholder="Enter occupation" /></label>
-          <label>Phone number *<input formControlName="phone" maxlength="10"
-              placeholder="Enter 10 digit mobile number" /></label>
           <label>WhatsApp number *<input formControlName="whatsapp" maxlength="16"
               placeholder="Mobile number or +country code and number" /></label>
-          <label>Email address<input type="email" formControlName="email" placeholder="Enter email address" /></label>
           <label>Preferred contact<select formControlName="communication">
               <option>WhatsApp</option>
               <option>Email</option>
               <option>Phone</option>
             </select></label>
         </div>
-        <app-address-fields [form]="form.controls.address" />
       </section>
       <section class="card relationship">
         <h2><i class="pi pi-link"></i>Student relationship</h2>
         <div class="fields two">
-          <label>Linked student<select formControlName="studentId">
+          <label>Linked student<select formControlName="studentId" aria-describedby="linked-student-help">
               <option value="">Select student (optional)</option>@for (student of students(); track student.id) {
               <option [value]="student.id">{{ student.full_name }} · {{ student.student_code }}</option> }
-            </select></label>
+            </select><small id="linked-student-help" class="field-help">Link a student to add this parent as their
+              guardian.</small></label>
           <label class="check"><input type="checkbox" formControlName="isPrimary" />Primary guardian</label>
         </div>
       </section>
-      <footer><button type="button" (click)="cancel()">Cancel</button><button class="primary" [disabled]="loading()"><i
-            class="pi pi-check"></i>{{ loading() ? 'Saving...' : editing() ? 'Update parent' : 'Save parent' }}</button>
+      <footer><button type="button" (click)="cancel()">Cancel</button><button type="submit" class="primary"
+          [disabled]="loading()"><i class="pi pi-check"></i>{{ loading() ? 'Saving...' : editing() ? 'Update parent' :
+          'Save parent' }}</button>
       </footer>
     </main>
-    <aside>
-      <section class="card photo">
-        <h2><i class="pi pi-image"></i>Parent photo</h2><app-profile-photo-upload label="Parent" [photoUrl]="photoUrl()"
-          [selected]="photoSelected()" [saving]="loading()" (fileSelected)="selectPhoto($event)"
-          [saveAction]="savePhotoAction" />
-      </section>
-      <section class="card help">
-        <h2><i class="pi pi-info-circle"></i>Parent account</h2>
-        <p>Contact and relationship details are stored securely in Supabase.</p>
-        <p>Linking a student makes this parent available as a guardian on the student profile.</p>
-      </section>
-    </aside>
   </form>
 </div>

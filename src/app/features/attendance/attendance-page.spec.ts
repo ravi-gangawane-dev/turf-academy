@@ -22,7 +22,7 @@ describe('AttendancePage', () => {
   });
 
   it('renders five summary cards including checked-out students', () => {
-    expect(fixture.nativeElement.querySelectorAll('.attendance-metrics app-summary-metric-card')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelectorAll('app-summary-cards app-summary-metric-card')).toHaveLength(5);
     expect(fixture.nativeElement.textContent).toContain('Checked Out');
   });
 });

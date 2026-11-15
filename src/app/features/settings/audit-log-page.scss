@@ -9,7 +9,7 @@
 .settings-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--app-space-1-5);
   padding: 6px;
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-md);
@@ -19,7 +19,7 @@
   display: inline-flex;
   flex: 1 1 120px;
   min-width: 0;
-  min-height: 42px;
+  min-height: var(--app-control-md);
   align-items: center;
   justify-content: center;
   padding: 10px 18px;
@@ -62,13 +62,11 @@ table {
   width: 100%;
   min-width: 900px;
   table-layout: fixed;
-  border-collapse: collapse;
 }
 td,
 th {
   padding: 14px 16px;
   text-align: left;
-  border-bottom: 1px solid var(--app-border);
   vertical-align: middle;
 }
 th {
@@ -101,19 +99,16 @@ tbody tr {
 tbody tr:hover {
   background: var(--app-surface-muted);
 }
-tbody tr:last-child td {
-  border-bottom: 0;
-}
 footer {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--app-space-2-5);
 }
 .audit-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding: 12px 16px;
   border-bottom: 1px solid var(--app-border);
 }
@@ -121,11 +116,11 @@ footer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 40px;
+  gap: var(--app-space-2);
+  min-height: var(--app-control-md);
   padding: 8px 14px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: var(--app-text);
   font: inherit;
@@ -147,14 +142,14 @@ footer {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  min-height: 40px;
+  min-height: var(--app-control-md);
   padding: 8px 34px 8px 10px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 .column-filters i {
   position: absolute;

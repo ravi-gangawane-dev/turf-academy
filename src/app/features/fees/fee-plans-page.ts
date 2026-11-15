@@ -8,6 +8,7 @@ import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { AcademyMoneyPipe } from '../../shared/academy-money.pipe';
 import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
+import { ModalBackdrop } from '../../shared/interaction-dialog/modal-backdrop';
 
 import {
   ChangeDetectionStrategy,
@@ -38,7 +39,7 @@ interface FeePlan {
 
 @Component({
   selector: 'app-fee-plans-page',
-  imports: [FeeViewNavigation, TableTools, ColumnFilter, PageHero, StatusBadge, AcademyMoneyPipe, ModalFocus, FormsModule, ReactiveFormsModule, DataTable, AsyncState, SummaryMetricCard, SortableHeader],
+  imports: [FeeViewNavigation, TableTools, ColumnFilter, PageHero, StatusBadge, AcademyMoneyPipe, ModalFocus, FormsModule, ReactiveFormsModule, DataTable, AsyncState, SummaryMetricCard, SortableHeader, ModalBackdrop],
   templateUrl: './fee-plans-page.html',
   styleUrl: './fee-plans-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,7 +94,8 @@ export class FeePlansPage implements OnInit {
     this.sampleDownloading.set(true);
     this.sampleError.set('');
     try {
-      const header = ['Plan name', 'Monthly fee (₹)', 'Duration (months)', 'Status', 'Registration fee (₹)', 'Description'];
+      const currency = this.preferences.currency();
+      const header = ['Plan name', `Monthly fee (${currency})`, 'Duration (months)', 'Status', `Registration fee (${currency})`, 'Description'];
       const rows = [
         ['Junior Development', 1250, 3, 'active', 0, 'Beginner program for ages 5-8'],
         ['Youth Program', 2400, 6, 'active', 500, 'Core program for ages 9-12'],

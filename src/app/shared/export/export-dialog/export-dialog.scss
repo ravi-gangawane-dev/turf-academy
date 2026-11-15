@@ -14,29 +14,29 @@
   width: min(560px, 100%);
   max-height: calc(100vh - 40px);
   overflow: auto;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   background: #fff;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+  box-shadow: var(--app-shadow-lg);
 }
 
 .export-dialog > header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--app-space-4);
   padding: 18px 22px;
   border-bottom: 1px solid #e2e8e5;
 }
 
 .export-dialog h2 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: var(--app-fs-h2);
 }
 
 .export-kicker {
   margin: 0;
-  color: #0f6b3f;
-  font-size: 10.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -45,14 +45,14 @@
 .export-subtitle {
   margin: 6px 0 0;
   color: #5f6f66;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   line-height: 1.5;
 }
 
 .export-close {
   padding: 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   background: none;
   color: #5f6f66;
   cursor: pointer;
@@ -72,7 +72,7 @@
 .export-group legend {
   padding: 0;
   color: #15231c;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -80,111 +80,111 @@
 
 .export-options {
   display: grid;
-  gap: 8px;
+  gap: var(--app-space-2);
   margin-top: 10px;
 }
 
 .export-option {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--app-space-3);
   padding: 12px 14px;
   border: 1px solid #dce5e0;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   cursor: pointer;
 }
 
 .export-option--active {
-  border-color: #0f6b3f;
+  border-color: var(--app-primary-dark);
   background: #f2f9f5;
-  box-shadow: inset 0 0 0 1px #0f6b3f;
+  box-shadow: inset 0 0 0 1px var(--app-primary-dark);
 }
 
 .export-option input {
   margin: 0;
-  accent-color: #0f6b3f;
+  accent-color: var(--app-primary-dark);
 }
 
 .export-option span {
   display: grid;
-  gap: 2px;
+  gap: var(--app-space-half);
   flex: 1 1 auto;
 }
 
 .export-option strong {
-  font-size: 13.5px;
+  font-size: var(--app-fs-label);
 }
 
 .export-option small {
   color: #5f6f66;
-  font-size: 11.5px;
+  font-size: var(--app-fs-caption);
 }
 
 .export-option b {
   min-width: 34px;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--app-radius-lg);
   background: #e7f1eb;
-  color: #0f6b3f;
-  font-size: 11.5px;
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-caption);
   text-align: center;
 }
 
 .export-formats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--app-space-2);
   margin-top: 10px;
 }
 
 .export-formats button {
   display: grid;
-  gap: 3px;
+  gap: var(--app-space-1);
   padding: 12px;
   border: 1px solid #dce5e0;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
   background: #fff;
   text-align: left;
   cursor: pointer;
 }
 
 .export-formats button strong {
-  font-size: 13px;
+  font-size: var(--app-fs-label);
 }
 
 .export-formats button small {
   color: #5f6f66;
-  font-size: 11px;
+  font-size: var(--app-fs-caption);
   line-height: 1.4;
 }
 
 .export-formats button.export-format--active {
-  border-color: #0f6b3f;
+  border-color: var(--app-primary-dark);
   background: #f2f9f5;
-  box-shadow: inset 0 0 0 1px #0f6b3f;
+  box-shadow: inset 0 0 0 1px var(--app-primary-dark);
 }
 
 .export-error {
   margin: 0;
   padding: 12px 22px;
   color: #9b1c1c;
-  font-size: 12.5px;
+  font-size: var(--app-fs-meta);
 }
 
 .export-dialog > footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   padding: 14px 22px;
 }
 
 .export-dialog > footer button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
   padding: 10px 16px;
   border: 1px solid #d3ddd8;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   color: #15231c;
   font: inherit;
@@ -193,8 +193,8 @@
 }
 
 .export-dialog > footer button.primary {
-  border-color: #0f6b3f;
-  background: #0f6b3f;
+  border-color: var(--app-primary-dark);
+  background: var(--app-primary-dark);
   color: #fff;
 }
 

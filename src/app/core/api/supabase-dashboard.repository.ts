@@ -114,9 +114,10 @@ export class SupabaseDashboardRepository implements DashboardRepository {
             .slice(0, 2),
           batchName: batch?.name ?? 'Batch',
           checkedInAt: row.check_in_at
-            ? new Date(row.check_in_at).toLocaleTimeString('en-IN', {
+            ? new Date(row.check_in_at).toLocaleTimeString(this.preferences.locale(), {
                 hour: '2-digit',
                 minute: '2-digit',
+                timeZone: this.preferences.timezone(),
               })
             : '—',
           status: row.status === 'late' ? 'Late' : 'On time',
@@ -129,28 +130,28 @@ export class SupabaseDashboardRepository implements DashboardRepository {
             {
               label: 'Assigned students',
               value: String(students?.length ?? 0),
-              detail: 'Your current players',
+              hint: 'Your current players',
               icon: 'pi-users',
               tone: 'green' as const,
             },
             {
               label: 'Present today',
               value: String(attendance?.filter((row) => row.status !== 'absent').length ?? 0),
-              detail: 'Your assigned students',
+              hint: 'Your assigned students',
               icon: 'pi-check-circle',
               tone: 'blue' as const,
             },
             {
               label: 'Assigned batches',
               value: String(batchIds.length),
-              detail: 'Your training batches',
+              hint: 'Your training batches',
               icon: 'pi-calendar',
               tone: 'amber' as const,
             },
             {
               label: 'Attendance records',
               value: String(attendance?.length ?? 0),
-              detail: 'Recorded today',
+              hint: 'Recorded today',
               icon: 'pi-verified',
               tone: 'violet' as const,
             },
@@ -160,14 +161,14 @@ export class SupabaseDashboardRepository implements DashboardRepository {
               {
                 label: 'Linked students',
                 value: String(students?.length ?? 0),
-                detail: 'Your children',
+                hint: 'Your children',
                 icon: 'pi-users',
                 tone: 'green' as const,
               },
               {
                 label: 'Present today',
                 value: String(attendance?.filter((row) => row.status !== 'absent').length ?? 0),
-                detail: 'Attendance today',
+                hint: 'Attendance today',
                 icon: 'pi-check-circle',
                 tone: 'blue' as const,
               },
@@ -180,11 +181,11 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const trends = analytics.data as { attendance: {day:string;count:number}[]; collections:{month:string;amount:number}[]; pendingFees: DashboardSummary['pendingFees'] } | null;
     return {
       academyName: this.preferences.value().academy_name,
-      businessDateLabel: new Intl.DateTimeFormat('en-IN', {
+      businessDateLabel: new Intl.DateTimeFormat(this.preferences.locale(), {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
-        timeZone: this.preferences.value().timezone,
+        timeZone: this.preferences.timezone(),
       }).format(new Date()),
       metrics,
       checkIns,
@@ -207,35 +208,35 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       {
         label: 'Active students',
         value: String(tables[0].count ?? 0),
-        detail: 'Academy students',
+        hint: 'Academy students',
         icon: 'pi-users',
         tone: 'green' as const,
       },
       {
         label: 'Total coaches',
         value: String(tables[1].count ?? 0),
-        detail: 'Academy coaches',
+        hint: 'Academy coaches',
         icon: 'pi-id-card',
         tone: 'violet' as const,
       },
       {
         label: 'Active batches',
         value: String(tables[2].count ?? 0),
-        detail: 'Current batches',
+        hint: 'Current batches',
         icon: 'pi-calendar',
         tone: 'amber' as const,
       },
       {
         label: 'Total parents',
         value: String(tables[3].count ?? 0),
-        detail: 'Parent profiles',
+        hint: 'Parent profiles',
         icon: 'pi-heart',
         tone: 'green' as const,
       },
       {
         label: 'Present today',
         value: String(presentToday),
-        detail: 'Students checked in today',
+        hint: 'Students checked in today',
         icon: 'pi-check-circle',
         tone: 'blue' as const,
       },

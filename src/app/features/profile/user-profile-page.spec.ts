@@ -231,7 +231,11 @@ describe('UserProfilePage', () => {
     const phoneIndex = contactRows.findIndex((row) => row.querySelector('.pi-phone'));
     const locationIndex = contactRows.findIndex((row) => row.querySelector('.pi-map-marker'));
     expect(locationIndex).toBeGreaterThan(phoneIndex);
-    expect(contactRows[locationIndex].textContent).toContain(role === 'parent' ? '12 Academy Road' : 'Academy location');
+    const personalAddress = role === 'parent' ? '12 Academy Road' : role === 'coach' ? '10 Coach Road' : '10 Staff Road';
+    expect(contactRows[locationIndex].textContent).toContain(personalAddress);
+    expect(contactRows[locationIndex].textContent).not.toContain('Academy location');
+    const addressSection = fixture.nativeElement.querySelectorAll('.personal-detail-section')[1] as HTMLElement;
+    expect(addressSection.textContent).toContain(personalAddress);
   });
 
   it.each([
@@ -269,9 +273,12 @@ describe('UserProfilePage', () => {
       'Date of Birth',
       'Qualification',
     ]);
-    expect(fields[1]).toEqual(['Address Line 1', 'Address Line 2', 'City', 'State', 'PIN Code']);
+    expect(fields[1]).toEqual([]);
+    expect(sections[1].querySelector('.address-inline')).not.toBeNull();
     expect(fields[2]).toEqual(roleFields);
-    expect(sections[1].textContent).toContain(role === 'parent' ? 'Unit 4' : '—');
+    expect(sections[1].querySelector('.address-inline')?.textContent).toContain(
+      role === 'parent' ? 'Unit 4' : role === 'coach' ? 'Coach Road' : 'Staff Road',
+    );
     expect(sections[2].textContent).toContain(roleFields.length ? roleFields[0] : 'No additional role-specific details');
 
     (fixture.nativeElement.querySelector('.section-heading .primary-button') as HTMLButtonElement).click();

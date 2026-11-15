@@ -4,26 +4,26 @@
 
 .whatsapp-action {
   display: grid;
-  gap: 12px;
+  gap: var(--app-space-3);
   margin-top: 16px;
   padding: 18px 20px;
   background: var(--app-card, #fff);
   border: 1px solid var(--app-border, #dfe7e3);
-  border-left: 4px solid #16834b;
+  border-left: 4px solid var(--app-primary);
   border-radius: var(--app-radius-md, 14px);
   color: var(--app-text, #1d2b24);
 }
 
 header {
   display: flex;
-  gap: 12px;
+  gap: var(--app-space-3);
   align-items: flex-start;
 }
 
 header i {
   margin-top: 3px;
-  color: #16834b;
-  font-size: 22px;
+  color: var(--app-primary);
+  font-size: var(--app-fs-stat);
 }
 
 h2 {
@@ -55,19 +55,19 @@ header p,
   line-height: 1.55;
   background: #f2f8f4;
   border: 1px solid #dcebe1;
-  border-radius: 10px;
+  border-radius: var(--app-radius-md);
 }
 
 .whatsapp-open {
   justify-self: start;
   display: inline-flex;
-  gap: 8px;
+  gap: var(--app-space-2);
   align-items: center;
-  min-height: 42px;
+  min-height: var(--app-control-md);
   padding: 0.6rem 1.1rem;
   border: 0;
-  border-radius: 9px;
-  background: #16834b;
+  border-radius: var(--app-radius-md);
+  background: var(--app-primary);
   color: #fff;
   font: inherit;
   font-weight: 600;
@@ -75,7 +75,7 @@ header p,
 }
 
 .whatsapp-open:hover {
-  background: #126b3d;
+  background: var(--app-primary-dark);
 }
 
 .whatsapp-open:disabled {
@@ -84,7 +84,7 @@ header p,
 }
 
 .whatsapp-open:focus-visible {
-  outline: 3px solid #76b98c;
+  outline: 3px solid var(--app-primary);
   outline-offset: 2px;
 }
 
@@ -96,6 +96,6 @@ header p,
 
 .missing a {
   justify-self: start;
-  color: var(--app-primary-dark, #176735);
+  color: var(--app-primary-dark, var(--app-primary-dark));
   font-weight: 600;
 }

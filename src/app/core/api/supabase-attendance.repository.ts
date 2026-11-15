@@ -2,6 +2,7 @@ import { DataRequestError } from '../supabase/data-error';
 import { inject, Injectable } from '@angular/core';
 import { AttendanceRecord, Batch, Enrollment, QrIdentity, Student } from '../models/academy.model';
 import { SupabaseClientService } from '../supabase/supabase-client.service';
+import { AcademyPreferencesService } from '../supabase/academy-preferences.service';
 import { AttendanceWhatsApp } from '../services/whatsapp.service';
 
 interface AttendanceRow {
@@ -51,11 +52,12 @@ export function mapAttendance(row: AttendanceRow): AttendanceRecord {
 @Injectable({ providedIn: 'root' })
 export class SupabaseAttendanceRepository {
   private readonly supabase = inject(SupabaseClientService);
+  private readonly preferences = inject(AcademyPreferencesService);
   private get client() {
     return this.supabase.requireClient();
   }
   async whatsappMessage(studentId: string, batchId: string, action: 'check_in' | 'check_out'): Promise<AttendanceWhatsApp> {
-    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+    const date = this.preferences.today();
     const [attendance, links, student, batch] = await Promise.all([
       this.client.from('attendance_records').select('check_in_at,check_out_at').eq('student_id', studentId).eq('batch_id', batchId).eq('attendance_date', date).single(),
       this.client.from('student_parents').select('is_primary,parents(*)').eq('student_id', studentId).order('is_primary', { ascending: false }),
@@ -69,13 +71,23 @@ export class SupabaseAttendanceRepository {
     if (parent.communication_preferences?.['whatsapp'] === false) throw new Error('Parent WhatsApp notifications are disabled.');
     const timestamp = action === 'check_in' ? attendance.data!.check_in_at : attendance.data!.check_out_at;
     if (!timestamp) throw new Error('Attendance has not been saved yet.');
-    return { studentName: student.data!.full_name, parentName: parent.full_name, batchName: batch.data!.name, parentPhone: parent.whatsapp || parent.phone, action, timestamp };
+    return {
+      studentName: student.data!.full_name,
+      parentName: parent.full_name,
+      batchName: batch.data!.name,
+      parentPhone: parent.whatsapp || parent.phone,
+      action,
+      timestamp,
+      academyName: this.preferences.value().academy_name,
+      timezone: this.preferences.timezone(),
+      locale: this.preferences.locale(),
+    };
   }
   // One bounded server-side page (max 500 rows) instead of the former client-side loop
   // over every 500-row enrollment page plus a separate full attendance read. The joined
   // rows arrive under the caller's own RLS policies with an exact backend total.
   async workspace() {
-    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+    const today = this.preferences.today();
     const result = await this.client.rpc('get_attendance_workspace_page', {
       p_date: today,
       p_limit: 500,
@@ -151,7 +163,7 @@ export class SupabaseAttendanceRepository {
   // Targeted reads for one student instead of downloading the whole workspace per scan.
   async identifyQr(code: string): Promise<QrIdentity> {
     const token = code.trim();
-    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+    const today = this.preferences.today();
     const qr = await this.client
       .from('qr_profiles')
       .select('student_id')

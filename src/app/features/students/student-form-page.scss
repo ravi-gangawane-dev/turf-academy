@@ -2,61 +2,91 @@
   display: block;
   height: 100%;
 }
+
+// All three role forms import this stylesheet and share these layout rules.
+.entity-form-page.entity-form-page {
+  --app-control-height: 44px;
+  height: auto;
+  font-size: var(--app-fs-body);
+  form { height: auto; margin: 0; grid-template-columns: minmax(0, 1fr); gap: var(--app-space-4); }
+  .form-top-row { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: var(--app-space-4); align-items: stretch; }
+  .form-top-row app-profile-photo-upload { flex: 1; min-height: 0; }
+  .form-top-row > .card { min-width: 0; }
+  .guardian label { margin-top: 0; }
+  main, aside { min-width: 0; gap: var(--app-space-4); grid-template-rows: none; align-content: start; }
+  .card, main > footer { padding: 20px; border-radius: var(--app-radius-md); }
+  h2 { margin-bottom: 16px; font-size: var(--app-fs-h3); line-height: 1.4; }
+  label { font-size: var(--app-fs-body); line-height: 1.5; gap: var(--app-space-1-5); }
+  .fields { gap: var(--app-space-3-5) var(--app-space-3); }
+  input:not([type='checkbox']), select { height: 44px; font-size: var(--app-fs-body); }
+  .check { display: flex; }
+  .check input { width: 18px; height: 18px; }
+  @media (max-width: 1100px) {
+    form { grid-template-columns: minmax(0, 1fr); }
+    .form-top-row { grid-template-columns: minmax(0, 1fr); }
+    .form-top-row .photo { width: 250px; max-width: 100%; box-sizing: border-box; }
+  }
+  @media (max-width: 600px) {
+    .fields, .fields.two, aside { grid-template-columns: minmax(0, 1fr); }
+    .card, main > footer { padding: 16px; }
+  }
+}
 .student-form-page {
   height: 100%;
-  font-size: 12px;
+  font-size: var(--app-fs-meta);
 }
 form {
   height: calc(100% - 144px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 250px;
-  gap: 10px;
+  gap: var(--app-space-2-5);
   margin: 12px;
 }
 main,
 aside {
   min-height: 0;
   display: grid;
-  gap: 10px;
+  gap: var(--app-space-2-5);
 }
 main {
   grid-template-rows: auto auto auto;
   align-content: start;
 }
 aside {
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1.25fr);
+  grid-template-rows: auto auto;
+  align-content: start;
 }
 .card,
 main > footer {
   padding: 12px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
 }
 h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-space-2);
   margin: 0 0 10px;
-  font-size: 14px;
+  font-size: var(--app-fs-body);
 }
 h2 i {
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   color: var(--app-primary);
   background: #e8f5eb;
 }
 .fields {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px 12px;
+  gap: var(--app-space-3-5) var(--app-space-3);
 }
 label {
   display: grid;
-  gap: 4px;
+  gap: var(--app-space-1);
   color: #1d2943;
   font-weight: 600;
 }
@@ -67,7 +97,7 @@ select {
   height: 40px;
   padding: 0 11px;
   border: 1px solid #d5ded9;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   font: inherit;
 }
@@ -77,10 +107,10 @@ main > footer {
   justify-content: space-between;
 }
 button {
-  min-height: 36px;
+  min-height: var(--app-control-sm);
   padding: 0 16px;
   border: 1px solid #d5ded9;
-  border-radius: 7px;
+  border-radius: var(--app-radius-sm);
   background: #fff;
   font: inherit;
   font-weight: 700;
@@ -93,23 +123,11 @@ button {
 .photo {
   display: flex;
   flex-direction: column;
-  min-height: 340px;
+  min-height: 0;
 }
 aside.photo-only {
   grid-template-rows: auto;
   align-content: start;
-}
-.photo-message {
-  margin: 12px 0 0;
-  line-height: 1.5;
-}
-.save-photo {
-  margin-top: 12px;
-  min-height: 44px;
-}
-.upload:focus-within {
-  outline: 2px solid var(--app-primary);
-  outline-offset: 3px;
 }
 .personal {
   min-height: 0;
@@ -117,83 +135,13 @@ aside.photo-only {
 .program .fields {
   align-items: end;
 }
-.upload {
-  position: relative;
-  overflow: hidden;
-  min-height: 280px;
-  flex: 1;
-  place-content: center;
-  justify-items: center;
-  border: 1px dashed #c8d6ce;
-  border-radius: 7px;
-}
-.upload.has-photo {
-  justify-content: end;
-  padding: 10px;
-  color: #fff;
-  background: #0b3e2f;
-}
-.upload img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.upload.has-photo::after {
-  position: absolute;
-  inset: 45% 0 0;
-  content: '';
-  background: linear-gradient(transparent, rgb(3 28 21 / 85%));
-}
-.upload.has-photo strong,
-.upload.has-photo small,
-.upload.has-photo b {
-  position: relative;
-  z-index: 1;
-}
-.upload.has-photo b {
-  border-color: #fff;
-  color: #fff;
-  background: rgb(0 0 0 / 18%);
-}
-.upload > i {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  color: var(--app-primary);
-  background: #e7f4ea;
-  font-size: 18px;
-}
-.upload strong,
-.upload small,
-.upload b {
-  margin-top: 8px;
-}
-.upload small {
-  color: var(--app-muted);
-}
-.upload b {
-  padding: 7px 12px;
-  border: 1px solid var(--app-primary);
-  border-radius: 5px;
-  color: var(--app-primary);
-}
-.upload input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
 .guardian label {
   margin-top: 8px;
 }
 .notice {
   margin-top: 8px;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   color: #9a3412;
   background: #fff7ed;
 }

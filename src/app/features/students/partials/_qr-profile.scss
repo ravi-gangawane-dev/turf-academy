@@ -1,0 +1,404 @@
+@use '../student-shared' as student-shared;
+
+/* qr profile */
+.qr-profile-workspace {
+  display: grid;
+  grid-template-columns: 270px minmax(320px, 1fr) 295px;
+  gap: var(--app-space-3-5);
+  margin-top: 12px;
+}
+
+.qr-panel,
+.qr-preview-panel,
+.about-qr,
+.qr-actions,
+.qr-share {
+  min-width: 0;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: white;
+}
+
+.qr-panel,
+.qr-preview-panel {
+  padding: 20px;
+}
+
+.qr-profile-workspace h2 {
+  margin: 0;
+  color: #17223c;
+  font-size: var(--app-fs-meta);
+  text-transform: capitalize;
+}
+
+.qr-panel>p,
+.qr-preview-panel>p {
+  margin: 8px 0 14px;
+  color: #526078;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-image {
+  min-height: 238px;
+  display: grid;
+  place-items: center;
+  padding: 15px;
+  border: 1px solid #d7dfe5;
+  border-radius: var(--app-radius-sm);
+}
+
+.qr-image img {
+  width: 210px;
+  height: 210px;
+  max-width: 100%;
+}
+
+.qr-image>i {
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-stat);
+}
+
+.qr-security {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--app-radius-sm);
+  color: #26364d;
+  background: #eff8f2;
+  font-size: var(--app-fs-meta);
+  line-height: 1.6;
+}
+
+.qr-security i {
+  color: var(--app-primary-dark);
+  font-size: var(--app-fs-h3);
+}
+
+.qr-panel>label {
+  display: grid;
+  gap: var(--app-space-2);
+  margin-top: 18px;
+  color: #425168;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-panel>label>div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--app-control-sm);
+  padding: 0 8px 0 12px;
+  border-radius: var(--app-radius-sm);
+  background: #f6f8fa;
+}
+
+.qr-panel label strong {
+  font-size: var(--app-fs-meta);
+}
+
+.qr-panel label button {
+  width: 27px;
+  height: 27px;
+  border: 0;
+  border-radius: var(--app-radius-sm);
+  color: #40506a;
+  background: white;
+}
+
+.qr-preview-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.student-profile-card {
+  width: min(310px, 100%);
+  overflow: hidden;
+  margin: 0 auto;
+  border: 1px solid #dce3df;
+  border-radius: var(--app-radius-md);
+  background: white;
+  box-shadow: var(--app-shadow);
+  text-align: center;
+}
+
+.student-profile-card>header {
+  min-height: 140px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  color: white;
+  background: #004427;
+}
+
+.student-profile-card header>i {
+  font-size: 30px;
+}
+
+.student-profile-card header strong {
+  margin-top: 8px;
+  font-size: var(--app-fs-label);
+}
+
+.student-profile-card header small {
+  margin-top: 2px;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-avatar {
+  width: 70px;
+  height: 70px;
+  margin: -36px auto 0;
+  border: 3px solid white;
+  font-size: var(--app-fs-h3);
+}
+
+.student-profile-card h3 {
+  margin: 8px 0 3px;
+  font-size: var(--app-fs-body);
+}
+
+.student-profile-card>p {
+  margin: 0;
+  color: #344258;
+  font-size: var(--app-fs-meta);
+}
+
+.student-profile-card dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-3-5);
+  padding: 17px 22px;
+  margin: 0;
+  text-align: left;
+}
+
+.student-profile-card dt,
+.student-profile-card dd {
+  font-size: var(--app-fs-meta);
+}
+
+.student-profile-card dt {
+  color: #46546a;
+}
+
+.student-profile-card dt i {
+  width: 20px;
+  color: #53617a;
+}
+
+.student-profile-card dd {
+  overflow: hidden;
+  margin: 0;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.student-profile-card footer {
+  padding: 10px;
+  color: #7b8797;
+  font-size: var(--app-fs-meta);
+}
+
+.student-profile-card footer i {
+  margin-right: 7px;
+  color: var(--app-primary);
+}
+
+.qr-profile-sidebar {
+  display: grid;
+  align-content: start;
+  gap: var(--app-space-3);
+}
+
+.about-qr,
+.qr-actions,
+.qr-share {
+  padding: 17px;
+}
+
+.about-qr h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+.about-qr>p {
+  margin: 15px 0;
+  color: #334158;
+  font-size: var(--app-fs-meta);
+  line-height: 1.7;
+}
+
+.about-qr ul {
+  padding: 0;
+  list-style: none;
+}
+
+.about-qr li {
+  display: flex;
+  gap: var(--app-space-2);
+  margin: 11px 0;
+  color: #26344d;
+  font-size: var(--app-fs-meta);
+}
+
+.about-qr li i {
+  color: var(--app-primary);
+}
+
+.qr-actions button {
+  width: 100%;
+  min-height: 31px;
+  margin-top: 7px;
+  border: 1px solid var(--app-primary);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: white;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-actions button.primary {
+  color: white;
+  background: var(--app-primary-dark);
+}
+
+.qr-actions button i {
+  margin-right: 8px;
+}
+
+.qr-share>div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--app-space-2);
+  margin-top: 13px;
+}
+
+.qr-share button {
+  min-width: 0;
+  min-height: 58px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--app-space-1-5);
+  border: 1px solid #dce3df;
+  border-radius: var(--app-radius-sm);
+  color: #25334d;
+  background: white;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-share button i {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-primary-dark);
+  background: #e8f5ec;
+  font-size: var(--app-fs-body);
+}
+
+.qr-share button:first-child i {
+  color: var(--app-primary);
+}
+
+.qr-share button:nth-child(2) i {
+  color: #2777ef;
+  background: #e9f1ff;
+}
+
+.qr-share button:last-child i {
+  color: #7f3de1;
+  background: #f1e9ff;
+}
+
+.qr-tip {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid #dfece3;
+  border-radius: var(--app-radius-sm);
+  color: #53647b;
+  background: #eef8f1;
+  font-size: var(--app-fs-meta);
+}
+
+.qr-tip i {
+  color: var(--app-primary);
+  font-size: var(--app-fs-h3);
+}
+
+.students-page:has(.qr-profile-workspace)>.detail-page-heading>span,
+.students-page:has(.qr-profile-workspace)>.detail-page-heading h1,
+.students-page:has(.qr-profile-workspace)>.detail-page-heading p,
+.students-page:has(.qr-profile-workspace)>.detail-breadcrumb strong {
+  font-size: 0;
+}
+
+.students-page:has(.qr-profile-workspace)>.detail-page-heading>span::after {
+  content: '05.11';
+  font-size: var(--app-fs-stat);
+}
+
+.students-page:has(.qr-profile-workspace)>.detail-page-heading h1::after {
+  content: 'QR Profile';
+  font-size: var(--app-fs-stat);
+}
+
+.students-page:has(.qr-profile-workspace)>.detail-page-heading p::after {
+  content: 'Generate and share student QR profile for quick access.';
+  font-size: var(--app-fs-meta);
+}
+
+.students-page:has(.qr-profile-workspace)>.detail-breadcrumb strong::after {
+  content: 'QR Profile';
+  font-size: var(--app-fs-meta);
+}
+
+@media (max-width: 1050px) {
+  .qr-profile-workspace {
+    grid-template-columns: 270px 1fr;
+  }
+
+  .qr-profile-sidebar {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .qr-profile-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-profile-sidebar {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .qr-panel,
+  .qr-preview-panel {
+    padding: 15px;
+  }
+
+  .qr-image {
+    min-height: 220px;
+  }
+
+  .student-profile-card {
+    width: 100%;
+  }
+
+  .qr-share>div {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@include student-shared.page-base;

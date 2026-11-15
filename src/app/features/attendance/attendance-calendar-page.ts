@@ -1,3 +1,5 @@
+import { AcademyDatePipe } from '../../shared/academy-date.pipe';
+import { AcademyPreferencesService } from '../../core/supabase/academy-preferences.service';
 import { AttendanceViewNavigation } from './attendance-view-navigation';
 import { TableTools } from '../../shared/data-table/table-tools';
 import {
@@ -11,7 +13,7 @@ import {
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+
 import {
   AttendanceCalendarService,
   AttendanceCalendarResult,
@@ -23,8 +25,9 @@ import { BatchesService, StudentsService } from '../../core/supabase/domain-serv
 import { AcademyFacade } from '../../core/state/academy.facade';
 import { API_CONFIG } from '../../core/config/api.config';
 import { readAllPages } from '../../core/supabase/read-all-pages';
-import { Pagination } from '../../shared/pagination/pagination';
+import { DataTable } from '../../shared/data-table/data-table';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { ModalFocus } from '../../shared/interaction-dialog/modal-focus';
 import { ExportColumn, ExportRow } from '../../shared/export/export.models';
 import {
   buildRecordExportRows,
@@ -36,13 +39,14 @@ import {
 type ViewMode = 'month' | 'week' | 'list';
 @Component({
   selector: 'app-attendance-calendar-page',
-  imports: [AttendanceViewNavigation, TableTools, FormsModule, DatePipe, Pagination, PageHero],
+  imports: [AttendanceViewNavigation, TableTools, FormsModule, AcademyDatePipe, PageHero, ModalFocus, DataTable],
   templateUrl: './attendance-calendar-page.html',
   styleUrl: './attendance-calendar-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AttendanceCalendarPage implements OnInit {
   private readonly calendar = inject(AttendanceCalendarService);
+  private readonly preferences = inject(AcademyPreferencesService);
   private readonly store = inject(AcademyFacade);
   private readonly batches = inject(BatchesService);
   private readonly students = inject(StudentsService);
@@ -103,14 +107,14 @@ export class AttendanceCalendarPage implements OnInit {
         length: Math.ceil(
           (new Date(this.currentYear(), this.currentMonth() - 1, 1).getDay() +
             new Date(this.currentYear(), this.currentMonth(), 0).getDate()) /
-            7,
+          7,
         ),
       },
       (_, i) => i + 1,
     ),
   );
   protected readonly monthName = computed(() =>
-    new Date(this.currentYear(), this.currentMonth() - 1, 1).toLocaleString('en-IN', {
+    new Date(this.currentYear(), this.currentMonth() - 1, 1).toLocaleString(this.preferences.locale(), {
       month: 'long',
     }),
   );
@@ -378,8 +382,8 @@ export class AttendanceCalendarPage implements OnInit {
     return !!from && !!to && date >= from && date <= to;
   }
   protected formatDate(value: string): string {
-    return new Date(`${value}T12:00:00`).toLocaleDateString('en-IN', {
-      day: 'numeric', month: 'short', year: 'numeric',
+    return new Date(`${value}T00:00:00Z`).toLocaleDateString(this.preferences.locale(), {
+      day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
     });
   }
   private calendarMonthRange(value: string): AttendanceDateRange {

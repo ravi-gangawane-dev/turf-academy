@@ -14,19 +14,19 @@ nav {
   margin-bottom: 1.25rem;
 }
 nav a {
-  color: #34794b;
+  color: var(--app-primary);
   text-decoration: none;
 }
 header,
 section {
   background: #fff;
   border: 1px solid #dce5e1;
-  border-radius: 14px;
+  border-radius: var(--app-radius-lg);
   padding: 1.5rem;
   margin-bottom: 1rem;
 }
 header p {
-  color: #438653;
+  color: var(--app-primary);
   font-weight: 700;
   margin: 0 0 0.35rem;
 }
@@ -39,13 +39,13 @@ header span {
 }
 dl {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--app-space-3);
   margin-top: 1rem;
 }
 dl div {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--app-space-4);
   border-bottom: 1px solid #edf1ef;
   padding: 0.75rem 0;
 }
@@ -54,6 +54,6 @@ dt {
 }
 code {
   background: #f2f6f4;
-  border-radius: 5px;
+  border-radius: var(--app-radius-sm);
   padding: 0.25rem 0.45rem;
 }

@@ -103,6 +103,25 @@ describe('StudentDetailsPage', () => {
     expect(page['loading']()).toBe(false);
   });
 
+  it('renders themed, accessible section tabs with the active section selected', async () => {
+    const { fixture, page } = setup('s1');
+    await page.ngOnInit();
+    fixture.detectChanges();
+
+    const tabs = Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]')) as HTMLButtonElement[];
+    expect(tabs.map((tab) => tab.textContent?.trim())).toEqual([
+      'overview',
+      'documents',
+      'attendance',
+      'payments',
+      'medical',
+      'timeline',
+    ]);
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+    expect(tabs[0].classList).toContain('active');
+    expect(tabs[1].getAttribute('aria-selected')).toBe('false');
+  });
+
   it('derives the attendance rate from the summary', async () => {
     const { page } = setup('s1');
     await page.ngOnInit();

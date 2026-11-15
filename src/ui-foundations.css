@@ -27,22 +27,22 @@
 }
 
 .workspace>main h1 {
-  font-size: var(--app-font-xl) !important;
+  font-size: var(--app-font-xl);
   line-height: 1.2;
 }
 
 .workspace>main h2 {
-  font-size: var(--app-font-lg) !important;
+  font-size: var(--app-font-lg);
   line-height: 1.35;
 }
 
 .workspace>main h3 {
-  font-size: var(--app-font-md) !important;
+  font-size: var(--app-font-md);
   line-height: 1.4;
 }
 
 .workspace>main :is(p, li, dt, dd, label, input, select, textarea, button, a, td) {
-  font-size: var(--app-font-sm) !important;
+  font-size: var(--app-font-sm);
   line-height: var(--app-line-height);
 }
 
@@ -120,7 +120,7 @@
 }
 
 .workspace>main :is(.metrics, .student-metrics, .attendance-metrics, .notification-metrics, .report-summary, .summary-grid) :is(strong, b):not(.percent) {
-  font-size: var(--app-font-stat) !important;
+  font-size: var(--app-font-stat);
   font-weight: 750;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
@@ -148,6 +148,22 @@ app-root :is(
   box-sizing: border-box;
   height: var(--app-control-height) !important;
   min-height: var(--app-control-height) !important;
+}
+
+app-root :is(
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='file']):not([type='range']):not([type='button']):not([type='submit']):not([type='reset']):not([type='image']):not([type='color']),
+  select:not([multiple]),
+  textarea
+) {
+  font-family: inherit;
+  font-size: var(--app-font-sm);
+  line-height: var(--app-line-height);
+}
+
+app-root form label,
+app-root form label > span {
+  font-size: var(--app-font-sm);
+  line-height: var(--app-line-height);
 }
 
 .workspace>main :is(input, select) {
@@ -245,7 +261,6 @@ button:disabled {
 
 .workspace>main td {
   padding: 14px 16px;
-  border-bottom-color: var(--app-border);
   vertical-align: middle;
 }
 

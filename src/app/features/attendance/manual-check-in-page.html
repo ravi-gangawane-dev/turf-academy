@@ -1,4 +1,4 @@
-<div class="app-list-page attendance-section manual-page" [class.checkout-page]="isCheckout">
+<div class="app-list-page attendance-section manual-page" [class.checkout-page]="isCheckout" [attr.aria-busy]="store.loading()">
   @if (store.loading()) {
     <app-async-state title="Loading attendance..." />
   }
@@ -87,7 +87,7 @@
         <p>The current academy date and time will be recorded securely when you confirm.</p>
         <footer>
           <a routerLink="/attendance"><i class="pi pi-times"></i> Cancel</a
-          ><button
+          ><button type="button"
             [disabled]="saving() || store.loading() || !selected()"
             (click)="submitAttendance()"
           >

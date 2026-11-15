@@ -71,6 +71,23 @@ describe('PrintInvoice', () => {
     );
   });
 
+  it('renders configured registration, terms and footer text', async () => {
+    const fixture = await render({
+      ...invoice,
+      brand: {
+        ...invoice.brand,
+        registrationNumber: 'REG-42',
+        terms: 'Configured invoice terms',
+        footerNote: 'Configured printed footer',
+      },
+    });
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('Reg. REG-42');
+    expect(text).toContain('Configured invoice terms');
+    expect(text).toContain('Configured printed footer');
+  });
+
   it('omits empty adjustments and paid lines for a fully outstanding invoice', async () => {
     const fixture = await render({
       ...invoice,
