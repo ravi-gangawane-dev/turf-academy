@@ -13,7 +13,13 @@ export interface UserProfile {
 
 export interface AuthSession {
   readonly accessToken: string;
-  readonly user: { readonly id: string; readonly name: string; readonly role: StaffRole };
+  readonly user: {
+    readonly id: string;
+    readonly name: string;
+    readonly role: StaffRole;
+    /** Set when an administrator created the account with a temporary password. */
+    readonly mustChangePassword?: boolean;
+  };
   readonly profile?: UserProfile;
 }
 

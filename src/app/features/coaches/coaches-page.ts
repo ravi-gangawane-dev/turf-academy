@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { Coach } from '../../core/models/academy.model';
 import { CoachesService } from '../../core/supabase/domain-services';
 import { ServerListService } from '../../core/supabase/server-list.service';
+import { StorageService } from '../../core/supabase/storage.service';
 import { AsyncState } from '../../shared/async-state/async-state';
 import { ColumnFilter, createColumnFilters } from '../../shared/column-filter/column-filter';
 import { DataTable } from '../../shared/data-table/data-table';
@@ -32,6 +33,7 @@ import { ToastService } from '../../shared/toast/toast.service';
 export class CoachesPage implements OnInit {
   private readonly router = inject(Router);
   private readonly lists = inject(ServerListService);
+  private readonly storage = inject(StorageService);
   private requestId = 0;
   protected readonly columns = createColumnFilters(() => this.filterChanged(), () => { ++this.requestId; this.page.set(1); });
   protected readonly total = signal(0);
@@ -68,8 +70,23 @@ export class CoachesPage implements OnInit {
       if (request !== this.requestId) return;
       const records = result.rows;
       this.total.set(result.total); this.page.set(result.page); this.coachMetrics.set(result.metrics);
+      // The list page comes from the `get_staff_list_page` RPC, which returns the
+      // raw `coaches` row: it carries `photo_path`, not a resolvable `photo_url`.
+      // Sign the storage paths here so the avatar column is not stuck on initials.
+      const photoUrls = await Promise.all(
+        records.map(async (record) => {
+          if (record.photo_url) return record.photo_url as string;
+          if (!record.photo_path) return undefined;
+          try {
+            return await this.storage.signedUrl('coach-photos', record.photo_path);
+          } catch {
+            return undefined;
+          }
+        }),
+      );
+      if (request !== this.requestId) return;
       this.apiCoaches.set(
-        records.map((record) => {
+        records.map((record, index) => {
           const specializations = (record.coach_specializations ?? []).map(
             (row: { specialization: string }) => row.specialization,
           );
@@ -84,7 +101,7 @@ export class CoachesPage implements OnInit {
             biography: record.biography ?? undefined,
             specialization: specializations[0] ?? 'General coaching',
             specializations,
-            photoDataUrl: record.photo_url ?? undefined,
+            photoDataUrl: photoUrls[index],
             status: record.status,
           } as Coach;
         }),
@@ -109,6 +126,20 @@ export class CoachesPage implements OnInit {
   }
   protected coachEmail(coach: Coach): string {
     return coach.email || 'Not provided';
+  }
+  /**
+   * Phone display that does not double the country code: records saved as
+   * "+91 98765 43210" already carry it, while records saved as a bare number
+   * do not. Both render as one "+91 …" number.
+   */
+  protected phone(value: string | null | undefined): string {
+    const raw = (value ?? '').trim();
+    if (!raw) return 'Not provided';
+    // Any country code other than +91 is left exactly as stored.
+    if (raw.startsWith('+') && !raw.startsWith('+91')) return raw;
+    const digits = raw.replace(/\D/g, '').replace(/^0+/, '');
+    const local = digits.length > 10 && digits.startsWith('91') ? digits.slice(2) : digits;
+    return local ? `+91 ${local}` : raw;
   }
   private readonly dialogs = inject(InteractionDialogService);
   private readonly toast = inject(ToastService);

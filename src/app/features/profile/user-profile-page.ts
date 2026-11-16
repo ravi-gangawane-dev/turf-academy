@@ -53,6 +53,8 @@ interface SectionAction {
 interface ProfileDetail {
   readonly label: string;
   readonly value: string;
+  /** Optional action target, e.g. a mailto: or tel: link for contact details. */
+  readonly href?: string;
 }
 interface ProfileDetailSection {
   readonly title: string;
@@ -186,8 +188,9 @@ export class UserProfilePage implements OnInit {
     if (this.role() !== 'parent' || !whatsapp || whatsapp === phone) return phone || whatsapp || '—';
     return `${phone || '—'} (WhatsApp: ${whatsapp})`;
   });
-  protected readonly location = computed(() =>
-    addressLines(this.profileAddress()).join('\n') || 'Location not provided',
+  /** One-line address for the identity card; the full value stays in the title. */
+  protected readonly location = computed(
+    () => addressLines(this.profileAddress()).join(', ') || 'Location not provided',
   );
   protected readonly activeTabLabel = computed(() =>
     this.tabs().find((tab) => tab.id === this.selectedTab())?.label ?? '',
@@ -220,12 +223,28 @@ export class UserProfilePage implements OnInit {
     const years = this.coachRecord()?.['experience_years'];
     return years == null ? '—' : `${years} years`;
   });
+  /** Groups an Indian number for reading: 9130451715 → +91 91304 51715. */
+  protected friendlyPhone(value: string): string {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 10) return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+    if (digits.length === 12 && digits.startsWith('91')) return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`;
+    return value;
+  }
+
+  private phoneHref(value: string): string | undefined {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 10) return `tel:+91${digits}`;
+    if (digits.length === 12 && digits.startsWith('91')) return `tel:+${digits}`;
+    return undefined;
+  }
+
   protected readonly personalDetailSections = computed<readonly ProfileDetailSection[]>(() => {
     const role = this.role();
     const status = this.profile()?.status;
     const parent = this.parentRecord();
     const coach = this.coachRecord();
     const coachSpecializations = this.specializations().join(', ');
+    const email = this.contactEmail()?.trim() ?? '';
     const roleFields: ProfileDetail[] = role === 'parent'
       ? [
         { label: 'Relationship', value: parent?.relation || '—' },
@@ -247,8 +266,8 @@ export class UserProfilePage implements OnInit {
         fields: [
           { label: 'Full Name', value: this.profile()?.fullName?.trim() || '—' },
           { label: 'Role', value: this.roleLabel() },
-          { label: 'Email Address', value: this.contactEmail()?.trim() || '—' },
-          { label: this.mobileLabel(), value: this.mobileValue() },
+          { label: 'Email Address', value: email || '—', href: email ? `mailto:${email}` : undefined },
+          { label: this.mobileLabel(), value: this.friendlyPhone(this.mobileValue()), href: this.phoneHref(this.mobileValue()) },
           { label: 'Account Status', value: status ? status[0].toUpperCase() + status.slice(1) : '—' },
           { label: 'Joined Date', value: this.joinedDate() || '—' },
           { label: 'Date of Birth', value: this.dateOfBirth() },

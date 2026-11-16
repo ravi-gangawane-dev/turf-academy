@@ -28,6 +28,14 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* Same track maths and gaps as the form grid that hosts these fields, so the
+   address columns line up exactly with the fields above them at every width. */
+.address-fields--five,
+.address-display--five {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px 22px;
+}
+
 .address-field,
 .address-detail {
   display: grid;
@@ -92,6 +100,13 @@
   font-size: var(--app-font-sm);
   font-weight: 600;
   line-height: var(--app-line-height);
+}
+
+@media (max-width: 1200px) {
+  .address-fields--five,
+  .address-display--five {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 900px) {

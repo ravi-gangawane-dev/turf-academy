@@ -143,4 +143,112 @@ describe('User management backend pagination', () => {
       api.inviteLink({ fullName: 'Ravi', email: 'ravi@example.com', role: 'coach' }),
     ).rejects.toThrow('could not be created');
   });
+  it('sends a deletion with its required reason', async () => {
+    const { api, invoke } = setup({ message: 'User deleted.' });
+    await api.delete('u1', '  Duplicate account  ');
+    expect(invoke.mock.calls[0][1].body).toEqual({
+      action: 'delete',
+      userId: 'u1',
+      reason: 'Duplicate account',
+    });
+  });
+  it('maps the history-blocked deletion code to the reversible action', async () => {
+    const { api, invoke } = setup(null);
+    invoke.mockResolvedValue({
+      data: null,
+      error: {
+        context: new Response(JSON.stringify({ code: 'account_has_history' }), { status: 409 }),
+      },
+    } as never);
+    await expect(api.delete('u1', 'Duplicate account')).rejects.toThrow('Disable it instead');
+  });
+  it('creates an account and returns the one-time temporary password', async () => {
+    const { api, invoke } = setup({
+      userId: 'created-1',
+      email: 'coach@example.com',
+      role: 'coach',
+      temporaryPassword: 'Abcd1234!Efgh5678',
+    });
+    const created = await api.create({
+      fullName: ' New Coach ',
+      email: ' NEW@Example.com ',
+      phone: ' 999 ',
+      role: 'coach',
+    });
+    expect(invoke.mock.calls[0][1].body).toEqual({
+      action: 'create',
+      fullName: 'New Coach',
+      email: 'new@example.com',
+      phone: '999',
+      role: 'coach',
+    });
+    expect(created.temporaryPassword).toBe('Abcd1234!Efgh5678');
+  });
+  it('rejects a create response without a usable temporary password', async () => {
+    const { api } = setup({
+      userId: 'created-1',
+      email: 'coach@example.com',
+      role: 'coach',
+      temporaryPassword: '',
+    });
+    await expect(
+      api.create({ fullName: 'New Coach', email: 'new@example.com', role: 'coach' }),
+    ).rejects.toThrow('invalid response');
+  });
+  it('loads the override set and the role it sits on', async () => {
+    const result = {
+      userId: 'u1',
+      role: 'coach',
+      overrides: [{ permissionKey: 'students:read', effect: 'grant', reason: 'Cover reception' }],
+    };
+    const { api, invoke } = setup(result);
+    expect(await api.permissions('u1')).toEqual(result);
+    expect(invoke.mock.calls[0][1].body).toEqual({ action: 'permissions', userId: 'u1' });
+  });
+  it('rejects an override response without a list', async () => {
+    const { api } = setup({ role: 'coach' });
+    await expect(api.permissions('u1')).rejects.toThrow('invalid response');
+  });
+  it('replaces the override set with the required reason', async () => {
+    const { api, invoke } = setup({ message: 'Permission overrides saved.' });
+    await api.setPermissions(
+      'u1',
+      [
+        { permissionKey: 'students:read', effect: 'grant', reason: 'ignored on write' },
+        { permissionKey: 'settings:write', effect: 'revoke' },
+      ],
+      '  Cover reception  ',
+    );
+    expect(invoke.mock.calls[0][1].body).toEqual({
+      action: 'set_permissions',
+      userId: 'u1',
+      reason: 'Cover reception',
+      overrides: [
+        { permissionKey: 'students:read', effect: 'grant' },
+        { permissionKey: 'settings:write', effect: 'revoke' },
+      ],
+    });
+  });
+  it('maps the self-lockout guard to an actionable message', async () => {
+    const { api, invoke } = setup(null);
+    invoke.mockResolvedValue({
+      data: null,
+      error: {
+        context: new Response(JSON.stringify({ code: 'self_lockout' }), { status: 409 }),
+      },
+    } as never);
+    await expect(
+      api.setPermissions('caller', [{ permissionKey: 'settings:write', effect: 'revoke' }], 'Remove own access'),
+    ).rejects.toThrow('cannot remove your own settings access');
+  });
+  it('reports unavailable override storage instead of silently dropping the change', async () => {
+    const { api, invoke } = setup(null);
+    invoke.mockResolvedValue({
+      data: null,
+      error: {
+        context: new Response(JSON.stringify({ code: 'permissions_unavailable' }), { status: 503 }),
+      },
+    } as never);
+    await expect(api.permissions('u1')).rejects.toThrow('Permission overrides are unavailable');
+  });
 });

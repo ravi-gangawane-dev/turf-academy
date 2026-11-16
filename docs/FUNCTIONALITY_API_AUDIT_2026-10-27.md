@@ -61,7 +61,7 @@ These source-confirmed gaps remain despite older summary documents claiming zero
 - Real-browser offline check: `checkIn` rejects with an online-API requirement, attendance is unchanged and queued-operation count remains zero. No attendance record was written.
 - `npm run lint`: failed because the target is absent.
 
-Evidence: [documentation inventory](audit/document-inventory-2026-10-27.md), [initial route sweep](audit/api-runtime-2026-10-27.json), [authoritative rechecks](audit/api-runtime-recheck-2026-10-27.json), [offline check](audit/api-only-offline-2026-10-27.json). Command logs are in `.scratch/audit-{build,tests,db,live,lint}.log`.
+Evidence: [documentation inventory](PROJECT-IMPLEMENTATION-STATUS.md), [initial route sweep](audit/api-runtime-2026-10-27.json), [authoritative rechecks](audit/api-runtime-recheck-2026-10-27.json), [offline check](audit/api-only-offline-2026-10-27.json). Command logs are in `.scratch/audit-{build,tests,db,live,lint}.log`.
 
 ## Still unverified / release work
 

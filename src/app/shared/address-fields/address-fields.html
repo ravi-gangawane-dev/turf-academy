@@ -1,5 +1,6 @@
 @if (form(); as addressForm) {
-<div class="address-fields" [class.address-fields--four]="columns() === 4" [formGroup]="addressForm">
+<div class="address-fields" [class.address-fields--four]="columns() === 4"
+  [class.address-fields--five]="columns() === 5" [formGroup]="addressForm">
   <label class="address-field">
     <span>Address Line 1 <b>*</b></span>
     <input formControlName="line1" autocomplete="address-line1" placeholder="Enter address line 1"
@@ -40,7 +41,8 @@
 @if (inline()) {
 <div class="address-inline">{{ formattedAddress() }}</div>
 } @else {
-<div class="address-display" [class.address-display--four]="columns() === 4">
+<div class="address-display" [class.address-display--four]="columns() === 4"
+  [class.address-display--five]="columns() === 5">
   @for (field of fields(); track field.label) {
   <div class="address-detail">
     <span>{{ field.label }}</span>

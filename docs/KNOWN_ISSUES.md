@@ -36,10 +36,10 @@ The latest recorded blocker recheck clears the following claims; they are not op
 
 ## Sources
 
-- [Latest blocker recheck](BLOCKER_RECHECK_2026-10-29.md)
-- [Earlier functional gaps and follow-up corrections](OPEN_FUNCTIONAL_GAPS_2026-10-19.md)
+- [Latest blocker recheck](PROJECT-IMPLEMENTATION-STATUS.md)
+- [Earlier functional gaps and follow-up corrections](PROJECT-IMPLEMENTATION-STATUS.md)
 - [Repair tracker and verification scope](REPAIR_TRACKER.md)
-- [Pre-GitHub audit](PRE_GITHUB_AUDIT_2026-10-29.md)
+- [Pre-GitHub audit](PROJECT-IMPLEMENTATION-STATUS.md)
 - [Production monitoring configuration](../src/environments/environment.production.ts)
 - [Netlify error collector](../netlify/functions/client-errors.mjs)
 - [Payment enum-cast migration](../supabase/migrations/202610300001_record_payment_status_cast.sql)

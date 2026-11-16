@@ -39,12 +39,12 @@
         @if (profile()?.phone) {
         <div class="contact-row">
           <i class="pi pi-phone" aria-hidden="true"></i>
-          <span>{{ profile()?.phone }}</span>
+          <span>{{ friendlyPhone(profile()?.phone || '') }}</span>
         </div>
         }
         <div class="contact-row">
           <i class="pi pi-map-marker" aria-hidden="true"></i>
-          <span class="contact-address">{{ location() }}</span>
+          <span class="contact-address" [title]="location()">{{ location() }}</span>
         </div>
         @if (joinedDate()) {
         <div class="contact-row">
@@ -176,7 +176,7 @@
 
             <section class="personal-edit-section" aria-label="Address Information">
               <h4>Address Information</h4>
-              <app-address-fields [form]="form.controls.address" />
+              <app-address-fields [form]="form.controls.address" [columns]="5" />
             </section>
 
             <section class="personal-edit-section" aria-label="Role-Specific Information">
@@ -261,15 +261,24 @@
                 <app-address-fields [value]="profileAddress()" [inline]="true" />
                 } @else {
                 @for (field of section.fields; track field.label) {
-                <div class="detail">
+                <div class="detail" [class.detail-status]="field.label === 'Account Status'">
                   <span>{{ field.label }}</span>
+                  @if (field.label === 'Account Status') {
+                  <div class="status-pill" [attr.data-status]="(profile()?.status || '').toLowerCase()">
+                    <i class="pi pi-check-circle" aria-hidden="true"></i>{{ field.value }}
+                  </div>
+                  } @else if (field.href) {
+                  <strong><a class="detail-link" [href]="field.href">{{ field.value }}</a></strong>
+                  } @else {
                   <strong>{{ field.value }}</strong>
+                  }
                 </div>
                 }
                 }
               </div>
               @if (section.title === 'Role-Specific Information' && !section.fields.length) {
-              <p class="role-empty">No additional role-specific details are available.</p>
+              <p class="role-empty"><i class="pi pi-info-circle" aria-hidden="true"></i>No additional
+                role-specific details are available for this role.</p>
               }
             </section>
             }

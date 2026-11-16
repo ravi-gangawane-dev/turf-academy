@@ -22,6 +22,7 @@ describe('authGuard', () => {
           useValue: {
             ensureInitialized: () => Promise.resolve(),
             isAuthenticated: () => authenticated,
+            mustChangePassword: () => false,
           },
         },
       ],
@@ -57,6 +58,7 @@ describe('authGuard', () => {
               order.push('check');
               return true;
             },
+            mustChangePassword: () => false,
           },
         },
       ],

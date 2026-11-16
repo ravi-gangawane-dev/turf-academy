@@ -6,14 +6,14 @@ This is source evidence, not authenticated browser acceptance. No application co
 
 Follow-up: the findings below were subsequently corrected at the user's request. See the tracker section “Corrections and verification” for implementation and test results. The table preserves the original findings; authenticated browser acceptance remains pending.
 
-| Finding | Evidence | Follow-up acceptance |
+| Finding | Evidence | Status |
 | --- | --- | --- |
-| Global imports repeat | `src/styles.css` imports Tailwind at lines 1/8, PrimeIcons at 4/9, foundations at 5/11. | P1: consolidate only after checking cascade and comparing screenshots. |
-| Photo editor lacks modal keyboard lifecycle | `profile-photo-upload.html` declares dialog semantics, but its component does not import `ModalFocus` or implement initial focus, Tab containment, Escape handling, focus restoration, or scroll locking. | P2: open from keyboard; verify forward/backward Tab, Escape, restored trigger focus, and background scroll. |
-| Photo editor closes before persistence completes | `ProfilePhotoUpload.saveAndClose()` emits `fileSelected` and `save`, then immediately sets `open = false`; the void output does not await the parent save. | P2: delayed success and rejected save must preserve the intended draft and expose a recoverable error. |
-| Photo editor can dismiss while busy | Close and Cancel call `close()` without a busy guard; `close()` unconditionally hides the editor. | P2: exercise close, cancel and Escape while processing and saving. |
-| Crop handles are decorative | Crop-grid spans have no input handlers; `render(true)` uses fixed crop coordinates. | P2: reconcile the visible crop affordance with supported interaction and verify exported framing. |
-| Shared dialog keyboard behavior exists | `interaction-dialog/modal-focus.ts` provides initial focus, Tab wrapping, busy-aware Escape, body scroll locking and focus restoration; shared `DialogHost` imports it. | Verify in a real browser, including stacked dialogs and hidden/disabled controls; source presence is not a passing runtime result. |
+| Global imports repeat | `src/styles.css` imported Tailwind at lines 1/8, PrimeIcons at 4/9, foundations at 5/11. | **Fixed.** `src/styles.css` now has one import per stylesheet (lines 1-7), verified on 2026-11-16. |
+| Photo editor lacks modal keyboard lifecycle | `profile-photo-upload.html` declared dialog semantics without `ModalFocus`. | **Fixed in source.** The component now imports `ModalFocus` and binds `appModalFocus` with `[modalBusy]`; browser acceptance (Tab cycling, Escape, focus restore, scroll lock) still pending. |
+| Photo editor closes before persistence completes | `saveAndClose()` hid the editor without awaiting the parent save. | **Fixed in source.** `saveAndClose()` is async and the host drives `saving`, so the editor stays open until the parent save resolves; delayed/rejected-save acceptance still pending in a browser. |
+| Photo editor can dismiss while busy | Close/Cancel called `close()` unguarded. | **Fixed in source.** Close, Cancel, Escape (`close()`, line 343) and the save button all return early while `saving || processing()`. |
+| Crop handles are decorative | Crop-grid spans had no input handlers. | **Resolved by design.** The crop grid is now `aria-hidden` decoration over a documented fixed square crop: zoom, rotate and keyboard pan are the real controls, and the help copy states the behaviour. |
+| Shared dialog keyboard behavior exists | `interaction-dialog/modal-focus.ts` provides initial focus, Tab wrapping, busy-aware Escape, scroll locking and focus restoration. | **Present and imported** by the photo editor and the attendance/batch/fee dialogs; runtime acceptance in a real browser is still outstanding. |
 
 Preserve the photo shell's current `width: 100%`, `max-width: 760px`, `max-height: 90vh`, and 600px layout breakpoint during later corrections. Preserve the official logo, blue/sky-blue uniforms, permissions and business behavior.
 

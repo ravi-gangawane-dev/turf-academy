@@ -71,20 +71,35 @@ describe('AuthService session revalidation', () => {
     TestBed.resetTestingModule();
   });
 
-  function clientWith(profiles: { data: unknown; error: unknown }[]) {
+  function clientWith(
+    profiles: { data: unknown; error: unknown }[],
+    userMetadata: Record<string, unknown> = {},
+    overrides: { data: unknown; error: unknown } = { data: [], error: null },
+  ) {
     let index = 0;
-    const query: Record<string, unknown> = {};
-    query['select'] = () => query;
-    query['eq'] = () => query;
-    query['maybeSingle'] = () =>
+    const profileQuery: Record<string, unknown> = {};
+    profileQuery['select'] = () => profileQuery;
+    profileQuery['eq'] = () => profileQuery;
+    profileQuery['maybeSingle'] = () =>
       Promise.resolve(profiles[Math.min(index++, profiles.length - 1)]);
-    const session = { access_token: 'token', user: { id: 'u1' } };
+    const overrideQuery: Record<string, unknown> = {};
+    overrideQuery['select'] = () => overrideQuery;
+    overrideQuery['eq'] = () => overrideQuery;
+    overrideQuery['then'] = (
+      resolve: (value: unknown) => unknown,
+      reject?: (reason: unknown) => unknown,
+    ) => Promise.resolve(overrides).then(resolve, reject);
+    const session = { access_token: 'token', user: { id: 'u1', user_metadata: userMetadata } };
     const auth = {
       getSession: vi.fn().mockResolvedValue({ data: { session }, error: null }),
       onAuthStateChange: vi.fn(),
       signOut: vi.fn().mockResolvedValue({ error: null }),
     };
-    return { auth, from: vi.fn(() => query), session };
+    return {
+      auth,
+      from: vi.fn((table: string) => (table === 'profile_permissions' ? overrideQuery : profileQuery)),
+      session,
+    };
   }
 
   function setup(client: ReturnType<typeof clientWith>) {
@@ -171,7 +186,63 @@ describe('AuthService session revalidation', () => {
     expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 
-  it('keeps the session through a transient network failure', async () => {
+  it('applies a per-user grant on top of the role matrix', async () => {
+    const coachProfile = { ...activeProfile, role: 'coach' };
+    const client = clientWith(
+      [{ data: coachProfile, error: null }],
+      {},
+      { data: [{ permission_key: 'students:read', effect: 'grant' }], error: null },
+    );
+    const { service } = setup(client);
+
+    await service.ensureInitialized();
+
+    expect(service.hasPermission('coach:portal')).toBe(true);
+    expect(service.hasPermission('students:read')).toBe(true);
+    expect(service.hasPermission('students:write')).toBe(false);
+  });
+
+  it('removes a role permission when the account has a revoke override', async () => {
+    const client = clientWith(
+      [{ data: activeProfile, error: null }],
+      {},
+      { data: [{ permission_key: 'settings:write', effect: 'revoke' }], error: null },
+    );
+    const { service } = setup(client);
+
+    await service.ensureInitialized();
+
+    expect(service.hasPermission('settings:write')).toBe(false);
+    expect(service.hasPermission('students:read')).toBe(true);
+  });
+
+  it('keeps role permissions when overrides cannot be read', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const client = clientWith(
+      [{ data: activeProfile, error: null }],
+      {},
+      { data: null, error: { code: '42P01' } },
+    );
+    const { service } = setup(client);
+
+    await service.ensureInitialized();
+
+    expect(service.hasPermission('settings:write')).toBe(true);
+  });
+
+  it('flags a directly created account that must replace its temporary password', async () => {
+    const client = clientWith(
+      [{ data: activeProfile, error: null }],
+      { must_change_password: true },
+    );
+    const { service } = setup(client);
+
+    await service.ensureInitialized();
+
+    expect(service.mustChangePassword()).toBe(true);
+  });
+
+  it('keeps a session through a transient network failure', async () => {
     const client = clientWith([{ data: activeProfile, error: null }]);
     const { service, router } = setup(client);
     await service.ensureInitialized();

@@ -84,7 +84,7 @@
               </button>
             </td>
             <td>{{ coach.specialization }}</td>
-            <td><span class="coach-contact"><i class="pi pi-phone"></i>+91 {{ coach.mobile }}</span></td>
+            <td><span class="coach-contact"><i class="pi pi-phone"></i>{{ phone(coach.mobile) }}</span></td>
             <td><span class="coach-contact"><i class="pi pi-envelope"></i>{{ coachEmail(coach) }}</span></td>
             <td>{{ coach.experienceYears ?? 0 }} years</td>
             <td>{{ coach.qualification || 'Not provided' }}</td>

@@ -14,6 +14,11 @@ const VALID_ROLES: readonly StaffRole[] = ['admin', 'coach', 'receptionist', 'pa
 /** Re-check an open session at least this often, and immediately when the tab regains focus. */
 export const SESSION_REVALIDATE_MS = 5 * 60 * 1000;
 export type SessionEndReason = 'expired' | 'inactive' | 'suspended' | 'removed';
+type PermissionEffect = 'grant' | 'revoke';
+interface PermissionOverrideSet {
+  readonly userId: string;
+  readonly effects: Readonly<Record<string, PermissionEffect>>;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -29,10 +34,27 @@ export class AuthService {
   readonly profile = computed(() => this.sessionState()?.profile ?? null);
   readonly profileImageUrl = signal<string | null>(null);
   readonly role = computed(() => this.sessionState()?.user.role ?? null);
+  /**
+   * Every role the account holds, primary first. `profiles.role` stays the one
+   * the database RLS policies read; additional roles only widen the app.
+   */
+  readonly assignedRoles = computed<readonly StaffRole[]>(() => {
+    const primary = this.role();
+    if (!primary) return [];
+    const assigned = this.assignedRolesState();
+    if (!assigned?.length) return [primary];
+    return [primary, ...assigned.filter((role) => role !== primary)];
+  });
   readonly initialized = signal(!this.usesSupabase);
   readonly isAuthenticated = computed(() => this.initialized() && Boolean(this.sessionState()?.accessToken));
+  /** A directly created account must replace its temporary password before using the app. */
+  readonly mustChangePassword = computed(() => this.sessionState()?.user.mustChangePassword === true);
   /** Why the last session was closed by server-side revalidation; the route shows a matching message. */
   readonly sessionEndReason = signal<SessionEndReason | null>(null);
+  /** Per-user grant/revoke rows layered over the role matrix, keyed by the signed-in account. */
+  private readonly permissionOverrides = signal<PermissionOverrideSet | null>(null);
+  /** Roles held beyond the primary role; removed accounts fall back to the primary role. */
+  private readonly assignedRolesState = signal<readonly StaffRole[] | null>(null);
   private refreshRequest?: Observable<AuthSession>;
   private validationRequest?: Promise<boolean>;
   private revalidationTimer?: ReturnType<typeof setInterval>;
@@ -70,8 +92,15 @@ export class AuthService {
     if (error) throw new Error(this.friendlyError(error));
   }
   async changePassword(password: string): Promise<void> {
-    const { error } = await this.supabase.requireClient().auth.updateUser({ password });
+    const { error } = await this.supabase.requireClient().auth.updateUser({
+      password,
+      data: { must_change_password: false },
+    });
     if (error) throw new Error(this.friendlyError(error));
+    const session = this.sessionState();
+    if (session) {
+      this.sessionState.set({ ...session, user: { ...session.user, mustChangePassword: false } });
+    }
     await this.completeOnboarding();
     await this.writeAudit('password_changed').catch(() => undefined);
   }
@@ -98,8 +127,24 @@ export class AuthService {
   }
 
   accessToken(): string | null { return this.sessionState()?.accessToken ?? null; }
-  hasRole(roles: readonly StaffRole[]): boolean { const role=this.role(); return Boolean(role && roles.includes(role)); }
-  hasPermission(permission?: Permission): boolean { const role=this.role(); return !permission || Boolean(role && this.roleCatalog.matrix()[role].includes(permission)); }
+  /** True when any assigned role is in the list; route data keeps listing the roles it allows. */
+  hasRole(roles: readonly StaffRole[]): boolean {
+    const assigned = this.assignedRoles();
+    return roles.some((role) => assigned.includes(role));
+  }
+  hasPermission(permission?: Permission): boolean {
+    if (!permission) return true;
+    const roles = this.assignedRoles();
+    if (!roles.length) return false;
+    const overrides = this.permissionOverrides();
+    const effect = overrides && overrides.userId === this.sessionState()?.user.id
+      ? overrides.effects[permission]
+      : undefined;
+    if (effect === 'grant') return true;
+    if (effect === 'revoke') return false;
+    const matrix = this.roleCatalog.matrix();
+    return roles.some((role) => matrix[role]?.includes(permission) === true);
+  }
   updateCurrentProfile(value: Partial<Pick<UserProfile, 'fullName' | 'phone' | 'avatarUrl'>>): void {
     const session = this.sessionState();
     if (!session?.profile) return;
@@ -193,9 +238,18 @@ export class AuthService {
       const profile = this.profileFromRow(data);
       this.sessionState.set({
         accessToken: session.access_token,
-        user: { id: profile.id, name: profile.fullName, role: profile.role },
+        user: {
+          id: profile.id,
+          name: profile.fullName,
+          role: profile.role,
+          mustChangePassword: session.user.user_metadata?.['must_change_password'] === true,
+        },
         profile,
       });
+      await Promise.all([
+        this.loadPermissionOverrides(profile.id),
+        this.loadAssignedRoles(profile.id),
+      ]);
       return true;
     } catch {
       // A temporary network or PostgREST failure must not end a valid session.
@@ -247,10 +301,64 @@ export class AuthService {
     if(!data.is_active||data.status==='inactive')throw new Error('Account inactive.');
     if(data.status==='suspended')throw new Error('Account suspended.');
     const profile=this.profileFromRow(data);
-    const value:AuthSession={accessToken:session.access_token,user:{id:profile.id,name:profile.fullName,role:profile.role},profile};this.sessionState.set(value);
+    const value:AuthSession={accessToken:session.access_token,user:{id:profile.id,name:profile.fullName,role:profile.role,mustChangePassword:session.user.user_metadata?.['must_change_password']===true},profile};this.sessionState.set(value);
+    await Promise.all([
+      this.loadPermissionOverrides(profile.id),
+      this.loadAssignedRoles(profile.id),
+    ]);
     // The catalogue updates hasPermission() with the database matrix; failure falls back locally.
     void this.roleCatalog.load();
     return value;
+  }
+  /**
+   * Reads this account's grant/revoke rows. A failed or missing table must not
+   * remove role-based access, so the app keeps the role matrix as the baseline.
+   */
+  private async loadPermissionOverrides(userId: string): Promise<void> {
+    try {
+      const { data, error } = await this.supabase.requireClient()
+        .from('profile_permissions')
+        .select('permission_key,effect')
+        .eq('profile_id', userId);
+      if (error) {
+        console.warn('permission overrides not loaded', { code: error.code });
+        this.permissionOverrides.set(null);
+        return;
+      }
+      const effects: Record<string, PermissionEffect> = {};
+      for (const row of data ?? []) {
+        if ((row.effect === 'grant' || row.effect === 'revoke') && typeof row.permission_key === 'string') {
+          effects[row.permission_key] = row.effect;
+        }
+      }
+      this.permissionOverrides.set({ userId, effects });
+    } catch {
+      this.permissionOverrides.set(null);
+    }
+  }
+  /**
+   * Reads every role assigned to this account. A database without the
+   * profile-roles migration, or a failed read, leaves the primary `profiles.role`
+   * as the only role so access never widens on an error.
+   */
+  private async loadAssignedRoles(userId: string): Promise<void> {
+    try {
+      const { data, error } = await this.supabase.requireClient()
+        .from('profile_roles')
+        .select('role_key')
+        .eq('profile_id', userId);
+      if (error) {
+        console.warn('assigned roles not loaded', { code: error.code });
+        this.assignedRolesState.set(null);
+        return;
+      }
+      const roles = (data ?? [])
+        .map((row) => row.role_key)
+        .filter((role): role is StaffRole => VALID_ROLES.includes(role as StaffRole));
+      this.assignedRolesState.set(roles.length ? [...new Set(roles)] : null);
+    } catch {
+      this.assignedRolesState.set(null);
+    }
   }
   private profileFromRow(data: Record<string, unknown>): UserProfile {
     return {
@@ -266,7 +374,7 @@ export class AuthService {
   private async refreshSupabase():Promise<AuthSession>{const {data,error}=await this.supabase.requireClient().auth.refreshSession();if(error||!data.session){this.clearSession();throw error??new Error('Session expired.');}return this.restoreSession(data.session);}
   private async writeAudit(action:string,userId?:string,email?:string):Promise<void>{await this.supabase.requireClient().from('auth_audit_logs').insert({user_id:userId??this.sessionState()?.user.id,email:email??this.profile()?.email,action,metadata:{user_agent:navigator.userAgent}});}
   private updateToken(token:string):void{const value=this.sessionState();if(value)this.sessionState.set({...value,accessToken:token});}
-  private clearSession():void{this.sessionState.set(null);this.profileImageUrl.set(null);sessionStorage.removeItem(SESSION_KEY);}
+  private clearSession():void{this.sessionState.set(null);this.permissionOverrides.set(null);this.assignedRolesState.set(null);this.profileImageUrl.set(null);sessionStorage.removeItem(SESSION_KEY);}
   private saveMockSession(session:AuthSession):void{this.sessionState.set(session);sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));}
   private readMockSession():AuthSession|null{try{const value=sessionStorage.getItem(SESSION_KEY);return value?JSON.parse(value) as AuthSession:null;}catch{sessionStorage.removeItem(SESSION_KEY);return null;}}
 }

@@ -10,18 +10,28 @@ const source = ts.transpileModule(readFileSync('supabase/functions/admin-manage-
 
 function setup(options = {}) {
   let handler;
-  const state = { invited: null, resent: null, invitationInsert: null, invitationUpdates: [], profileUpdates: [], audit: [], authBans: [] };
+  const state = { invited: null, resent: null, invitationInsert: null, invitationUpdates: [], profileUpdates: [], roleDeletes: [], audit: [], authBans: [], authDeletes: [], authCreated: [], rpc: [] };
+  const permissionKeys = options.permissionKeys ?? [
+    'coach:portal', 'children:read', 'students:read', 'students:write',
+    'parents:read', 'parents:write', 'coaches:read', 'coaches:write',
+    'batches:read', 'batches:write', 'enrollments:write', 'attendance:read',
+    'attendance:write', 'fees:write', 'notifications:read', 'reports:read',
+    'settings:write',
+  ];
   let profilesSingleCalls = 0;
 
   const callerClient = { auth: { getUser: async () => ({ data: { user: options.signedOut ? null : { id: 'caller' } }, error: null }) } };
 
   const query = (table) => {
-    const ctx = { table, op: 'select', single: null, head: false, update: null, insert: null };
+    const ctx = { table, op: 'select', single: null, head: false, update: null, insert: null, neq: false, inValues: null };
     const q = {
       select: (_columns, meta) => { if (meta?.head) ctx.head = true; return q; },
       insert: (values) => { ctx.op = 'insert'; ctx.insert = values; return q; },
       update: (values) => { ctx.op = 'update'; ctx.update = values; return q; },
-      eq: () => q, in: () => q, ilike: () => q, lt: () => q, order: () => q, limit: () => q, range: () => q,
+      delete: () => { ctx.op = 'delete'; return q; },
+      eq: () => q, in: (_column, values) => { ctx.inValues = values; return q; },
+      neq: () => { ctx.neq = true; return q; },
+      ilike: () => q, lt: () => q, order: () => q, limit: () => q, range: () => q,
       maybeSingle: () => { ctx.single = 'maybe'; return q; },
       single: () => { ctx.single = 'one'; return q; },
       then: (resolve, reject) => Promise.resolve(resolveQuery()).then(resolve, reject),
@@ -34,13 +44,37 @@ function setup(options = {}) {
           return { data: null, error: null };
         }
         if (ctx.head) return { data: null, count: options.activeAdmins ?? 2, error: null };
-        if (ctx.single === 'maybe') return { data: options.existingProfile ? { id: 'existing' } : null, error: null };
+        if (ctx.neq) return { data: options.otherAdmins ?? [], error: null };
+        if (ctx.single === 'maybe') {
+          if (options.roleTarget !== undefined) return { data: options.roleTarget, error: null };
+          if (options.permissionTarget !== undefined) return { data: options.permissionTarget, error: null };
+          if (options.deleteTarget) return { data: options.deleteTarget, error: null };
+          return { data: options.existingProfile ? { id: 'existing' } : null, error: null };
+        }
         if (ctx.single === 'one') {
           profilesSingleCalls += 1;
           if (profilesSingleCalls === 1) return { data: { role: options.callerRole ?? 'admin', status: 'active', is_active: true }, error: null };
           return { data: options.targetProfile ?? null, error: null };
         }
-        return { data: [], error: null, count: 0 };
+        return { data: options.listProfiles ?? [], error: null, count: (options.listProfiles ?? []).length };
+      }
+      if (table === 'permissions') {
+        if (options.permissionsError) return { data: null, error: options.permissionsError };
+        return { data: permissionKeys.map((key) => ({ key })), error: null };
+      }
+      if (table === 'profile_permissions') {
+        if (options.profilePermissionsError) return { data: null, error: options.profilePermissionsError };
+        if (ctx.inValues) return { data: options.revokedAdmins ?? [], error: null };
+        return { data: options.profilePermissions ?? [], error: null };
+      }
+      if (table === 'profile_roles') {
+        if (options.profileRolesError) return { data: null, error: options.profileRolesError };
+        if (ctx.op === 'delete') {
+          state.roleDeletes.push({ ...ctx });
+          return { data: null, error: null };
+        }
+        if (ctx.inValues) return { data: options.profileRolesForList ?? [], error: null };
+        return { data: options.profileRoles ?? [], error: null };
       }
       if (table === 'user_invitations') {
         if (ctx.op === 'update') {
@@ -57,11 +91,13 @@ function setup(options = {}) {
       }
       if (table === 'audit_logs') {
         if (ctx.op === 'insert') { state.audit.push(ctx.insert); return { data: null, error: null }; }
+        if (ctx.head) return { data: null, count: options.historyTable === table ? 1 : 0, error: null };
         return { data: [], error: null };
       }
       if (table === 'roles') {
         return { data: options.roleRows ?? null, error: options.rolesError ?? null };
       }
+      if (ctx.head) return { data: null, count: options.historyTable === table ? 1 : 0, error: null };
       return { data: null, error: null };
     };
     return q;
@@ -69,13 +105,29 @@ function setup(options = {}) {
 
   const adminClient = {
     from: (table) => query(table),
+    rpc: async (name, args) => {
+      state.rpc.push({ name, args });
+      return options.rpcError ? { data: null, error: options.rpcError } : { data: null, error: null };
+    },
     auth: {
       admin: {
         inviteUserByEmail: async (email, input) => {
           state.invited = { email, ...input };
           return options.providerError ? { data: { user: null }, error: options.providerError } : { data: { user: { id: 'invitee' } }, error: null };
         },
+        createUser: async (input) => {
+          state.authCreated.push(input);
+          return options.createError
+            ? { data: { user: null }, error: options.createError }
+            : { data: { user: { id: 'created-user' } }, error: null };
+        },
         updateUserById: async (userId, input) => { state.authBans.push({ userId, ...input }); return { data: {}, error: options.banError ?? null }; },
+        deleteUser: async (userId) => {
+          state.authDeletes.push(userId);
+          return options.deleteError
+            ? { data: { user: null }, error: options.deleteError }
+            : { data: { user: { id: userId } }, error: null };
+        },
       },
       resend: async (input) => {
         state.resent = input;
@@ -96,7 +148,7 @@ function setup(options = {}) {
       },
       serve: (fn) => { handler = fn; },
     },
-    Response, URL, Map, Date, console: { error: () => undefined, warn: () => undefined, log: () => undefined },
+    Response, URL, Map, Date, Uint32Array, crypto: globalThis.crypto, console: { error: () => undefined, warn: () => undefined, log: () => undefined },
   });
 
   return {
@@ -258,6 +310,65 @@ test('revoking a pending invitation records the status', async () => {
   assert.equal(s.state().invitationUpdates.at(-1).status, 'revoked');
 });
 
+test('creating a user returns a one-time temporary password and audits without it', async () => {
+  const s = setup();
+  const r = await s.run({ action: 'create' });
+  assert.equal(r.status, 201);
+  const body = await r.json();
+  assert.equal(body.email, 'person@example.com');
+  assert.equal(body.role, 'admin');
+  assert.match(body.temporaryPassword, /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{16}$/);
+  assert.equal(s.state().authCreated[0].email, 'person@example.com');
+  assert.equal(s.state().authCreated[0].password, body.temporaryPassword);
+  assert.equal(s.state().authCreated[0].email_confirm, true);
+  assert.equal(s.state().authCreated[0].user_metadata.must_change_password, true);
+  assert.equal(s.state().profileUpdates[0].role, 'admin');
+  assert.equal(s.state().profileUpdates[0].onboarding_completed_at, null);
+  const entry = s.state().audit[0];
+  assert.equal(entry.action, 'user_created');
+  assert.equal(entry.new_values.email, 'person@example.com');
+  assert.equal(JSON.stringify(entry).includes(body.temporaryPassword), false);
+});
+
+test('two created accounts do not share a temporary password', async () => {
+  const first = await (await setup().run({ action: 'create' })).json();
+  const second = await (await setup().run({ action: 'create' })).json();
+  assert.notEqual(first.temporaryPassword, second.temporaryPassword);
+});
+
+test('creating a user refuses an email that already has a profile', async () => {
+  const s = setup({ existingProfile: true });
+  const r = await s.run({ action: 'create' });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'account_exists');
+  assert.equal(s.state().authCreated.length, 0);
+});
+
+test('creating a user requires a catalogue role', async () => {
+  const s = setup();
+  assert.equal((await s.run({ action: 'create', role: 'owner' })).status, 400);
+  assert.equal(s.state().authCreated.length, 0);
+});
+
+test('a provider failure while creating is reported without leaking details', async () => {
+  const s = setup({ createError: { code: 'unexpected', status: 500, message: 'private failure' } });
+  const r = await s.run({ action: 'create' });
+  assert.equal(r.status, 502);
+  const body = await r.json();
+  assert.equal(body.code, 'create_failed');
+  assert.ok(!body.error.includes('private'));
+  assert.equal(s.state().audit.length, 0);
+});
+
+test('a profile that cannot be prepared rolls the new login back', async () => {
+  const s = setup({ missingProfile: true });
+  const r = await s.run({ action: 'create' });
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).code, 'create_profile_failed');
+  assert.deepEqual(s.state().authDeletes, ['created-user']);
+  assert.equal(s.state().audit.length, 0);
+});
+
 test('the last active administrator cannot be demoted', async () => {
   const s = setup({ activeAdmins: 1, targetProfile: { role: 'admin', status: 'active', is_active: true } });
   const r = await s.run({ action: 'update', userId: 'other-admin', role: 'coach', status: 'active', reason: 'Role reassignment' });
@@ -311,4 +422,414 @@ test('list accepts the exact Users first-page request', async () => {
   });
   assert.equal(r.status, 200);
   assert.deepEqual(await r.json(), { users: [], total: 0, page: 1, pageSize: 5 });
+});
+
+const deletableAccount = {
+  id: 'coach-1',
+  full_name: 'Coach One',
+  email: 'coach@example.com',
+  role: 'coach',
+  status: 'active',
+  is_active: true,
+};
+
+test('deletes an account with no linked history and records the reason', async () => {
+  const s = setup({ deleteTarget: deletableAccount });
+  const r = await s.run({ action: 'delete', userId: 'coach-1', reason: 'Duplicate test account' });
+  assert.equal(r.status, 200);
+  assert.deepEqual(s.state().authDeletes, ['coach-1']);
+  const entry = s.state().audit.at(-1);
+  assert.equal(entry.action, 'user_deleted');
+  assert.equal(entry.table_name, 'profiles');
+  assert.equal(entry.record_id, 'coach-1');
+  assert.equal(entry.new_values.reason, 'Duplicate test account');
+  assert.equal(entry.new_values.before.email, 'coach@example.com');
+});
+
+test('a deletion with linked records is refused and nothing is removed', async () => {
+  const s = setup({ deleteTarget: deletableAccount, historyTable: 'payments' });
+  const r = await s.run({ action: 'delete', userId: 'coach-1', reason: 'Duplicate test account' });
+  assert.equal(r.status, 409);
+  const body = await r.json();
+  assert.equal(body.code, 'account_has_history');
+  assert.ok(body.blockers.includes('payments'));
+  assert.deepEqual(s.state().authDeletes, []);
+  assert.equal(s.state().audit.length, 0);
+});
+
+test('an administrator cannot delete their own account', async () => {
+  const s = setup();
+  const r = await s.run({ action: 'delete', userId: 'caller', reason: 'Testing self delete' });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'self_delete');
+  assert.deepEqual(s.state().authDeletes, []);
+});
+
+test('the last active administrator cannot be deleted', async () => {
+  const s = setup({
+    activeAdmins: 1,
+    deleteTarget: { ...deletableAccount, id: 'admin-2', role: 'admin' },
+  });
+  const r = await s.run({ action: 'delete', userId: 'admin-2', reason: 'Removing final admin' });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'last_admin');
+  assert.deepEqual(s.state().authDeletes, []);
+});
+
+test('a deletion requires a reason', async () => {
+  const s = setup({ deleteTarget: deletableAccount });
+  const r = await s.run({ action: 'delete', userId: 'coach-1', reason: ' ' });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'reason_required');
+  assert.deepEqual(s.state().authDeletes, []);
+});
+
+test('a failed provider delete is reported without leaking details', async () => {
+  const s = setup({
+    deleteTarget: deletableAccount,
+    deleteError: { code: 'unexpected', status: 500, message: 'private failure' },
+  });
+  const r = await s.run({ action: 'delete', userId: 'coach-1', reason: 'Duplicate test account' });
+  assert.equal(r.status, 502);
+  const body = await r.json();
+  assert.equal(body.code, 'delete_failed');
+  assert.ok(!body.error.includes('private'));
+  assert.equal(s.state().audit.length, 0);
+});
+
+const permissionAccount = { id: 'coach-1', role: 'coach', status: 'active', is_active: true };
+
+test('permissions returns the role and existing overrides for an account', async () => {
+  const s = setup({
+    permissionTarget: permissionAccount,
+    profilePermissions: [
+      { permission_key: 'attendance:read', effect: 'grant', reason: 'Cover reception', created_at: '2026-11-16T00:00:00Z' },
+      { permission_key: 'reports:read', effect: 'revoke', reason: 'Not required', created_at: '2026-11-16T00:00:00Z' },
+    ],
+  });
+  const r = await s.run({ action: 'permissions', userId: 'coach-1' });
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), {
+    userId: 'coach-1',
+    role: 'coach',
+    overrides: [
+      { permissionKey: 'attendance:read', effect: 'grant', reason: 'Cover reception' },
+      { permissionKey: 'reports:read', effect: 'revoke', reason: 'Not required' },
+    ],
+  });
+});
+
+test('permissions is refused for an account that no longer exists', async () => {
+  const s = setup();
+  const r = await s.run({ action: 'permissions', userId: 'missing' });
+  assert.equal(r.status, 404);
+  assert.equal((await r.json()).code, 'user_not_found');
+});
+
+test('permissions reports the migration gap instead of pretending there are none', async () => {
+  const s = setup({ permissionTarget: permissionAccount, profilePermissionsError: { code: '42P01' } });
+  const r = await s.run({ action: 'permissions', userId: 'coach-1' });
+  assert.equal(r.status, 503);
+  assert.equal((await r.json()).code, 'permissions_unavailable');
+});
+
+test('set_permissions replaces the override set atomically and audits before/after', async () => {
+  const s = setup({
+    permissionTarget: permissionAccount,
+    profilePermissions: [{ permission_key: 'reports:read', effect: 'revoke' }],
+  });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Cover reception during leave',
+    overrides: [
+      { permissionKey: 'attendance:read', effect: 'grant' },
+      { permissionKey: 'reports:read', effect: 'revoke' },
+    ],
+  });
+  assert.equal(r.status, 200);
+  const body = await r.json();
+  assert.equal(body.message, 'Permission overrides saved.');
+  assert.equal(s.state().rpc.length, 1);
+  assert.equal(s.state().rpc[0].name, 'replace_profile_permissions');
+  assert.equal(s.state().rpc[0].args.target_profile, 'coach-1');
+  assert.equal(s.state().rpc[0].args.change_reason, 'Cover reception during leave');
+  assert.equal(JSON.stringify(s.state().rpc[0].args.entries), JSON.stringify([
+    { permissionKey: 'attendance:read', effect: 'grant' },
+    { permissionKey: 'reports:read', effect: 'revoke' },
+  ]));
+  const entry = s.state().audit.at(-1);
+  assert.equal(entry.action, 'user_permissions_changed');
+  assert.equal(entry.record_id, 'coach-1');
+  assert.equal(entry.new_values.reason, 'Cover reception during leave');
+  assert.equal(JSON.stringify(entry.new_values.before), JSON.stringify([{ permissionKey: 'reports:read', effect: 'revoke' }]));
+  assert.equal(JSON.stringify(entry.new_values.after), JSON.stringify([
+    { permissionKey: 'attendance:read', effect: 'grant' },
+    { permissionKey: 'reports:read', effect: 'revoke' },
+  ]));
+});
+
+test('set_permissions accepts an empty list to clear every override', async () => {
+  const s = setup({ permissionTarget: permissionAccount });
+  const r = await s.run({ action: 'set_permissions', userId: 'coach-1', reason: 'Back to role defaults', overrides: [] });
+  assert.equal(r.status, 200);
+  assert.equal(s.state().rpc[0].args.entries.length, 0);
+});
+
+test('set_permissions rejects a permission key the catalogue does not know', async () => {
+  const s = setup({ permissionTarget: permissionAccount });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Try an invented permission',
+    overrides: [{ permissionKey: 'finance:destroy', effect: 'grant' }],
+  });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'invalid_permissions');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions rejects an unknown effect', async () => {
+  const s = setup({ permissionTarget: permissionAccount });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Try an invalid effect',
+    overrides: [{ permissionKey: 'reports:read', effect: 'allow' }],
+  });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'invalid_permissions');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions rejects the same key twice', async () => {
+  const s = setup({ permissionTarget: permissionAccount });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Duplicate entries',
+    overrides: [
+      { permissionKey: 'reports:read', effect: 'grant' },
+      { permissionKey: 'reports:read', effect: 'revoke' },
+    ],
+  });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'invalid_permissions');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions requires a reason', async () => {
+  const s = setup({ permissionTarget: permissionAccount });
+  const r = await s.run({ action: 'set_permissions', userId: 'coach-1', reason: ' ', overrides: [] });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'reason_required');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions refuses to remove the caller own settings access', async () => {
+  const s = setup({ permissionTarget: { id: 'caller', role: 'admin', status: 'active', is_active: true } });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'caller',
+    reason: 'Remove own settings access',
+    overrides: [{ permissionKey: 'settings:write', effect: 'revoke' }],
+  });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'self_lockout');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions keeps at least one administrator with settings access', async () => {
+  const s = setup({
+    permissionTarget: { id: 'admin-2', role: 'admin', status: 'active', is_active: true },
+    otherAdmins: [],
+  });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'admin-2',
+    reason: 'Remove settings access',
+    overrides: [{ permissionKey: 'settings:write', effect: 'revoke' }],
+  });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'last_admin');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions refuses when every other administrator already lost settings access', async () => {
+  const s = setup({
+    permissionTarget: { id: 'admin-2', role: 'admin', status: 'active', is_active: true },
+    otherAdmins: [{ id: 'admin-3' }, { id: 'admin-4' }],
+    revokedAdmins: [{ profile_id: 'admin-3' }, { profile_id: 'admin-4' }],
+  });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'admin-2',
+    reason: 'Remove settings access',
+    overrides: [{ permissionKey: 'settings:write', effect: 'revoke' }],
+  });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).code, 'last_admin');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_permissions allows removing settings access while another admin keeps it', async () => {
+  const s = setup({
+    permissionTarget: { id: 'admin-2', role: 'admin', status: 'active', is_active: true },
+    otherAdmins: [{ id: 'admin-3' }, { id: 'admin-4' }],
+    revokedAdmins: [{ profile_id: 'admin-3' }],
+  });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'admin-2',
+    reason: 'Remove settings access',
+    overrides: [{ permissionKey: 'settings:write', effect: 'revoke' }],
+  });
+  assert.equal(r.status, 200);
+  assert.equal(s.state().rpc.length, 1);
+});
+
+test('set_permissions reports a failed replacement without leaking details', async () => {
+  const s = setup({ permissionTarget: permissionAccount, rpcError: { code: 'XX000', message: 'private failure' } });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Cover reception',
+    overrides: [{ permissionKey: 'reports:read', effect: 'grant' }],
+  });
+  assert.equal(r.status, 502);
+  const body = await r.json();
+  assert.equal(body.code, 'permission_update_failed');
+  assert.ok(!body.error.includes('private'));
+  assert.equal(s.state().audit.length, 0);
+});
+
+test('set_permissions reports an unavailable catalogue instead of accepting the keys', async () => {
+  const s = setup({ permissionTarget: permissionAccount, permissionsError: { code: '42P01' } });
+  const r = await s.run({
+    action: 'set_permissions',
+    userId: 'coach-1',
+    reason: 'Cover reception',
+    overrides: [{ permissionKey: 'reports:read', effect: 'grant' }],
+  });
+  assert.equal(r.status, 503);
+  assert.equal((await r.json()).code, 'permissions_unavailable');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+const roleAccount = { id: 'coach-1', role: 'coach', status: 'active', is_active: true };
+
+test('the user list includes every assigned role and falls back to the primary role', async () => {
+  const s = setup({
+    listProfiles: [roleAccount],
+    profileRolesForList: [
+      { profile_id: 'coach-1', role_key: 'coach' },
+      { profile_id: 'coach-1', role_key: 'receptionist' },
+    ],
+  });
+  const r = await s.run({
+    action: 'list', page: 1, pageSize: 5, search: '', role: '', status: '',
+    filters: { name: '', contact: '', role: '', status: '', joined: '' },
+    sortBy: 'createdAt', sortDirection: 'desc',
+  });
+  assert.equal(r.status, 200);
+  const body = await r.json();
+  assert.equal(JSON.stringify(body.users[0].roles), JSON.stringify(['coach', 'receptionist']));
+
+  const fallback = setup({ listProfiles: [roleAccount], profileRolesError: { code: '42P01' } });
+  const fallbackResponse = await fallback.run({
+    action: 'list', page: 1, pageSize: 5, search: '', role: '', status: '',
+    filters: { name: '', contact: '', role: '', status: '', joined: '' },
+    sortBy: 'createdAt', sortDirection: 'desc',
+  });
+  assert.equal(JSON.stringify((await fallbackResponse.json()).users[0].roles), JSON.stringify(['coach']));
+});
+
+test('set_roles replaces the assignment set and audits before/after', async () => {
+  const s = setup({
+    roleTarget: roleAccount,
+    profileRoles: [{ role_key: 'coach' }, { role_key: 'receptionist' }],
+  });
+  const r = await s.run({
+    action: 'set_roles',
+    userId: 'coach-1',
+    reason: 'Also covers reception',
+    roles: ['coach', 'receptionist', 'admin'],
+  });
+  assert.equal(r.status, 200);
+  assert.equal(JSON.stringify(await r.json()), JSON.stringify({
+    message: 'Role assignments saved.',
+    roles: ['coach', 'receptionist', 'admin'],
+  }));
+  assert.equal(s.state().rpc[0].name, 'replace_profile_roles');
+  assert.equal(s.state().rpc[0].args.target_profile, 'coach-1');
+  assert.equal(s.state().rpc[0].args.change_reason, 'Also covers reception');
+  assert.equal(JSON.stringify(s.state().rpc[0].args.role_keys), JSON.stringify(['coach', 'receptionist', 'admin']));
+  const entry = s.state().audit.at(-1);
+  assert.equal(entry.action, 'user_roles_changed');
+  assert.equal(entry.record_id, 'coach-1');
+  assert.equal(entry.new_values.reason, 'Also covers reception');
+  assert.equal(JSON.stringify(entry.new_values.before), JSON.stringify(['coach', 'receptionist']));
+  assert.equal(JSON.stringify(entry.new_values.after), JSON.stringify(['coach', 'receptionist', 'admin']));
+});
+
+test('set_roles requires the primary role to stay assigned', async () => {
+  const s = setup({ roleTarget: roleAccount });
+  const r = await s.run({
+    action: 'set_roles',
+    userId: 'coach-1',
+    reason: 'Try to drop the primary role',
+    roles: ['receptionist'],
+  });
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'invalid_roles');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_roles rejects an unknown role, a duplicate and an empty set', async () => {
+  for (const roles of [['coach', 'finance'], ['coach', 'coach'], []]) {
+    const s = setup({ roleTarget: roleAccount });
+    const r = await s.run({ action: 'set_roles', userId: 'coach-1', reason: 'Invalid selection', roles });
+    assert.equal(r.status, 400);
+    assert.equal((await r.json()).code, 'invalid_roles');
+    assert.equal(s.state().rpc.length, 0);
+  }
+});
+
+test('set_roles requires a reason and an existing account', async () => {
+  const noReason = setup({ roleTarget: roleAccount });
+  const reasonResponse = await noReason.run({ action: 'set_roles', userId: 'coach-1', reason: ' ', roles: ['coach'] });
+  assert.equal(reasonResponse.status, 400);
+  assert.equal((await reasonResponse.json()).code, 'reason_required');
+
+  const missing = setup({ roleTarget: null });
+  const missingResponse = await missing.run({ action: 'set_roles', userId: 'missing', reason: 'Assign roles', roles: ['coach'] });
+  assert.equal(missingResponse.status, 404);
+  assert.equal((await missingResponse.json()).code, 'user_not_found');
+});
+
+test('set_roles reports the migration gap instead of pretending the roles were saved', async () => {
+  const s = setup({ roleTarget: roleAccount, profileRolesError: { code: '42P01' } });
+  const r = await s.run({ action: 'set_roles', userId: 'coach-1', reason: 'Assign roles', roles: ['coach', 'admin'] });
+  assert.equal(r.status, 503);
+  assert.equal((await r.json()).code, 'roles_unavailable');
+  assert.equal(s.state().rpc.length, 0);
+});
+
+test('set_roles reports a failed replacement without leaking details', async () => {
+  const s = setup({ roleTarget: roleAccount, rpcError: { code: 'XX000', message: 'private failure' } });
+  const r = await s.run({ action: 'set_roles', userId: 'coach-1', reason: 'Assign roles', roles: ['coach', 'admin'] });
+  assert.equal(r.status, 502);
+  const body = await r.json();
+  assert.equal(body.code, 'role_update_failed');
+  assert.ok(!body.error.includes('private'));
+  assert.equal(s.state().audit.length, 0);
+});
+
+test('changing the primary role drops the previous primary assignment', async () => {
+  const s = setup({ targetProfile: { role: 'coach', status: 'active', is_active: true } });
+  const r = await s.run({ action: 'update', userId: 'admin-2', role: 'receptionist', status: 'active', reason: 'Role change' });
+  assert.equal(r.status, 200);
+  assert.equal(s.state().roleDeletes.length, 1);
+  assert.equal(s.state().roleDeletes[0].table, 'profile_roles');
+  assert.equal(s.state().profileUpdates[0].role, 'receptionist');
 });

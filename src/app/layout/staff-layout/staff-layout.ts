@@ -13,9 +13,10 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from '../../core/auth/auth.service';
+import { StaffRole } from '../../core/auth/auth.model';
 import { AcademyFacade } from '../../core/state/academy.facade';
 import { LOCAL_KEYS, LocalStore } from '../../core/state/local-store';
-import { Permission } from '../../core/auth/permissions';
+import { Permission, ROLE_LABELS } from '../../core/auth/permissions';
 import { NotificationsService, ParentsService } from '../../core/supabase/domain-services';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { StorageService } from '../../core/supabase/storage.service';
@@ -194,12 +195,44 @@ export class StaffLayout implements OnInit {
   ];
 
   protected navigationItems(): readonly NavigationItem[] {
-    const role = this.auth.session()?.user?.role;
+    const roles = this.auth.assignedRoles();
+    if (!roles.length) return this.navigation;
+    // Add each assigned role's menu once, primary role first, so an account that
+    // holds two roles sees both workspaces without duplicate Dashboard/Profile links.
+    const seen = new Set<string>();
+    const items: NavigationItem[] = [];
+    for (const role of roles) {
+      for (const item of this.navigationFor(role)) {
+        if (seen.has(item.label)) continue;
+        seen.add(item.label);
+        items.push(item);
+      }
+    }
+    return items;
+  }
+
+  private navigationFor(role: StaffRole | null): readonly NavigationItem[] {
     return role === 'parent'
       ? this.parentNavigation
       : role === 'coach'
         ? this.coachNavigation
-        : this.navigation;
+        : role
+          ? this.navigation
+          : [];
+  }
+
+  protected roleSummary(): string {
+    return this.auth.assignedRoles().map((role) => ROLE_LABELS[role]).join(' + ');
+  }
+
+  protected notificationRoute(): string {
+    if (this.auth.hasRole(['admin', 'receptionist'])) return '/notifications';
+    if (this.auth.hasRole(['coach'])) return '/coach/notifications';
+    return '/parent/notifications';
+  }
+
+  protected showNotifications(): boolean {
+    return this.auth.hasPermission('notifications:read') || this.auth.hasRole(['parent', 'coach']);
   }
 
   protected isSectionHeaderVisible(item: NavigationItem): boolean {
@@ -215,7 +248,11 @@ export class StaffLayout implements OnInit {
   protected submitGlobalSearch(): void {
     const query = this.globalSearch().trim();
     if (!query) return;
-    const destination = this.auth.role() === 'coach' ? '/coach/students' : '/search';
+    const destination = this.auth.hasRole(['admin', 'receptionist'])
+      ? '/search'
+      : this.auth.hasRole(['coach'])
+        ? '/coach/students'
+        : '/search';
     void this.router.navigate([destination], { queryParams: { q: query } });
   }
 
@@ -230,7 +267,7 @@ export class StaffLayout implements OnInit {
   @HostListener('window:keydown', ['$event'])
   protected handleKeyboardShortcut(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-      if (this.auth.role() !== 'parent') {
+      if (this.auth.hasRole(['admin', 'receptionist', 'coach'])) {
         event.preventDefault();
         const searchInput = document.querySelector<HTMLInputElement>('input[aria-label="Search academy"]');
         searchInput?.focus();
@@ -249,12 +286,7 @@ export class StaffLayout implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => void this.loadProfilePhoto());
-    if (
-      this.supabase.configured &&
-      (this.auth.hasPermission('notifications:read') ||
-        this.auth.role() === 'parent' ||
-        this.auth.role() === 'coach')
-    ) {
+    if (this.supabase.configured && this.showNotifications()) {
       this.notificationChannel = this.notifications.subscribe(() => void this.loadBellCount());
       void this.loadBellCount();
       this.destroyRef.onDestroy(() => {
