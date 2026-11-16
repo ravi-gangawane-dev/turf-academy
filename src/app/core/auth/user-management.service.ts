@@ -2,6 +2,7 @@ import { DataRequestError } from '../supabase/data-error';
 import { inject, Injectable } from '@angular/core';
 import { SupabaseClientService } from '../supabase/supabase-client.service';
 import { AccountStatus, StaffRole } from './auth.model';
+import { Permission } from './permissions';
 
 export type InvitationStatus = 'pending' | 'accepted' | 'expired' | 'failed' | 'revoked';
 
@@ -20,6 +21,8 @@ export interface ManagedUser {
   readonly email: string | null;
   readonly phone: string | null;
   readonly role: StaffRole;
+  /** Primary role plus any additional app-level roles assigned to the account. */
+  readonly roles?: readonly StaffRole[];
   readonly status: AccountStatus;
   readonly created_at: string;
   readonly onboarding_completed_at?: string | null;
@@ -77,6 +80,27 @@ export interface UserInvitationLink {
   readonly expiresAt: string;
 }
 
+/** A directly created account; the temporary password is shown once and never stored. */
+export interface CreatedUser {
+  readonly userId: string;
+  readonly email: string;
+  readonly role: StaffRole;
+  readonly temporaryPassword: string;
+}
+
+/** A named permission changed on top of the account's role. */
+export type PermissionEffect = 'grant' | 'revoke';
+export interface UserPermissionOverride {
+  readonly permissionKey: Permission;
+  readonly effect: PermissionEffect;
+  readonly reason?: string;
+}
+export interface UserPermissions {
+  readonly userId: string;
+  readonly role: StaffRole;
+  readonly overrides: readonly UserPermissionOverride[];
+}
+
 /** Only HTTPS links (or localhost during development) may be shown to an admin. */
 function isSafeInvitationLink(value: unknown): value is string {
   if (typeof value !== 'string') return false;
@@ -104,8 +128,22 @@ const ERROR_MESSAGES: Record<string, string> = {
   invite_link_failed: 'The invitation link could not be created. Try again or use Forgot password.',
   invite_profile_failed: 'The invitation was sent, but account access could not be confirmed. Review this user in Users before sending another invitation.',
   last_admin: 'At least one active administrator must remain.',
-  reason_required: 'Add a short reason (at least 3 characters) for this access change.',
+  reason_required: 'Add a short reason (at least 3 characters).',
   access_partial: 'The profile was updated but the sign-in restriction could not be applied. Retry this change.',
+  self_delete: 'You cannot delete your own account. Ask another administrator.',
+  user_not_found: 'That account no longer exists. Reload the list.',
+  account_has_history: 'This account is linked to attendance, fee, audit or other records, so it cannot be deleted. Disable it instead to keep the history.',
+  delete_failed: 'The account could not be deleted. Retry, or disable it instead.',
+  create_failed: 'The account could not be created. Retry, or send an invitation instead.',
+  create_profile_failed: 'The account could not be prepared. No account was created; please retry.',
+  temporary_password_rejected: 'The temporary password was rejected by the sign-in provider. Try creating the account again.',
+  invalid_permissions: 'Check the permission selection and try again.',
+  permissions_unavailable: 'Permission overrides are unavailable. Apply the profile-permissions migration and deploy the latest admin-manage-users function.',
+  permission_update_failed: 'The permission overrides could not be saved. Retry, or contact the academy administrator.',
+  self_lockout: 'You cannot remove your own settings access. Ask another administrator.',
+  invalid_roles: 'Check the role selection and try again.',
+  roles_unavailable: 'Multiple roles are unavailable. Apply the profile-roles migration and deploy the latest admin-manage-users function.',
+  role_update_failed: 'The role assignments could not be saved. Retry, or contact the academy administrator.',
 };
 
 @Injectable({providedIn:'root'})
@@ -179,9 +217,64 @@ export class UserManagementService {
       expiresAt: response.expiresAt,
     };
   }
-  async resend(email:string):Promise<void>{await this.invoke({action:'resend',email:email.trim().toLowerCase()});}
-  async revoke(invitationId:string):Promise<void>{await this.invoke({action:'revoke',invitationId});}
+  /**
+   * Creates a confirmed account with a server-generated temporary password. The
+   * password is returned once so the admin can hand it over privately; the user
+   * must replace it at first sign-in.
+   */
+  async create(input:{fullName:string;email:string;phone?:string;role:StaffRole}):Promise<CreatedUser>{
+    const response = await this.invoke<Partial<CreatedUser> & { error?: string }>({
+      action:'create',
+      ...input,
+      fullName:input.fullName.trim(),
+      email:input.email.trim().toLowerCase(),
+      phone:input.phone?.trim(),
+    });
+    if (
+      typeof response.userId !== 'string' ||
+      typeof response.email !== 'string' ||
+      typeof response.temporaryPassword !== 'string' ||
+      response.temporaryPassword.length < 8
+    ) {
+      throw new Error(
+        response.error ||
+          'The create-user endpoint returned an invalid response. Deploy the latest admin-manage-users function.',
+      );
+    }
+    return {
+      userId: response.userId,
+      email: response.email,
+      role: response.role ?? input.role,
+      temporaryPassword: response.temporaryPassword,
+    };
+  }
+  async resend(email:string):Promise<void>{await this.invoke({action:'resend',email:email.trim().toLowerCase()});}  async revoke(invitationId:string):Promise<void>{await this.invoke({action:'revoke',invitationId});}
   async update(userId:string,role:StaffRole,status:AccountStatus,reason:string):Promise<void>{await this.invoke({action:'update',userId,role,status,reason:reason.trim()});}
+  /** Permanently removes an account only when the Edge Function confirms it has no linked history. */
+  async delete(userId:string,reason:string):Promise<void>{await this.invoke({action:'delete',userId,reason:reason.trim()});}
+  /** Reads the per-account overrides and the role they are layered on. */
+  async permissions(userId:string):Promise<UserPermissions>{
+    const response = await this.invoke<Partial<UserPermissions> & { error?: string }>({ action: 'permissions', userId });
+    if (!Array.isArray(response.overrides) || typeof response.role !== 'string') {
+      throw new Error(
+        response.error || 'The permissions endpoint returned an invalid response. Deploy the latest admin-manage-users function.',
+      );
+    }
+    return { userId: response.userId ?? userId, role: response.role, overrides: response.overrides };
+  }
+  /** Replaces the whole override set; an empty list restores the role defaults. */
+  async setPermissions(userId:string,overrides:readonly UserPermissionOverride[],reason:string):Promise<void>{
+    await this.invoke({
+      action: 'set_permissions',
+      userId,
+      reason: reason.trim(),
+      overrides: overrides.map((override) => ({ permissionKey: override.permissionKey, effect: override.effect })),
+    });
+  }
+  /** Replaces the assigned role set; the primary role is always included. */
+  async setRoles(userId:string,roles:readonly StaffRole[],reason:string):Promise<void>{
+    await this.invoke({ action: 'set_roles', userId, roles: [...roles], reason: reason.trim() });
+  }
   async audit(page:number,pageSize:number):Promise<UserAccessAuditPage>{
     const response = await this.invoke<Partial<UserAccessAuditPage> & { error?: string }>({
       action: 'audit',

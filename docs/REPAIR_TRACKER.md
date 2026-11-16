@@ -4,7 +4,7 @@ Updated: 19 October 2026
 
 19 October: [live release verification](LIVE_RELEASE_VERIFICATION.md) records 19 distinct passing core/correction browser cases, one recovery case, four refund UI/access cases, passing refund accuracy, and 14 passing Events/automation assertions in rollback-only testing. Events deployment candidate is staged with scheduling paused; the eight-digit recovery fix is included in the rebuilt recovery archive; refund verification required only test changes.
 
-Current release handoff: [Monday release checklist](RELEASE_2026-10-19.md). Fresh local checks passed: production build, 205 unit tests, 28 mock browser tests and 1 production PWA test. Selected live verification is recorded separately; remaining scope is listed below.
+Current release handoff: [Monday release checklist](PROJECT-IMPLEMENTATION-STATUS.md). Fresh local checks passed: production build, 205 unit tests, 28 mock browser tests and 1 production PWA test. Selected live verification is recorded separately; remaining scope is listed below.
 
 16 October backend follow-up: [read-only preflight](BACKEND_RELEASE_PREFLIGHT.md) verified current list RPCs, user-management function source, RLS enablement and four-role student SELECT isolation. Events/automation dependencies are confirmed absent; migration history needs reconciliation. Live write tests and target-environment confirmation remain pending.
 

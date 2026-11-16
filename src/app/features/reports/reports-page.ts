@@ -161,12 +161,14 @@ export class ReportsPage implements OnInit {
   protected readonly store = { batches: this.batches };
   protected readonly form = this.formBuilder.nonNullable.group({
     type: ['attendance' as ReportSelection, Validators.required],
-    period: ['today' as ReportPeriod, Validators.required],
+    // Default to the current month: a "today" default shows an empty table on
+    // any day without attendance yet, which reads as a broken report.
+    period: ['month' as ReportPeriod, Validators.required],
     from: [
-      reportPeriodRange('today')[0],
+      reportPeriodRange('month')[0],
       Validators.required,
     ],
-    to: [reportPeriodRange('today')[1], Validators.required],
+    to: [reportPeriodRange('month')[1], Validators.required],
     batchId: [''],
   });
 

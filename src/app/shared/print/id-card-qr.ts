@@ -1,5 +1,3 @@
-import * as qrcode from 'qrcode';
-
 import { PrintIdCardHolder } from './print-document.models';
 
 /**
@@ -25,37 +23,17 @@ export function idCardNumber(holder: PrintIdCardHolder, source: string): string 
   return `${prefix}-${clean || 'UNASSIGNED'}`;
 }
 
-type QrRenderer = (text: string, options?: QrOptions) => Promise<string>;
-
-interface QrOptions {
-  readonly errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
-  readonly margin?: number;
-  readonly width?: number;
-  readonly color?: { readonly dark?: string; readonly light?: string };
-}
-
 /**
- * `qrcode` is a CommonJS package (`module.exports = require('./server')` with a
- * `browser` map). Reading a named export off a *dynamic* import of it works in
- * the dev server, which pre-bundles dependencies to ESM, but the production
- * build emits the package into a lazy chunk with no ESM exports at all - the
- * namespace comes back empty and calling the destructured function throws
- * "<minified> is not a function" only on the deployed site.
+ * Renders a printable QR image without adding a second QR dependency.
  *
- * So the package is imported statically and the renderer is resolved through
- * both interop shapes (named export, or `default`) at runtime.
+ * The encoder lives behind `./qr-encode` and is imported dynamically: the
+ * wrapper is ESM with a real export, so its lazy chunk survives the production
+ * build (see the note in that file), while the id-card encoder stays out of the
+ * main bundle until a card is actually printed.
  */
-function qrRenderer(): QrRenderer {
-  for (const candidate of [qrcode, (qrcode as { default?: unknown }).default]) {
-    const render = (candidate as { toDataURL?: unknown } | undefined)?.toDataURL;
-    if (typeof render === 'function') return render as QrRenderer;
-  }
-  throw new Error('The QR code renderer is not available in this build.');
-}
-
-/** Renders a printable QR image without adding a second QR dependency. */
 export async function idCardQrDataUrl(payload: string): Promise<string> {
-  return qrRenderer()(payload, {
+  const { encodeQrDataUrl } = await import('./qr-encode');
+  return encodeQrDataUrl(payload, {
     errorCorrectionLevel: 'M',
     margin: 1,
     width: 320,

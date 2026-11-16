@@ -3,8 +3,8 @@
 **Compiled:** 22 October 2026 (Asia/Kolkata). **Sources:** the 21 October read-only audit sweep, the
 22 October unit-pipeline repair pass, and the 22 October test-isolation fix in this session.
 Every table below is extracted mechanically from the per-status reports, so this file cannot drift
-from [PROJECT-AUDIT-SUMMARY.md](PROJECT-AUDIT-SUMMARY.md),
-[NOT-WORKING-FEATURES.md](NOT-WORKING-FEATURES.md) and [PRIORITY-FIX-PLAN.md](PRIORITY-FIX-PLAN.md).
+from [PROJECT-AUDIT-SUMMARY.md](../PROJECT-IMPLEMENTATION-STATUS.md),
+[NOT-WORKING-FEATURES.md](../PROJECT-IMPLEMENTATION-STATUS.md) and [PRIORITY-FIX-PLAN.md](../PROJECT-IMPLEMENTATION-STATUS.md).
 
 ## 1. How to read this report
 
@@ -57,11 +57,11 @@ payment-view contract. This is not a security certification.
 
 ## 4. Complete capability catalogue (152 entries)
 
-Long-form per-status evidence: [WORKING-FEATURES.md](WORKING-FEATURES.md),
-[PARTIALLY-WORKING-FEATURES.md](PARTIALLY-WORKING-FEATURES.md),
-[NOT-WORKING-FEATURES.md](NOT-WORKING-FEATURES.md),
-[MISSING-FEATURES.md](MISSING-FEATURES.md),
-[IMPROVEMENT-RECOMMENDATIONS.md](IMPROVEMENT-RECOMMENDATIONS.md).
+Long-form per-status evidence: [WORKING-FEATURES.md](../PROJECT-IMPLEMENTATION-STATUS.md),
+[PARTIALLY-WORKING-FEATURES.md](../PROJECT-IMPLEMENTATION-STATUS.md),
+[NOT-WORKING-FEATURES.md](../PROJECT-IMPLEMENTATION-STATUS.md),
+[MISSING-FEATURES.md](../PROJECT-IMPLEMENTATION-STATUS.md),
+[IMPROVEMENT-RECOMMENDATIONS.md](../PROJECT-IMPLEMENTATION-STATUS.md).
 
 | ID | Module | Capability | Primary status (21 Oct) | Status after 22 Oct pass | Priority |
 | --- | --- | --- | --- | --- | --- |
@@ -350,7 +350,7 @@ composed and opened"; delivery stays unconfirmed unless separately observed.
 [build](build-output.txt) · [blocked unit log](unit-tests-excluding-provider-output.txt) ·
 [pure tests](pure-unit-output.txt) · [unit suite 22 Oct](unit-suite-2026-10-22.txt) ·
 [payment recheck 22 Oct](payment-recheck-2026-10-22.json) ·
-[components and tables](COMPONENT-AND-TABLE-AUDIT.md)
+[components and tables](../PROJECT-IMPLEMENTATION-STATUS.md)
 
 Screenshots: [admin](admin-dashboard-admin.png) · [receptionist](receptionist-dashboard-reception.png) ·
 [coach](coach-coach-dashboard.png) · [parent](parent-parent-dashboard.png).

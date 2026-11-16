@@ -26,4 +26,4 @@ The application has four roles: Admin, Receptionist, Coach, and Parent. Route gu
 
 WhatsApp and email delivery require a configured delivery worker and provider credentials. SMS is no longer a configurable app channel; legacy delivery support remains for existing SMS records. Notification logs/templates alone do not send messages. See [notification delivery setup](NOTIFICATION_DELIVERY_SETUP.md).
 
-This is a functionality catalog, not an assertion that every route or deployment integration has been audited. See [continuation status](CONTINUATION_STATUS.md) for the latest fixes and verification.
+This is a functionality catalog, not an assertion that every route or deployment integration has been audited. See [continuation status](PROJECT-IMPLEMENTATION-STATUS.md) for the latest fixes and verification.

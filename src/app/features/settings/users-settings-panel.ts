@@ -3,11 +3,15 @@ import { AcademyDatePipe } from '../../shared/academy-date.pipe';
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AccountStatus, StaffRole } from '../../core/auth/auth.model';
+import { AuthService } from '../../core/auth/auth.service';
+import { Permission } from '../../core/auth/permissions';
 import { RoleCatalogService } from '../../core/auth/role-catalog.service';
 import {
+  CreatedUser,
   ManagedUser,
   ManagedUserFilters,
   ManagedUserQuery,
+  PermissionEffect,
   UserAccessAuditRow,
   UserInvitationLink,
   UserManagementService,
@@ -40,6 +44,8 @@ interface PendingAccessChange {
 })
 export class UsersSettingsPanel implements OnInit, OnDestroy {
   protected readonly roleCatalog = inject(RoleCatalogService);
+  private readonly auth = inject(AuthService);
+  protected readonly currentUserId = computed(() => this.auth.profile()?.id ?? null);
   protected readonly roleOptions = this.roleCatalog.roleOptions;
   protected readonly permissionSummary = computed(() => {
     const labels = new Map(this.roleCatalog.permissions().map((permission) => [permission.key, permission]));
@@ -55,12 +61,63 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
   private auditRequest = 0;
   private filterTimer?: ReturnType<typeof setTimeout>;
   protected readonly users = signal<readonly ManagedUser[]>([]); protected readonly total = signal(0); protected readonly page = signal(1); protected readonly pageSize = signal(DEFAULT_PAGE_SIZE); protected readonly filters: ManagedUserFilters = { name: '', contact: '', role: '', status: '', joined: '' }; protected sortBy: ManagedUserQuery['sortBy'] = 'createdAt'; protected sortDirection: ManagedUserQuery['sortDirection'] = 'desc'; protected readonly loading = signal(true); protected readonly saving = signal(false); protected readonly error = signal(''); protected readonly inviteOpen = signal(false);
+  protected readonly createOpen = signal(false);
+  protected readonly createError = signal('');
+  protected readonly createdUser = signal<CreatedUser | null>(null);
+  protected readonly createdCopied = signal(false);
+  protected readonly createForm = this.fb.nonNullable.group({
+    fullName: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    phone: [''],
+    role: ['receptionist' as StaffRole, Validators.required],
+  });
   protected readonly form = this.fb.nonNullable.group({ fullName: ['', [Validators.required, Validators.minLength(2)]], email: ['', [Validators.required, Validators.email]], phone: [''], role: ['receptionist' as StaffRole, Validators.required] });
   protected readonly pendingAccess = signal<PendingAccessChange | null>(null);
   protected readonly accessError = signal('');
   protected readonly accessForm = this.fb.nonNullable.group({
     reason: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(500)]],
   });
+  protected readonly deleteTarget = signal<ManagedUser | null>(null);
+  protected readonly deleteError = signal('');
+  protected readonly deleteForm = this.fb.nonNullable.group({
+    reason: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(500)]],
+    confirm: [false, [Validators.requiredTrue]],
+  });
+  protected readonly permissionsTarget = signal<ManagedUser | null>(null);
+  protected readonly permissionsError = signal('');
+  protected readonly permissionsLoading = signal(false);
+  protected readonly permissionsLoaded = signal(false);
+  protected readonly permissionsSaving = signal(false);
+  protected readonly permissionsDefault = signal<readonly Permission[]>([]);
+  protected readonly permissionOverrides = signal<ReadonlyMap<Permission, PermissionEffect>>(new Map());
+  protected readonly permissionForm = this.fb.nonNullable.group({
+    reason: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(500)]],
+  });
+  /** The catalogue grouped by area, with the role default and the chosen override. */
+  protected readonly permissionGroups = computed(() => {
+    const defaults = new Set(this.permissionsDefault());
+    const overrides = this.permissionOverrides();
+    const groups = new Map<string, {
+      key: Permission;
+      label: string;
+      description: string;
+      roleDefault: boolean;
+      effect: PermissionEffect | 'default';
+    }[]>();
+    for (const permission of this.roleCatalog.permissions()) {
+      const rows = groups.get(permission.area) ?? [];
+      rows.push({
+        key: permission.key,
+        label: permission.label,
+        description: permission.description,
+        roleDefault: defaults.has(permission.key),
+        effect: overrides.get(permission.key) ?? 'default',
+      });
+      groups.set(permission.area, rows);
+    }
+    return [...groups].map(([area, permissions]) => ({ area, permissions }));
+  });
+  protected readonly permissionChangeCount = computed(() => this.permissionOverrides().size);
   protected readonly auditRows = signal<readonly UserAccessAuditRow[]>([]);
   protected readonly auditTotal = signal(0);
   protected readonly auditPage = signal(1);
@@ -102,8 +159,71 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
       this.saving.set(false);
     }
   }
-  /** Fallback when email delivery is unavailable: create a link the admin can share. */
-  protected async createInviteLink(): Promise<void> {
+  protected dismissCreateBackdrop(): void {
+    if (!this.saving()) this.cancelCreate();
+  }
+  protected cancelCreate(): void {
+    if (this.saving()) return;
+    this.createOpen.set(false);
+    this.createError.set('');
+    this.createForm.reset({ fullName: '', email: '', phone: '', role: 'receptionist' });
+  }
+  /**
+   * Creates a confirmed account with a server-generated temporary password. The
+   * password is shown once in a credential dialog; the admin shares it privately
+   * and the person must replace it at first sign-in.
+   */
+  protected async createUser(): Promise<void> {
+    if (this.saving()) return;
+    this.createForm.patchValue({
+      fullName: this.createForm.controls.fullName.value.trim(),
+      email: this.createForm.controls.email.value.trim().toLowerCase(),
+      phone: this.createForm.controls.phone.value.trim(),
+    });
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+    this.saving.set(true);
+    this.createError.set('');
+    this.error.set('');
+    try {
+      const created = await this.usersApi.create(this.createForm.getRawValue());
+      this.createOpen.set(false);
+      this.createForm.reset({ fullName: '', email: '', phone: '', role: 'receptionist' });
+      this.createdCopied.set(false);
+      this.createdUser.set(created);
+      this.toast.success(`${created.email} was created. Share the temporary password privately.`);
+      await this.reload();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'The account could not be created.';
+      this.createError.set(message);
+      this.toast.error(message);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+  protected dismissCreatedBackdrop(): void {
+    if (!this.saving()) this.closeCreatedCredentials();
+  }
+  protected closeCreatedCredentials(): void {
+    if (this.saving()) return;
+    this.createdUser.set(null);
+    this.createdCopied.set(false);
+  }
+  protected async copyTemporaryPassword(): Promise<void> {
+    const created = this.createdUser();
+    if (!created) return;
+    try {
+      await navigator.clipboard.writeText(created.temporaryPassword);
+      this.createdCopied.set(true);
+      this.toast.success('Temporary password copied.');
+    } catch {
+      this.createdCopied.set(false);
+      this.toast.error('Copy failed. Select the password and copy it manually.');
+    }
+  }
+  /** Fallback when email delivery is unavailable: create a link the admin can share. */  protected async createInviteLink(): Promise<void> {
     if (this.saving()) return;
     this.normalizeInviteForm();
     if (this.form.invalid) {
@@ -245,6 +365,144 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
       this.saving.set(false);
     }
   }
+  /** Offer delete only for another account; the Edge Function repeats the self check. */
+  protected canDelete(user: ManagedUser): boolean {
+    return user.id !== this.currentUserId();
+  }
+  protected openDelete(user: ManagedUser): void {
+    if (this.saving() || !this.canDelete(user)) return;
+    this.deleteError.set('');
+    this.deleteForm.reset({ reason: '', confirm: false });
+    this.deleteTarget.set(user);
+  }
+  protected dismissDeleteBackdrop(): void {
+    if (!this.saving()) this.cancelDelete();
+  }
+  protected cancelDelete(): void {
+    if (this.saving()) return;
+    this.deleteTarget.set(null);
+    this.deleteError.set('');
+    this.deleteForm.reset({ reason: '', confirm: false });
+  }
+  /**
+   * A hard delete is only allowed when the Edge Function finds no linked
+   * records. The reason and the checked confirmation are both required before
+   * the irreversible request is sent.
+   */
+  protected async confirmDelete(): Promise<void> {
+    const target = this.deleteTarget();
+    if (!target || this.saving()) return;
+    this.deleteForm.markAllAsTouched();
+    if (this.deleteForm.invalid) return;
+    const reason = this.deleteForm.controls.reason.value.trim();
+    if (reason.length < 3) return;
+    this.saving.set(true);
+    this.deleteError.set('');
+    this.error.set('');
+    try {
+      await this.usersApi.delete(target.id, reason);
+      this.toast.success(`${target.full_name} was deleted.`);
+      this.deleteTarget.set(null);
+      this.deleteForm.reset({ reason: '', confirm: false });
+      await Promise.all([this.reload(), this.loadAudit()]);
+    } catch (error) {
+      this.deleteError.set(error instanceof Error ? error.message : 'The account could not be deleted.');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+  /** When history blocks deletion, hand the admin the reversible action instead. */
+  protected switchToDisable(): void {
+    const target = this.deleteTarget();
+    if (!target || this.saving()) return;
+    const reason = this.deleteForm.controls.reason.value.trim();
+    this.deleteTarget.set(null);
+    this.deleteError.set('');
+    this.deleteForm.reset({ reason: '', confirm: false });
+    this.accessError.set('');
+    this.accessForm.reset({ reason: reason.length >= 3 ? reason : '' });
+    this.pendingAccess.set({ user: target, role: target.role, status: 'inactive' });
+  }
+  /** Opens the override editor and loads the account's current grant/revoke rows. */
+  protected async openPermissions(user: ManagedUser): Promise<void> {
+    if (this.saving() || this.permissionsLoading() || this.permissionsSaving()) return;
+    this.permissionsTarget.set(user);
+    this.permissionsError.set('');
+    this.permissionsLoaded.set(false);
+    this.permissionForm.reset({ reason: '' });
+    this.permissionsDefault.set([...(this.roleCatalog.matrix()[user.role] ?? [])]);
+    this.permissionOverrides.set(new Map());
+    this.permissionsLoading.set(true);
+    try {
+      const result = await this.usersApi.permissions(user.id);
+      const overrides = new Map<Permission, PermissionEffect>();
+      for (const override of result.overrides) overrides.set(override.permissionKey, override.effect);
+      this.permissionOverrides.set(overrides);
+      this.permissionsDefault.set([...(this.roleCatalog.matrix()[result.role] ?? [])]);
+      this.permissionsLoaded.set(true);
+    } catch (error) {
+      this.permissionsError.set(error instanceof Error ? error.message : 'Permission overrides could not be loaded.');
+    } finally {
+      this.permissionsLoading.set(false);
+    }
+  }
+  protected dismissPermissionsBackdrop(): void {
+    if (!this.permissionsSaving()) this.cancelPermissions();
+  }
+  protected cancelPermissions(): void {
+    if (this.permissionsSaving()) return;
+    this.permissionsTarget.set(null);
+    this.permissionsError.set('');
+    this.permissionsLoaded.set(false);
+    this.permissionOverrides.set(new Map());
+    this.permissionForm.reset({ reason: '' });
+  }
+  /** An empty value restores the role default for that permission. */
+  protected setPermissionEffect(key: Permission, effect: string): void {
+    const next = new Map(this.permissionOverrides());
+    if (effect === 'grant' || effect === 'revoke') next.set(key, effect);
+    else next.delete(key);
+    this.permissionOverrides.set(next);
+  }
+  protected async savePermissions(): Promise<void> {
+    const target = this.permissionsTarget();
+    if (!target || !this.permissionsLoaded() || this.permissionsSaving()) return;
+    this.permissionForm.controls.reason.markAsTouched();
+    if (this.permissionForm.invalid) return;
+    const reason = this.permissionForm.controls.reason.value.trim();
+    if (reason.length < 3) return;
+    this.permissionsSaving.set(true);
+    this.permissionsError.set('');
+    try {
+      const overrides = [...this.permissionOverrides()].map(([permissionKey, effect]) => ({ permissionKey, effect }));
+      await this.usersApi.setPermissions(target.id, overrides, reason);
+      this.toast.success(`Permissions updated for ${target.full_name}.`);
+      this.permissionsTarget.set(null);
+      this.permissionForm.reset({ reason: '' });
+      await this.loadAudit();
+    } catch (error) {
+      this.permissionsError.set(error instanceof Error ? error.message : 'The permission overrides could not be saved.');
+    } finally {
+      this.permissionsSaving.set(false);
+    }
+  }
+  /** Human label for the account states, shared by the row and the confirmation dialog. */
+  protected statusLabel(status: AccountStatus): string {
+    return status === 'active' ? 'Active' : status === 'suspended' ? 'Suspended' : 'Disabled';
+  }
+  /** Plain-language effect shown before an access change is saved. */
+  protected accessEffect(change: PendingAccessChange): string {
+    if (change.user.status === change.status) {
+      return 'Sign-in access stays the same. The new role takes effect on the next request, and the account keeps its existing records.';
+    }
+    if (change.status === 'active') {
+      return 'Sign-in is restored and any sign-in ban is cleared. The person keeps their existing role, records and access history.';
+    }
+    if (change.status === 'suspended') {
+      return 'Sign-in is blocked immediately while the issue is reviewed. The account keeps its role, records and access history, and it can be reinstated later.';
+    }
+    return 'Sign-in is blocked immediately. The account keeps its role, records and access history, and it can be re-enabled later.';
+  }
   protected async loadAudit(): Promise<void> {
     const request = ++this.auditRequest;
     this.auditLoading.set(true);
@@ -277,6 +535,26 @@ export class UsersSettingsPanel implements OnInit, OnDestroy {
     const before = row.old_values ?? {};
     const after = row.new_values ?? {};
     const value = (input: unknown): string => (typeof input === 'string' && input ? input : '—');
+    if (row.action === 'user_deleted') {
+      const before = after['before'];
+      const label = before && typeof before === 'object'
+        ? String((before as Record<string, unknown>)['email'] ?? (before as Record<string, unknown>)['full_name'] ?? '')
+        : '';
+      return label ? `Account deleted (${label})` : 'Account deleted';
+    }
+    if (row.action === 'user_created') {
+      return `Account created as ${value(after['role'])} with a temporary password`;
+    }
+    if (row.action === 'user_permissions_changed') {
+      const labels = new Map(this.roleCatalog.permissions().map((permission) => [permission.key, permission.label]));
+      const changes = Array.isArray(after['after']) ? after['after'] as Record<string, unknown>[] : [];
+      if (!changes.length) return 'Permission overrides cleared; role defaults restored';
+      const parts = changes.map((change) => {
+        const key = String(change['permissionKey'] ?? '');
+        return `${labels.get(key as Permission) ?? key} ${change['effect'] === 'revoke' ? 'revoked' : 'granted'}`;
+      });
+      return `Permissions: ${parts.join(', ')}`;
+    }
     if (row.action === 'invitation_sent' || row.action === 'invitation_resent') {
       return `Invitation ${row.action === 'invitation_resent' ? 'resent' : 'sent'} as ${value(after['role'])}`;
     }

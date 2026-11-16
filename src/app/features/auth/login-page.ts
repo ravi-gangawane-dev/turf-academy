@@ -27,7 +27,11 @@ export class LoginPage {
     this.auth.login(this.form.getRawValue())
       .pipe(finalize(() => this.submitting.set(false)), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (session) => void this.router.navigateByUrl(this.safeReturnUrl() || this.auth.dashboardForRole(session.user.role)),
+        next: (session) => void this.router.navigateByUrl(
+          this.auth.mustChangePassword()
+            ? '/auth/reset-password'
+            : this.safeReturnUrl() || this.auth.dashboardForRole(session.user.role),
+        ),
         error: (error) => this.error.set(this.auth.friendlyError(error)),
       });
   }

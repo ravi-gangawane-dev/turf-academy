@@ -24,6 +24,7 @@ describe('LoginPage', () => {
         { provide: AuthService, useValue: {
           login,
           friendlyError: (error: Error) => error.message,
+          mustChangePassword: () => false,
           dashboardForRole: (role: StaffRole) => AuthService.prototype.dashboardForRole.call({} as AuthService, role),
         } },
       ],

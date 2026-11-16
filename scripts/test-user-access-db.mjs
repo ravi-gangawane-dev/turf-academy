@@ -71,6 +71,9 @@ try {
   await apply('202609040002_security_and_workflows');
   await apply('202610310001_invitation_lifecycle');
   await apply('202611040001_user_access_guard');
+  await apply('202611040002_role_catalog');
+  await apply('202611160001_profile_delete_guard');
+  await apply('202611160002_profile_permissions');
 
   await db.exec(`
     insert into auth.users(id, email, raw_user_meta_data) values
@@ -155,6 +158,106 @@ try {
     assert.ok((await db.query('select id from public.audit_logs')).rows.length >= 3);
   });
   console.log('PASS profile writes and audit reads remain admin-only under RLS');
+
+  // 6. An administrator cannot delete their own active administrator profile.
+  await asUser(ids.admin1, async () => {
+    await expectFailure(
+      () => db.exec(`delete from public.profiles where id = '${ids.admin1}';`),
+      /own administrator/,
+    );
+  });
+  console.log('PASS direct self-deletion is blocked');
+
+  // 7. The final active administrator cannot be deleted, even without a caller
+  //    (the service-role/Edge path).
+  await expectFailure(
+    () => db.exec(`delete from public.profiles where id = '${ids.admin1}';`),
+    /At least one active administrator must remain/,
+  );
+  console.log('PASS last-active-administrator protection applies to deletion');
+
+  // 8. Per-user permission overrides replace atomically, reject bad input and
+  //    are readable only by the account itself or an administrator.
+  const replacePermissions = (target, entries, reason = 'Permission test') =>
+    db.query('select public.replace_profile_permissions($1, $2::jsonb, $3, $4)', [
+      target,
+      JSON.stringify(entries),
+      reason,
+      ids.admin1,
+    ]);
+  const overrideRows = async (target) =>
+    (await db.query(
+      `select permission_key, effect from public.profile_permissions where profile_id = $1 order by permission_key`,
+      [target],
+    )).rows;
+
+  await replacePermissions(ids.parent, [
+    { permissionKey: 'students:read', effect: 'grant' },
+    { permissionKey: 'reports:read', effect: 'revoke' },
+  ]);
+  assert.equal((await overrideRows(ids.parent)).length, 2);
+  await replacePermissions(ids.parent, [{ permissionKey: 'reports:read', effect: 'revoke' }]);
+  assert.deepEqual(await overrideRows(ids.parent), [{ permission_key: 'reports:read', effect: 'revoke' }]);
+  await replacePermissions(ids.parent, []);
+  assert.equal((await overrideRows(ids.parent)).length, 0);
+  console.log('PASS override replacement is atomic and can clear the set');
+
+  await replacePermissions(ids.parent, [{ permissionKey: 'students:read', effect: 'grant' }]);
+  await expectFailure(
+    () => replacePermissions(ids.parent, [{ permissionKey: 'finance:destroy', effect: 'grant' }], 'Invalid key'),
+    /Unknown permission/,
+  );
+  assert.deepEqual(await overrideRows(ids.parent), [{ permission_key: 'students:read', effect: 'grant' }]);
+  await expectFailure(
+    () => replacePermissions(ids.parent, [{ permissionKey: 'students:read', effect: 'allow' }], 'Invalid effect'),
+    /grant or revoke/,
+  );
+  await expectFailure(
+    () => replacePermissions(ids.parent, [{ permissionKey: 'students:read', effect: 'grant' }], 'ab'),
+    /reason of 3 to 500/,
+  );
+  console.log('PASS invalid key, effect and reason are refused without changing the existing set');
+
+  await asUser(ids.parent, async () => {
+    await expectFailure(
+      () => replacePermissions(ids.parent, [{ permissionKey: 'settings:write', effect: 'grant' }]),
+      /permission denied/,
+    );
+  });
+  console.log('PASS a browser session cannot replace overrides directly');
+
+  await replacePermissions(ids.reception, [{ permissionKey: 'fees:write', effect: 'revoke' }]);
+  await asUser(ids.parent, async () => {
+    assert.deepEqual(await overrideRows(ids.parent), [{ permission_key: 'students:read', effect: 'grant' }]);
+  });
+  await asUser(ids.reception, async () => {
+    assert.deepEqual(await overrideRows(ids.reception), [{ permission_key: 'fees:write', effect: 'revoke' }]);
+    assert.equal((await db.query('select profile_id from public.profile_permissions')).rows.length, 1);
+  });
+  await asUser(ids.admin1, async () => {
+    assert.equal((await db.query('select profile_id from public.profile_permissions')).rows.length, 2);
+  });
+  console.log('PASS overrides are readable by their account and by an administrator under RLS');
+
+  // 9. A profile with linked history cannot be deleted; a clean profile can, and
+  //    its overrides are removed by the cascade.
+  await db.exec(`
+    insert into public.offline_attendance_queue(client_operation_id, device_id, operation, payload, created_by)
+    values ('delete-guard-1', 'device-1', 'check_in', '{}'::jsonb, '${ids.reception}');
+  `);
+  await expectFailure(
+    () => db.exec(`delete from public.profiles where id = '${ids.reception}';`),
+    /foreign key|violates/,
+  );
+  assert.equal((await overrideRows(ids.reception)).length, 1);
+  await db.exec(`delete from public.offline_attendance_queue where client_operation_id = 'delete-guard-1';`);
+  await db.exec(`delete from public.profiles where id = '${ids.reception}';`);
+  assert.equal(
+    (await db.query(`select id from public.profiles where id = '${ids.reception}'`)).rows.length,
+    0,
+  );
+  assert.equal((await overrideRows(ids.reception)).length, 0);
+  console.log('PASS linked history blocks deletion while a clean profile and its overrides are removed');
 
   console.log('LIMIT: simulated auth and RLS on a disposable engine; no PostgREST, Edge HTTP or staging session.');
 } catch (error) {

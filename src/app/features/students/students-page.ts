@@ -175,8 +175,19 @@ export class StudentsPage implements OnInit {
       .slice(0, 2)
       .toUpperCase();
   }
-  protected hideBrokenImage(event: Event): void {
+  /**
+   * A signed photo URL can expire or the object can be missing. Clearing the URL
+   * drops the avatar back to initials instead of leaving an empty circle.
+   */
+  protected hideBrokenImage(
+    row: StudentListItem,
+    field: 'photoUrl' | 'coachPhotoUrl',
+    event: Event,
+  ): void {
     (event.target as HTMLImageElement).style.display = 'none';
+    this.rows.update((rows) =>
+      rows.map((item) => (item.id === row.id ? { ...item, [field]: undefined } : item)),
+    );
   }
   protected toggleSelected(id: string): void {
     const next = new Set(this.selection());

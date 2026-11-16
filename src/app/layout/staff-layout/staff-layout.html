@@ -41,15 +41,13 @@
           <span class="sidebar-status-dot"></span>
           <strong>Role:
             {{
-            auth.session()?.user?.role === 'admin'
-            ? 'Administrator'
-            : (auth.session()?.user?.role | titlecase)
+            roleSummary()
             }}</strong>
         </div>
         <small>{{
-          auth.session()?.user?.role === 'admin'
+          auth.hasRole(['admin'])
           ? 'Full access to manage academy operations.'
-          : 'Access follows your assigned permissions.'
+          : 'Access follows every role assigned to your account.'
           }}</small>
       </div>
     </div>

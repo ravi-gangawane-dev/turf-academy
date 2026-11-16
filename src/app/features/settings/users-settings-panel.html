@@ -7,8 +7,12 @@
           <h2 id="users-roles-title">Users &amp; Roles</h2>
           <p>Manage who can access your academy.</p>
         </div>
-        <button type="button" class="primary invite-user-button" (click)="inviteOpen.set(true)"><i
-            class="pi pi-user-plus" aria-hidden="true"></i> Invite user</button>
+        <div class="users-heading-actions">
+          <button type="button" class="app-button secondary create-user-button" (click)="createOpen.set(true)"><i
+              class="pi pi-key" aria-hidden="true"></i> Create user</button>
+          <button type="button" class="primary invite-user-button" (click)="inviteOpen.set(true)"><i
+              class="pi pi-user-plus" aria-hidden="true"></i> Invite user</button>
+        </div>
       </header>
 
       <div class="user-capabilities">
@@ -16,7 +20,7 @@
           <span class="capability-icon"><i class="pi pi-user-plus" aria-hidden="true"></i></span>
           <div>
             <h3>Invite team members</h3>
-            <p>Send an email invitation or create a secure setup link.</p>
+            <p>Send an email invitation, create a secure setup link, or set a temporary password yourself.</p>
           </div>
         </article>
         <article>
@@ -85,6 +89,9 @@
   @if(error() && !inviteOpen()){<div
     class="notice error" role="alert">{{error()}}</div>}
   <section class="app-card users-table-card">
+    <p class="account-policy-note"><i class="pi pi-info-circle" aria-hidden="true"></i><span><strong>Deactivation
+          keeps history.</strong> Disabling or suspending an account blocks sign-in immediately. Attendance, fee and
+        audit records stay intact. Only an account with no linked records can be permanently deleted.</span></p>
     <app-data-table [total]="total()" [page]="page()" [pageSize]="pageSize()" itemLabel="users"
       (pageChange)="setPage($event)" (pageSizeChange)="setPageSize($event)">
     <div class="table-wrap">
@@ -134,15 +141,15 @@
                 (change)="requestAccessChange(user,role.value,status.value,role,status)"
                 [disabled]="saving() || !!pendingAccess()" [attr.aria-label]="'Role for ' + user.full_name">
                 @for (option of roleOptions(); track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
+                <option [value]="option.value" [selected]="option.value === user.role">{{ option.label }}</option>
                 }
               </select></td>
             <td class="account-status-cell"><select #status [value]="user.status"
                 (change)="requestAccessChange(user,role.value,status.value,role,status)"
                 [disabled]="saving() || !!pendingAccess()" [attr.aria-label]="'Account status for ' + user.full_name">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
+                <option value="active" [selected]="user.status === 'active'">Active</option>
+                <option value="inactive" [selected]="user.status === 'inactive'">Disabled (inactive)</option>
+                <option value="suspended" [selected]="user.status === 'suspended'">Suspended</option>
               </select><small class="account-state">{{accountLabel(user)}}</small></td>
             <td><app-status-badge [status]="user.invitation?.status ?? 'none'"
                 [text]="invitationLabel(user)" /><small>Invited
@@ -159,7 +166,12 @@
               <button type="button" class="app-button small danger" [disabled]="saving()"
                 (click)="revokeInvitation(user)">Revoke</button>
               }
-              @if (!canResend(user) && !canRevoke(user)) { <span>—</span> }
+              @if (canDelete(user)) {
+              <button type="button" class="app-button small danger" [disabled]="saving()"
+                (click)="openDelete(user)" [attr.aria-label]="'Delete ' + user.full_name">Delete</button>
+              }
+              <button type="button" class="app-button small secondary" [disabled]="saving() || permissionsLoading()"
+                (click)="openPermissions(user)" [attr.aria-label]="'Permissions for ' + user.full_name">Permissions</button>
             </td>
           </tr>}@empty{<tr>
             <td colspan="8">@if (!error()) { <app-async-state [kind]="loading() ? 'loading' : 'empty'"
@@ -210,6 +222,59 @@
     </div>
     </app-data-table>
   </section>
+  @if(createOpen()){<div class="dialog-backdrop" appModalBackdrop (dismiss)="dismissCreateBackdrop()">
+    <form class="dialog create-user-dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="cancelCreate()"
+      aria-labelledby="create-dialog-title" [formGroup]="createForm" (ngSubmit)="createUser()">
+      <header>
+        <h2 id="create-dialog-title">Create user account</h2><button type="button" (click)="cancelCreate()"
+          [disabled]="saving()" aria-label="Close"><i class="pi pi-times"></i></button>
+      </header>
+      @if(createError()){<div class="notice error" role="alert">{{createError()}}</div>}
+      <p>Create a ready-to-use account now. The system generates a strong temporary password and shows it once so you
+        can share it privately. No email is sent.</p>
+      <label>Full name<input formControlName="fullName"></label>
+      <label>Email<input type="email" formControlName="email"></label>
+      <label>Phone<input formControlName="phone"></label>
+      <label>Role<select formControlName="role">
+          @for (option of roleOptions(); track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select></label>
+      <div class="delete-effect">
+        <i class="pi pi-shield" aria-hidden="true"></i>
+        <p>The person must choose a new password when they first sign in. The temporary password is never stored by the
+          app or written to Access history.</p>
+      </div>
+      <footer><button type="button" [disabled]="saving()" (click)="cancelCreate()">Cancel</button><button
+          type="submit" class="primary" [disabled]="saving()||createForm.invalid">{{saving()?'Creating…':'Create
+          account'}}</button>
+      </footer>
+    </form>
+  </div>}
+  @if (createdUser(); as created) {
+  <div class="dialog-backdrop" appModalBackdrop (dismiss)="dismissCreatedBackdrop()">
+    <section class="dialog credential-dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="closeCreatedCredentials()"
+      aria-labelledby="created-user-title">
+      <header>
+        <h2 id="created-user-title">Account created</h2>
+        <button type="button" (click)="closeCreatedCredentials()" [disabled]="saving()" aria-label="Close"><i
+            class="pi pi-times"></i></button>
+      </header>
+      <p>Share these sign-in details with <strong>{{created.email}}</strong> through a private channel. The temporary
+        password is shown only once and cannot be retrieved later.</p>
+      <label>Email<input type="text" readonly [value]="created.email" aria-label="Account email"
+          (focus)="selectLink($event)" (click)="selectLink($event)" /></label>
+      <label>Temporary password<input class="link-value" type="text" readonly [value]="created.temporaryPassword"
+          aria-label="Temporary password" (focus)="selectLink($event)" (click)="selectLink($event)" /></label>
+      <small class="link-expiry">The person must replace this password when they first sign in.</small>
+      <footer>
+        <button type="button" (click)="closeCreatedCredentials()" [disabled]="saving()">Close</button>
+        <button type="button" class="primary" (click)="copyTemporaryPassword()">{{createdCopied() ? 'Copied' : 'Copy
+          password'}}</button>
+      </footer>
+    </section>
+  </div>
+  }
   @if(inviteOpen()){<div class="dialog-backdrop" appModalBackdrop (dismiss)="dismissInviteBackdrop()">
     <form class="dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="inviteOpen.set(false)"
       aria-labelledby="invite-dialog-title" [formGroup]="form" (ngSubmit)="invite()">
@@ -246,15 +311,24 @@
       <dl class="access-diff">
         <div>
           <dt>Role</dt>
-          <dd><span>{{change.user.role}}</span><i class="pi pi-arrow-right" aria-hidden="true"></i><strong>{{change.role}}</strong>
+          <dd><span>{{ roleCatalog.roleLabel(change.user.role) }}</span><i class="pi pi-arrow-right" aria-hidden="true"></i><strong>{{ roleCatalog.roleLabel(change.role) }}</strong>
           </dd>
         </div>
         <div>
           <dt>Status</dt>
-          <dd><span>{{change.user.status}}</span><i class="pi pi-arrow-right"
-              aria-hidden="true"></i><strong>{{change.status}}</strong></dd>
+          <dd><span>{{ statusLabel(change.user.status) }}</span><i class="pi pi-arrow-right"
+              aria-hidden="true"></i><strong>{{ statusLabel(change.status) }}</strong></dd>
         </div>
       </dl>
+      <div class="access-effect"
+        [class.blocking]="change.user.status !== change.status && change.status !== 'active'">
+        <i class="pi" [class.pi-check-circle]="change.user.status === change.status || change.status === 'active'"
+          [class.pi-exclamation-circle]="change.user.status !== change.status && change.status !== 'active'"
+          aria-hidden="true"></i>
+        <p>{{ accessEffect(change) }}</p>
+      </div>
+      <p class="access-policy">This change is written to <strong>Access history</strong> with your account and the
+        reason entered. Deactivation is reversible and does not remove historical records.</p>
       <label>Reason<textarea formControlName="reason" rows="3" maxlength="500"
           placeholder="Why is this access changing?"></textarea></label>
       @if (accessForm.controls.reason.invalid && accessForm.controls.reason.touched) {
@@ -264,6 +338,108 @@
         <button type="button" [disabled]="saving()" (click)="cancelAccessChange()">Cancel</button>
         <button type="submit" class="primary"
           [disabled]="saving() || accessForm.invalid">{{saving() ? 'Saving…' : 'Confirm change'}}</button>
+      </footer>
+    </form>
+  </div>
+  }
+  @if (deleteTarget(); as target) {
+  <div class="dialog-backdrop" appModalBackdrop (dismiss)="dismissDeleteBackdrop()">
+    <form class="dialog delete-dialog" appModalFocus [modalBusy]="saving()" (modalDismiss)="cancelDelete()"
+      aria-labelledby="delete-dialog-title" [formGroup]="deleteForm" (ngSubmit)="confirmDelete()">
+      <header>
+        <h2 id="delete-dialog-title">Delete user account</h2>
+        <button type="button" (click)="cancelDelete()" [disabled]="saving()" aria-label="Close"><i
+            class="pi pi-times"></i></button>
+      </header>
+      @if (deleteError()) { <div class="notice error" role="alert">{{deleteError()}}</div> }
+      <p>This permanently removes the sign-in and profile for <strong>{{target.full_name}}</strong>@if (target.email) {
+        ({{target.email}}) }. It cannot be undone.</p>
+      <div class="delete-effect">
+        <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+        <p><strong>Only accounts with no linked history can be deleted.</strong> If attendance, enrolment, fee, audit or
+          other records reference this person, the request is refused. Disable the account instead: sign-in is blocked,
+          records stay intact and the account can be restored later.</p>
+      </div>
+      <label>Reason<textarea formControlName="reason" rows="3" maxlength="500"
+          placeholder="Why is this account being deleted?"></textarea></label>
+      @if (deleteForm.controls.reason.invalid && deleteForm.controls.reason.touched) {
+      <small class="field-error">Add a short reason (at least 3 characters).</small>
+      }
+      <label class="delete-confirm">
+        <input type="checkbox" formControlName="confirm" />
+        <span>I understand this permanently deletes the account and cannot be undone.</span>
+      </label>
+      <footer>
+        @if (target.status !== 'inactive') {
+        <button type="button" [disabled]="saving()" (click)="switchToDisable()">Disable instead</button>
+        }
+        <button type="button" [disabled]="saving()" (click)="cancelDelete()">Cancel</button>
+        <button type="submit" class="danger"
+          [disabled]="saving() || deleteForm.invalid">{{saving() ? 'Deleting…' : 'Delete account'}}</button>
+      </footer>
+    </form>
+  </div>
+  }
+  @if (permissionsTarget(); as target) {
+  <div class="dialog-backdrop" appModalBackdrop (dismiss)="dismissPermissionsBackdrop()">
+    <form class="dialog permissions-dialog" appModalFocus [modalBusy]="permissionsSaving()"
+      (modalDismiss)="cancelPermissions()" aria-labelledby="permissions-dialog-title" [formGroup]="permissionForm"
+      (ngSubmit)="savePermissions()">
+      <header>
+        <h2 id="permissions-dialog-title">Permission overrides</h2>
+        <button type="button" (click)="cancelPermissions()" [disabled]="permissionsSaving()" aria-label="Close"><i
+            class="pi pi-times"></i></button>
+      </header>
+      @if (permissionsError()) { <div class="notice error" role="alert">{{permissionsError()}}</div> }
+      <p>Adjust what <strong>{{target.full_name}}</strong> can open on top of their
+        <strong>{{ roleCatalog.roleLabel(target.role) }}</strong> role. Keep <em>Role default</em> wherever the role is
+        already correct.</p>
+      <div class="permissions-note">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
+        <p>Overrides change the menus, screens and action buttons this app offers. Database row security still follows
+          the role: a grant cannot open records the role may not read, and a revoke is not a hard API boundary.</p>
+      </div>
+      @if (permissionsLoading()) {
+      <app-async-state title="Loading permission overrides…" />
+      } @else if (permissionsLoaded()) {
+      <div class="permission-groups">
+        @for (group of permissionGroups(); track group.area) {
+        <fieldset class="permission-group">
+          <legend>{{ group.area }}</legend>
+          @for (permission of group.permissions; track permission.key) {
+          <label class="permission-row">
+            <span class="permission-text">
+              <strong>{{ permission.label }}</strong>
+              <small>{{ permission.description }}</small>
+              <span class="permission-default" [class.included]="permission.roleDefault">
+                {{ permission.roleDefault ? 'Included with role' : 'Not included with role' }}
+              </span>
+            </span>
+            <select [value]="permission.effect" [disabled]="permissionsSaving()"
+              (change)="setPermissionEffect(permission.key, $any($event.target).value)"
+              [attr.aria-label]="'Override for ' + permission.label">
+              <option value="default">Role default</option>
+              <option value="grant">Grant</option>
+              <option value="revoke">Revoke</option>
+            </select>
+          </label>
+          }
+        </fieldset>
+        }
+      </div>
+      <p class="permission-count">{{ permissionChangeCount() }} override{{
+        permissionChangeCount() === 1 ? '' : 's' }} selected.</p>
+      <label>Reason<textarea formControlName="reason" rows="3" maxlength="500"
+          placeholder="Why are these permissions changing?"></textarea></label>
+      @if (permissionForm.controls.reason.invalid && permissionForm.controls.reason.touched) {
+      <small class="field-error">Add a short reason (at least 3 characters).</small>
+      }
+      }
+      <footer>
+        <button type="button" [disabled]="permissionsSaving()" (click)="cancelPermissions()">Cancel</button>
+        <button type="submit" class="primary"
+          [disabled]="permissionsSaving() || !permissionsLoaded() || permissionForm.invalid">{{
+          permissionsSaving() ? 'Saving…' : 'Save permissions' }}</button>
       </footer>
     </form>
   </div>

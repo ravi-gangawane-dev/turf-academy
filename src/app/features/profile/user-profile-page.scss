@@ -136,51 +136,45 @@ h1 {
   box-shadow: 0 0 0 3px #e4f4e9;
 }
 
+/* House tab pattern (same as the student workspace): left-aligned text tabs,
+   transparent background, 2px green underline on the active tab. */
 .profile-tabs {
   display: flex;
-  overflow-x: auto;
+  flex-wrap: wrap;
   gap: var(--app-space-1);
-  padding: 0 clamp(14px, 2vw, 28px);
-  border-top: 1px solid #edf1ed;
-  border-bottom: 1px solid #e9eee9;
-  scrollbar-width: thin;
+  padding: 0 clamp(16px, 2.2vw, 28px);
+  border-bottom: 1px solid #e6ece6;
 }
 
 .profile-tabs button {
   position: relative;
   display: inline-flex;
-  min-height: 57px;
+  min-height: 52px;
   flex: 0 0 auto;
   align-items: center;
-  gap: var(--app-space-2);
-  padding: 0 13px;
+  gap: 8px;
+  padding: 0 15px;
   border: 0;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  color: #748078;
+  color: #6c7973;
   cursor: pointer;
   font: inherit;
   font-size: var(--app-fs-meta);
-  font-weight: 650;
-  transition: color 0.16s ease, background 0.16s ease;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.16s ease, border-color 0.16s ease;
 }
 
 .profile-tabs button:hover {
   color: var(--app-primary-dark);
+  border-bottom-color: #cfe3d5;
 }
 
 .profile-tabs button.active {
+  border-bottom-color: var(--app-primary);
   color: var(--app-primary-dark);
-}
-
-.profile-tabs button.active::after {
-  position: absolute;
-  right: 12px;
-  bottom: -1px;
-  left: 12px;
-  height: 3px;
-  border-radius: var(--app-radius-sm) 3px 0 0;
-  background: var(--app-primary);
-  content: '';
+  font-weight: 750;
 }
 
 .profile-tabs button:focus-visible,
@@ -198,8 +192,10 @@ h1 {
 }
 
 .section-heading {
+  flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 23px;
+  gap: 12px 16px;
+  margin-bottom: 22px;
 }
 
 .section-heading h3 {
@@ -273,9 +269,13 @@ h1 {
 .details-grid,
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 22px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px 28px;
   align-items: start;
+}
+
+.form-grid {
+  gap: 18px 22px;
 }
 
 .detail,
@@ -288,9 +288,53 @@ h1 {
 
 .detail {
   align-content: start;
-  min-height: 55px;
-  padding-bottom: 13px;
-  border-bottom: 1px solid #edf1ed;
+  gap: 5px;
+  min-width: 0;
+  padding: 11px 0 13px;
+  border-bottom: 1px solid #eef2ee;
+}
+
+.detail-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.detail-link:hover {
+  color: var(--app-primary-dark);
+  border-bottom-color: currentColor;
+}
+
+.status-pill {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  background: #eaf6ee;
+  color: #14663c;
+  font-size: var(--app-fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.status-pill[data-status='inactive'],
+.status-pill[data-status='suspended'],
+.status-pill[data-status='disabled'] {
+  background: #fdeceb;
+  color: #a8342a;
+}
+
+.status-pill[data-status='pending'] {
+  background: #fdf4e3;
+  color: #8a5a12;
+}
+
+.detail > strong {
+  font-size: var(--app-fs-label);
+  font-weight: 600;
 }
 
 .detail > span,
@@ -327,8 +371,21 @@ h1 {
 }
 
 .role-empty {
-  color: #758178;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px dashed #dde7df;
+  border-radius: var(--app-radius-md);
+  background: #fafcf9;
+  color: #6d7b72;
   font-size: var(--app-fs-meta);
+}
+
+.role-empty i {
+  color: #8ba394;
+  font-size: 15px;
 }
 
 .span-two {
@@ -580,6 +637,12 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  .profile-tabs button {
+    min-height: 46px;
+    padding: 0 10px;
+    font-size: var(--app-fs-caption);
+  }
+
   .profile-page {
     padding: 20px 12px 32px;
   }
@@ -726,7 +789,7 @@ app-page-hero [hero-actions] {
 
 .profile-layout {
   display: grid;
-  grid-template-columns: minmax(230px, 282px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
   align-items: stretch;
   min-height: 460px;
   gap: var(--app-space-3-5);
@@ -851,37 +914,17 @@ app-page-hero [hero-actions] {
 }
 
 .contact-row .contact-address {
-  white-space: pre-line;
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   line-height: 1.65;
 }
 
 .profile-tabs {
-  gap: 0;
   margin: -16px -16px 0;
-  padding: 0 12px;
   border-top: 0;
   border-bottom-color: #e4ebe5;
-}
-
-.profile-tabs button {
-  flex: 1 0 auto;
-  justify-content: center;
-  min-height: 62px;
-  padding: 0 12px;
-  font-size: var(--app-fs-label);
-}
-
-.profile-tabs button.active {
-  border-radius: var(--app-radius-md);
-  background: #edf7ef;
-  color: var(--app-primary-dark);
-}
-
-.profile-tabs button.active::after {
-  right: 12px;
-  bottom: 3px;
-  left: 12px;
-  height: 2px;
 }
 
 .profile-content {
@@ -897,9 +940,21 @@ app-page-hero [hero-actions] {
   color: #52665a;
 }
 
+/* The two cards need room for their own content before they can sit side by
+   side; below this the identity card moves on top and details get full width. */
+@media (max-width: 1400px) {
+  .profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .identity-card {
+    height: auto;
+  }
+}
+
 @media (max-width: 880px) {
   .profile-layout {
-    grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .profile-tabs button {
@@ -975,5 +1030,52 @@ app-page-hero [hero-actions] {
 
   .profile-content {
     padding: 20px 2px 2px;
+  }
+}
+
+/* Tablet / small-desktop: the two cards stack, so the identity card becomes a
+   compact header band instead of a tall centred column, and the five tabs keep
+   one row. */
+@media (min-width: 701px) and (max-width: 1400px) {
+  .identity {
+    flex-direction: row;
+    align-items: center;
+    min-height: 0;
+    gap: 16px;
+    padding: 18px 20px;
+    text-align: left;
+  }
+
+  .identity-copy {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .identity-copy h2 {
+    font-size: 22px;
+  }
+
+  .account-status {
+    position: static;
+    margin-left: auto;
+  }
+
+  .identity-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin-top: 0;
+    padding: 13px 20px 15px;
+  }
+
+  .contact-row {
+    width: auto;
+  }
+
+  .profile-tabs button {
+    min-height: 48px;
+    flex: 0 0 auto;
+    padding: 0 11px;
+    font-size: var(--app-fs-caption);
   }
 }

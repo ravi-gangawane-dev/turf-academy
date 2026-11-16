@@ -101,9 +101,11 @@
             <td>{{ (page() - 1) * pageSize() + index + 1 }}</td>
             <td [attr.data-export-value]="row.fullName + ' (' + row.studentCode + ')'">
               <button type="button" class="student-link" (click)="openStudent(row.id)">
-                <span class="avatar-stack"><span class="mini-avatar">{{ initials(row.fullName) }}</span>
-                  @if (row.photoUrl) {
-                  <img class="mini-avatar avatar-photo" [src]="row.photoUrl" alt="" (error)="hideBrokenImage($event)" />
+                <!-- One avatar only: the photo when the student has one, initials otherwise. -->
+                <span class="avatar-stack">@if (row.photoUrl) {
+                  <img class="mini-avatar avatar-photo" [src]="row.photoUrl" alt="" (error)="hideBrokenImage(row, 'photoUrl', $event)" />
+                  } @else {
+                  <span class="mini-avatar">{{ initials(row.fullName) }}</span>
                   }</span><span><strong>{{ row.fullName }}</strong><small>{{ row.studentCode }}</small></span>
               </button>
             </td>
@@ -111,11 +113,11 @@
               <span class="batch-chip">{{ row.batchName || 'Not assigned' }}</span>
             </td>
             <td [attr.data-export-value]="row.coachName || 'Not assigned'">
-              <span class="coach-cell"><span class="avatar-stack"><span class="coach-avatar">{{ initials(row.coachName
-                    || 'NA') }}</span>
-                  @if (row.coachPhotoUrl) {
+              <span class="coach-cell"><span class="avatar-stack">@if (row.coachPhotoUrl) {
                   <img class="coach-avatar avatar-photo" [src]="row.coachPhotoUrl" alt=""
-                    (error)="hideBrokenImage($event)" />
+                    (error)="hideBrokenImage(row, 'coachPhotoUrl', $event)" />
+                  } @else {
+                  <span class="coach-avatar">{{ initials(row.coachName || 'NA') }}</span>
                   }</span>{{ row.coachName || 'Not assigned' }}</span>
             </td>
             <td>{{ row.dateOfBirth | academyDate: 'dd MMM yyyy' }}</td>

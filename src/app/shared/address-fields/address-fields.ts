@@ -13,7 +13,8 @@ export class AddressFields {
   readonly form = input<AddressFormGroup | null>(null);
   readonly value = input<Address | null>(null);
   readonly readOnly = input(false);
-  readonly columns = input<2 | 4>(2);
+  /** 5 puts the whole address on one row (wide screens only). */
+  readonly columns = input<2 | 4 | 5>(2);
   readonly inline = input(false);
   protected readonly formattedAddress = computed(() => formatAddress(this.value()) || '—');
   protected readonly fields = computed(() => {
